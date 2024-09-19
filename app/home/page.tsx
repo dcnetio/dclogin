@@ -1,14 +1,8 @@
-import Link from "next/link";
 
 export default function Home() {
   return (
     <div>
-      <div>
-        <Link href="/test">test</Link>
-      </div>
-      <div>
-        <Link href="/">back</Link>
-      </div>
+      <h1>钱包首页</h1>
     </div>
   );
 }

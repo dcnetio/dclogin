@@ -1,0 +1,14 @@
+.header {
+  padding: 10px;
+  background-color: #eee;
+  text-align: center;
+  .account{
+    padding-top: 10px;
+    font-size: 1.1rem;
+    font-weight: bold;
+  }
+  .address{
+    padding: 10px;
+    font-size: 0.8rem;
+  }
+}

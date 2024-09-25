@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import 'antd-mobile/es/global'
-
-
+import "antd-mobile/es/global";
+import StoreProvider from "@/context/storeProvider";
+import styles from "./layout.module.css";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -31,7 +31,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <div className={styles.container}>
+          <StoreProvider>
+            {children}
+          </StoreProvider>
+        </div>
       </body>
     </html>
   );

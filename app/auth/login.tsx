@@ -4,13 +4,23 @@ import ethers from "@/helpers/ethers";
 import styles from "./login.module.css";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { saveMnemonic } from "@/lib/slices/walletSlice";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { store } from "@/lib/store";
 
 export default function Login() {
   const router = useRouter();
+  const dispatch = useAppDispatch();
+  const mnemonic = useAppSelector(state => state.wallet.mnemonic)
   const [account, setAccount] = useState("");
   const [loading, setLoading] = useState(true);
   const create = async () => {
-    await ethers.createWallet();
+    const wallet = await ethers.createWallet();
+    // todo 保存到auth中
+    // 保存到store
+    store.dispatch(
+      saveMnemonic(wallet.mnemonic?.phrase)
+    );
     // 提示成功，并跳转到首页
     Toast.show({
       content: "创建成功",
@@ -26,13 +36,10 @@ export default function Login() {
   };
   // 获取账号
   const getAccount = async () => {
-    // const naccount = "";
-    const naccount =
-      "about pretty elevator couch keen blood garment bright wagon marble outer around";
-    if (naccount) {
-      await initWallet(naccount);
+    if (mnemonic) {
+      await initWallet(mnemonic);
     }
-    setAccount(naccount);
+    setAccount(mnemonic);
     setLoading(false);
   };
 

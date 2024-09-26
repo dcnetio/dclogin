@@ -561,6 +561,23 @@ async function addChain(chainInfo) {
 }
 
 
+//修改网络
+async function updateChain(chainInfo) {
+    if (chainInfo == null ) {
+        return;
+    }
+    if (chainInfo.confirms == null || chainInfo.confirms == 0) {
+        chainInfo.confirms = 6;
+    }
+    try {
+        await dbInstance.updateData(store_chain, chainInfo);
+        return true;
+    }catch(e){
+        console.error('修改网络失败:', e);
+        return false;
+    }
+}
+
 // 切换网络
 async function switchChain(chainInfo) {
     try {

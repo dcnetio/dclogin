@@ -2,17 +2,17 @@
 // 定义一个变量，用于存储BroadcastChannel对象
 const version = 'v0_0_1';
 const channelName = 'dcwallet_iframe_channel';
+import {ethersHelper} from "@/helpers/ethersHelper.js";
 const dcWalletChannel = new BroadcastChannel("dcWalletChannel");
 let broadcastChannel = null;
 let walletLoadedFlag = false; //钱包已加载标志
-let validRandom = ''; //连接校验随机数
-let waitSignMessage =  ''; //等待签名消息
+let waitSignMessage =  null; //等待签名消息
+let waitSignEip712Message = null; //等待签名EIP712消息
 //获取父窗口域名
 const parentOrigin = window.location.ancestorOrigins[0];
 // Dapp信息
 let appName = '';
 let appIcon = '';
-let appUrl = '';
 let appVersion = '';
 
 /*******************************初始化需要完成操作***********************************/
@@ -71,10 +71,13 @@ window.addEventListener('message', function(event) {
             initConfig(message.data);
             break;
         case 'connect': //连接命令
-            connect(message.data);
+            connect();
             break;
         case 'signMessage': //签名消息
             signMessage(message.data);
+            break;
+        case 'signEIP712Message': //签名EIP712消息
+            signEIP712Message(message.data);
             break;
         default:
             break;
@@ -90,7 +93,6 @@ function initConfig(data) {
     }
     appName = config.appName;
     appIcon = config.appIcon;
-    appUrl = config.appUrl;
     appVersion = config.appVersion;
     createDCWalletIframeBroadcastChannel(channelName);
     if (!broadcastChannel) {
@@ -102,16 +104,17 @@ function initConfig(data) {
 
 
 // 父窗口发送的连接命令处理,打开钱包页面前调用
-function connect(radomdata) {
+function connect() {
     // 等待钱包加载完成
     walletLoadedFlag = false;
     waitForFlagToTrue(() => walletLoadedFlag)
     .then((flag) => { //钱包已经加载完成
         if (flag) {
-            connectWallet(radomdata);
+            connectWallet();
         } 
-    }).catch((error) => {  //超时不处理
-      
+    }).catch((e) => {  //超时不处理
+      console.log(e);
+      return false;
     });
 }
 
@@ -139,10 +142,46 @@ function signMessage(data) {
     .then((flag) => { //钱包已经加载完成
         if (flag) {
             //发送签名请求消息
-            signMessage(message);
+            requsetForSignMessage(message);
         } 
-    }).catch((error) => {  //超时不处理
-      
+    }).catch((e) => {  //超时不处理
+      return e;
+    });
+}
+
+// 父窗口发送的签名EIP712消息处理,打开钱包页面前调用
+/** message格式为
+{
+    type: 'string',//string,hex,base64,eip712
+    message: 'test message',
+}
+**/
+function signEIP712Message(data) {
+    //校验数据
+    try {
+        let message = JSON.parse(data);
+        if (message.type == null || message.message == null ) {
+            return 'The message type or message is null';
+        }
+        if (message.domain == null){
+            return 'The domain is null';
+        }
+        if (message.primaryType == null){
+            return 'The primaryType is null';
+        }   
+    } catch (e) {
+        return e;
+    }
+    // 等待钱包加载完成
+    walletLoadedFlag = false;
+    waitForFlagToTrue(() => walletLoadedFlag)
+    .then((flag) => { //钱包已经加载完成
+        if (flag) {
+            //发送签名请求消息
+            requestSignEIP712Message(message);
+        } 
+    }).catch((e) => {  //超时不处理
+        return e;
     });
 }
 
@@ -199,20 +238,33 @@ function signMessageResponse(successFlag, message) {
     window.parent.postMessage(jsonMessage, parentOrigin);
 }
 
+
+//发送签名EIP712成功消息给父窗口
+function signEIP712MessageResponse(successFlag, message) {
+    let message = {
+        type: 'signEIP712MessageResponse',
+        data: {
+            success: successFlag,
+            message: message
+        }
+    }
+    jsonMessage = JSON.stringify(message);
+    window.parent.postMessage(jsonMessage, parentOrigin);
+}
+
 /*********************************与钱包页面通信处理************************************/
 
 // 发送连接命令给钱包页面
-function connectWallet(radomdata) {
-    validRandom = radomdata;
+function connectWallet() {
     // 像钱包网页发送连接命令
     let message = {
         version: version,
         type: 'connect',
+        origin: parentOrigin,
         data: {
             appName: appName,
             appIcon: appIcon,
             appUrl: parentOrigin,
-            random: radomdata,
             appversion: appVersion
         }
     }
@@ -221,29 +273,51 @@ function connectWallet(radomdata) {
 }
 
 // 发送签名消息给钱包页面
-function signMessage(orignMessage) {
+function requsetForSignMessage(orignMessage) {
     // 向钱包网页发送签名消息
     let message = {
         version: version,
         type: 'signMessage',
+        origin: parentOrigin,
         data: {
             appName: appName,
             appIcon: appIcon,
             appUrl: parentOrigin,
             appversion: appVersion,
+            account: orignMessage.account,
             messagetype: orignMessage.type,
             message: orignMessage.message
         }
     }
+    waitSignMessage = orignMessage;
     jsonMessage = JSON.stringify(message);
     dcWalletChannel.postMessage(jsonMessage);
 }
 
-
-
-
-
-
+// 发送签名EIP712消息给钱包页面
+function requestSignEIP712Message(orignMessage) {
+    // 向钱包网页发送签名消息
+    let message = {
+        version: version,
+        type: 'signEIP712Message',
+        origin: parentOrigin,
+        data: {
+            appName: appName,
+            appIcon: appIcon,
+            appUrl: parentOrigin,
+            appversion: appVersion,
+            account: orignMessage.account,
+            messagetype: orignMessage.type,
+            domain: orignMessage.domain,
+            primaryType: orignMessage.primaryType,
+            types: orignMessage.types,
+            message: orignMessage.message,
+        }
+    }
+    waitSignEip712Message = orignMessage;
+    jsonMessage = JSON.stringify(message);
+    dcWalletChannel.postMessage(jsonMessage);
+}
 
 
 
@@ -268,6 +342,10 @@ function onIframeChannelMessage(event) {
         console.error('Received invalid version:', message.version,"expected version:",version);
         return;
     }
+    if (message.origin !== parentOrigin) { //不是发给当前应用,不处理
+        console.error('Received invalid origin:', message.origin,"expected origin:",parentOrigin);
+        return;
+    }
     /** 判断消息类型,message格式为
      * {
      *      type: 'getUserInfo', 
@@ -287,7 +365,12 @@ function onIframeChannelMessage(event) {
         case 'connected': //连接成功
             connectResponse(data)
             break;
-        case 'signsuccess': //签名成功
+        case 'signSuccess': //签名成功
+            responseForsignMessage(data);
+            break;
+        case 'signEIP712Success': //签名EIP712成功
+            responseForSignEIP712Message(data);
+            break
         default:
             break;
     }
@@ -298,9 +381,12 @@ function onIframeChannelMessage(event) {
 function connectResponse(data) {
     try {
        let message = JSON.parse(data); 
-       //todo 利用ether.js随机数签名校验,如果校验失败,则提示父窗口连接失败
-       
-
+       //签名校验,如果校验失败,则不处理
+       const flag =  ethersHelper.verifySignature(parentOrigin,message.signature, message.account);
+       if (!flag) {
+           console.log('verifySignature failed');
+            return;
+        }
        walletConnected(message.success, message.account, message.chainid, data);
     } catch (e) {
         walletConnected(false, "", "",data);
@@ -309,15 +395,60 @@ function connectResponse(data) {
 }
 
 // 接受钱包页面响应签名消息
-function signMessageResponse(data) {
+function responseForsignMessage(data) {
     try {
         let message = JSON.parse(data);
-        //todo 利用ether.js签名校验,如果校验失败,则提示父窗口签名失败
+        if (message.success){
+            // 进行签名校验,如果校验失败,则提示父窗口签名失败
+            if (waitSignMessage == null) {
+                console.log('waitSignMessage is null');
+                return;
+            }
+            if (waitSignMessage.type == 'hex') {
+                orignMessage = hexToUint8Array(waitSignMessage.message);
+                const flag =  ethersHelper.verifySignature(orignMessage,message.signature, waitSignMessage.account);
+                if (!flag) {
+                    console.log('verifySignature failed');
+                    return;
+                }
+            }else {
+                const flag =  ethersHelper.verifySignature(waitSignMessage.message,message.signature, waitSignMessage.account);
+                if (!flag) {
+                    console.log('verifySignature failed');
+                    return;
+                }
+            }
+        }
         //发送签名成功消息给父窗口
         signMessageResponse(message.success, message.message);
     } catch (e) {
         //发送签名失败消息给父窗口
         signMessageResponse(false, e);
+    }
+}
+
+// 接受钱包页面响应签名EIP712消息
+function responseForSignEIP712Message(data) {
+    try {
+        let message = JSON.parse(data);
+        // 进行签名校验,如果校验失败
+        if (waitSignEip712Message == null) {
+            console.log('waitSignEip712Message is null');
+            return;
+        }
+        if (message.success){
+            const flag =  ethersHelper.verifyEIP712Signature(waitSignEip712Message.primaryType,waitSignEip712Message.domain,
+                            waitSignEip712Message.type,waitSignEip712Message.message,message.signature, waitSignEip712Message.account);
+            if (!flag) {
+                console.log('verifyEIP712Signature failed');
+                return;
+            }
+        }
+        //发送签名成功消息给父窗口
+        signEIP712MessageResponse(message.success, message.message);
+    } catch (e) {
+        //发送签名失败消息给父窗口
+        signEIP712MessageResponse(false, e);
     }
 }
 
@@ -340,4 +471,28 @@ function waitForFlagToTrue(getWalletLoadedFlag) {
             reject(new Error("Timeout: Flag did not change within 60 seconds"));  
         }, 60000); // 60秒超时  
     });  
+}  
+
+
+function hexToUint8Array(hex) {  
+    // 如果十六进制字符串以 "0x" 开头，则去掉这个前缀  
+    if (hex.startsWith("0x")) {  
+        hex = hex.slice(2);  
+    }  
+
+    // 确保十六进制字符串长度是偶数  
+    if (hex.length % 2 !== 0) {  
+        throw new Error("Invalid hex string");  
+    }  
+
+    // 创建 Uint8Array  
+    const byteArray = new Uint8Array(hex.length / 2);  
+
+    // 遍历十六进制字符串，每两个字符转换为一个字节  
+    for (let i = 0; i < hex.length; i += 2) {  
+        const byte = hex.substr(i, 2);  
+        byteArray[i / 2] = parseInt(byte, 16);  
+    }  
+
+    return byteArray;  
 }  

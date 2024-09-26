@@ -1,18 +1,22 @@
 
-import { timeStamp } from 'console';
+import { count } from 'console';
 import IndexedDBHelper from './indexedDBHelper.js';  
-import ethersHelper from "@/helpers/ethersHelper.js";
+import {ethersHelper} from "@/helpers/ethersHelper.js";
+
 // 定义一个变量，用于存储BroadcastChannel对象
 const version = 'v_0_0_1';
 const channelName = 'dcwallet_channel';
 let broadcastChannel = null;
+let currentChain = null; //当前网络
+let currentAccount = null; //当前账号
+
+
 const dbname = 'dcwallet';
 const store_account = 'walletaccount';
 const store_chain = 'walletchain';
 const store_record = 'transferrecods';
 const store_apps = 'walletapps';
 const store_keyinfo = 'walletkeyinfo';
-const dbversion = 1;
 let dbInstance = null; // 全局变量，用于存储数据库实例 
 
 // 获取查询字符串  
@@ -20,21 +24,38 @@ const queryString = window.location.search;
 
 // 使用 URLSearchParams 解析查询字符串  
 const urlParams = new URLSearchParams(queryString);  
+let  location = urlParams.get('origin');
 
+if (window.opener && window.opener.location){
+    if (length(window.opener.location.hostname) > 3) {
+        location = window.opener.location.hostname;
+    }
+}
 // 获取特定参数的值  
-const origin = urlParams.get('origin'); // 
- 
+const origin = location; // 
+
+
+
+const NetworkStauts = Object.freeze({  
+    connecting: 0,
+    connected: 1,
+    disconnect: 2 
+});  
+let networkStatus = NetworkStauts.disconnect; //网络状态
 
 
 //todo 向iframe发送加载成功消息
 
 /*******************************初始化需要完成操作***********************************/
 
+
+
+
 // 初始化数据库并设置全局变量  
 async function initializeDatabase() {  
     const storeConfigs = [  
         {  // 账号信息存储,
-            name: 'store_account',  
+            name: store_account,  
             keyPath: 'account',  
             autoIncrement: false,
             indexes: [
@@ -44,30 +65,29 @@ async function initializeDatabase() {
             ]  
         },  
         {  // 网络信息存储
-            name: 'walletchain',  
+            name: walletchain,  
             keyPath: 'chainid',  
             autoIncrement: false,  
             indexes: [{ name: 'chainid', keyPath: 'chainid', unique: true }]  
         },
         {// 转账记录存储
-            name: 'transferrecods',  
+            name: transferrecods,  
             keyPath: 'id',  
             autoIncrement: true,  
             indexes: [{ name: 'account', keyPath: 'account', unique: false },{ name: 'chainid', keyPath: 'chainid', unique: false }]  
         },
         {// 已连接的DAPP存储
-            name: 'store_apps',  
-            keyPath: 'id',  
-            autoIncrement: true,  
+            name: store_apps,  
+            keyPath: 'appurl',   
             indexes: [{ name: 'timestamp', keyPath: 'timestamp', unique: false }]  
         },
-         {// key信息存储,主要用来存储经webauthn过程中唯一信息加密的私钥的信息,一般就一条数据
-            name: 'store_keyinfo',  
+        {// key,value信息存储,主要用来存储非标准信息,连接过的网络信息(固定key:"connectedChain")与最近选择的账号信息(固定key:"chosedAccount")
+            name: store_keyinfo,  
             keyPath: 'key',   
         },
     
     ];  
-    const dbHelper = new IndexedDBHelper('myDatabase', storeConfigs);  
+    const dbHelper = new IndexedDBHelper(dbname, storeConfigs,dbversion);  
 
     try {  
         dbInstance = await dbHelper.open();  
@@ -77,9 +97,66 @@ async function initializeDatabase() {
     }  
 }  
 
+// 初始化基本信息(初始化网络为最近切换的网络,账号为最近切换的账号)
+async function initBaseinfo() {
+    try {
+        if  (currentChain == null){
+            //从数据库中获取上次打开的网络信息
+            let netinfo = await  dbInstance.getData(store_keyinfo, 'connectedChain');
+            if (netinfo) {
+                currentChain = netinfo;
+            }
+            //连接网络
+            flag = ethersHelper.connectWithHttps(currentChain.rpcurl);
+            if (!flag) {
+                networkStatus = NetworkStauts.disconnect;
+            }else{
+                networkStatus = NetworkStauts.connected;
+            }
+        }
+        if (currentAccount == null){
+            //从数据库中获取上次打开的账号信息
+            let accountinfo = await dbInstance.getData(store_keyinfo, 'chosedAccount');
+            if (accountinfo) {
+                currentAccount = accountinfo;
+            }
+        }
+    }catch(e){
+        console.error('获取网络信息失败:', e);
+    }
+    
+}
+
 // 调用初始化函数  
 await initializeDatabase(); 
-
+await initBaseinfo();//初始化网络和账号信息
+//启动定时器,定时检查网络状态,如果网络状态为断开,则重新连接
+checkCount = 0;
+setInterval(() => {
+    if (networkStatus != NetworkStauts.connected) {//如果网络状态为断开,则m每秒检查一次网络状态
+       flag = ethersHelper.checkNetworkStatus();
+       if (flag) {
+           networkStatus = NetworkStauts.connected;
+           checkCount = 0;
+       }else{
+            count++;
+            if (count > 5) { //超过5秒,将网络状态设置为断开
+                networkStatus = NetworkStauts.disconnect;
+                count = 0;
+            }
+       }
+    }else{
+        checkCount++;
+        if (checkCount > 10) { //每10秒检查一次网络状态
+            flag = ethersHelper.checkNetworkStatus();
+            if (flag) {
+                networkStatus = NetworkStauts.connected;
+            }else{
+                networkStatus = NetworkStauts.disconnect;
+            }
+        }
+    }
+}, 1000);
 createBroadcastChannel(channelName);
 
 //写一个方法创建broadcastChannel
@@ -97,8 +174,9 @@ function createBroadcastChannel(name) {
             type: 'loaded',
             data: {origin:origin}
         };
-        broadcastChannel.postMessage(JSON.stringify(message));//发送加载成功消息
-        //如果没有创建过，创建一个新的BroadcastChannel对象
+        if (origin != null) {
+            broadcastChannel.postMessage(JSON.stringify(message));//发送加载成功消息
+        }
         return broadcastChannel;
     }
     //如果不支持，提示错误
@@ -121,13 +199,19 @@ function onChannelMessage(event) {
     if (message.version !== version) {//判断版本号
         return;
     }
+    if (message.origin != origin) {//判断消息来源
+        return;
+    }
     //判断消息类型,message格式为{type: 'getUserInfo', data: {}}
     switch (message.type) {
         case 'connect': //连接钱包请求 
             connectCmdHandler(message);
             break;
-        case 'signmessage': //签名请求
+        case 'signMessage': //签名请求
             signMessageHandler(message);
+            break;
+        case 'signEIP712Message': //签名EIP712请求
+            signEIP712MessageHandler(message);
             break;
         default:
             break;
@@ -135,13 +219,15 @@ function onChannelMessage(event) {
 }
 
 
-// 收到连接钱包请求处理,message格式为{version:'v_0_0_1',type: 'connect',data: {appname:'test',appIcon:'',appurl: 'http://localhost:8080',appVersion: '1.0.0'}}
-async function connectCmdHandler(message) {
+// 判断是否已经有账号,如果没有,则创建账号
+async function checkAccountAndCreate() {
+    if (currentAccount) {
+        return currentAccount;
+    }
     let accounts = [];
-    connectingApp = message.data;
     try{
         //判断用户是否已经创建过钱包账号,如果没有,则跳出状态等待框,提示用户账号创建中
-         accounts = await dbInstance.getData(store_account);
+        accounts = await dbInstance.getData(store_account);
         if (accounts.length === 0) {
             //todo 跳出状态等待框,提示用户账号创建中
             account = await createWalletAccount();
@@ -159,13 +245,161 @@ async function connectCmdHandler(message) {
         //todo 跳出提示框,提示用户创建账号失败
         return;
     }
-    //todo 判断账号数量,如果有多个账号,则跳出选择账号框,让用户选择账号
-    //todo 账号存在后,跳出授权框,提示用户授权连接对应的APP(这个界面可以切换网络)
-    //todo 用户确认后,调出webauthn进行校验,并提取出userHandleHash
-
-    //todo 授权成功后,发送连接成功消息给APP,并返回用户信息(网络,账号,公钥)
-    //todo 返回原来的窗口,并关闭当前窗口
+    if (accounts.length > 1) {
+        //todo 跳出选择账号框,让用户选择账号
+        return;
+    }
+    return accounts[0];
 }
+
+// 收到连接钱包请求处理,message格式为{version:'v_0_0_1',type: 'connect',data: {appname:'test',appIcon:'',appurl: 'http://localhost:8080',appVersion: '1.0.0'}}
+async function connectCmdHandler(message) {
+    let mnemonic = "";
+    connectingApp = message.data;
+    choseedAccount = await checkAccountAndCreate();
+    // 取出网络列表
+    let chains = [];
+    try {
+        chains = await dbInstance.getAllData(store_chain);
+    } catch (e) {
+        console.error('获取网络信息失败:', e);
+        //todo 跳出提示框,提示用户获取网络信息失败
+        return;
+    }
+    if (currentChain == null){//如果当前网络为空,则取第一个网络
+        currentChain = {
+            chainid: chains[0].chainid,
+            chainname: chains[0].chainname,
+            rpcurl: chains[0].rpcurl,
+            desc: chains[0].desc,
+            confirms: chains[0].confirms,//确认数
+        };
+    }
+    if (ethersHelper.jsonRpcProvider != null &&  ethersHelper.jsonRpcProvider.network != null 
+        && ethersHelper.jsonRpcProvider.network.chainId != currentChain.chainid) {
+            providerChainId = ethersHelper.jsonRpcProvider.network.chainId;
+        // 将jsonRpcProvider网络切换到当前网络
+        for (let i = 0; i < chains.length; i++) {
+            if (chains[i].chainid == providerChainId) {
+                currentChain = {
+                    chainid: chains[i].chainid,
+                    chainname: chains[i].chainname,
+                    rpcurl: chains[i].rpcurl,
+                    desc: chains[i].desc,
+                    confirms: chains[i].confirms,//确认数
+                };
+                break;
+            }
+        }
+        return;
+    }
+    //todo 异步获取当前网络状态,更新钱包网络状态
+ 
+    //todo 账号存在后,跳出授权框,提示用户授权连接对应的APP(这个界面可以切换网络)
+
+    //用户确认后,调出webauthn进行校验,并提取出userHandleHash
+    const userHandleHash = await authenticateWithPasskey(account.credentialid);
+    if (!userHandleHash) {
+        //todo 跳出提示框,提示用户授权失败
+        return;
+    }
+    //解密出助记词
+    const cryptoKey = await importAesKeyFromHash(userHandleHash);
+    mnemonic = await crypto.subtle.decrypt(
+        {
+            name: "AES-GCM",
+            iv: choseedAccount.iv,
+        },
+        cryptoKey,
+        choseedAccount.mnemonic
+    );
+    // 通过助记词导入钱包,生成带私钥钱包账号
+    const wallet = await ethersHelper.createWalletAccountWithMnemonic(mnemonic);
+    if (!wallet) {
+        //todo 跳出提示框,提示用户导入钱包失败
+        return;
+    }
+    // 执行签名
+    const signature = await ethersHelper.signMessage(wallet,message.data.origin);
+    if (!signature) {
+        //todo 跳出提示框,提示用户签名失败
+        return;
+    }
+    //签名成功后,发送链接成功消息给APP
+    const resMessage = {
+        version: version,
+        type: 'connected',
+        origin: origin,
+        data: {
+            success: true,
+            account: wallet.address,
+            chainid: currentChain.chainid,
+            chainname: currentChain.chainname,
+            signature: signature,
+        }
+    };
+    broadcastChannel.postMessage(JSON.stringify(resMessage));
+    // 连接记录存储到数据库
+    const app = {
+        appname: connectingApp.appname,
+        appIcon: connectingApp.appIcon,
+        appurl: connectingApp.appurl,
+        appVersion: connectingApp.appVersion,
+        timestamp: new Date().getTime(),
+    };
+    dbInstance.updateData(store_apps, app).then(() => {
+        console.log('连接记录存储成功');
+        }
+    );
+    // 关闭当前窗口,并返回原来的窗口
+     if (window.opener) {  
+        // 可以在原窗口中执行一些操作，例如导航  
+        window.opener.focus(); // 返回并聚焦到原窗口  
+    }  
+    window.close();
+}
+
+
+
+// 根据账号,生成签名的钱包账号对象
+async function generateWalletAccount(seedAccount) {
+    // 数据库里获取账号信息
+    try {
+        account = await dbInstance.getData(store_account, seedAccount);
+        if (account == null) {
+            //todo 跳出提示框,提示钱包里的用户账号不存在
+            return null;
+        }
+    } catch (e) {
+        console.error('获取账号信息失败:', e);
+        //todo 跳出提示框,提示用户获取账号信息失败
+        return null ;
+    }
+    //todo 跳出授权框,提示用户进行签名(显示所有签名信息,以及签名申请的APP信息)
+    //用户确认后,调出webauthn进行校验,并提取出userHandleHash
+    const userHandleHash = await authenticateWithPasskey(account.credentialid);
+    if (!userHandleHash) {
+        //todo 跳出提示框,提示用户授权失败
+        return null;
+    }
+    //解密出助记词
+    const cryptoKey = await importAesKeyFromHash(userHandleHash);
+    mnemonic = await crypto.subtle.decrypt(
+        {
+            name: "AES-GCM",
+            iv: account.iv,
+        },
+        cryptoKey,
+        account.mnemonic
+    );
+    // 通过助记词导入钱包,生成带私钥钱包账号
+    const wallet = await ethersHelper.createWalletAccountWithMnemonic(mnemonic);
+    if (!wallet) {
+        //todo 跳出提示框,提示用户导入钱包失败
+    }
+    return wallet;
+}
+
 
 /** 收到签名请求处理,message格式为
 {
@@ -176,21 +410,218 @@ async function connectCmdHandler(message) {
             appIcon:'',
             appurl: 'http://localhost:8080',
             appVersion: '1.0.0',
-            messagetype: 'string',//string,hex,base64,eip712
+            messagetype: 'string',//string,hex
             message: 'test message',
         }
 }
 **/
-function signMessageHandler(message) {
-    //todo 显示要签名的消息(string类型直接签名,hex,base64 转换后签名,eip712需要转json格式,校验后签名),以及签名申请的APP信息
-    //todo 用户确认后,调出webauthn进行签名
-    //todo 签名成功后,发送签名成功消息给APP,并返回签名结果
-    //todo 返回原来的窗口,并关闭当前窗口
+async function signMessageHandler(message) {
+    if (message.data.account == null) {//没有签名账号,不做处理
+        return;
+    }
+   const wallet = await generateWalletAccount(message.data.account);
+    if (!wallet) {
+         return;
+    }
+   let signature = null;
+   if (message.data.messagetype == 'hex') {
+        waitSignMessage = hexToUint8Array(message.data.message);
+        // 执行签名
+       signature = await ethersHelper.signMessage(wallet,waitSignMessage);
+        if (!signature) {
+            //todo 跳出提示框,提示用户签名失败
+            return;
+        }
+    }else {
+        // 执行签名
+        signature = await ethersHelper.signHexMessage(wallet,message.data.message);
+        if (!signature) {
+            //todo 跳出提示框,提示用户签名失败
+            return;
+        }
+    }
+   
+    //签名成功后,发送签名成功消息给APP,并返回签名结果
+    const resMessage = {
+        version: version,
+        type: 'signSuccess',
+        origin: origin,
+        data: {
+            success: true,
+            account: wallet.address,
+            chainid: currentChain.chainid,
+            chainname: currentChain.chainname,
+            signature: signature,
+        }
+    };
+    broadcastChannel.postMessage(JSON.stringify(resMessage));
+     // 关闭当前窗口,并返回原来的窗口
+     if (window.opener) {  
+        // 可以在原窗口中执行一些操作，例如导航  
+        window.opener.focus(); // 返回并聚焦到原窗口  
+    }  
+    window.close();
 }
+
+//收到签名EIP712请求处理,message格式为
+// {
+//     version:'v_0_0_1',
+//     type: 'signEIP712Message',
+//     data: {
+//             appname:'test',
+//             appIcon:'',
+//             appurl: 'http://localhost:8080',
+//             appVersion: '1.0.0',
+//             domain: {
+//                 name: 'Test',
+//                 version: '1.0.0',
+//                 chainId: 1,
+//                 verifyingContract: '0x1234567890123456789012345678901234567890',
+//
+//             },
+//             types: {
+//                 Person: [
+//                     { name: 'name', type: 'string' },
+//                     { name: 'wallet', type: 'address' }
+//                 ],
+//                 Mail: [
+//                     { name: 'from', type: 'Person' },
+//                     { name: 'to', type: 'Person' },
+//                     { name: 'contents', type: 'string' }
+//                 ],
+//             },
+//             message: {
+//                 from: {
+//                     name: 'Cow',
+//                     wallet: '0xCD2a3d9F
+//                 },
+//                 to: {
+//                     name: 'Bob',
+//                     wallet: '0xbBbBBBBbb
+//                 },
+//                 contents: 'Hello, Bob!'
+//             }
+//         }
+// }
+async function signEIP712MessageHandler(message) {
+    if (message.data.account == null) {//没有签名账号,不做处理
+        return;
+    }
+    const wallet = await generateWalletAccount(message.data.account);
+    if (!wallet) {
+         return;
+    }
+    // 执行签名
+    const signature = await ethersHelper.signEIP712Message(wallet,message.data.primaryType,message.data.domain,message.data.types,message.data.message);
+     if (!signature) {
+         //todo 跳出提示框,提示用户签名失败
+        return;
+    }
+    //签名成功后,发送签名成功消息给APP,并返回签名结果
+    const resMessage = {
+        version: version,
+        type: 'signEIP712Success',
+        origin: origin,
+        data: {
+            success: true,
+            account: wallet.address,
+            chainid: currentChain.chainid,
+            chainname: currentChain.chainname,
+            signature: signature,
+        }
+    };
+    broadcastChannel.postMessage(JSON.stringify(resMessage));
+     // 关闭当前窗口,并返回原来的窗口
+     if (window.opener) {  
+        // 可以在原窗口中执行一些操作，例如导航  
+        window.opener.focus(); // 返回并聚焦到原窗口  
+    }  
+    window.close();
+}
+
+
 
 /*******************************基础功能***********************************/
 
-// 判断是否存在钱包账号,如果不存在,则创建一个
+//添加网络
+async function addChain(chainInfo) {
+    if (chainInfo == null ) {
+        return;
+    }
+    if (chainInfo.confirms == null || chainInfo.confirms == 0) {
+        chainInfo.confirms = 6;
+    }
+    try {
+        await dbInstance.addData(store_chain, chainInfo);
+        return true;
+    }catch(e){
+        console.error('添加网络失败:', e);
+        return false;
+    }
+}
+
+
+// 切换网络
+async function switchChain(chainInfo) {
+    try {
+        dbInstance.updateData(store_keyinfo, {key: 'connectedChain', value: currentChain});
+        currentChain = chainInfo;
+        //连接网络
+        flag = ethersHelper.connectWithHttps(currentChain.rpcurl);
+        if (!flag) {
+            networkStatus = NetworkStauts.disconnect;
+            return;
+        }else{
+            networkStatus = NetworkStauts.connected;
+        }
+        return true;
+    }catch(e){
+        console.error('切换网络失败:', e);
+        return false;
+    }
+}
+
+// 转账
+async function transfer(wallet, to, amount,gasLimit,gasPrice) {
+    if (currentChain == null || networkStatus != NetworkStauts.connected) {
+        //todo 跳出提示框,提示用户未连接钱包
+        return;
+    }
+    if (currentAccount == null ) {
+        //todo 跳出提示框,提示用户没有可用账号
+        return;
+    }
+    const wallet = await generateWalletAccount(currentAccount.account);
+    if (!wallet) {
+        return;
+    }
+    // 执行转账
+    const txResponse = await ethersHelper.transfer(wallet,to,amount,gasLimit,gasPrice);
+    if (!txResponse) {
+        //todo 跳出提示框,提示用户转账失败
+        return;
+    }
+    //等待转账成功
+    const receipt = await ethersHelper.waitTransactionConfirm(txResponse);
+    if (!receipt) {
+        //todo //将转账记录存储到数据库,每次登录检查转账记录,并根据链上状态,更新转账记录状态
+        return;
+    }
+    //转账成功后,存储转账记录
+    const record = {
+        account: wallet.address,
+        chainid: currentChain.chainid,
+        to: to,
+        value: value,
+        txhash: txHash,
+        timestamp: new Date().getTime(),
+    };
+    dbInstance.updateData(store_record, record).then(() => {
+        console.log('转账记录存储成功');
+        }
+    );
+    //todo 界面提示转账成功
+}
 
 
 
@@ -224,6 +655,8 @@ async function createWalletAccount() {
                 type: 'eth',
                 credentialid: credentialid,
                 mnemonic: encryptedMnemonic,
+                iv: iv,
+                name: accountInfo.address.substring(0,6),
                 timeStamp: new Date().getTime(),
             };
             resAccount = account;
@@ -289,3 +722,60 @@ async function importAesKeyFromHash(userHandleHash) {
         throw error;
     }
 }
+
+
+  // 使用 Passkey 进行身份验证,并提取出userHandleHash
+  async function authenticateWithPasskey(credentialid) {
+    const challenge = new Uint8Array(32);
+    window.crypto.getRandomValues(challenge);
+
+    const getCredentialOptions = {
+        challenge: challenge,
+        rpId: window.location.hostname,
+        allowCredentials: [{
+            id: base64ToArrayBuffer(credentialid),
+            type: 'public-key',
+        }],
+        userVerification: "required",
+        timeout: 60000
+    };
+
+    try {
+        const assertion = await navigator.credentials.get({
+            publicKey: getCredentialOptions
+        });
+        if (!assertion) {
+            return null;
+        }
+        console.log("Authentication successful");
+        userHandleHash = await crypto.subtle.digest('SHA-256', assertion.response.userHandle);
+        return userHandleHash;
+    } catch (error) {
+        console.error("Authentication failed", error);
+        return null;
+    }
+}
+
+
+function hexToUint8Array(hex) {  
+    // 如果十六进制字符串以 "0x" 开头，则去掉这个前缀  
+    if (hex.startsWith("0x")) {  
+        hex = hex.slice(2);  
+    }  
+
+    // 确保十六进制字符串长度是偶数  
+    if (hex.length % 2 !== 0) {  
+        throw new Error("Invalid hex string");  
+    }  
+
+    // 创建 Uint8Array  
+    const byteArray = new Uint8Array(hex.length / 2);  
+
+    // 遍历十六进制字符串，每两个字符转换为一个字节  
+    for (let i = 0; i < hex.length; i += 2) {  
+        const byte = hex.substr(i, 2);  
+        byteArray[i / 2] = parseInt(byte, 16);  
+    }  
+
+    return byteArray;  
+}  

@@ -2,32 +2,15 @@
  * 链节点交互
  */
 // Import everything
-import { ethers, Wallet, WebSocketProvider,JsonRpcProvider} from "ethers";
+import { ethers, Wallet,JsonRpcProvider} from "ethers";
 
-
-let wssProvider: ethers.WebSocketProvider | null = null;
 let jsonRpcProvider: ethers.JsonRpcProvider | null = null;
-let wallet: ethers.HDNodeWallet;
 
-// websocket连接区块链
-const connectChainWithWss = async (url: string) => {
-  try {
-    wssProvider = new WebSocketProvider(url);
-    console.log('connectChainWithWss success,url: ', url);
-    jsonRpcProvider = null;
-    return true;
-  } catch (error) {
-    wssProvider = null;
-    console.log('connectChainWithWss error', error);
-    return false;
-  }
-};
 
 const connectWithHttps = async (url: string) => {
   try {
     jsonRpcProvider = new JsonRpcProvider(url);
     console.log('connectChainWithWss success,url: ', url);
-    wssProvider = null;
     return true;
   } catch (error) {
     jsonRpcProvider = null;
@@ -39,7 +22,7 @@ const connectWithHttps = async (url: string) => {
 // 创建钱包账号
 const createWalletAccount = async () => {
   // wallet 创建包，助记词，私钥，地址
-  wallet = Wallet.createRandom();
+  const wallet = Wallet.createRandom();
   console.log('===============wallet', wallet);
   console.log('===============wallet.mnemonic', wallet.mnemonic);
   console.log('===============wallet.privateKey', wallet.privateKey);
@@ -48,8 +31,8 @@ const createWalletAccount = async () => {
 };
 
 // 根据助记词生成钱包账号
-const createWalletAccountByMnemonic = async (mnemonic: string) => {
-  wallet = Wallet.fromPhrase(mnemonic);
+const createWalletAccountWithMnemonic = async (mnemonic: string) => {
+  const wallet = Wallet.fromPhrase(mnemonic);
   console.log('===============wallet', wallet);
   console.log('===============wallet.mnemonic', wallet.mnemonic);
   console.log('===============wallet.privateKey', wallet.privateKey);
@@ -59,10 +42,7 @@ const createWalletAccountByMnemonic = async (mnemonic: string) => {
 
 // 获取当前区块高度
 const getBlockNumber = async () => {
-  if (wssProvider) {
-    const blockNumber = await wssProvider.getBlockNumber();
-    return blockNumber;
-  }else if(jsonRpcProvider){
+  if(jsonRpcProvider){
     const blockNumber = await jsonRpcProvider.getBlockNumber();
     return blockNumber;
   } else {
@@ -71,41 +51,88 @@ const getBlockNumber = async () => {
 };
 
 // 获取用户的余额
-const getUserBlance = async () => {
-  if ( wallet) {
-    if (wssProvider) {
-       const balance = await wssProvider.getBalance(wallet.address);
-      console.log('===============getUserBlance balance', balance);
-       return balance.toString()
-    }else if(jsonRpcProvider){
-      const balance = await jsonRpcProvider.getBalance(wallet.address);
+const getUserBlance = async (address:string) => {
+  if(jsonRpcProvider){
+      const balance = await jsonRpcProvider.getBalance(address);
       console.log('===============getUserBlance balance', balance);
       return balance.toString()
     }
-    
-    ;
-  } else {
-    return null;
-  }
+
 };
+
+async function checkNetworkStatus() {  
+  try {  
+    if (!jsonRpcProvider) {  
+        console.log("请先连接到网络");  
+        return false;
+    }
+    const blockNumber = await jsonRpcProvider.getBlockNumber();  
+    console.log("当前区块号:", blockNumber);  
+    return true;
+  } catch (error) {  
+      console.log("无法连接到网络:", error);  
+      return false; 
+  }  
+} 
 
 // 转账
-const transfer = async (to: string, amount: string) => {
-  if (wssProvider || jsonRpcProvider) {
-    const tx = await wallet.sendTransaction({
-      to,
-      value: ethers.parseEther(amount),
-    });
-    console.log('===============tx', tx);
-    // Often you may wish to wait until the transaction is mined
-    const receipt = await tx.wait();
-    console.log('===============receipt', tx);
-    return receipt;
-  } else {
-    return null;
-  }
+const transfer = async (wallet: ethers.HDNodeWallet, to: string, amount: string,gasLimit: number,gasPrice: string ) => {
+  wallet = wallet.connect(jsonRpcProvider);
+  // 定义交易对象  
+  const transaction = {  
+    to: to, // 接收者地址  
+    value: ethers.parseEther(amount), // 发送金额（以太币）  
+    gasLimit: gasLimit, // 基本交易的 gas 限制  
+    gasPrice: ethers.parseUnits(gasPrice, "gwei") // gas 价格  
+  }; 
+  const txResponse  = await wallet.sendTransaction(transaction);
+  return txResponse;
 };
 
+// 等待交易确认
+const waitTransactionConfirm = async (txResponse: ethers.TransactionResponse,_confirms?:number,_timeout?:number) => {
+  try {
+    const receipt = await txResponse.wait(_confirms,_timeout);  
+    console.log("Transaction receipt: ", receipt);  
+    return receipt;
+  } catch (error) {
+    console.log('waitTransactionConfirm error', error);
+    return null;
+  }
+}
+
+
+
+// 生成签名
+const signMessage = async (wallet: ethers.HDNodeWallet,message: Uint8Array|string,) => {  
+  // Sign the message  
+  const signature = await wallet.signMessage(message);  
+  console.log("Signature: ", signature);  
+  return signature;
+}
+
+// 生成eip712签名
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const signEIP712Message = async (wallet: ethers.HDNodeWallet,primaryType:string, domain:ethers.TypedDataDomain, types:Record<string, Array<ethers.TypedDataField>>, message:Record<string, any>) => {  
+  // 计算域分隔符  
+  const domainSeparator = ethers.TypedDataEncoder.hashDomain(domain);  
+
+  // 计算结构化数据的哈希值  
+  const hashStruct = ethers.TypedDataEncoder.hashStruct(primaryType, types, message);  
+
+  // 生成最终的哈希值  
+  const digest = ethers.keccak256(  
+      ethers.solidityPacked(  
+          ["string", "bytes32", "bytes32"],  
+          ["\x19\x01", domainSeparator, hashStruct]  
+      )  
+  );  
+
+  // 从签名中恢复地址  
+  const signature = await wallet.signMessage(digest);  
+  console.log("Signature: ", signature);  
+  return signature;
+}
 
 // Function to verify the signature  message:要签名的消息，signature:签名,16进制，expectedAddress:预期的签名者地址
 const verifySignature = async (message: Uint8Array|string, signature: string, expectedAddress:string) => {  
@@ -118,8 +145,10 @@ const verifySignature = async (message: Uint8Array|string, signature: string, ex
   // Compare the recovered address with the expected address  
   if (recoveredAddress.toLowerCase() === expectedAddress.toLowerCase()) {  
       console.log("Signature is valid and matches the expected address.");  
+      return true;
   } else {  
       console.log("Signature is invalid or does not match the expected address.");  
+      return false;
   }  
 }
 
@@ -134,7 +163,8 @@ const verifySignature = async (message: Uint8Array|string, signature: string, ex
  * @param {string} expectedAddress - 预期的签名者地址  
  * @returns {boolean} - 签名是否有效  
  */  
-const verifyEIP712Signature = async (primaryType:string, domain:object, types:object, message:object, signature:string, expectedAddress:string) => {  
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const verifyEIP712Signature = async (primaryType:string, domain:ethers.TypedDataDomain, types:Record<string, Array<ethers.TypedDataField>>, message:Record<string, any>, signature:string, expectedAddress:string) => {  
   // 计算域分隔符  
   const domainSeparator = ethers.TypedDataEncoder.hashDomain(domain);  
 
@@ -142,30 +172,33 @@ const verifyEIP712Signature = async (primaryType:string, domain:object, types:ob
   const hashStruct = ethers.TypedDataEncoder.hashStruct(primaryType, types, message);  
 
   // 生成最终的哈希值  
-  const digest = ethers.utils.keccak256(  
-      ethers.utils.solidityPack(  
+  const digest = ethers.keccak256(  
+      ethers.solidityPacked(  
           ["string", "bytes32", "bytes32"],  
           ["\x19\x01", domainSeparator, hashStruct]  
       )  
   );  
-
   // 从签名中恢复地址  
-  const recoveredAddress = ethers.utils.recoverAddress(digest, signature);  
-
+  const recoveredAddress = ethers.recoverAddress(digest, signature);  
   // 比较恢复的地址与预期地址  
   return recoveredAddress.toLowerCase() === expectedAddress.toLowerCase();  
 }  
 
 
 const ethersHelper = {
-  connectChainWithWss,
+  jsonRpcProvider,
   connectWithHttps,
+  checkNetworkStatus,
   createWalletAccount,
-  createWalletAccountByMnemonic,
+  createWalletAccountWithMnemonic,
   getBlockNumber,
   getUserBlance,
   transfer,
-  verifySignature
+  waitTransactionConfirm,
+  signMessage,
+  signEIP712Message,
+  verifySignature,
+  verifyEIP712Signature
 };
 export default  ethersHelper;
 

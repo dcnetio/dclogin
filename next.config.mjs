@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  reactStrictMode: false,
   output: "export",// 导出静态页面
   distDir: "build",// 打包server
   generateBuildId: async () => { // 构建ID

@@ -1,14 +1,40 @@
 .header {
-  padding: 10px;
+  padding: 16px ;
   background-color: #eee;
   text-align: center;
+  justify-content: left;
+  align-items: center;
+  display: flex;
+  .network{
+    padding: 4px 10px;
+    color: white;
+    font-size: .9rem;
+    background-color: cornflowerblue;
+    border-radius: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .txt{
+      margin-left: 6px;
+    }
+  }
+  .accountD{
+    margin-left: 10px;
+    margin-right: 20px;
+    flex: 1;
+  }
   .account{
-    padding-top: 10px;
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .arrow{
+      margin-left: 6px;
+    }
   }
   .address{
-    padding: 10px;
     font-size: 0.8rem;
+    word-break:break-all;
   }
 }

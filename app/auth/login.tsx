@@ -4,21 +4,23 @@ import ethers from "@/helpers/ethers";
 import styles from "./login.module.css";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { saveMnemonic } from "@/lib/slices/walletSlice";
-import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { saveAccount } from "@/lib/slices/walletSlice";
+import { useAppSelector } from "@/lib/hooks";
 import { store } from "@/lib/store";
 
 export default function Login() {
   const router = useRouter();
-  const mnemonic = useAppSelector(state => state.wallet.mnemonic)
-  const [account, setAccount] = useState("");
+  const accountInfo = useAppSelector(state => state.wallet.account)
   const [loading, setLoading] = useState(true);
   const create = async () => {
+    // todo 后期改成从js获取（需要auth认证）
     const wallet = await ethers.createWallet();
-    // todo 保存到auth中
     // 保存到store
     store.dispatch(
-      saveMnemonic(wallet.mnemonic?.phrase)
+      saveAccount({
+        name: 'Account' + 1, // todo 暂时定1，后期根据account个数调整
+        address: wallet.address
+      })
     );
     // 提示成功，并跳转到首页
     Toast.show({
@@ -36,32 +38,28 @@ export default function Login() {
   };
   // 获取账号
   const getAccount = async () => {
-    if (mnemonic) {
-      await initWallet(mnemonic);
+    if (accountInfo) {
+      // todo后期改成js获取（auth认证）
+      await create();
+      // await initWallet(accountInfo.address);
+    }else {
+      await create();
     }
-    setAccount(mnemonic);
     setLoading(false);
   };
 
   useEffect(() => {
+    console.log("===============login");
     setLoading(true);
     getAccount();
   }, []);
 
   return (
     <>
-      {loading ? (
+      {loading && (
         <div className={styles.loginPage}>
           <DotLoading color="currentColor" />
         </div>
-      ) : (
-        !account && (
-          <div className={styles.loginPage}>
-            <Button color="primary" onClick={create}>
-              创建钱包账号
-            </Button>
-          </div>
-        )
       )}
     </>
   );

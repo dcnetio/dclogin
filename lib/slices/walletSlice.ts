@@ -1,6 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
+
+interface accountInfo {
+    name: string,
+    address: string
+}
 const initialState = {
-    mnemonic: '',
+    account: {} as accountInfo,
 };
 
 // 创建一个名为 wallet 的 slice，包含初始状态和 reducers。
@@ -8,12 +13,12 @@ export const walletSlice = createSlice({
     name: "wallet",
     initialState,
     reducers: {
-        saveMnemonic: (state, action) => {
-            state.mnemonic = action.payload;
+        saveAccount: (state, action) => {
+            state.account = action.payload;
         },
     },
 })
 
-export const { saveMnemonic } = walletSlice.actions;
+export const { saveAccount } = walletSlice.actions;
 // 提取并导出 slice 的 reducer 函数，用于在 store 中注册这个 slice
 export default walletSlice.reducer;

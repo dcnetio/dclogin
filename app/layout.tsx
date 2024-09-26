@@ -5,6 +5,7 @@ import "antd-mobile/es/global";
 import StoreProvider from "@/context/storeProvider";
 import styles from "./layout.module.css";
 import Login from "@/app/auth/login";
+import IndexedDBHelper from '@/helpers/indexedDBHelper';
 
 const geistSans = localFont({
   src: "../fonts/GeistVF.woff",
@@ -27,6 +28,14 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const init = () => {
+    const dbName = 'dcwallet';
+    const storeConfigs = [
+      
+    ];
+    const version = 1;
+    new IndexedDBHelper(dbName, storeConfigs, version = 1)
+  }
   return (
     <html lang="en">
       <body

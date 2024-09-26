@@ -1,9 +1,11 @@
 import { Button, List, Toast } from "antd-mobile";
 import styles from "./network.module.css";
 import ethers from "@/helpers/ethers";
-export default function network({
-  changeSuccess,
+import IndexedDBHelper from '@/helpers/indexedDBHelper';
+export default function Network({
+  onSuccess,
 }) {
+  // todo 后期改成从数据库获取
   const list = [
     {
       name: "31DC",
@@ -34,7 +36,7 @@ export default function network({
     console.log("connect");
     const bool = await ethers.connectEth(info.url);
     if(bool){
-      changeSuccess();
+      onSuccess && onSuccess();
       return;
     }
     Toast.show({
@@ -47,7 +49,7 @@ export default function network({
       <List header="选择网络">
         {list.map((item, index) => (
           <List.Item key={"network" + index} arrowIcon={false} clickable onClick={()=>connect(item)}>
-            {item.name} {item.url}
+            {item.name} 
           </List.Item>
         ))}
       </List>

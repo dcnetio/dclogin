@@ -1,5 +1,4 @@
 "use client";
-import Header from "@/components/header";
 import { SafeArea } from "antd-mobile";
 
 export default function HomeLayout({
@@ -12,7 +11,6 @@ export default function HomeLayout({
       <div>
         <SafeArea position="top" />
       </div>
-      <Header />
       {children}
       <div>
         <SafeArea position="bottom" />

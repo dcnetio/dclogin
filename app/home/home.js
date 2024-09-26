@@ -74,7 +74,7 @@ async function initializeDatabase() {
 }  
 
 // 调用初始化函数  
-await initializeDatabase(); 
+// await initializeDatabase(); 
 
 
 

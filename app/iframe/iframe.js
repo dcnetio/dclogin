@@ -294,11 +294,12 @@ function onIframeChannelMessage(event) {
 }
 
 
-// 接受钱包页面响应连接消息
+// 接受钱包页面响应连接消息,data格式为 {success: true, account: '', chainid: '', signature: ''}
 function connectResponse(data) {
     try {
-       let message = JSON.parse(data);
+       let message = JSON.parse(data); 
        //todo 利用ether.js随机数签名校验,如果校验失败,则提示父窗口连接失败
+       
 
        walletConnected(message.success, message.account, message.chainid, data);
     } catch (e) {

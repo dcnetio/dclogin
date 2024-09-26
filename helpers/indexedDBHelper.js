@@ -140,3 +140,5 @@ class IndexedDBHelper {
     }  
 }  
 
+
+export default IndexedDBHelper;

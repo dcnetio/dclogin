@@ -2,16 +2,22 @@
  * 链节点交互
  */
 // Import everything
-import { ethers, Wallet } from "ethers";
+import { ethers, Wallet, WebSocketProvider} from "ethers";
 
-let provider: ethers.JsonRpcProvider;
-let signer: ethers.Signer;
+let provider: ethers.WebSocketProvider;
+let signer: ethers.JsonRpcSigner;
 let wallet: ethers.HDNodeWallet;
 
 // 连接
 const connectEth = async (url: string) => {
-  provider = new ethers.JsonRpcProvider(url);
-  signer = await provider.getSigner();
+  try {
+    provider = new WebSocketProvider(url);
+    console.log('connectEth success', provider);
+    return true;
+  } catch (error) {
+    console.log('connectEth error', error);
+    return false;
+  }
 };
 
 // 创建钱包
@@ -46,10 +52,12 @@ const getBlockNumber = async () => {
 };
 
 // 获取用户的余额
-const getUserBlance = async (address: string) => {
-  if (provider) {
-    const balance = await provider.getBalance(address);
-    return balance;
+const getUserBlance = async () => {
+  if (provider && wallet) {
+    const balance = await provider.getBalance(wallet.address);
+    console.log('===============getUserBlance balance', balance);
+    return balance.toString()
+    ;
   } else {
     return null;
   }
@@ -58,12 +66,14 @@ const getUserBlance = async (address: string) => {
 // 转账
 const transfer = async (to: string, amount: string) => {
   if (provider) {
-    const tx = await signer.sendTransaction({
+    const tx = await wallet.sendTransaction({
       to,
       value: ethers.parseEther(amount),
     });
+    console.log('===============tx', tx);
     // Often you may wish to wait until the transaction is mined
     const receipt = await tx.wait();
+    console.log('===============receipt', tx);
     return receipt;
   } else {
     return null;

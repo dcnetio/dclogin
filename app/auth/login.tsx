@@ -10,7 +10,6 @@ import { store } from "@/lib/store";
 
 export default function Login() {
   const router = useRouter();
-  const dispatch = useAppDispatch();
   const mnemonic = useAppSelector(state => state.wallet.mnemonic)
   const [account, setAccount] = useState("");
   const [loading, setLoading] = useState(true);
@@ -24,6 +23,7 @@ export default function Login() {
     // 提示成功，并跳转到首页
     Toast.show({
       content: "创建成功",
+      position: "bottom",
       afterClose: () => {
         router.push("/home");
       },

@@ -1,4 +1,5 @@
 "use client";
+import ethers from "@/helpers/ethers";
 import styles from "./home.module.css";
 import Network from "@/components/network";
 import { Popup } from "antd-mobile";
@@ -9,6 +10,7 @@ import { useState } from "react";
 export default function Home() {
   const router = useRouter()
   const [visible, setVisible] = useState(false);
+  const [balance, setBalance] = useState('0');
   const sendBlance = () => {
     console.log("sendBlance");
     router.push("/transfer")
@@ -17,10 +19,17 @@ export default function Home() {
     console.log("changeNetwork");
     setVisible(true)
   }
+
+  const changeSuccess = async () => {
+    setVisible(false)
+    // 切换成功后，获取账号的余额
+    const nbalance = await ethers.getUserBlance();
+    setBalance(nbalance);
+  }
   return (
     <div>
       <div className={styles.contentPage}>
-        <h1 className={styles.balance}>0 DCT</h1>
+        <h1 className={styles.balance}>{balance} DCT</h1>
         <div className={styles.btns}>
           <div className={styles.btnD}>
             <div className={styles.btn} onClick={sendBlance}>
@@ -45,7 +54,7 @@ export default function Home() {
           }}
           bodyClassName={styles.popup}
         >
-          <Network />
+          <Network changeSuccess={changeSuccess}/>
         </Popup>
       </div>
     </div>

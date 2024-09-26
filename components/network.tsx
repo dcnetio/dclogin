@@ -1,12 +1,12 @@
 import { Button, List, Toast } from "antd-mobile";
 import styles from "./network.module.css";
-import ethers from "@/helpers/ethers";
-import IndexedDBHelper from '@/helpers/indexedDBHelper';
+import ethers from "@/helpers/ethersHelper";
+import { useEffect, useState } from "react";
+import { getTableAllData, store_chain } from "@/helpers/DBHelper";
 export default function Network({
   onSuccess,
 }) {
-  // todo 后期改成从数据库获取
-  const list = [
+  const defaultList = [
     {
       name: "31DC",
       url: "ws://192.168.31.31:9944",
@@ -15,26 +15,23 @@ export default function Network({
       name: "本地DC",
       url: "ws://192.168.31.99:9944",
     },
-    {
-      name: "发布DC",
-      url: "ws://io.dcnetio.cloud:9944",
-    },
-    {
-      name: "本地DC",
-      url: "ws://192.168.31.99:9944",
-    },
-    {
-      name: "本地DC",
-      url: "ws://192.168.31.99:9944",
-    },
-    {
-      name: "本地DC",
-      url: "ws://192.168.31.99:9944",
-    },
   ];
+  const [list, setList] = useState([]);
+  const getNetworks = async () => {
+    const data = await getTableAllData(store_chain) || defaultList
+    setList(data)
+  }
+
+  useEffect(() => {
+    getNetworks();
+  }, [])
   const connect = async (info) => {
-    console.log("connect");
-    const bool = await ethers.connectEth(info.url);
+    let bool = false;
+    if(info.url && info.url.indexOf('http') !== -1){
+      bool = await ethers.connectWithHttps(info.url);
+    }else {
+      bool = await ethers.connectChainWithWss(info.url);
+    }
     if(bool){
       onSuccess && onSuccess();
       return;

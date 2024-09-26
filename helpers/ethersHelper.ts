@@ -142,18 +142,18 @@ const verifyEIP712Signature = async (primaryType:string, domain:object, types:ob
   const hashStruct = ethers.TypedDataEncoder.hashStruct(primaryType, types, message);  
 
   // 生成最终的哈希值  
-  const digest = ethers.utils.keccak256(  
-      ethers.utils.solidityPack(  
-          ["string", "bytes32", "bytes32"],  
-          ["\x19\x01", domainSeparator, hashStruct]  
-      )  
-  );  
+  // const digest = ethers.utils.keccak256(  
+  //     ethers.utils.solidityPack(  
+  //         ["string", "bytes32", "bytes32"],  
+  //         ["\x19\x01", domainSeparator, hashStruct]  
+  //     )  
+  // );  
 
-  // 从签名中恢复地址  
-  const recoveredAddress = ethers.utils.recoverAddress(digest, signature);  
+  // // 从签名中恢复地址  
+  // const recoveredAddress = ethers.utils.recoverAddress(digest, signature);  
 
-  // 比较恢复的地址与预期地址  
-  return recoveredAddress.toLowerCase() === expectedAddress.toLowerCase();  
+  // // 比较恢复的地址与预期地址  
+  // return recoveredAddress.toLowerCase() === expectedAddress.toLowerCase();  
 }  
 
 

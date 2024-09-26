@@ -1,7 +1,7 @@
 "use client";
-import ethers from "@/helpers/ethers";
+// import ethers from "@/helpers/ethersHelper";
 import styles from "./home.module.css";
-import { SendOutline } from "antd-mobile-icons";
+import { SendOutline, FileOutline } from "antd-mobile-icons";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Header from "@/components/header";
@@ -15,13 +15,13 @@ export default function Home() {
   };
   const changeNetworkSuccess = async () => {
     // todo切换成功后，获取账号的余额
-    const nbalance = await ethers.getUserBlance();
-    setBalance(nbalance);
+    // const nbalance = await ethers.getUserBlance();
+    // setBalance(nbalance);
   };
   const changeAccountSuccess = async () => {
     // todo 切换成功后，获取账号的余额
-    const nbalance = await ethers.getUserBlance();
-    setBalance(nbalance);
+    // const nbalance = await ethers.getUserBlance();
+    // setBalance(nbalance);
   };
   return (
     <div>
@@ -34,6 +34,12 @@ export default function Home() {
               <SendOutline fontSize={24} />
             </div>
             <span className={styles.txt}>转账</span>
+          </div>
+          <div className={styles.btnD}>
+            <div className={styles.btn} onClick={sendBlance}>
+              <FileOutline fontSize={24} />
+            </div>
+            <span className={styles.txt}>转账记录</span>
           </div>
         </div>
       </div>

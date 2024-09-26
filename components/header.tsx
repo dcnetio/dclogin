@@ -1,4 +1,3 @@
-"use client";
 import { Ellipsis, Popup } from "antd-mobile";
 import styles from "./header.module.css";
 import Network from "@/components/network";

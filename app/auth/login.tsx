@@ -1,6 +1,6 @@
 "use client";
 import { Button, DotLoading, Toast } from "antd-mobile";
-import ethers from "@/helpers/ethers";
+import ethers from "@/helpers/ethersHelper";
 import styles from "./login.module.css";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -14,14 +14,14 @@ export default function Login() {
   const [loading, setLoading] = useState(true);
   const create = async () => {
     // todo 后期改成从js获取（需要auth认证）
-    const wallet = await ethers.createWallet();
+    // const wallet = await ethers.createWallet();
     // 保存到store
-    store.dispatch(
-      saveAccount({
-        name: 'Account' + 1, // todo 暂时定1，后期根据account个数调整
-        address: wallet.address
-      })
-    );
+    // store.dispatch(
+    //   saveAccount({
+    //     name: 'Account' + 1, // todo 暂时定1，后期根据account个数调整
+    //     address: wallet.address
+    //   })
+    // );
     // 提示成功，并跳转到首页
     Toast.show({
       content: "创建成功",

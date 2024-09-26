@@ -1,23 +1,11 @@
 import { Button, List, Toast } from "antd-mobile";
 import styles from "./account.module.css";
+import { useEffect, useState } from "react";
+import { getTableAllData, store_account } from "@/helpers/DBHelper";
 export default function Account({
   onSuccess,
 }) {
-  // todo 后期改成从数据库获取
-  const list = [
-    {
-      name: "Account1",
-      url: "sadashdqwkeuiqowyeuwqhejkwqhejkwqhkejaswdasdasdds",
-    },
-    {
-      name: "Account2",
-      url: "sadashdqwkeuiqowyeuwqhejkwqhejkwqhkejaswdasdasdds",
-    },
-    {
-      name: "Account3",
-      url: "sadashdqwkeuiqowyeuwqhejkwqhejkwqhkejaswdasdasdds",
-    },
-  ];
+  const [list, setList] = useState([]);
   const changeAccount = async (info) => {
     console.log("changeAccount");
     // todo 切换账号，获取账号信息，并进行存储
@@ -31,9 +19,18 @@ export default function Account({
       position: 'bottom',
     })
   };
+
+  const getAccounts = async () => {
+    const data = await getTableAllData(store_account) || []
+    setList(data)
+  }
+
+  useEffect(() => {
+    getAccounts();
+  }, [])
   return (
     <div>
-      <List header="选择网络">
+      <List header="选择账号">
         {list.map((item, index) => (
           <List.Item key={"account" + index} arrowIcon={false} clickable onClick={()=>changeAccount(item)}>
             {item.name} 

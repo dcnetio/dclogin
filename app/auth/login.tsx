@@ -6,12 +6,28 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { saveAccount } from "@/lib/slices/walletSlice";
 import { useAppSelector } from "@/lib/hooks";
-import { store } from "@/lib/store";
+import {initializeDatabase} from '@/helpers/DBHelper';
+import {initBaseinfo} from '@/app/home/home';
 
 export default function Login() {
   const router = useRouter();
   const accountInfo = useAppSelector(state => state.wallet.account)
   const [loading, setLoading] = useState(true);
+  const init = async () => {
+    // 初始化数据库
+    const bool = await initializeDatabase();
+    // 调用初始化函数  
+    await initBaseinfo();//初始化网络和账号信息
+    if(!bool){
+      Toast.show({
+        content: '初始化失败，请刷新网页重试',
+        position: 'bottom',
+      })
+      return;
+    }
+    // 初始化成功
+    
+  }
   const create = async () => {
     // todo 后期改成从js获取（需要auth认证）
     // const wallet = await ethers.createWallet();
@@ -51,15 +67,15 @@ export default function Login() {
   useEffect(() => {
     console.log("===============login");
     setLoading(true);
-    getAccount();
+    init();
   }, []);
 
   return (
     <>
       {loading && (
-        <div className={styles.loginPage}>
+        // <div className={styles.loginPage}></div>
           <DotLoading color="currentColor" />
-        </div>
+        // </div>
       )}
     </>
   );

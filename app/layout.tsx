@@ -6,8 +6,6 @@ import "antd-mobile/es/global";
 import StoreProvider from "@/context/storeProvider";
 import styles from "./layout.module.css";
 import Login from "@/app/auth/login";
-import {initializeDatabase} from '@/helpers/DBHelper';
-import { Toast } from "antd-mobile";
 
 const geistSans = localFont({
   src: "../fonts/GeistVF.woff",
@@ -30,19 +28,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // const init = async () => {
-  //   const bool = await initializeDatabase();
-  //   if(!bool){
-  //     Toast.show({
-  //       content: '数据库初始化失败，请刷新网页重试',
-  //       position: 'bottom',
-  //     })
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   init();
-  // }, []);
   
   return (
     <html lang="en">

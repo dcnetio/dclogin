@@ -2,7 +2,7 @@ import { Button, List, Toast } from "antd-mobile";
 import styles from "./network.module.css";
 import ethers from "@/helpers/ethersHelper";
 import { useEffect, useState } from "react";
-import { getTableAllData, store_chain } from "@/helpers/DBHelper";
+import { getAllData, store_chain } from "@/helpers/DBHelper";
 export default function Network({
   onSuccess,
 }) {
@@ -18,7 +18,7 @@ export default function Network({
   ];
   const [list, setList] = useState([]);
   const getNetworks = async () => {
-    const data = await getTableAllData(store_chain) || defaultList
+    const data = await getAllData(store_chain) || defaultList
     setList(data)
   }
 

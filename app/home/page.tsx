@@ -13,6 +13,9 @@ export default function Home() {
     console.log("sendBlance");
     router.push("/transfer");
   };
+  const gotoActivity = () => {
+    router.push("/activity");
+  }
   const changeNetworkSuccess = async () => {
     // todo切换成功后，获取账号的余额
     // const nbalance = await ethers.getUserBlance();
@@ -36,10 +39,10 @@ export default function Home() {
             <span className={styles.txt}>转账</span>
           </div>
           <div className={styles.btnD}>
-            <div className={styles.btn} onClick={sendBlance}>
+            <div className={styles.btn} onClick={gotoActivity}>
               <FileOutline fontSize={24} />
             </div>
-            <span className={styles.txt}>转账记录</span>
+            <span className={styles.txt}>活动</span>
           </div>
         </div>
       </div>

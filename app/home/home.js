@@ -1,6 +1,4 @@
 
-import { count } from 'console';
-import IndexedDBHelper from './indexedDBHelper.js';  
 import {ethersHelper} from "@/helpers/ethersHelper.js";
 
 // 定义一个变量，用于存储BroadcastChannel对象
@@ -10,14 +8,8 @@ let broadcastChannel = null;
 let currentChain = null; //当前网络
 let currentAccount = null; //当前账号
 
-
-const dbname = 'dcwallet';
-const store_account = 'walletaccount';
-const store_chain = 'walletchain';
-const store_record = 'transferrecods';
-const store_apps = 'walletapps';
-const store_keyinfo = 'walletkeyinfo';
-let dbInstance = null; // 全局变量，用于存储数据库实例 
+// 数据库
+import DBHelper from "@/helpers/DBHelper";
 
 // 获取查询字符串  
 const queryString = window.location.search;  
@@ -51,58 +43,13 @@ let networkStatus = NetworkStauts.disconnect; //网络状态
 
 
 
-// 初始化数据库并设置全局变量  
-async function initializeDatabase() {  
-    const storeConfigs = [  
-        {  // 账号信息存储,
-            name: store_account,  
-            keyPath: 'account',  
-            autoIncrement: false,
-            indexes: [
-                { name: 'type', keyPath: 'type', unique: false },
-                { name: 'credentialid', keyPath: 'credentialid', unique: false },
-                { name: 'createtime', keyPath: 'createtime', unique: false }
-            ]  
-        },  
-        {  // 网络信息存储
-            name: walletchain,  
-            keyPath: 'chainid',  
-            autoIncrement: false,  
-            indexes: [{ name: 'chainid', keyPath: 'chainid', unique: true }]  
-        },
-        {// 转账记录存储
-            name: transferrecods,  
-            keyPath: 'id',  
-            autoIncrement: true,  
-            indexes: [{ name: 'account', keyPath: 'account', unique: false },{ name: 'chainid', keyPath: 'chainid', unique: false }]  
-        },
-        {// 已连接的DAPP存储
-            name: store_apps,  
-            keyPath: 'appurl',   
-            indexes: [{ name: 'timestamp', keyPath: 'timestamp', unique: false }]  
-        },
-        {// key,value信息存储,主要用来存储非标准信息,连接过的网络信息(固定key:"connectedChain")与最近选择的账号信息(固定key:"chosedAccount")
-            name: store_keyinfo,  
-            keyPath: 'key',   
-        },
-    
-    ];  
-    const dbHelper = new IndexedDBHelper(dbname, storeConfigs,dbversion);  
-
-    try {  
-        dbInstance = await dbHelper.open();  
-        console.log('数据库已打开:', dbInstance);  
-    } catch (error) {  
-        console.error('数据库初始化失败:', error);  
-    }  
-}  
 
 // 初始化基本信息(初始化网络为最近切换的网络,账号为最近切换的账号)
 async function initBaseinfo() {
     try {
         if  (currentChain == null){
             //从数据库中获取上次打开的网络信息
-            let netinfo = await  dbInstance.getData(store_keyinfo, 'connectedChain');
+            let netinfo = await  DBHelper.getData(DBHelper.store_keyinfo, 'connectedChain');
             if (netinfo) {
                 currentChain = netinfo;
             }
@@ -116,7 +63,7 @@ async function initBaseinfo() {
         }
         if (currentAccount == null){
             //从数据库中获取上次打开的账号信息
-            let accountinfo = await dbInstance.getData(store_keyinfo, 'chosedAccount');
+            let accountinfo = await DBHelper.getData(DBHelper.store_keyinfo, 'chosedAccount');
             if (accountinfo) {
                 currentAccount = accountinfo;
             }
@@ -128,7 +75,6 @@ async function initBaseinfo() {
 }
 
 // 调用初始化函数  
-await initializeDatabase(); 
 await initBaseinfo();//初始化网络和账号信息
 //启动定时器,定时检查网络状态,如果网络状态为断开,则重新连接
 checkCount = 0;
@@ -138,12 +84,6 @@ setInterval(() => {
        if (flag) {
            networkStatus = NetworkStauts.connected;
            checkCount = 0;
-       }else{
-            count++;
-            if (count > 5) { //超过5秒,将网络状态设置为断开
-                networkStatus = NetworkStauts.disconnect;
-                count = 0;
-            }
        }
     }else{
         checkCount++;
@@ -154,6 +94,7 @@ setInterval(() => {
             }else{
                 networkStatus = NetworkStauts.disconnect;
             }
+            checkCount = 0;
         }
     }
 }, 1000);
@@ -227,7 +168,7 @@ async function checkAccountAndCreate() {
     let accounts = [];
     try{
         //判断用户是否已经创建过钱包账号,如果没有,则跳出状态等待框,提示用户账号创建中
-        accounts = await dbInstance.getData(store_account);
+        accounts = await DBHelper.getAllData(DBHelper.store_account);
         if (accounts.length === 0) {
             //todo 跳出状态等待框,提示用户账号创建中
             account = await createWalletAccount();
@@ -260,7 +201,7 @@ async function connectCmdHandler(message) {
     // 取出网络列表
     let chains = [];
     try {
-        chains = await dbInstance.getAllData(store_chain);
+        chains = await DBHelper.getAllData(DBHelper.store_chain);
     } catch (e) {
         console.error('获取网络信息失败:', e);
         //todo 跳出提示框,提示用户获取网络信息失败
@@ -347,7 +288,7 @@ async function connectCmdHandler(message) {
         appVersion: connectingApp.appVersion,
         timestamp: new Date().getTime(),
     };
-    dbInstance.updateData(store_apps, app).then(() => {
+    DBHelper.updateData(DBHelper.store_apps, app).then(() => {
         console.log('连接记录存储成功');
         }
     );
@@ -365,7 +306,7 @@ async function connectCmdHandler(message) {
 async function generateWalletAccount(seedAccount) {
     // 数据库里获取账号信息
     try {
-        account = await dbInstance.getData(store_account, seedAccount);
+        account = await DBHelper.getData(DBHelper.store_account, seedAccount);
         if (account == null) {
             //todo 跳出提示框,提示钱包里的用户账号不存在
             return null;
@@ -552,7 +493,7 @@ async function addChain(chainInfo) {
         chainInfo.confirms = 6;
     }
     try {
-        await dbInstance.addData(store_chain, chainInfo);
+        await DBHelper.addData(DBHelper.store_chain, chainInfo);
         return true;
     }catch(e){
         console.error('添加网络失败:', e);
@@ -570,7 +511,7 @@ async function updateChain(chainInfo) {
         chainInfo.confirms = 6;
     }
     try {
-        await dbInstance.updateData(store_chain, chainInfo);
+        await DBHelper.updateData(DBHelper.store_chain, chainInfo);
         return true;
     }catch(e){
         console.error('修改网络失败:', e);
@@ -581,7 +522,7 @@ async function updateChain(chainInfo) {
 // 切换网络
 async function switchChain(chainInfo) {
     try {
-        dbInstance.updateData(store_keyinfo, {key: 'connectedChain', value: currentChain});
+        DBHelper.updateData(DBHelper.store_keyinfo, {key: 'connectedChain', value: currentChain});
         currentChain = chainInfo;
         //连接网络
         flag = ethersHelper.connectWithHttps(currentChain.rpcurl);
@@ -633,7 +574,7 @@ async function transfer(wallet, to, amount,gasLimit,gasPrice) {
         txhash: txHash,
         timestamp: new Date().getTime(),
     };
-    dbInstance.updateData(store_record, record).then(() => {
+    DBHelper.updateData(DBHelper.store_record, record).then(() => {
         console.log('转账记录存储成功');
         }
     );
@@ -677,7 +618,7 @@ async function createWalletAccount() {
                 timeStamp: new Date().getTime(),
             };
             resAccount = account;
-            dbInstance.updateData(store_account, account).then(() => {
+            DBHelper.updateData(DBHelper.store_account, account).then(() => {
                 console.log('账号信息存储成功');
                 }
             );

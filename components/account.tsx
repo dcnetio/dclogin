@@ -1,7 +1,7 @@
 import { Button, List, Toast } from "antd-mobile";
 import styles from "./account.module.css";
 import { useEffect, useState } from "react";
-import { getTableAllData, store_account } from "@/helpers/DBHelper";
+import { getAllData, store_account } from "@/helpers/DBHelper";
 import { store } from "@/lib/store";
 import { saveAccount } from "@/lib/slices/walletSlice";
 export default function Account({
@@ -29,7 +29,7 @@ export default function Account({
   };
 
   const getAccounts = async () => {
-    const data = await getTableAllData(store_account) || []
+    const data = await getAllData(store_account) || []
     setList(data)
   }
 
@@ -44,12 +44,10 @@ export default function Account({
             {item.name} 
           </List.Item>
         ))}
+        { list.length == 0 && <div className={styles.emptyTxt}>
+          暂无账号信息
+        </div>}
       </List>
-      <div className={styles.btn}>
-        <Button color="primary" size="large" block>
-          创建账号
-        </Button>
-      </div>
     </div>
   );
 }

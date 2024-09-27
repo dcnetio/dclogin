@@ -3,7 +3,7 @@ import styles from "./account.module.css";
 import { useEffect, useState } from "react";
 import { getAllData, store_account } from "@/helpers/DBHelper";
 import { store } from "@/lib/store";
-import { saveAccount } from "@/lib/slices/walletSlice";
+import { saveAccountInfo } from "@/lib/slices/walletSlice";
 export default function Account({
   onSuccess,
 }) {
@@ -13,7 +13,7 @@ export default function Account({
     // todo 切换账号，获取账号信息，并进行存储store
     const bool = true;
     store.dispatch(
-      saveAccount({
+      saveAccountInfo({
         name: 'Account' + 1, // todo 暂时定1，后期根据account个数调整
         address: 'wallet.address'
       })

@@ -134,3 +134,18 @@ export const queryData = _queryData;
 export const addData = _addData;
 export const updateData = _updateData;
 export const deleteData = _deleteData;
+const databaseHelper = {
+  store_account,
+  store_chain,
+  store_record,
+  store_apps,
+  store_keyinfo,
+  initializeDatabase,
+  getAllData,
+  getData,
+  queryData,
+  addData,
+  updateData,
+  deleteData
+};
+export default databaseHelper;

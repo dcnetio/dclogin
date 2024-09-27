@@ -13,12 +13,12 @@ export const walletSlice = createSlice({
     name: "wallet",
     initialState,
     reducers: {
-        saveAccount: (state, action) => {
+        saveAccountInfo: (state, action) => {
             state.account = action.payload;
         },
     },
 })
 
-export const { saveAccount } = walletSlice.actions;
+export const { saveAccountInfo } = walletSlice.actions;
 // 提取并导出 slice 的 reducer 函数，用于在 store 中注册这个 slice
 export default walletSlice.reducer;

@@ -27,7 +27,7 @@ class IndexedDBHelper {
 
             request.onsuccess = (event) => {  
                 this.db = event.target.result;  
-                resolve(this.db);  
+                resolve(this);  
             };  
 
             request.onerror = (event) => {  

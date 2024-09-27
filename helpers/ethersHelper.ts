@@ -185,6 +185,42 @@ const verifyEIP712Signature = async (primaryType:string, domain:ethers.TypedData
 }  
 
 
+//获取转账预估gas
+const estimateGas = async (wallet: ethers.HDNodeWallet, to: string, amount: string) => {
+  wallet = wallet.connect(jsonRpcProvider);
+  // 定义交易对象  
+  const transaction = {  
+    to: to, // 接收者地址  
+    value: ethers.parseEther(amount), // 发送金额（以太币）  
+  }; 
+  const gas = await wallet.estimateGas(transaction);
+  return gas;
+};
+
+// 获取交易状态 
+const  checkTransactionStatus = async (txHash:string) => {  
+  if (!jsonRpcProvider) {
+    return null;
+  }
+  try { 
+      const receipt = await jsonRpcProvider.getTransactionReceipt(txHash);  
+      if (receipt) {  
+          if (receipt.status === 1) {  
+              console.log('Transaction succeeded:', receipt);  
+          } else {  
+              console.log('Transaction failed:', receipt);  
+          }  
+          return receipt;
+      } else {  
+          console.log('Transaction is still pending...');  
+          return null;
+      }  
+  } catch (error) {  
+      console.error('Error checking transaction status:', error);  
+      return null;
+  }  
+}  
+
 const ethersHelper = {
   jsonRpcProvider,
   connectWithHttps,
@@ -198,7 +234,9 @@ const ethersHelper = {
   signMessage,
   signEIP712Message,
   verifySignature,
-  verifyEIP712Signature
+  verifyEIP712Signature,
+  estimateGas,
+  checkTransactionStatus
 };
 export default  ethersHelper;
 

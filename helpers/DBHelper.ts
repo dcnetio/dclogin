@@ -28,15 +28,22 @@ async function _initializeDatabase() {
         },  
         {  // 网络信息存储
             name: _store_chain,  
-            keyPath: 'chainid',  
+            keyPath: 'chainId',  
             autoIncrement: false,  
-            indexes: [{ name: 'chainid', keyPath: 'chainid', unique: true }]  
+            indexes: [{ name: 'chainId', keyPath: 'chainId', unique: true }]  
         },
-        {// 转账记录存储
+        {// 交易记录存储
             name: _store_record,  
-            keyPath: 'id',  
-            autoIncrement: true,  
-            indexes: [{ name: 'account', keyPath: 'account', unique: false },{ name: 'chainid', keyPath: 'chainid', unique: false }]  
+            keyPath: 'hash',  
+            indexes: [
+              { name: 'chainId', keyPath: 'chainId', unique: false },
+              { name: 'blockNumber', keyPath: 'blockNumber', unique: false },
+              { name: 'status', keyPath: 'status', unique: false },
+              { name: 'value', keyPath: 'value', unique: false },
+              { name: 'timestamp', keyPath: 'timestamp', unique: false },
+              { name: 'from', keyPath: 'from', unique: false },
+              { name: 'to', keyPath: 'to', unique: false },
+            ]  
         },
         {// 已连接的DAPP存储
             name: _store_apps,  

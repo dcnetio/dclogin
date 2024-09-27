@@ -12,6 +12,7 @@ let currentAccount = null; //当前账号
 
 // 数据库
 import DBHelper from "@/helpers/DBHelper";
+import { time } from 'console';
 
 // 获取查询字符串  
 const queryString = window.location.search;  
@@ -555,30 +556,68 @@ async function transfer(wallet, to, amount,gasLimit,gasPrice) {
     }
     // 执行转账
     const txResponse = await ethersHelper.transfer(wallet,to,amount,gasLimit,gasPrice);
-    if (!txResponse) {
+    if (!txResponse || !txResponse.hash || !txResponse.Proverder) {
         //todo 跳出提示框,提示用户转账失败
         return;
     }
-    //等待转账成功
-    const receipt = await ethersHelper.waitTransactionConfirm(txResponse);
-    if (!receipt) {
-        //todo //将转账记录存储到数据库,每次登录检查转账记录,并根据链上状态,更新转账记录状态
-        return;
-    }
-    //转账成功后,存储转账记录
-    const record = {
-        account: wallet.address,
-        chainid: currentChain.chainid,
-        to: to,
-        value: value,
-        txhash: txHash,
+    let record = {
+        chainId: txResponse.chainId,
+        hash: txResponse.hash,
+        index: txResponse.index,
+        blockNumber: txResponse.blockNumber,
+        blockHash: txResponse.blockHash,
+        from: txResponse.from,
+        to: txResponse.to,
+        value: txResponse.value,
+        data: txResponse.data,
+        gasLimit: txResponse.gasLimit,
+        gasPrice: txResponse.gasPrice,
+        gasUsed: 0,
+        blobGasUsed: 0,
+        type: txResponse.type,
+        contractAddress: '',
+        status: 2,//0:失败,1:成功,2:等待确认
         timestamp: new Date().getTime(),
     };
-    DBHelper.updateData(DBHelper.store_record, record).then(() => {
-        console.log('转账记录存储成功');
-        }
-    );
+    DBHelper.updateData(DBHelper.store_record, record);
+    //等待转账成功
+    const receipt = await ethersHelper.waitTransactionConfirm(txResponse, currentChain.confirms);
+    if (!receipt) {
+        //todo 界面提示用户转账待确认
+        return;
+    }
+    record.gasUsed = receipt.gasUsed;
+    record.blobGasUsed = receipt.blobGasUsed;
+    record.status = 1;
+    record.timestamp = new Date().getTime();
+    DBHelper.updateData(DBHelper.store_record, record);
     //todo 界面提示转账成功
+}
+
+//刷新指定交易记录状态
+async function refreshRecordStatus(hash) {
+    //从数据库中获取交易记录
+    let record = await DBHelper.getData(DBHelper.store_record, hash);
+    if (!record) {
+        //todo 跳出提示框,提示用户获取交易记录失败
+        return;
+    }
+    if (currentChain == null || currentChain.chainId != record.chainId) {
+        //跳出提示框,开始切换网络
+        //数据库查出网络信息
+        let chainInfo = await DBHelper.getData(DBHelper.store_chain, record.chainId);
+        const flag = switchChain(chainInfo);
+        if (!flag) {
+            //todo 跳出提示框,提示用户切换网络失败
+            return;
+        } 
+    }
+    const receipt =  await ethersHelper.checkTransactionStatus(hash)
+    record.gasUsed = receipt.gasUsed;
+    record.blobGasUsed = receipt.blobGasUsed;
+    record.status = receipt.status;
+    record.timestamp = new Date().getTime();
+    DBHelper.updateData(DBHelper.store_record, record);
 }
 
 
@@ -631,6 +670,9 @@ async function createWalletAccount() {
         return null;
     }
 }
+
+
+
 
 async function importAesKeyFromHash(userHandleHash) {  
     // Convert the userHandleHash (32-byte) into a CryptoKey object  

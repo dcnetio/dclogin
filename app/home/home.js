@@ -1,4 +1,5 @@
 
+import {hexToUint8Array} from '@/helpers/utilHelper';
 import {ethersHelper} from "@/helpers/ethersHelper.js";
 
 // 定义一个变量，用于存储BroadcastChannel对象
@@ -98,8 +99,8 @@ setInterval(() => {
         }
     }
 }, 1000);
-createBroadcastChannel(channelName);
 
+createBroadcastChannel(channelName);
 //写一个方法创建broadcastChannel
 function createBroadcastChannel(name) {
     //如果支持BroadcastChannel，直接返回
@@ -714,26 +715,3 @@ async function importAesKeyFromHash(userHandleHash) {
     }
 }
 
-
-function hexToUint8Array(hex) {  
-    // 如果十六进制字符串以 "0x" 开头，则去掉这个前缀  
-    if (hex.startsWith("0x")) {  
-        hex = hex.slice(2);  
-    }  
-
-    // 确保十六进制字符串长度是偶数  
-    if (hex.length % 2 !== 0) {  
-        throw new Error("Invalid hex string");  
-    }  
-
-    // 创建 Uint8Array  
-    const byteArray = new Uint8Array(hex.length / 2);  
-
-    // 遍历十六进制字符串，每两个字符转换为一个字节  
-    for (let i = 0; i < hex.length; i += 2) {  
-        const byte = hex.substr(i, 2);  
-        byteArray[i / 2] = parseInt(byte, 16);  
-    }  
-
-    return byteArray;  
-}  

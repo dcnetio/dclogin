@@ -2,6 +2,7 @@
 // 定义一个变量，用于存储BroadcastChannel对象
 const version = 'v0_0_1';
 const channelName = 'dcwallet_iframe_channel';
+import {hexToUint8Array} from '@/helpers/utilHelper';
 import {ethersHelper} from "@/helpers/ethersHelper.js";
 const dcWalletChannel = new BroadcastChannel("dcWalletChannel");
 let broadcastChannel = null;
@@ -473,26 +474,3 @@ function waitForFlagToTrue(getWalletLoadedFlag) {
     });  
 }  
 
-
-function hexToUint8Array(hex) {  
-    // 如果十六进制字符串以 "0x" 开头，则去掉这个前缀  
-    if (hex.startsWith("0x")) {  
-        hex = hex.slice(2);  
-    }  
-
-    // 确保十六进制字符串长度是偶数  
-    if (hex.length % 2 !== 0) {  
-        throw new Error("Invalid hex string");  
-    }  
-
-    // 创建 Uint8Array  
-    const byteArray = new Uint8Array(hex.length / 2);  
-
-    // 遍历十六进制字符串，每两个字符转换为一个字节  
-    for (let i = 0; i < hex.length; i += 2) {  
-        const byte = hex.substr(i, 2);  
-        byteArray[i / 2] = parseInt(byte, 16);  
-    }  
-
-    return byteArray;  
-}  

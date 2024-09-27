@@ -46,7 +46,7 @@ let networkStatus = NetworkStauts.disconnect; //网络状态
 
 
 // 初始化基本信息(初始化网络为最近切换的网络,账号为最近切换的账号)
-async function initBaseinfo() {
+async function _initBaseinfo() {
     try {
         if  (currentChain == null){
             //从数据库中获取上次打开的网络信息
@@ -75,8 +75,6 @@ async function initBaseinfo() {
     
 }
 
-// 调用初始化函数  
-await initBaseinfo();//初始化网络和账号信息
 //启动定时器,定时检查网络状态,如果网络状态为断开,则重新连接
 checkCount = 0;
 setInterval(() => {
@@ -715,3 +713,5 @@ async function importAesKeyFromHash(userHandleHash) {
     }
 }
 
+
+export const initBaseinfo = _initBaseinfo;

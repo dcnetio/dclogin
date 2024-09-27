@@ -173,7 +173,7 @@ async function checkAccountAndCreate() {
             //todo 跳出状态等待框,提示用户账号创建中
             let account = await createWalletAccount();
             //todo 关闭状态等待框
-            if (!flag){
+            if (!account){
                 //todo 跳出提示框,提示用户创建账号失败
                 return;
 

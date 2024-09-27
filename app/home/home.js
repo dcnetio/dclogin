@@ -5,6 +5,7 @@ import {ethersHelper} from "@/helpers/ethersHelper.js";
 // 定义一个变量，用于存储BroadcastChannel对象
 const version = 'v_0_0_1';
 const channelName = 'dcwallet_channel';
+const dcWalletIframeChannel = new BroadcastChannel("dcwallet_iframe_channel");
 let broadcastChannel = null;
 let currentChain = null; //当前网络
 let currentAccount = null; //当前账号
@@ -115,7 +116,7 @@ function createBroadcastChannel(name) {
             data: {origin:origin}
         };
         if (origin != null) {
-            broadcastChannel.postMessage(JSON.stringify(message));//发送加载成功消息
+            dcWalletIframeChannel.postMessage(JSON.stringify(message));//发送加载成功消息
         }
         return broadcastChannel;
     }
@@ -278,7 +279,7 @@ async function connectCmdHandler(message) {
             signature: signature,
         }
     };
-    broadcastChannel.postMessage(JSON.stringify(resMessage));
+    dcWalletIframeChannel.postMessage(JSON.stringify(resMessage));
     // 连接记录存储到数据库
     const app = {
         appname: connectingApp.appname,
@@ -394,7 +395,7 @@ async function signMessageHandler(message) {
             signature: signature,
         }
     };
-    broadcastChannel.postMessage(JSON.stringify(resMessage));
+    dcWalletIframeChannel.postMessage(JSON.stringify(resMessage));
      // 关闭当前窗口,并返回原来的窗口
      if (window.opener) {  
         // 可以在原窗口中执行一些操作，例如导航  
@@ -470,7 +471,7 @@ async function signEIP712MessageHandler(message) {
             signature: signature,
         }
     };
-    broadcastChannel.postMessage(JSON.stringify(resMessage));
+    dcWalletIframeChannel.postMessage(JSON.stringify(resMessage));
      // 关闭当前窗口,并返回原来的窗口
      if (window.opener) {  
         // 可以在原窗口中执行一些操作，例如导航  

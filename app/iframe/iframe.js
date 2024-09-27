@@ -4,7 +4,7 @@ const version = 'v0_0_1';
 const channelName = 'dcwallet_iframe_channel';
 import {hexToUint8Array} from '@/helpers/utilHelper';
 import {ethersHelper} from "@/helpers/ethersHelper.js";
-const dcWalletChannel = new BroadcastChannel("dcWalletChannel");
+const dcWalletChannel = new BroadcastChannel("dcwallet_channel");
 let broadcastChannel = null;
 let walletLoadedFlag = false; //钱包已加载标志
 let waitSignMessage =  null; //等待签名消息

@@ -12,6 +12,7 @@ let currentAccount = null; //当前账号
 
 // 数据库
 import DBHelper from "@/helpers/DBHelper";
+import { id } from 'ethers';
 
 // 获取查询字符串  
 const queryString = window.location.search;  
@@ -721,9 +722,9 @@ async function createWalletAccount() {
              //调用webauthn进行账号信息加密,并存储到数据库
             const credential =  await registerPasskey();
             // 提取 response 对象  
-            const response = credential.response;  
+            const userHandle = credential.userHandle;  
             // 提取 userHandle 并进行 hash
-            let userHandleHash = await crypto.subtle.digest('SHA-256', response.userHandle); 
+            let userHandleHash = await crypto.subtle.digest('SHA-256',userHandle); 
             //用userHandleHash 生成aes256的密钥,来加密accountInfo.mnemonic
             const cryptoKey = await importAesKeyFromHash(userHandleHash); 
             const iv = window.crypto.getRandomValues(new Uint8Array(12));
@@ -739,7 +740,7 @@ async function createWalletAccount() {
             const account = {
                 account: accountInfo.address,
                 type: 'eth',
-                credentialid: credentialid,
+                credentialid: credential.id,
                 mnemonic: encryptedMnemonic,
                 iv: iv,
                 name: accountInfo.address.substring(0,6),
@@ -780,6 +781,7 @@ async function importAesKeyFromHash(userHandleHash) {
     window.crypto.getRandomValues(challenge);
     //生成可识别的时间戳:格式为2021-01-01 12:00:00
     const timestamp = new Date().toLocaleString('en-GB', { timeZone: 'UTC' });
+    const userHandle  = crypto.getRandomValues(new Uint8Array(32));
     const createCredentialOptions = {
         challenge: challenge,
         rp: {
@@ -787,7 +789,7 @@ async function importAesKeyFromHash(userHandleHash) {
             id:  window.location.hostname
         },
         user: {
-            id: crypto.getRandomValues(new Uint8Array(32)),
+            id: userHandle,
             name: timestamp,
             displayName: timestamp
         },
@@ -805,7 +807,7 @@ async function importAesKeyFromHash(userHandleHash) {
             publicKey: createCredentialOptions
         });
         console.log("Passkey registered successfully");
-        return credential
+        return {id: credential.id, userHandle: userHandle};
     } catch (error) {
         console.error("Passkey registration failed", error);
         throw error;

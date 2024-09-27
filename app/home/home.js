@@ -1,6 +1,6 @@
 
 import {hexToUint8Array} from '@/helpers/utilHelper';
-import {ethersHelper} from "@/helpers/ethersHelper.js";
+import ethersHelper from "@/helpers/ethersHelper";
 
 // 定义一个变量，用于存储BroadcastChannel对象
 const version = 'v_0_0_1';
@@ -54,13 +54,13 @@ async function _initBaseinfo() {
             let netinfo = await  DBHelper.getData(DBHelper.store_keyinfo, 'connectedChain');
             if (netinfo) {
                 currentChain = netinfo;
-            }
-            //连接网络
-            flag = ethersHelper.connectWithHttps(currentChain.rpcurl);
-            if (!flag) {
-                networkStatus = NetworkStauts.disconnect;
-            }else{
-                networkStatus = NetworkStauts.connected;
+                //连接网络
+                flag = ethersHelper.connectWithHttps(currentChain.rpcurl);
+                if (!flag) {
+                    networkStatus = NetworkStauts.disconnect;
+                }else{
+                    networkStatus = NetworkStauts.connected;
+                }
             }
         }
         if (currentAccount == null){
@@ -77,10 +77,10 @@ async function _initBaseinfo() {
 }
 
 //启动定时器,定时检查网络状态,如果网络状态为断开,则重新连接
-checkCount = 0;
-setInterval(() => {
+let checkCount = 0;
+setInterval(async () => {
     if (networkStatus != NetworkStauts.connected) {//如果网络状态为断开,则m每秒检查一次网络状态
-       flag = ethersHelper.checkNetworkStatus();
+       let flag = await ethersHelper.checkNetworkStatus();
        if (flag) {
            networkStatus = NetworkStauts.connected;
            checkCount = 0;
@@ -88,7 +88,7 @@ setInterval(() => {
     }else{
         checkCount++;
         if (checkCount > 10) { //每10秒检查一次网络状态
-            flag = ethersHelper.checkNetworkStatus();
+            let flag = await ethersHelper.checkNetworkStatus();
             if (flag) {
                 networkStatus = NetworkStauts.connected;
             }else{
@@ -146,7 +146,7 @@ function onChannelMessage(event) {
     //判断消息类型,message格式为{type: 'getUserInfo', data: {}}
     switch (message.type) {
         case 'connect': //连接钱包请求 
-            connectCmdHandler(message);
+            _connectCmdHandler(message, true);
             break;
         case 'signMessage': //签名请求
             signMessageHandler(message);
@@ -171,7 +171,7 @@ async function checkAccountAndCreate() {
         accounts = await DBHelper.getAllData(DBHelper.store_account);
         if (accounts.length === 0) {
             //todo 跳出状态等待框,提示用户账号创建中
-            account = await createWalletAccount();
+            let account = await createWalletAccount();
             //todo 关闭状态等待框
             if (!flag){
                 //todo 跳出提示框,提示用户创建账号失败
@@ -194,10 +194,10 @@ async function checkAccountAndCreate() {
 }
 
 // 收到连接钱包请求处理,message格式为{version:'v_0_0_1',type: 'connect',data: {appname:'test',appIcon:'',appurl: 'http://localhost:8080',appVersion: '1.0.0'}}
-async function connectCmdHandler(message) {
+async function _connectCmdHandler(message, bool) {
     let mnemonic = "";
-    connectingApp = message.data;
-    choseedAccount = await checkAccountAndCreate();
+    let connectingApp = message.data;
+    let choseedAccount = await checkAccountAndCreate();
     // 取出网络列表
     let chains = [];
     try {
@@ -266,38 +266,48 @@ async function connectCmdHandler(message) {
         //todo 跳出提示框,提示用户签名失败
         return;
     }
-    //签名成功后,发送链接成功消息给APP
-    const resMessage = {
-        version: version,
-        type: 'connected',
-        origin: origin,
-        data: {
+    if(bool){ // DCAPP进入
+        //签名成功后,发送链接成功消息给APP
+        const resMessage = {
+            version: version,
+            type: 'connected',
+            origin: origin,
+            data: {
+                success: true,
+                account: wallet.address,
+                chainid: currentChain.chainid,
+                chainname: currentChain.chainname,
+                signature: signature,
+            }
+        };
+        dcWalletIframeChannel.postMessage(JSON.stringify(resMessage));
+        // 连接记录存储到数据库
+        const app = {
+            appname: connectingApp.appname,
+            appIcon: connectingApp.appIcon,
+            appurl: connectingApp.appurl,
+            appVersion: connectingApp.appVersion,
+            timestamp: new Date().getTime(),
+        };
+        DBHelper.updateData(DBHelper.store_apps, app).then(() => {
+            console.log('连接记录存储成功');
+            }
+        );
+        // 关闭当前窗口,并返回原来的窗口
+         if (window.opener) {  
+            // 可以在原窗口中执行一些操作，例如导航  
+            window.opener.focus(); // 返回并聚焦到原窗口  
+        }  
+        window.close();
+    }else { // 钱包本身访问
+        return {
             success: true,
             account: wallet.address,
             chainid: currentChain.chainid,
             chainname: currentChain.chainname,
             signature: signature,
         }
-    };
-    dcWalletIframeChannel.postMessage(JSON.stringify(resMessage));
-    // 连接记录存储到数据库
-    const app = {
-        appname: connectingApp.appname,
-        appIcon: connectingApp.appIcon,
-        appurl: connectingApp.appurl,
-        appVersion: connectingApp.appVersion,
-        timestamp: new Date().getTime(),
-    };
-    DBHelper.updateData(DBHelper.store_apps, app).then(() => {
-        console.log('连接记录存储成功');
-        }
-    );
-    // 关闭当前窗口,并返回原来的窗口
-     if (window.opener) {  
-        // 可以在原窗口中执行一些操作，例如导航  
-        window.opener.focus(); // 返回并聚焦到原窗口  
-    }  
-    window.close();
+    }
 }
 
 
@@ -540,7 +550,7 @@ async function switchChain(chainInfo) {
 }
 
 // 转账
-async function transfer(wallet, to, amount,gasLimit,gasPrice) {
+async function transfer(to, amount,gasLimit,gasPrice) {
     if (currentChain == null || networkStatus != NetworkStauts.connected) {
         //todo 跳出提示框,提示用户未连接钱包
         return;
@@ -587,7 +597,7 @@ async function transfer(wallet, to, amount,gasLimit,gasPrice) {
 // 创建钱包账号
 async function createWalletAccount() {
     let resAccount = {};
-    accountInfo = await ethersHelper.createWalletAccount();
+    let accountInfo = await ethersHelper.createWalletAccount();
     if (accountInfo) {
         try {
              //调用webauthn进行账号信息加密,并存储到数据库
@@ -595,7 +605,7 @@ async function createWalletAccount() {
             // 提取 response 对象  
             const response = credential.response;  
             // 提取 userHandle 并进行 hash
-            userHandleHash = await crypto.subtle.digest('SHA-256', response.userHandle); 
+            let userHandleHash = await crypto.subtle.digest('SHA-256', response.userHandle); 
             //用userHandleHash 生成aes256的密钥,来加密accountInfo.mnemonic
             const cryptoKey = await importAesKeyFromHash(userHandleHash); 
             const iv = window.crypto.getRandomValues(new Uint8Array(12));
@@ -716,3 +726,4 @@ async function importAesKeyFromHash(userHandleHash) {
 
 
 export const initBaseinfo = _initBaseinfo;
+export const connectCmdHandler = _connectCmdHandler;

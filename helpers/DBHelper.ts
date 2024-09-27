@@ -13,6 +13,7 @@ const dbversion = 1;
 // 数据库实例
 let dbInstance = null;
 
+
 // 初始化数据库并设置全局变量  
 async function _initializeDatabase() {  
     const storeConfigs = [  

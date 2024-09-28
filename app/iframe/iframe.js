@@ -207,13 +207,13 @@ function initConfigResponse(flag, message) {
             message: message
         }
     }
-    jsonMessage = JSON.stringify(message);
+    const jsonMessage = JSON.stringify(message);
     window.parent.postMessage(jsonMessage, parentOrigin);
 }
 
 //发送钱包连接成功消息给父窗口
 function walletConnected(successFlag,account, chainId,responseData) {
-    let message = {
+    const message = {
         type: 'walletConnected',
         data: {
             success: successFlag,
@@ -222,34 +222,34 @@ function walletConnected(successFlag,account, chainId,responseData) {
             responseData: responseData
         }
     }
-    jsonMessage = JSON.stringify(message);
+    const jsonMessage = JSON.stringify(message);
     window.parent.postMessage(jsonMessage, parentOrigin);
 }
 
 //发送签名成功消息给父窗口
 function signMessageResponse(successFlag, message) {
-    let message = {
+    const message = {
         type: 'signMessageResponse',
         data: {
             success: successFlag,
             message: message
         }
     }
-    jsonMessage = JSON.stringify(message);
+    const jsonMessage = JSON.stringify(message);
     window.parent.postMessage(jsonMessage, parentOrigin);
 }
 
 
 //发送签名EIP712成功消息给父窗口
 function signEIP712MessageResponse(successFlag, message) {
-    let message = {
+    const message = {
         type: 'signEIP712MessageResponse',
         data: {
             success: successFlag,
             message: message
         }
     }
-    jsonMessage = JSON.stringify(message);
+    const jsonMessage = JSON.stringify(message);
     window.parent.postMessage(jsonMessage, parentOrigin);
 }
 
@@ -258,7 +258,7 @@ function signEIP712MessageResponse(successFlag, message) {
 // 发送连接命令给钱包页面
 function connectWallet() {
     // 像钱包网页发送连接命令
-    let message = {
+    const message = {
         version: version,
         type: 'connect',
         origin: parentOrigin,
@@ -269,14 +269,14 @@ function connectWallet() {
             appversion: appVersion
         }
     }
-    jsonMessage = JSON.stringify(message);
+    const jsonMessage = JSON.stringify(message);
     dcWalletChannel.postMessage(jsonMessage);
 }
 
 // 发送签名消息给钱包页面
 function requsetForSignMessage(orignMessage) {
     // 向钱包网页发送签名消息
-    let message = {
+    const message = {
         version: version,
         type: 'signMessage',
         origin: parentOrigin,
@@ -291,14 +291,14 @@ function requsetForSignMessage(orignMessage) {
         }
     }
     waitSignMessage = orignMessage;
-    jsonMessage = JSON.stringify(message);
+    const jsonMessage = JSON.stringify(message);
     dcWalletChannel.postMessage(jsonMessage);
 }
 
 // 发送签名EIP712消息给钱包页面
 function requestSignEIP712Message(orignMessage) {
     // 向钱包网页发送签名消息
-    let message = {
+    const message = {
         version: version,
         type: 'signEIP712Message',
         origin: parentOrigin,
@@ -316,7 +316,7 @@ function requestSignEIP712Message(orignMessage) {
         }
     }
     waitSignEip712Message = orignMessage;
-    jsonMessage = JSON.stringify(message);
+    const jsonMessage = JSON.stringify(message);
     dcWalletChannel.postMessage(jsonMessage);
 }
 

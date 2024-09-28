@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { saveAccountInfo } from "@/lib/slices/walletSlice";
 import { useAppSelector } from "@/lib/hooks";
 import { initializeDatabase } from "@/helpers/DBHelper";
-import { connectCmdHandler, initBaseinfo } from "@/app/home/home";
+import { connectCmdHandler, initBaseinfo, initNetworks } from "@/app/home/home";
 import { store } from "@/lib/store";
 
 export default function Login() {
@@ -18,6 +18,8 @@ export default function Login() {
       setLoading(true);
       // 初始化数据库
       const bool = await initializeDatabase();
+      // 初始化网络数据
+      await initNetworks();
       // 调用初始化函数
       await initBaseinfo(); //初始化网络和账号信息
       if (!bool) {

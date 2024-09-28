@@ -1,6 +1,7 @@
 
 import {hexToUint8Array} from '@/helpers/utilHelper';
 import ethersHelper from "@/helpers/ethersHelper";
+import {defaultNetworks} from '@/context/constant';
 
 // 定义一个变量，用于存储BroadcastChannel对象
 const version = 'v_0_0_1';
@@ -43,76 +44,8 @@ let networkStatus = NetworkStauts.disconnect; //网络状态
 
 /*******************************初始化需要完成操作***********************************/
 
-defaultNetworks = {  
-    "networks": [  
-      {  
-        "name": "Ethereum Mainnet",  
-        "rpcUrl": "https://mainnet.infura.io/v3/YOUR_INFURA_PROJECT_ID",  
-        "chainId": 1,  
-        "currencySymbol": "ETH",  
-        "blockExplorerUrl": "https://etherscan.io"  
-      },  
-      {  
-        "name": "Binance Smart Chain",  
-        "rpcUrl": "https://bsc-dataseed.binance.org/",  
-        "chainId": 56,  
-        "currencySymbol": "BNB",  
-        "blockExplorerUrl": "https://bscscan.com"  
-      },  
-      {  
-        "name": "Polygon (Matic)",  
-        "rpcUrl": "https://rpc-mainnet.maticvigil.com/",  
-        "chainId": 137,  
-        "currencySymbol": "MATIC",  
-        "blockExplorerUrl": "https://polygonscan.com"  
-      }, 
-      {  
-        "name": "DCCHAIN",  
-        "rpcUrl": "https://dcchain.baybird.cn",  
-        "chainId": 176,  
-        "currencySymbol": "DCT",  
-        "blockExplorerUrl": "https://dcnetio.baybird.cn"  
-      }, 
-      {  
-        "name": "Fantom Opera",  
-        "rpcUrl": "https://rpc.ftm.tools/",  
-        "chainId": 250,  
-        "currencySymbol": "FTM",  
-        "blockExplorerUrl": "https://ftmscan.com"  
-      },  
-      {  
-        "name": "Avalanche C-Chain",  
-        "rpcUrl": "https://api.avax.network/ext/bc/C/rpc",  
-        "chainId": 43114,  
-        "currencySymbol": "AVAX",  
-        "blockExplorerUrl": "https://snowtrace.io"  
-      },  
-      {  
-        "name": "Arbitrum One",  
-        "rpcUrl": "https://arb1.arbitrum.io/rpc",  
-        "chainId": 42161,  
-        "currencySymbol": "ETH",  
-        "blockExplorerUrl": "https://arbiscan.io"  
-      },  
-      {  
-        "name": "Optimism",  
-        "rpcUrl": "https://mainnet.optimism.io",  
-        "chainId": 10,  
-        "currencySymbol": "ETH",  
-        "blockExplorerUrl": "https://optimistic.etherscan.io"  
-      },  
-      {  
-        "name": "Harmony Mainnet",  
-        "rpcUrl": "https://api.harmony.one",  
-        "chainId": 1666600000,  
-        "currencySymbol": "ONE",  
-        "blockExplorerUrl": "https://explorer.harmony.one"  
-      } 
-    ]  
-  }  
-
 //初始化网络列表
-async function initNetworks() {
+async function _initNetworks() {
     try {
         let chains = await DBHelper.getAllData(DBHelper.store_chain);
         if (chains.length == 0) {
@@ -777,8 +710,7 @@ async function importAesKeyFromHash(userHandleHash) {
 
  // 注册新的 Passkey
  async function registerPasskey() {
-    const challenge = new Uint8Array(32);
-    window.crypto.getRandomValues(challenge);
+    const challenge = window.crypto.getRandomValues(new Uint8Array(32));
     //生成可识别的时间戳:格式为2021-01-01 12:00:00
     const timestamp = new Date().toLocaleString('en-GB', { timeZone: 'UTC' });
     const userHandle  = crypto.getRandomValues(new Uint8Array(32));
@@ -817,8 +749,7 @@ async function importAesKeyFromHash(userHandleHash) {
 
   // 使用 Passkey 进行身份验证,并提取出userHandleHash
   async function authenticateWithPasskey(credentialid) {
-    const challenge = new Uint8Array(32);
-    window.crypto.getRandomValues(challenge);
+    const challenge = window.crypto.getRandomValues(new Uint8Array(32));
 
     const getCredentialOptions = {
         challenge: challenge,
@@ -849,4 +780,5 @@ async function importAesKeyFromHash(userHandleHash) {
 
 
 export const initBaseinfo = _initBaseinfo;
+export const initNetworks = _initNetworks;
 export const connectCmdHandler = _connectCmdHandler;

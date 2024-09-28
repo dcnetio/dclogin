@@ -95,29 +95,29 @@ const _queryData = async (storeName: string, indexName: string, queryValue: stri
     return data;
   }
 };
-const _addData = async (storeName: string, indexName: string, queryValue: string) => {
+const _addData = async (storeName: string, info: any) => {
   if (!dbInstance) {
     return null;
   } else {
-    const data = await dbInstance.addData(storeName, indexName, queryValue)
+    const data = await dbInstance.addData(storeName, info)
     return data;
   }
 };
 
-const _updateData = async (storeName: string, indexName: string, queryValue: string) => {
+const _updateData = async  (storeName: string, info: any) => {
   if (!dbInstance) {
     return null;
   } else {
-    const data = await dbInstance.updateData(storeName, indexName, queryValue)
+    const data = await dbInstance.updateData(storeName, info)
     return data;
   }
 };
 
-const _deleteData = async (storeName: string, indexName: string, queryValue: string) => {
+const _deleteData = async (storeName: string, key: string) => {
   if (!dbInstance) {
     return null;
   } else {
-    const data = await dbInstance.deleteData(storeName, indexName, queryValue)
+    const data = await dbInstance.deleteData(storeName, key)
     return data;
   }
 };

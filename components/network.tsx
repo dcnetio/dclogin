@@ -3,37 +3,33 @@ import styles from "./network.module.css";
 import ethers from "@/helpers/ethersHelper";
 import { useEffect, useState } from "react";
 import { getAllData, store_chain } from "@/helpers/DBHelper";
+import { getCurrentNetwork, switchChain } from "@/app/home/home";
 export default function Network({
   onSuccess,
 }) {
-  const defaultList = [
-    {
-      name: "31DC",
-      url: "ws://192.168.31.31:9944",
-    },
-    {
-      name: "本地DC",
-      url: "ws://192.168.31.99:9944",
-    },
-  ];
   const [list, setList] = useState([]);
+  const [chainId, setChainId] = useState(0);
   const getNetworks = async () => {
-    const data = await getAllData(store_chain) || defaultList
+    const data = await getAllData(store_chain) || []
     setList(data)
+  }
+
+  const getNowNetwork = async () => {
+    const info = getCurrentNetwork();
+    if(info){
+      setChainId(info.chainId)
+    }
   }
 
   useEffect(() => {
     getNetworks();
+    getNowNetwork();
   }, [])
   const connect = async (info) => {
-    let bool = false;
-    if(info.url && info.url.indexOf('http') !== -1){
-      bool = await ethers.connectWithHttps(info.url);
-    }else {
-      bool = await ethers.connectChainWithWss(info.url);
-    }
+    let bool = await switchChain(info);
     if(bool){
-      onSuccess && onSuccess();
+      setChainId(info.chainId)
+      onSuccess && onSuccess(info.name);
       return;
     }
     Toast.show({
@@ -46,7 +42,7 @@ export default function Network({
       <List header="选择网络">
         {list.map((item, index) => (
           <List.Item key={"network" + index} arrowIcon={false} clickable onClick={()=>connect(item)}>
-            {item.name} 
+            <span className={item.chainId === chainId ? styles.now : ''}>{item.name} </span>
           </List.Item>
         ))}
       </List>

@@ -43,10 +43,8 @@ export default function Login() {
       Toast.show({
         content: "连接成功",
         position: "bottom",
-        afterClose: () => {
-          router.push("/home");
-        },
       });
+      router.push("/home");
     } catch (error) {
       console.error("login error", error);
     } finally {

@@ -90,7 +90,7 @@ async function _initBaseinfo() {
             if (netinfo) {
                 currentChain = netinfo;
                 //连接网络
-                flag = ethersHelper.connectWithHttps(currentChain.rpcUrl);
+                let flag = await ethersHelper.connectWithHttps(currentChain.rpcUrl);
                 if (!flag) {
                     networkStatus = NetworkStauts.disconnect;
                 }else{
@@ -570,12 +570,12 @@ async function updateChain(chainInfo) {
 }
 
 // 切换网络
-async function switchChain(chainInfo) {
+async function _switchChain(chainInfo) {
     try {
         DBHelper.updateData(DBHelper.store_keyinfo, {key: 'connectedChain', value: currentChain});
         currentChain = chainInfo;
         //连接网络
-        flag = ethersHelper.connectWithHttps(currentChain.rpcUrl);
+        let flag = await ethersHelper.connectWithHttps(currentChain.rpcUrl);
         if (!flag) {
             networkStatus = NetworkStauts.disconnect;
             return;
@@ -655,7 +655,7 @@ async function refreshRecordStatus(hash) {
         //跳出提示框,开始切换网络
         //数据库查出网络信息
         let chainInfo = await DBHelper.getData(DBHelper.store_chain, record.chainId);
-        const flag = switchChain(chainInfo);
+        const flag = _switchChain(chainInfo);
         if (!flag) {
             //todo 跳出提示框,提示用户切换网络失败
             return;
@@ -804,7 +804,18 @@ async function importAesKeyFromHash(userHandleHash) {
     }
 }
 
+const _getCurrentNetwork = () => {
+    return currentChain;
+}
+
+
+const _getCurrentAccount = () => {
+    return currentAccount;
+}
 
 export const initBaseinfo = _initBaseinfo;
 export const initNetworks = _initNetworks;
 export const connectCmdHandler = _connectCmdHandler;
+export const getCurrentNetwork = _getCurrentNetwork;
+export const getCurrentAccount = _getCurrentAccount;
+export const switchChain = _switchChain;

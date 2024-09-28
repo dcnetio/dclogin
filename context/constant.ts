@@ -2,7 +2,7 @@ const _defaultNetworks = {
   networks: [
     {
       name: "Ethereum Mainnet",
-      rpcUrl: "https://mainnet.infura.io/v3/YOUR_INFURA_PROJECT_ID",
+      rpcUrl: "https://mainnet.infura.io/v3/5cc3dc24825a4a06a5f39e21e4cbc03e",
       chainId: 1,
       currencySymbol: "ETH",
       blockExplorerUrl: "https://etherscan.io",

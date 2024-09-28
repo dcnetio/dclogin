@@ -44,7 +44,7 @@ let networkStatus = NetworkStauts.disconnect; //网络状态
 
 /*******************************初始化需要完成操作***********************************/
 
-//初始化网络列表
+//初始化网络列表,并连接最近切换的网络
 async function _initNetworks() {
     try {
         let chains = await DBHelper.getAllData(DBHelper.store_chain);
@@ -56,6 +56,37 @@ async function _initNetworks() {
     }catch(e){
         console.error('初始化网络列表失败:', e);
     }
+    //取出最近切换的网络
+    try {
+        let netinfo = await DBHelper.getData(DBHelper.store_keyinfo, 'connectedChain');
+        if (netinfo) {
+            currentChain = netinfo;
+            //连接网络
+            flag = ethersHelper.connectWithHttps(currentChain.rpcUrl);
+            if (!flag) {
+                networkStatus = NetworkStauts.disconnect;
+            }else{
+                networkStatus = NetworkStauts.connected;
+            }
+        }
+    }catch(e){
+        console.error('获取网络信息失败:', e);
+    }
+    if (currentChain == null) {
+       //从数据库中获取第一个网络信息
+        let chains = await DBHelper.getAllData(DBHelper.store_chain);
+        if (chains.length > 0) {
+            currentChain = chains[0];
+            //连接网络
+            flag = ethersHelper.connectWithHttps(currentChain.rpcUrl);
+            if (!flag) {
+                networkStatus = NetworkStauts.disconnect;
+            }else{
+                networkStatus = NetworkStauts.connected;
+            }
+        }
+    }
+    
 }
 
 
@@ -69,7 +100,7 @@ async function _initBaseinfo() {
             if (netinfo) {
                 currentChain = netinfo;
                 //连接网络
-                flag = ethersHelper.connectWithHttps(currentChain.rpcurl);
+                flag = ethersHelper.connectWithHttps(currentChain.rpcUrl);
                 if (!flag) {
                     networkStatus = NetworkStauts.disconnect;
                 }else{
@@ -225,25 +256,27 @@ async function _connectCmdHandler(message, bool) {
         currentChain = {
             chainid: chains[0].chainid,
             chainname: chains[0].chainname,
-            rpcurl: chains[0].rpcurl,
+            rpcUrl: chains[0].rpcUrl,
             desc: chains[0].desc,
             confirms: chains[0].confirms,//确认数
         };
     }
-    if (ethersHelper.jsonRpcProvider != null &&  ethersHelper.jsonRpcProvider.network != null 
-        && ethersHelper.jsonRpcProvider.network.chainId != currentChain.chainid) {
+    if (ethersHelper.jsonRpcProvider != null ) {       // 获取网络信息  
+        const network = await provider.getNetwork();  
+        if (network.chainId != currentChain.chainid) {
             providerChainId = ethersHelper.jsonRpcProvider.network.chainId;
-        // 将jsonRpcProvider网络切换到当前网络
-        for (let i = 0; i < chains.length; i++) {
-            if (chains[i].chainid == providerChainId) {
-                currentChain = {
-                    chainid: chains[i].chainid,
-                    chainname: chains[i].chainname,
-                    rpcurl: chains[i].rpcurl,
-                    desc: chains[i].desc,
-                    confirms: chains[i].confirms,//确认数
-                };
-                break;
+            // 将jsonRpcProvider网络切换到当前网络
+            for (let i = 0; i < chains.length; i++) {
+                if (chains[i].chainid == providerChainId) {
+                    currentChain = {
+                        chainid: chains[i].chainid,
+                        chainname: chains[i].chainname,
+                        rpcUrl: chains[i].rpcUrl,
+                        desc: chains[i].desc,
+                        confirms: chains[i].confirms,//确认数
+                    };
+                    break;
+                }
             }
         }
         return;
@@ -549,7 +582,7 @@ async function switchChain(chainInfo) {
         DBHelper.updateData(DBHelper.store_keyinfo, {key: 'connectedChain', value: currentChain});
         currentChain = chainInfo;
         //连接网络
-        flag = ethersHelper.connectWithHttps(currentChain.rpcurl);
+        flag = ethersHelper.connectWithHttps(currentChain.rpcUrl);
         if (!flag) {
             networkStatus = NetworkStauts.disconnect;
             return;

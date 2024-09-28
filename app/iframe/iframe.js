@@ -2,7 +2,7 @@
 // 定义一个变量，用于存储BroadcastChannel对象
 const version = 'v0_0_1';
 const channelName = 'dcwallet_iframe_channel';
-import {hexToUint8Array} from '@/helpers/utilHelper';
+import utilHelper from '@/helpers/utilHelper';
 import {ethersHelper} from "@/helpers/ethersHelper.js";
 const dcWalletChannel = new BroadcastChannel("dcwallet_channel");
 let broadcastChannel = null;
@@ -218,7 +218,7 @@ function walletConnected(successFlag,account, chainId,responseData) {
         data: {
             success: successFlag,
             account: account,
-            chainid: chainId,
+            chainId: chainId,
             responseData: responseData
         }
     }
@@ -378,7 +378,7 @@ function onIframeChannelMessage(event) {
 }
 
 
-// 接受钱包页面响应连接消息,data格式为 {success: true, account: '', chainid: '', signature: ''}
+// 接受钱包页面响应连接消息,data格式为 {success: true, account: '', chainId: '', signature: ''}
 function connectResponse(data) {
     try {
        let message = JSON.parse(data); 
@@ -388,7 +388,7 @@ function connectResponse(data) {
            console.log('verifySignature failed');
             return;
         }
-       walletConnected(message.success, message.account, message.chainid, data);
+       walletConnected(message.success, message.account, message.chainId, data);
     } catch (e) {
         walletConnected(false, "", "",data);
         return;
@@ -406,7 +406,7 @@ function responseForsignMessage(data) {
                 return;
             }
             if (waitSignMessage.type == 'hex') {
-                orignMessage = hexToUint8Array(waitSignMessage.message);
+                orignMessage = utilHelper.hexToUint8Array(waitSignMessage.message);
                 const flag =  ethersHelper.verifySignature(orignMessage,message.signature, waitSignMessage.account);
                 if (!flag) {
                     console.log('verifySignature failed');

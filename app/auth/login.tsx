@@ -48,6 +48,7 @@ export default function Login() {
         },
       });
     } catch (error) {
+      console.error("login error", error);
     } finally {
       setLoading(false);
     }

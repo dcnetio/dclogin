@@ -37,6 +37,7 @@ const createWalletAccountWithMnemonic = async (mnemonic: string) => {
   console.log('===============wallet.mnemonic', wallet.mnemonic);
   console.log('===============wallet.privateKey', wallet.privateKey);
   console.log('===============wallet.address', wallet.address);
+  return wallet;
 }
 
 

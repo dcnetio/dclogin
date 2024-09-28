@@ -1,5 +1,5 @@
 
-import {hexToUint8Array} from '@/helpers/utilHelper';
+import utilHelper from '@/helpers/utilHelper';
 import ethersHelper from "@/helpers/ethersHelper";
 import {defaultNetworks} from '@/context/constant';
 
@@ -56,29 +56,13 @@ async function _initNetworks() {
     }catch(e){
         console.error('初始化网络列表失败:', e);
     }
-    //取出最近切换的网络
-    try {
-        let netinfo = await DBHelper.getData(DBHelper.store_keyinfo, 'connectedChain');
-        if (netinfo) {
-            currentChain = netinfo;
-            //连接网络
-            flag = ethersHelper.connectWithHttps(currentChain.rpcUrl);
-            if (!flag) {
-                networkStatus = NetworkStauts.disconnect;
-            }else{
-                networkStatus = NetworkStauts.connected;
-            }
-        }
-    }catch(e){
-        console.error('获取网络信息失败:', e);
-    }
     if (currentChain == null) {
        //从数据库中获取第一个网络信息
         let chains = await DBHelper.getAllData(DBHelper.store_chain);
         if (chains.length > 0) {
             currentChain = chains[0];
             //连接网络
-            flag = ethersHelper.connectWithHttps(currentChain.rpcUrl);
+           const flag = await ethersHelper.connectWithHttps(currentChain.rpcUrl);
             if (!flag) {
                 networkStatus = NetworkStauts.disconnect;
             }else{
@@ -86,7 +70,13 @@ async function _initNetworks() {
             }
         }
     }
-    
+    if (currentAccount == null){
+        //从数据库中获取第一个账号信息
+        let accounts = await DBHelper.getAllData(DBHelper.store_account);
+        if (accounts.length > 0) {
+            currentAccount = accounts[0];
+        }
+    }
 }
 
 
@@ -240,7 +230,6 @@ async function checkAccountAndCreate() {
 
 // 收到连接钱包请求处理,message格式为{version:'v_0_0_1',type: 'connect',data: {appname:'test',appIcon:'',appurl: 'http://localhost:8080',appVersion: '1.0.0'}}
 async function _connectCmdHandler(message, bool) {
-    let mnemonic = "";
     let connectingApp = message.data;
     let choseedAccount = await checkAccountAndCreate();
     // 取出网络列表
@@ -254,7 +243,7 @@ async function _connectCmdHandler(message, bool) {
     }
     if (currentChain == null){//如果当前网络为空,则取第一个网络
         currentChain = {
-            chainid: chains[0].chainid,
+            chainId: chains[0].chainId,
             chainname: chains[0].chainname,
             rpcUrl: chains[0].rpcUrl,
             desc: chains[0].desc,
@@ -263,13 +252,13 @@ async function _connectCmdHandler(message, bool) {
     }
     if (ethersHelper.jsonRpcProvider != null ) {       // 获取网络信息  
         const network = await provider.getNetwork();  
-        if (network.chainId != currentChain.chainid) {
-            providerChainId = ethersHelper.jsonRpcProvider.network.chainId;
+        if (network.chainId != currentChain.chainId) {
+            providerChainId = network.chainId;
             // 将jsonRpcProvider网络切换到当前网络
             for (let i = 0; i < chains.length; i++) {
-                if (chains[i].chainid == providerChainId) {
+                if (chains[i].chainId == providerChainId) {
                     currentChain = {
-                        chainid: chains[i].chainid,
+                        chainId: chains[i].chainId,
                         chainname: chains[i].chainname,
                         rpcUrl: chains[i].rpcUrl,
                         desc: chains[i].desc,
@@ -286,14 +275,14 @@ async function _connectCmdHandler(message, bool) {
     //todo 账号存在后,跳出授权框,提示用户授权连接对应的APP(这个界面可以切换网络)
 
     //用户确认后,调出webauthn进行校验,并提取出userHandleHash
-    const userHandleHash = await authenticateWithPasskey(account.credentialid);
+    const userHandleHash = await authenticateWithPasskey(choseedAccount.credentialid);
     if (!userHandleHash) {
         //todo 跳出提示框,提示用户授权失败
         return;
     }
     //解密出助记词
     const cryptoKey = await importAesKeyFromHash(userHandleHash);
-    mnemonic = await crypto.subtle.decrypt(
+    const encodedMnemonic = await crypto.subtle.decrypt(
         {
             name: "AES-GCM",
             iv: choseedAccount.iv,
@@ -301,6 +290,8 @@ async function _connectCmdHandler(message, bool) {
         cryptoKey,
         choseedAccount.mnemonic
     );
+    const decoder = new TextDecoder();  
+    const mnemonic = decoder.decode(encodedMnemonic); 
     // 通过助记词导入钱包,生成带私钥钱包账号
     const wallet = await ethersHelper.createWalletAccountWithMnemonic(mnemonic);
     if (!wallet) {
@@ -322,7 +313,7 @@ async function _connectCmdHandler(message, bool) {
             data: {
                 success: true,
                 account: wallet.address,
-                chainid: currentChain.chainid,
+                chainId: currentChain.chainId,
                 chainname: currentChain.chainname,
                 signature: signature,
             }
@@ -350,7 +341,7 @@ async function _connectCmdHandler(message, bool) {
         return {
             success: true,
             account: wallet.address,
-            chainid: currentChain.chainid,
+            chainId: currentChain.chainId,
             chainname: currentChain.chainname,
             signature: signature,
         }
@@ -382,7 +373,7 @@ async function generateWalletAccount(seedAccount) {
     }
     //解密出助记词
     const cryptoKey = await importAesKeyFromHash(userHandleHash);
-    mnemonic = await crypto.subtle.decrypt(
+    const encodedMnemonic = await crypto.subtle.decrypt(
         {
             name: "AES-GCM",
             iv: account.iv,
@@ -390,6 +381,8 @@ async function generateWalletAccount(seedAccount) {
         cryptoKey,
         account.mnemonic
     );
+    const decoder = new TextDecoder();  
+    const mnemonic = decoder.decode(encodedMnemonic);  
     // 通过助记词导入钱包,生成带私钥钱包账号
     const wallet = await ethersHelper.createWalletAccountWithMnemonic(mnemonic);
     if (!wallet) {
@@ -423,7 +416,7 @@ async function signMessageHandler(message) {
     }
    let signature = null;
    if (message.data.messagetype == 'hex') {
-        waitSignMessage = hexToUint8Array(message.data.message);
+        waitSignMessage = utilHelper.hexToUint8Array(message.data.message);
         // 执行签名
        signature = await ethersHelper.signMessage(wallet,waitSignMessage);
         if (!signature) {
@@ -447,7 +440,7 @@ async function signMessageHandler(message) {
         data: {
             success: true,
             account: wallet.address,
-            chainid: currentChain.chainid,
+            chainId: currentChain.chainId,
             chainname: currentChain.chainname,
             signature: signature,
         }
@@ -523,7 +516,7 @@ async function signEIP712MessageHandler(message) {
         data: {
             success: true,
             account: wallet.address,
-            chainid: currentChain.chainid,
+            chainId: currentChain.chainId,
             chainname: currentChain.chainname,
             signature: signature,
         }
@@ -700,7 +693,7 @@ async function createWalletAccount() {
                     iv: iv,
                 },
                 cryptoKey,
-                new TextEncoder().encode(accountInfo.mnemonic)
+                new TextEncoder().encode(accountInfo.mnemonic.phrase)
             );
             //将账号信息(助记词)存储到数据库
             const account = {
@@ -788,7 +781,7 @@ async function importAesKeyFromHash(userHandleHash) {
         challenge: challenge,
         rpId: window.location.hostname,
         allowCredentials: [{
-            id: base64ToArrayBuffer(credentialid),
+            id: utilHelper.base64UrlToArrayBuffer(credentialid),
             type: 'public-key',
         }],
         userVerification: "required",
@@ -803,7 +796,7 @@ async function importAesKeyFromHash(userHandleHash) {
             return null;
         }
         console.log("Authentication successful");
-        userHandleHash = await crypto.subtle.digest('SHA-256', assertion.response.userHandle);
+        const userHandleHash = await crypto.subtle.digest('SHA-256', assertion.response.userHandle);
         return userHandleHash;
     } catch (error) {
         console.error("Authentication failed", error);

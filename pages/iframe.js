@@ -2,9 +2,8 @@
 // 定义一个变量，用于存储BroadcastChannel对象
 const version = 'v0_0_1';
 const channelName = 'dcwallet_iframe_channel';
-alert(111)
 import utilHelper from '@/helpers/utilHelper';
-import {ethersHelper} from "@/helpers/ethersHelper.js";
+import {ethersHelper} from "@/helpers/ethersHelper";
 const dcWalletChannel = new BroadcastChannel("dcwallet_channel");
 let broadcastChannel = null;
 let walletLoadedFlag = false; //钱包已加载标志
@@ -202,20 +201,20 @@ function signEIP712Message(data) {
 
 // 发送初始化结果消息给父窗口
 function initConfigResponse(flag, message) {
-    let message = {
+    let sendMessage = {
         type: 'initConfigResponse',
         data: {
             success: flag,
             message: message
         }
     }
-    const jsonMessage = JSON.stringify(message);
+    const jsonMessage = JSON.stringify(sendMessage);
     window.parent.postMessage(jsonMessage, parentOrigin);
 }
 
 //发送钱包连接成功消息给父窗口
 function walletConnected(successFlag,account, chainId,responseData) {
-    const message = {
+    const sendMessage = {
         type: 'walletConnected',
         data: {
             success: successFlag,
@@ -224,34 +223,34 @@ function walletConnected(successFlag,account, chainId,responseData) {
             responseData: responseData
         }
     }
-    const jsonMessage = JSON.stringify(message);
+    const jsonMessage = JSON.stringify(sendMessage);
     window.parent.postMessage(jsonMessage, parentOrigin);
 }
 
 //发送签名成功消息给父窗口
 function signMessageResponse(successFlag, message) {
-    const message = {
+    const senMessage = {
         type: 'signMessageResponse',
         data: {
             success: successFlag,
             message: message
         }
     }
-    const jsonMessage = JSON.stringify(message);
+    const jsonMessage = JSON.stringify(senMessage);
     window.parent.postMessage(jsonMessage, parentOrigin);
 }
 
 
 //发送签名EIP712成功消息给父窗口
 function signEIP712MessageResponse(successFlag, message) {
-    const message = {
+    const sendMessage = {
         type: 'signEIP712MessageResponse',
         data: {
             success: successFlag,
             message: message
         }
     }
-    const jsonMessage = JSON.stringify(message);
+    const jsonMessage = JSON.stringify(sendMessage);
     window.parent.postMessage(jsonMessage, parentOrigin);
 }
 

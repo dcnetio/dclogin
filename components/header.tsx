@@ -6,11 +6,13 @@ import { GlobalOutline, DownFill } from "antd-mobile-icons";
 import { useEffect, useState } from "react";
 import { useAppSelector } from "@/lib/hooks";
 import { getCurrentAccount, getCurrentNetwork } from "@/app/home/home";
+import { appState } from "@/context/constant";
 export default function Header({ changeNetworkSuccess, changeAccountSuccess }) {
   const [networkName, setNetworkName] = useState("");
   const [networkVisible, setNetworkVisible] = useState(false);
   const [accountVisible, setAccountVisible] = useState(false);
   const [accountInfo, setAccountInfo] = useState({});
+  const initState = useAppSelector(state => state.app.initState)
   const showChangeNetwork = () => {
     console.log("showChangeNetwork");
     setNetworkVisible(true);
@@ -43,9 +45,10 @@ export default function Header({ changeNetworkSuccess, changeAccountSuccess }) {
   }
 
   useEffect(() => {
+    if(initState  == appState.init_success)
     getNowNetwork();
     getNowAccount();
-  }, [])
+  }, [initState])
   return (
     <div className={styles.header}>
       <div className={styles.network} onClick={showChangeNetwork}>

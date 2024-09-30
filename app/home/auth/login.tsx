@@ -9,6 +9,8 @@ import { useAppSelector } from "@/lib/hooks";
 import { initializeDatabase } from "@/helpers/DBHelper";
 import { connectCmdHandler, initBaseinfo, initNetworks } from "@/app/home/home";
 import { store } from "@/lib/store";
+import { saveInitState } from "@/lib/slices/appSlice";
+import { appState } from "@/context/constant";
 
 export default function Login() {
   const router = useRouter();
@@ -16,6 +18,9 @@ export default function Login() {
   const init = async () => {
     try {
       setLoading(true);
+      store.dispatch(
+        saveInitState(appState.initing)
+      );
       // 初始化数据库
       const bool = await initializeDatabase();
       // 初始化网络数据
@@ -23,19 +28,23 @@ export default function Login() {
       // 调用初始化函数
       await initBaseinfo(); //初始化网络和账号信息
       if (!bool) {
+        store.dispatch(
+          saveInitState(appState.init_failed)
+        );
         Toast.show({
           content: "初始化失败，请刷新网页重试",
           position: "bottom",
         });
         return;
       }
-      // 初始化成功，连接网络，并把用户信息保存下来
+      //连接网络，并把用户信息保存下来
       const message = {
         data: {
           origin: window.location.origin,
         },
       };
       const accountInfo = await connectCmdHandler(message, false);
+      console.log('accountInfo====', accountInfo)
       store.dispatch(
         saveAccountInfo(accountInfo)
       );
@@ -44,7 +53,10 @@ export default function Login() {
         content: "连接成功",
         position: "bottom",
       });
-      router.push("/home");
+      // 初始化成功，
+      store.dispatch(
+        saveInitState(appState.init_success)
+      );
     } catch (error) {
       console.error("login error", error);
     } finally {

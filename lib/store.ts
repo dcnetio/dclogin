@@ -2,6 +2,7 @@
 import logger from "redux-logger";
 import storage from 'redux-persist/lib/storage'; 
 import {configureStore, combineReducers} from '@reduxjs/toolkit'
+import {appSlice} from "@/lib/slices/appSlice";
 import {walletSlice} from "@/lib/slices/walletSlice";
 import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
 
@@ -12,7 +13,8 @@ const persistConfig = {
   };
   // 2.创建持久化的reducer
 const rootReducer = combineReducers({
-    [walletSlice.name]: walletSlice.reducer
+    [walletSlice.name]: walletSlice.reducer,
+    [appSlice.name]: appSlice.reducer,
 })
 const persistedReducer = persistReducer(persistConfig, rootReducer);
  

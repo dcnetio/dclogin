@@ -3,10 +3,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import "antd-mobile/es/global";
-import StoreProvider from "@/context/storeProvider";
 import styles from "./layout.module.css";
-import Login from "@/app/auth/login";
-
 const geistSans = localFont({
   src: "../fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -35,10 +32,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <div className={styles.container}>
-          <StoreProvider>
-            <Login />
             {children}
-          </StoreProvider>
         </div>
       </body>
     </html>

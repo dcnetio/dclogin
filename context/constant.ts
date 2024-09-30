@@ -66,4 +66,12 @@ const _defaultNetworks = {
   ],
 };
 
+const _appState = {
+  not_init: 0,
+  initing: 1,
+  init_success: 2,
+  init_failed: 3,
+};
+
 export const defaultNetworks = _defaultNetworks;
+export const appState = _appState;

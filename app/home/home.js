@@ -13,17 +13,17 @@ let currentAccount = null; //当前账号
 
 // 数据库
 import DBHelper from "@/helpers/DBHelper";
-import { id } from 'ethers';
 
 // 获取查询字符串  
 const queryString = window.location.search;  
+console.log('window.location', window.location)
 
 // 使用 URLSearchParams 解析查询字符串  
 const urlParams = new URLSearchParams(queryString);  
 let  location = urlParams.get('origin');
 
 if (window.opener && window.opener.location){
-    if (length(window.opener.location.hostname) > 3) {
+    if (window.opener.location.hostname?.length > 3) {
         location = window.opener.location.hostname;
     }
 }

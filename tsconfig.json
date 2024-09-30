@@ -33,7 +33,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "build/types/**/*.ts"
-  ],
+, "app/iframe/page.tsx"  ],
   "exclude": [
     "node_modules"
   ]

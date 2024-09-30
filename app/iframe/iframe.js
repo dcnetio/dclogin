@@ -2,6 +2,7 @@
 // 定义一个变量，用于存储BroadcastChannel对象
 const version = 'v0_0_1';
 const channelName = 'dcwallet_iframe_channel';
+alert(111)
 import utilHelper from '@/helpers/utilHelper';
 import {ethersHelper} from "@/helpers/ethersHelper.js";
 const dcWalletChannel = new BroadcastChannel("dcwallet_channel");
@@ -44,6 +45,7 @@ function createDCWalletIframeBroadcastChannel(name) {
 
 // 监听父窗口发送的消息
 window.addEventListener('message', function(event) {
+    alert('message', event.data)
     //判断消息来源
     if (event.origin !== parentOrigin) {
         return;
@@ -327,6 +329,192 @@ function requestSignEIP712Message(orignMessage) {
 /*********************************接收钱包页面响应信息处理************************************/
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //创建一个BroadcastChannel的监听消息处理函数
 function onIframeChannelMessage(event) {
     let message = null;
@@ -474,3 +662,4 @@ function waitForFlagToTrue(getWalletLoadedFlag) {
     });  
 }  
 
+export default null;

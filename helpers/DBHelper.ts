@@ -11,7 +11,7 @@ const _store_apps = "walletapps";
 const _store_keyinfo = "walletkeyinfo";
 const dbversion = 1;
 // 数据库实例
-let dbInstance = null;
+let dbInstance:any = null;
 
 
 // 初始化数据库并设置全局变量  

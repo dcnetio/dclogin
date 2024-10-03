@@ -1,22 +1,25 @@
 "use client";
+import { useEffect, useState } from 'react'; 
 // 定义一个变量，用于存储BroadcastChannel对象
 const version = 'v0_0_1';
 const channelName = 'dcwallet_iframe_channel';
 import utilHelper from '@/helpers/utilHelper';
-import {ethersHelper} from "@/helpers/ethersHelper";
+import ethersHelper from "@/helpers/ethersHelper";
 const dcWalletChannel = new BroadcastChannel("dcwallet_channel");
 let broadcastChannel = null;
 let walletLoadedFlag = false; //钱包已加载标志
 let waitSignMessage =  null; //等待签名消息
 let waitSignEip712Message = null; //等待签名EIP712消息
-//获取父窗口域名
-const parentOrigin = window.location.ancestorOrigins[0];
+//todo 获取父窗口域名,改成动态获取
+const  parentOrigin = "127.0.0.1:3000";
 // Dapp信息
 let appName = '';
 let appIcon = '';
 let appVersion = '';
 console.log('**************iframejs')
 /*******************************初始化需要完成操作***********************************/
+
+
 
 //写一个方法创建broadcastChannel
 function createDCWalletIframeBroadcastChannel(name) {

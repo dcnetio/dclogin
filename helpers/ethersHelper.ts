@@ -115,24 +115,31 @@ const signMessage = async (wallet: ethers.HDNodeWallet,message: Uint8Array|strin
 // 生成eip712签名
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const signEIP712Message = async (wallet: ethers.HDNodeWallet,primaryType:string, domain:ethers.TypedDataDomain, types:Record<string, Array<ethers.TypedDataField>>, message:Record<string, any>) => {  
-  // 计算域分隔符  
-  const domainSeparator = ethers.TypedDataEncoder.hashDomain(domain);  
+  try{
+    // 计算域分隔符  
+    const domainSeparator = ethers.TypedDataEncoder.hashDomain(domain);  
 
-  // 计算结构化数据的哈希值  
-  const hashStruct = ethers.TypedDataEncoder.hashStruct(primaryType, types, message);  
+    // 计算结构化数据的哈希值  
+    const hashStruct = ethers.TypedDataEncoder.hashStruct(primaryType, types, message);  
 
-  // 生成最终的哈希值  
-  const digest = ethers.keccak256(  
-      ethers.solidityPacked(  
-          ["string", "bytes32", "bytes32"],  
-          ["\x19\x01", domainSeparator, hashStruct]  
-      )  
-  );  
+    // 生成最终的哈希值  
+    const digest = ethers.keccak256(  
+        ethers.solidityPacked(  
+            ["string", "bytes32", "bytes32"],  
+            ["\x19\x01", domainSeparator, hashStruct]  
+        )  
+    );  
 
-  // 从签名中恢复地址  
-  const signature = await wallet.signMessage(digest);  
-  console.log("Signature: ", signature);  
-  return signature;
+    // 从签名中恢复地址  
+    const signature = await wallet.signMessage(digest);  
+    console.log("Signature: ", signature);  
+   const flag = await verifyEIP712Signature(primaryType, domain, types, message, signature, wallet.address);
+    console.log('signEIP712Message flag', flag);
+    return signature;
+  } catch (error) {
+    console.log('signEIP712Message error', error);
+  }
+  return null;
 }
 
 // Function to verify the signature  message:要签名的消息，signature:签名,16进制，expectedAddress:预期的签名者地址
@@ -179,8 +186,10 @@ const verifyEIP712Signature = async (primaryType:string, domain:ethers.TypedData
           ["\x19\x01", domainSeparator, hashStruct]  
       )  
   );  
+    // Hash the message  
+   const messageHash = ethers.hashMessage(digest);  
   // 从签名中恢复地址  
-  const recoveredAddress = ethers.recoverAddress(digest, signature);  
+  const recoveredAddress = ethers.recoverAddress(messageHash, signature);  
   // 比较恢复的地址与预期地址  
   return recoveredAddress.toLowerCase() === expectedAddress.toLowerCase();  
 }  

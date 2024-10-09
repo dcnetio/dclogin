@@ -24,7 +24,7 @@ let  location = urlParams.get('origin');
 
 if (window.opener && window.opener.location){
     if (window.opener.location.hostname?.length > 3) {
-        location = window.opener.location.hostname;
+        location = window.opener.location.origin;
     }
 }
 // 获取特定参数的值  
@@ -134,9 +134,9 @@ setInterval(async () => {
     }
 }, 1000);
 
-createBroadcastChannel(channelName);
+
 //写一个方法创建broadcastChannel
-function createBroadcastChannel(name) {
+function _createBroadcastChannel(name=channelName) {
     //如果支持BroadcastChannel，直接返回
     if (window.BroadcastChannel) {
         //如果已经创建过，直接返回
@@ -148,7 +148,8 @@ function createBroadcastChannel(name) {
         const message = {
             version: version,
             type: 'loaded',
-            data: {origin:origin}
+            origin: origin,
+            data: {}
         };
         if (origin != null) {
             dcWalletIframeChannel.postMessage(JSON.stringify(message));//发送加载成功消息
@@ -204,6 +205,9 @@ async function checkAccountAndCreate() {
     try{
         //判断用户是否已经创建过钱包账号,如果没有,则跳出状态等待框,提示用户账号创建中
         accounts = await DBHelper.getAllData(DBHelper.store_account);
+        if(!accounts){
+            accounts = [];
+        }
         if (accounts.length === 0) {
             //todo 跳出状态等待框,提示用户账号创建中
             let account = await createWalletAccount();
@@ -213,6 +217,7 @@ async function checkAccountAndCreate() {
                 return;
 
             }
+            
             //todo 跳出账号创建成功提示框
             accounts.push(account);
         }
@@ -228,8 +233,11 @@ async function checkAccountAndCreate() {
     return accounts[0];
 }
 
-// 收到连接钱包请求处理,message格式为{version:'v_0_0_1',type: 'connect',data: {appname:'test',appIcon:'',appurl: 'http://localhost:8080',appVersion: '1.0.0'}}
+// 收到连接钱包请求处理,message格式为{version:'v_0_0_1',type: 'connect',data: {appname:'test',appIcon:'',appUrl: 'http://localhost:8080',appVersion: '1.0.0'}}
 async function _connectCmdHandler(message, bool) {
+    if(!bool){
+        return;
+    }
     let connectingApp = message.data;
     let choseedAccount = await checkAccountAndCreate();
     // 取出网络列表
@@ -244,7 +252,7 @@ async function _connectCmdHandler(message, bool) {
     if (currentChain == null){//如果当前网络为空,则取第一个网络
         currentChain = {
             chainId: chains[0].chainId,
-            chainname: chains[0].chainname,
+            chainName: chains[0].chainName,
             rpcUrl: chains[0].rpcUrl,
             desc: chains[0].desc,
             confirms: chains[0].confirms,//确认数
@@ -259,7 +267,7 @@ async function _connectCmdHandler(message, bool) {
                 if (chains[i].chainId == providerChainId) {
                     currentChain = {
                         chainId: chains[i].chainId,
-                        chainname: chains[i].chainname,
+                        chainName: chains[i].chainName,
                         rpcUrl: chains[i].rpcUrl,
                         desc: chains[i].desc,
                         confirms: chains[i].confirms,//确认数
@@ -278,6 +286,12 @@ async function _connectCmdHandler(message, bool) {
     const userHandleHash = await authenticateWithPasskey(choseedAccount.credentialid);
     if (!userHandleHash) {
         //todo 跳出提示框,提示用户授权失败
+         // 关闭当前窗口,并返回原来的窗口
+        if (window.opener) {  
+            // 可以在原窗口中执行一些操作，例如导航  
+            window.opener.focus(); // 返回并聚焦到原窗口  
+        }  
+        window.close();
         return;
     }
     //解密出助记词
@@ -299,7 +313,7 @@ async function _connectCmdHandler(message, bool) {
         return;
     }
     // 执行签名
-    const signature = await ethersHelper.signMessage(wallet,message.data.origin);
+    const signature = await ethersHelper.signMessage(wallet,message.origin);
     if (!signature) {
         //todo 跳出提示框,提示用户签名失败
         return;
@@ -307,6 +321,7 @@ async function _connectCmdHandler(message, bool) {
     if(bool){ // DCAPP进入
         //签名成功后,发送链接成功消息给APP
         const resMessage = {
+            code: message.code,
             version: version,
             type: 'connected',
             origin: origin,
@@ -314,7 +329,7 @@ async function _connectCmdHandler(message, bool) {
                 success: true,
                 account: wallet.address,
                 chainId: currentChain.chainId,
-                chainname: currentChain.chainname,
+                chainName: currentChain.chainName,
                 signature: signature,
             }
         };
@@ -323,26 +338,29 @@ async function _connectCmdHandler(message, bool) {
         const app = {
             appname: connectingApp.appname,
             appIcon: connectingApp.appIcon,
-            appurl: connectingApp.appurl,
+            appUrl: connectingApp.appUrl,
             appVersion: connectingApp.appVersion,
             timestamp: new Date().getTime(),
         };
         DBHelper.updateData(DBHelper.store_apps, app).then(() => {
             console.log('连接记录存储成功');
             }
-        );
-        // 关闭当前窗口,并返回原来的窗口
-         if (window.opener) {  
-            // 可以在原窗口中执行一些操作，例如导航  
-            window.opener.focus(); // 返回并聚焦到原窗口  
-        }  
-        window.close();
+        ).catch((e) => {
+            console.error('连接记录存储失败:', e);
+        }).finally(() => {
+            // 关闭当前窗口,并返回原来的窗口
+            if (window.opener) {  
+                // 可以在原窗口中执行一些操作，例如导航  
+                window.opener.focus(); // 返回并聚焦到原窗口  
+            }  
+            window.close();
+        });
     }else { // 钱包本身访问
         return {
             success: true,
             account: wallet.address,
             chainId: currentChain.chainId,
-            chainname: currentChain.chainname,
+            chainName: currentChain.chainName,
             signature: signature,
         }
     }
@@ -352,6 +370,7 @@ async function _connectCmdHandler(message, bool) {
 
 // 根据账号,生成签名的钱包账号对象
 async function generateWalletAccount(seedAccount) {
+    let account = null;
     // 数据库里获取账号信息
     try {
         account = await DBHelper.getData(DBHelper.store_account, seedAccount);
@@ -397,26 +416,29 @@ async function generateWalletAccount(seedAccount) {
     version:'v_0_0_1',
     type: 'signMessage', 
     data: {
-            appname:'test',
+            account: '0x1234567890123456789012345678901234567890',
+            appName:'test',
             appIcon:'',
-            appurl: 'http://localhost:8080',
+            appUrl: 'http://localhost:8080',
             appVersion: '1.0.0',
-            messagetype: 'string',//string,hex
+            messageType: 'string',//string,hex
             message: 'test message',
         }
 }
 **/
 async function signMessageHandler(message) {
-    if (message.data.account == null) {//没有签名账号,不做处理
+    const data = message.data;
+    if (data.account == null) {//没有签名账号,不做处理
         return;
     }
-   const wallet = await generateWalletAccount(message.data.account);
+
+   const wallet = await generateWalletAccount(data.account);
     if (!wallet) {
          return;
     }
    let signature = null;
-   if (message.data.messagetype == 'hex') {
-        waitSignMessage = utilHelper.hexToUint8Array(message.data.message);
+   if (data.messageType == 'hex') {
+        waitSignMessage = utilHelper.hexToUint8Array(data.message);
         // 执行签名
        signature = await ethersHelper.signMessage(wallet,waitSignMessage);
         if (!signature) {
@@ -425,7 +447,7 @@ async function signMessageHandler(message) {
         }
     }else {
         // 执行签名
-        signature = await ethersHelper.signHexMessage(wallet,message.data.message);
+        signature = await ethersHelper.signMessage(wallet,data.message);
         if (!signature) {
             //todo 跳出提示框,提示用户签名失败
             return;
@@ -434,6 +456,7 @@ async function signMessageHandler(message) {
    
     //签名成功后,发送签名成功消息给APP,并返回签名结果
     const resMessage = {
+        code: message.code,
         version: version,
         type: 'signSuccess',
         origin: origin,
@@ -441,7 +464,7 @@ async function signMessageHandler(message) {
             success: true,
             account: wallet.address,
             chainId: currentChain.chainId,
-            chainname: currentChain.chainname,
+            chainName: currentChain.chainName,
             signature: signature,
         }
     };
@@ -456,12 +479,13 @@ async function signMessageHandler(message) {
 
 //收到签名EIP712请求处理,message格式为
 // {
+//     code: 'CxzQW5n8k0',
 //     version:'v_0_0_1',
 //     type: 'signEIP712Message',
 //     data: {
 //             appname:'test',
 //             appIcon:'',
-//             appurl: 'http://localhost:8080',
+//             appUrl: 'http://localhost:8080',
 //             appVersion: '1.0.0',
 //             domain: {
 //                 name: 'Test',
@@ -495,21 +519,23 @@ async function signMessageHandler(message) {
 //         }
 // }
 async function signEIP712MessageHandler(message) {
-    if (message.data.account == null) {//没有签名账号,不做处理
+    const data = message.data;
+    if (data.account == null) {//没有签名账号,不做处理
         return;
     }
-    const wallet = await generateWalletAccount(message.data.account);
+    const wallet = await generateWalletAccount(data.account);
     if (!wallet) {
          return;
     }
     // 执行签名
-    const signature = await ethersHelper.signEIP712Message(wallet,message.data.primaryType,message.data.domain,message.data.types,message.data.message);
+    const signature = await ethersHelper.signEIP712Message(wallet,data.primaryType,data.domain,data.types,data.message);
      if (!signature) {
          //todo 跳出提示框,提示用户签名失败
         return;
     }
     //签名成功后,发送签名成功消息给APP,并返回签名结果
     const resMessage = {
+        code: message.code,
         version: version,
         type: 'signEIP712Success',
         origin: origin,
@@ -517,7 +543,7 @@ async function signEIP712MessageHandler(message) {
             success: true,
             account: wallet.address,
             chainId: currentChain.chainId,
-            chainname: currentChain.chainname,
+            chainName: currentChain.chainName,
             signature: signature,
         }
     };
@@ -819,3 +845,4 @@ export const connectCmdHandler = _connectCmdHandler;
 export const getCurrentNetwork = _getCurrentNetwork;
 export const getCurrentAccount = _getCurrentAccount;
 export const switchChain = _switchChain;
+export const createBroadcastChannel = _createBroadcastChannel;

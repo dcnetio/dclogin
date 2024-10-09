@@ -48,7 +48,7 @@ async function _initializeDatabase() {
         },
         {// 已连接的DAPP存储
             name: _store_apps,  
-            keyPath: 'appurl',   
+            keyPath: 'appUrl',   
             indexes: [{ name: 'timestamp', keyPath: 'timestamp', unique: false }]  
         },
         {// key,value信息存储,主要用来存储非标准信息,连接过的网络信息(固定key:"connectedChain")与最近选择的账号信息(固定key:"chosedAccount")

@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { saveAccountInfo } from "@/lib/slices/walletSlice";
 import { useAppSelector } from "@/lib/hooks";
 import { initializeDatabase } from "@/helpers/DBHelper";
-import { connectCmdHandler, initBaseinfo, initNetworks } from "@/app/home/home";
+import { connectCmdHandler, initBaseinfo, initNetworks,createBroadcastChannel } from "@/app/home/home";
 import { store } from "@/lib/store";
 import { saveInitState } from "@/lib/slices/appSlice";
 import { appState } from "@/context/constant";
@@ -23,10 +23,6 @@ export default function Login() {
       );
       // 初始化数据库
       const bool = await initializeDatabase();
-      // 初始化网络数据
-      await initNetworks();
-      // 调用初始化函数
-      await initBaseinfo(); //初始化网络和账号信息
       if (!bool) {
         store.dispatch(
           saveInitState(appState.init_failed)
@@ -37,26 +33,36 @@ export default function Login() {
         });
         return;
       }
+      // 初始化网络数据
+      await initNetworks();
+      // 调用初始化函数
+      await initBaseinfo(); //初始化网络和账号信息
       //连接网络，并把用户信息保存下来
       const message = {
+        origin: window.location.origin,
         data: {
-          origin: window.location.origin,
+          
         },
       };
-      const accountInfo = await connectCmdHandler(message, false);
-      console.log('accountInfo====', accountInfo)
-      store.dispatch(
-        saveAccountInfo(accountInfo)
-      );
-      // 提示成功，并跳转到首页
-      Toast.show({
-        content: "连接成功",
-        position: "bottom",
-      });
-      // 初始化成功，
-      store.dispatch(
-        saveInitState(appState.init_success)
-      );
+      createBroadcastChannel();
+      if (!window.opener) {
+        const accountInfo = await connectCmdHandler(message, false);
+        console.log('accountInfo====', accountInfo)
+        store.dispatch(
+          saveAccountInfo(accountInfo)
+        );
+         // 提示成功，并跳转到首页
+        Toast.show({
+          content: "连接成功",
+          position: "bottom",
+        });
+         // 初始化成功，
+        store.dispatch(
+          saveInitState(appState.init_success)
+        );
+      }
+     
+     
     } catch (error) {
       console.error("login error", error);
     } finally {

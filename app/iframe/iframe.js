@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from 'react'; 
 // 定义一个变量，用于存储BroadcastChannel对象
-const version = 'v0_0_1';
+const version = 'v_0_0_1';
 const channelName = 'dcwallet_iframe_channel';
 import utilHelper from '@/helpers/utilHelper';
 import ethersHelper from "@/helpers/ethersHelper";
@@ -10,12 +10,14 @@ let broadcastChannel = null;
 let walletLoadedFlag = false; //钱包已加载标志
 let waitSignMessage =  null; //等待签名消息
 let waitSignEip712Message = null; //等待签名EIP712消息
+let waitForConnectCode = null; //等待链接的code
 //todo 获取父窗口域名,改成动态获取
-const  parentOrigin = "127.0.0.1:3000";
+const  parentOrigin = "http://localhost:3000";
 // Dapp信息
 let appName = '';
 let appIcon = '';
 let appVersion = '';
+
 console.log('**************iframejs')
 /*******************************初始化需要完成操作***********************************/
 
@@ -56,32 +58,63 @@ window.addEventListener('message', function(event) {
     if (typeof event.data === 'string') {
         try {
             message = JSON.parse(event.data);
+            if (message.version !== version) { //版本不一致,不处理
+                console.error('Received invalid version:', message.version,"expected version:",version);
+                return;
+            }
+            if (message.code == null) { //code为空,不处理
+                console.error('Received invalid code:', message.code);
+                return;
+            }
         } catch (e) {
             console.error('Received invalid message:', event.data);
             return;
         }
     }
+   
     
     /** 判断消息类型,message格式为
      * {
+     *      code: 'qmc1XHOCNw',
+     *      version: 'v_0_0_1',
      *      type: 'walletDisconnectedReply', //父窗口发送的消息类型 walletDisconnectedReply, walletConnectedReply, chainChangedReply, accountChangedReply
      *      data: { //消息对应数据
      *         ...
      *     }}
      * 
      **/
+    let err = null;
     switch (message.type) {
         case 'init': //初始化配置
-            initConfig(message.data);
+            console.log('initConfig:', message.data);
+            err = initConfig(message.data);
+            if (err != null) {
+                initConfigResponse(false,message.code, err);
+            }else{
+                initConfigResponse(true,message.code,'success');
+            }
             break;
         case 'connect': //连接命令
-            connect();
+            console.log('connect:', message.data);
+            err = connect(message.code);
+            if (err != null) {
+                walletConnected(false,message.code, "", "",err);
+            }
             break;
         case 'signMessage': //签名消息
-            signMessage(message.data);
+            console.log('signMessage:', message.data);
+            err = signMessage(message);
+            if (err != null) {
+                signMessageResponse(false,message.code, err);
+            }
             break;
         case 'signEIP712Message': //签名EIP712消息
-            signEIP712Message(message.data);
+            console.log('signEIP712Message:', message);
+            err = signEIP712Message(message);
+            if (err != null) {
+                signEIP712MessageResponse(false,message.code, err);
+            }
+
             break;
         default:
             break;
@@ -89,36 +122,35 @@ window.addEventListener('message', function(event) {
 });
 
 // Dapp初始化配置
-function initConfig(data) {
+function initConfig(config) {
     // 初始化配置
-    let config = JSON.parse(data);
     if (config.appUrl != parentOrigin){
-        initConfigResponse(false, 'The appUrl is not equal to the parentOrigin');
+        return 'The appUrl is not equal to the parentOrigin';
     }
     appName = config.appName;
     appIcon = config.appIcon;
     appVersion = config.appVersion;
     createDCWalletIframeBroadcastChannel(channelName);
     if (!broadcastChannel) {
-        initConfigResponse(false, 'Your browser does not support BroadcastChannel');
+        return 'Your browser does not support BroadcastChannel';
     }else{
-        initConfigResponse(true, 'success');
+        return 
     }
 }
 
 
 // 父窗口发送的连接命令处理,打开钱包页面前调用
-function connect() {
+function connect(code) {
     // 等待钱包加载完成
     walletLoadedFlag = false;
     waitForFlagToTrue(() => walletLoadedFlag)
     .then((flag) => { //钱包已经加载完成
         if (flag) {
-            connectWallet();
+            connectWallet(code);
         } 
     }).catch((e) => {  //超时不处理
       console.log(e);
-      return false;
+      return e;
     });
 }
 
@@ -130,12 +162,12 @@ function connect() {
     message: 'test message',
 }
 **/
-function signMessage(data) {
+function signMessage(message) {
+    const data = message.data;
     //校验数据
     try {
-        let message = JSON.parse(data);
-        if (message.type == null || message.message == null) {
-            return 'The message type or message is null';
+        if ( data.message == null) {
+            return 'The message is null';
         }
     } catch (e) {
         return e;
@@ -160,22 +192,19 @@ function signMessage(data) {
     message: 'test message',
 }
 **/
-function signEIP712Message(data) {
+function signEIP712Message(message) {
+    const data = message.data;
     //校验数据
-    try {
-        let message = JSON.parse(data);
-        if (message.type == null || message.message == null ) {
-            return 'The message type or message is null';
-        }
-        if (message.domain == null){
-            return 'The domain is null';
-        }
-        if (message.primaryType == null){
-            return 'The primaryType is null';
-        }   
-    } catch (e) {
-        return e;
+    if (data.message == null ) {
+        return 'The  message is null';
     }
+    if (data.domain == null){
+        return 'The domain is null';
+    }
+    if (data.primaryType == null){
+        return 'The primaryType is null';
+    }   
+    
     // 等待钱包加载完成
     walletLoadedFlag = false;
     waitForFlagToTrue(() => walletLoadedFlag)
@@ -202,8 +231,10 @@ function signEIP712Message(data) {
 /*******************************发送响应消息给父窗口***********************************/
 
 // 发送初始化结果消息给父窗口
-function initConfigResponse(flag, message) {
+function initConfigResponse(flag,code, message) {
     let sendMessage = {
+        code: code,
+        version: version,
         type: 'initConfigResponse',
         data: {
             success: flag,
@@ -215,8 +246,10 @@ function initConfigResponse(flag, message) {
 }
 
 //发送钱包连接成功消息给父窗口
-function walletConnected(successFlag,account, chainId,responseData) {
+function walletConnected(successFlag,code,account, chainId,responseData) {
     const sendMessage = {
+        code: code,
+        version: version,
         type: 'walletConnected',
         data: {
             success: successFlag,
@@ -230,8 +263,10 @@ function walletConnected(successFlag,account, chainId,responseData) {
 }
 
 //发送签名成功消息给父窗口
-function signMessageResponse(successFlag, message) {
+function signMessageResponse(successFlag,code, message) {
     const sendMessage = {
+        code: code,
+        version: version,
         type: 'signMessageResponse',
         data: {
             success: successFlag,
@@ -244,8 +279,10 @@ function signMessageResponse(successFlag, message) {
 
 
 //发送签名EIP712成功消息给父窗口
-function signEIP712MessageResponse(successFlag, message) {
+function signEIP712MessageResponse(successFlag,code, message) {
     const sendMessage = {
+        code: code,
+        version: version,
         type: 'signEIP712MessageResponse',
         data: {
             success: successFlag,
@@ -259,9 +296,10 @@ function signEIP712MessageResponse(successFlag, message) {
 /*********************************与钱包页面通信处理************************************/
 
 // 发送连接命令给钱包页面
-function connectWallet() {
+function connectWallet(code) {
     // 像钱包网页发送连接命令
     const message = {
+        code: code,
         version: version,
         type: 'connect',
         origin: parentOrigin,
@@ -272,14 +310,17 @@ function connectWallet() {
             appversion: appVersion
         }
     }
+    waitForConnectCode = code;
     const jsonMessage = JSON.stringify(message);
     dcWalletChannel.postMessage(jsonMessage);
 }
 
 // 发送签名消息给钱包页面
 function requsetForSignMessage(orignMessage) {
+    const data = orignMessage.data;
     // 向钱包网页发送签名消息
     const message = {
+        code: orignMessage.code,
         version: version,
         type: 'signMessage',
         origin: parentOrigin,
@@ -288,9 +329,9 @@ function requsetForSignMessage(orignMessage) {
             appIcon: appIcon,
             appUrl: parentOrigin,
             appversion: appVersion,
-            account: orignMessage.account,
-            messagetype: orignMessage.type,
-            message: orignMessage.message
+            account: data.account,
+            messagetype: data.type,
+            message: data.message
         }
     }
     waitSignMessage = orignMessage;
@@ -300,8 +341,10 @@ function requsetForSignMessage(orignMessage) {
 
 // 发送签名EIP712消息给钱包页面
 function requestSignEIP712Message(orignMessage) {
+    const data = orignMessage.data;
     // 向钱包网页发送签名消息
     const message = {
+        code: orignMessage.code,
         version: version,
         type: 'signEIP712Message',
         origin: parentOrigin,
@@ -310,12 +353,12 @@ function requestSignEIP712Message(orignMessage) {
             appIcon: appIcon,
             appUrl: parentOrigin,
             appversion: appVersion,
-            account: orignMessage.account,
-            messagetype: orignMessage.type,
-            domain: orignMessage.domain,
-            primaryType: orignMessage.primaryType,
-            types: orignMessage.types,
-            message: orignMessage.message,
+            account: data.account,
+            messagetype: data.type,
+            domain: data.domain,
+            primaryType: data.primaryType,
+            types: data.types,
+            message: data.message,
         }
     }
     waitSignEip712Message = orignMessage;
@@ -361,19 +404,25 @@ function onIframeChannelMessage(event) {
     **/
     switch (message.type) {
         case 'loaded': //钱包页面加载成功
-        if (message.data.origin == parentOrigin) { 
-            walletLoadedFlag = true;
-        }
-        break;
+            if (message.origin == parentOrigin) { 
+                walletLoadedFlag = true;
+            }
+            break;
         //如果是获取用户信息的消息
         case 'connected': //连接成功
-            connectResponse(data)
+            if (message.data  != null && message.code == waitForConnectCode) {
+                connectResponse(message.code,message.data);
+            }
             break;
         case 'signSuccess': //签名成功
-            responseForsignMessage(data);
+            if (message.data != null && message.code == waitSignMessage.code) {
+                responseForsignMessage(message.code,message.data);
+            }
             break;
         case 'signEIP712Success': //签名EIP712成功
-            responseForSignEIP712Message(data);
+            if (message.data != null && message.code == waitSignEip712Message.code) {
+                responseForSignEIP712Message(message.code,message.data);
+            }
             break
         default:
             break;
@@ -382,41 +431,40 @@ function onIframeChannelMessage(event) {
 
 
 // 接受钱包页面响应连接消息,data格式为 {success: true, account: '', chainId: '', signature: ''}
-function connectResponse(data) {
+async function connectResponse(code,message) {
     try {
-       let message = JSON.parse(data); 
        //签名校验,如果校验失败,则不处理
-       const flag =  ethersHelper.verifySignature(parentOrigin,message.signature, message.account);
+       const flag = await ethersHelper.verifySignature(parentOrigin,message.signature, message.account);
        if (!flag) {
            console.log('verifySignature failed');
             return;
         }
-       walletConnected(message.success, message.account, message.chainId, data);
+       walletConnected(message.success,code, message.account, message.chainId, message);
     } catch (e) {
-        walletConnected(false, "", "",data);
+        walletConnected(false,code, "", "",message);
         return;
     }
 }
 
 // 接受钱包页面响应签名消息
-function responseForsignMessage(data) {
+async function responseForsignMessage(code,message) {
     try {
-        let message = JSON.parse(data);
         if (message.success){
             // 进行签名校验,如果校验失败,则提示父窗口签名失败
             if (waitSignMessage == null) {
                 console.log('waitSignMessage is null');
                 return;
             }
+            const waitData = waitSignMessage.data;
             if (waitSignMessage.type == 'hex') {
-                orignMessage = utilHelper.hexToUint8Array(waitSignMessage.message);
-                const flag =  ethersHelper.verifySignature(orignMessage,message.signature, waitSignMessage.account);
+                orignMessage = utilHelper.hexToUint8Array(waitData.message);
+                const flag =  await ethersHelper.verifySignature(waitData,message.signature, waitData.account);
                 if (!flag) {
                     console.log('verifySignature failed');
                     return;
                 }
             }else {
-                const flag =  ethersHelper.verifySignature(waitSignMessage.message,message.signature, waitSignMessage.account);
+                const flag =  await ethersHelper.verifySignature(waitData.message,message.signature, waitData.account);
                 if (!flag) {
                     console.log('verifySignature failed');
                     return;
@@ -424,35 +472,35 @@ function responseForsignMessage(data) {
             }
         }
         //发送签名成功消息给父窗口
-        signMessageResponse(message.success, message.message);
+        signMessageResponse(message.success,code, message);
     } catch (e) {
         //发送签名失败消息给父窗口
-        signMessageResponse(false, e);
+        signMessageResponse(false,code, e);
     }
 }
 
 // 接受钱包页面响应签名EIP712消息
-function responseForSignEIP712Message(data) {
+async function responseForSignEIP712Message(code,message) {
     try {
-        let message = JSON.parse(data);
         // 进行签名校验,如果校验失败
         if (waitSignEip712Message == null) {
             console.log('waitSignEip712Message is null');
             return;
         }
+        const waitData = waitSignEip712Message.data;
         if (message.success){
-            const flag =  ethersHelper.verifyEIP712Signature(waitSignEip712Message.primaryType,waitSignEip712Message.domain,
-                            waitSignEip712Message.type,waitSignEip712Message.message,message.signature, waitSignEip712Message.account);
+            const flag =  await ethersHelper.verifyEIP712Signature(waitData.primaryType,waitData.domain,
+                waitData.types,waitData.message,message.signature, waitData.account);
             if (!flag) {
                 console.log('verifyEIP712Signature failed');
                 return;
             }
         }
         //发送签名成功消息给父窗口
-        signEIP712MessageResponse(message.success, message.message);
+        signEIP712MessageResponse(message.success,code, message);
     } catch (e) {
         //发送签名失败消息给父窗口
-        signEIP712MessageResponse(false, e);
+        signEIP712MessageResponse(false,code, e);
     }
 }
 
@@ -463,7 +511,7 @@ function responseForSignEIP712Message(data) {
 function waitForFlagToTrue(getWalletLoadedFlag) {  
     return new Promise((resolve,reject) => {  
         const interval = setInterval(() => {  
-            flag = getWalletLoadedFlag();
+           let flag = getWalletLoadedFlag();
             if (flag) {  
                 clearInterval(interval);  
                 clearTimeout(timeout);

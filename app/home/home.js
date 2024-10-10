@@ -5,9 +5,7 @@ import {defaultNetworks} from '@/context/constant';
 
 // 定义一个变量，用于存储BroadcastChannel对象
 const version = 'v_0_0_1';
-const channelName = 'dcwallet_channel';
-const dcWalletIframeChannel = new BroadcastChannel("dcwallet_iframe_channel");
-let broadcastChannel = null;
+let dcWalletIframeChannel = null;
 let currentChain = null; //当前网络
 let currentAccount = null; //当前账号
 
@@ -16,21 +14,9 @@ import DBHelper from "@/helpers/DBHelper";
 
 // 获取查询字符串  
 const queryString = window.location.search;  
-console.log('window.location', window.location)
-
-// 使用 URLSearchParams 解析查询字符串  
 const urlParams = new URLSearchParams(queryString);  
 let  location = urlParams.get('origin');
-
-if (window.opener && window.opener.location){
-    if (window.opener.location.hostname?.length > 3) {
-        location = window.opener.location.origin;
-    }
-}
-// 获取特定参数的值  
-const origin = location; // 
-
-
+const origin = location; 
 
 const NetworkStauts = Object.freeze({  
     connecting: 0,
@@ -39,10 +25,25 @@ const NetworkStauts = Object.freeze({
 });  
 let networkStatus = NetworkStauts.disconnect; //网络状态
 
-
-//todo 向iframe发送加载成功消息
-
 /*******************************初始化需要完成操作***********************************/
+
+// 监听DAPP窗口发送的消息
+window.addEventListener('message', function(event) {
+    //判断消息来源
+    if (event.origin !== origin) {
+        return;
+    }
+    const port2 = event.ports[0]; 
+    if (!port2) {
+        return;
+    }
+    if(dcWalletIframeChannel){
+        dcWalletIframeChannel.onmessage = null;
+        dcWalletIframeChannel.close();
+        dcWalletIframeChannel = null;
+    }
+    dcWalletIframeChannel = port2;
+});
 
 //初始化网络列表,并连接最近切换的网络
 async function _initNetworks() {
@@ -78,6 +79,7 @@ async function _initNetworks() {
         }
     }
 }
+
 
 
 
@@ -134,44 +136,51 @@ setInterval(async () => {
     }
 }, 1000);
 
+ 
 
-//写一个方法创建broadcastChannel
-function _createBroadcastChannel(name=channelName) {
-    //如果支持BroadcastChannel，直接返回
-    if (window.BroadcastChannel) {
-        //如果已经创建过，直接返回
-        if (broadcastChannel) {
-            return broadcastChannel;
-        }
-        broadcastChannel = new BroadcastChannel(name);
-        broadcastChannel.onmessage = onChannelMessage;
-        const message = {
-            version: version,
-            type: 'loaded',
-            origin: origin,
-            data: {}
-        };
-        if (origin != null) {
-            dcWalletIframeChannel.postMessage(JSON.stringify(message));//发送加载成功消息
-        }
-        return broadcastChannel;
+//
+function _initCommChannel() {
+     //通知DAPP,钱包加载完成
+    const message = {
+        type: 'walletLoaded',
+        data: {
+        origin: window.location.origin,
+        },
+    };
+    if (window.opener) {
+        window.opener.postMessage(message, origin);
     }
-    //如果不支持，提示错误
-    console.error('Your browser does not support BroadcastChannel');
-    return null;
+    _waitChannelCreate();
+}
+
+function _waitChannelCreate() {
+      // 等待dcWalletIframeChannel对象创建完成
+    if (!dcWalletIframeChannel) {
+        setTimeout(_waitChannelCreate, 100);
+        return;
+    }
+    dcWalletIframeChannel.onmessage = onChannelMessage;
+    const message = {
+        version: version,
+        type: 'loaded',
+        origin: origin,
+        data: {}
+    };
+    if (origin != null) {
+        dcWalletIframeChannel.postMessage(message);//发送加载成功消息
+    }
 }
 
 //创建一个BroadcastChannel的监听消息处理函数
 function onChannelMessage(event) {
     let message = null;
     // 对消息进行json解析
-    if (typeof event.data === 'string') {
-        try {
-            message = JSON.parse(event.data);
-        } catch (e) {
-            console.error('Received invalid message:', event.data);
-            return;
-        }
+    message = event.data;
+    if (!message) {
+        return;
+    }
+    if (event.ports.length == 0) {
+        return;
     }
     if (message.version !== version) {//判断版本号
         return;
@@ -179,16 +188,17 @@ function onChannelMessage(event) {
     if (message.origin != origin) {//判断消息来源
         return;
     }
+
     //判断消息类型,message格式为{type: 'getUserInfo', data: {}}
     switch (message.type) {
         case 'connect': //连接钱包请求 
-            _connectCmdHandler(message, true);
+            _connectCmdHandler(message, true,event.ports[0]);
             break;
         case 'signMessage': //签名请求
-            signMessageHandler(message);
+            signMessageHandler(message,event.ports[0]);
             break;
         case 'signEIP712Message': //签名EIP712请求
-            signEIP712MessageHandler(message);
+            signEIP712MessageHandler(message,event.ports[0]);
             break;
         default:
             break;
@@ -234,7 +244,7 @@ async function checkAccountAndCreate() {
 }
 
 // 收到连接钱包请求处理,message格式为{version:'v_0_0_1',type: 'connect',data: {appname:'test',appIcon:'',appUrl: 'http://localhost:8080',appVersion: '1.0.0'}}
-async function _connectCmdHandler(message, bool) {
+async function _connectCmdHandler(message, bool,port = null) {
     if(!bool){
         return;
     }
@@ -252,7 +262,7 @@ async function _connectCmdHandler(message, bool) {
     if (currentChain == null){//如果当前网络为空,则取第一个网络
         currentChain = {
             chainId: chains[0].chainId,
-            chainName: chains[0].chainName,
+            name: chains[0].name,
             rpcUrl: chains[0].rpcUrl,
             desc: chains[0].desc,
             confirms: chains[0].confirms,//确认数
@@ -267,7 +277,7 @@ async function _connectCmdHandler(message, bool) {
                 if (chains[i].chainId == providerChainId) {
                     currentChain = {
                         chainId: chains[i].chainId,
-                        chainName: chains[i].chainName,
+                        name: chains[i].name,
                         rpcUrl: chains[i].rpcUrl,
                         desc: chains[i].desc,
                         confirms: chains[i].confirms,//确认数
@@ -321,7 +331,6 @@ async function _connectCmdHandler(message, bool) {
     if(bool){ // DCAPP进入
         //签名成功后,发送链接成功消息给APP
         const resMessage = {
-            code: message.code,
             version: version,
             type: 'connected',
             origin: origin,
@@ -329,11 +338,25 @@ async function _connectCmdHandler(message, bool) {
                 success: true,
                 account: wallet.address,
                 chainId: currentChain.chainId,
-                chainName: currentChain.chainName,
+                name: currentChain.name,
                 signature: signature,
             }
         };
-        dcWalletIframeChannel.postMessage(JSON.stringify(resMessage));
+        if(!port){
+            console.error('messagePort is null');
+            // 关闭当前窗口,并返回原来的窗口
+            if (window.opener) {  
+                // 可以在原窗口中执行一些操作，例如导航  
+                window.opener.focus(); // 返回并聚焦到原窗口  
+            }  
+            window.close();
+            return
+        }
+        port.postMessage(resMessage);
+        // 1秒后关闭port
+        setTimeout(() => {
+            port.close();
+        }, 1000);
         // 连接记录存储到数据库
         const app = {
             appname: connectingApp.appname,
@@ -360,7 +383,7 @@ async function _connectCmdHandler(message, bool) {
             success: true,
             account: wallet.address,
             chainId: currentChain.chainId,
-            chainName: currentChain.chainName,
+            name: currentChain.name,
             signature: signature,
         }
     }
@@ -426,7 +449,7 @@ async function generateWalletAccount(seedAccount) {
         }
 }
 **/
-async function signMessageHandler(message) {
+async function signMessageHandler(message,port=null) {
     const data = message.data;
     if (data.account == null) {//没有签名账号,不做处理
         return;
@@ -456,7 +479,6 @@ async function signMessageHandler(message) {
    
     //签名成功后,发送签名成功消息给APP,并返回签名结果
     const resMessage = {
-        code: message.code,
         version: version,
         type: 'signSuccess',
         origin: origin,
@@ -464,11 +486,17 @@ async function signMessageHandler(message) {
             success: true,
             account: wallet.address,
             chainId: currentChain.chainId,
-            chainName: currentChain.chainName,
+            name: currentChain.name,
             signature: signature,
         }
     };
-    dcWalletIframeChannel.postMessage(JSON.stringify(resMessage));
+    if (port) {
+        port.postMessage(resMessage);
+        // 1秒后关闭port
+        setTimeout(() => {
+            port.close();
+        }, 1000);
+    }
      // 关闭当前窗口,并返回原来的窗口
      if (window.opener) {  
         // 可以在原窗口中执行一些操作，例如导航  
@@ -518,7 +546,7 @@ async function signMessageHandler(message) {
 //             }
 //         }
 // }
-async function signEIP712MessageHandler(message) {
+async function signEIP712MessageHandler(message,port=null) {
     const data = message.data;
     if (data.account == null) {//没有签名账号,不做处理
         return;
@@ -535,7 +563,6 @@ async function signEIP712MessageHandler(message) {
     }
     //签名成功后,发送签名成功消息给APP,并返回签名结果
     const resMessage = {
-        code: message.code,
         version: version,
         type: 'signEIP712Success',
         origin: origin,
@@ -543,11 +570,17 @@ async function signEIP712MessageHandler(message) {
             success: true,
             account: wallet.address,
             chainId: currentChain.chainId,
-            chainName: currentChain.chainName,
+            name: currentChain.name,
             signature: signature,
         }
     };
-    dcWalletIframeChannel.postMessage(JSON.stringify(resMessage));
+    if(port){
+        port.postMessage(resMessage);
+        // 1秒后关闭port
+        setTimeout(() => {
+            port.close();
+        }, 1000);
+    }
      // 关闭当前窗口,并返回原来的窗口
      if (window.opener) {  
         // 可以在原窗口中执行一些操作，例如导航  
@@ -845,4 +878,4 @@ export const connectCmdHandler = _connectCmdHandler;
 export const getCurrentNetwork = _getCurrentNetwork;
 export const getCurrentAccount = _getCurrentAccount;
 export const switchChain = _switchChain;
-export const createBroadcastChannel = _createBroadcastChannel;
+export const initCommChannel = _initCommChannel;

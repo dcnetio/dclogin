@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { saveAccountInfo } from "@/lib/slices/walletSlice";
 import { useAppSelector } from "@/lib/hooks";
 import { initializeDatabase } from "@/helpers/DBHelper";
-import { connectCmdHandler, initBaseinfo, initNetworks,createBroadcastChannel } from "@/app/home/home";
+import { connectCmdHandler, initBaseinfo, initNetworks,initCommChannel } from "@/app/home/home";
 import { store } from "@/lib/store";
 import { saveInitState } from "@/lib/slices/appSlice";
 import { appState } from "@/context/constant";
@@ -44,7 +44,6 @@ export default function Login() {
           
         },
       };
-      createBroadcastChannel();
       if (!window.opener) {
         const accountInfo = await connectCmdHandler(message, false);
         console.log('accountInfo====', accountInfo)
@@ -60,6 +59,8 @@ export default function Login() {
         store.dispatch(
           saveInitState(appState.init_success)
         );
+      }else{
+        initCommChannel();
       }
      
      

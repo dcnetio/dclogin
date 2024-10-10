@@ -1,70 +1,93 @@
 "use client";
 import { Button } from "antd-mobile";
-import { version } from "os";
 import { useEffect, useState } from "react";
 
+
+const dcWalletIframe = 'dcWalletIframe';
+const version = 'v_0_0_1';
+const walletOrigin = 'http://localhost:3000'; //
+const walletUrl = walletOrigin +'/home'; // 钱包地址
+const walletWindowName = 'walletWindow'; // 窗口名称  
+let walletWindow:Window|null;
+let channelPort2: MessagePort | null;
 export default function WalletEl() {
-  const version = 'v_0_0_1';
-  const walletUrl = 'http://localhost:3000/home?origin=http://localhost:3000'; // 钱包地址
-  const walletWindowName = 'walletWindow'; // 窗口名称  
+  console.log('walletEl');
   const defaultAccount = {
     account: "",
   }
-  let code = "0";
   const [accountInfo, setAccountInfo] = useState(defaultAccount)
   const openConnect = () => {
-    const newWindow = window.open(walletUrl, walletWindowName); 
+    const urlWithOrigin = walletUrl+'?origin='+window.location.origin;
+    walletWindow = window.open(urlWithOrigin, walletWindowName); 
+    initCommChannel();
     const message = {
-      code: getMessageCode(),
       version: version,
       type: 'connect',
       data: {
         origin: window.location.origin,
       },
     };
-    const jsonMessage = JSON.stringify(message);
-    sendMessage(jsonMessage)
+    sendMessageToIframe(message, 60000).then((response) => {
+      console.log('openConnect response', response);
+      if(response){
+        const data = response.data;
+        setAccountInfo(response.data.data);
+      }else{
+        console.error('openConnect response is null');
+      }
+    }).catch((error) => {
+      console.error('openConnect error', error);
+    });
+
   }
 
-  function generateRandomString(length:number) {  
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';  
-    let result = '';  
-    const charactersLength = characters.length;  
-    for (let i = 0; i < length; i++) {  
-        result += characters.charAt(Math.floor(Math.random() * charactersLength));  
-    }  
-    return result;  
-}  
-
-// 使用示例：生成一个长度为10的随机字符串  
-  const getMessageCode = () => {
-    code = generateRandomString(10); 
-    return code;
-  }
 
   const initConfig = () => {
     const message = {
-      code: getMessageCode(),
       version: version,
       type: 'init',
       data: {
         appName: 'testDAPP',
         appIcon: 'https://dcnetio.cloud/ipfs/bafybeicco3kk3aq5to5l376npfosnvgwk6yr4azz35xinnilqvpa4hmbq4/favicon.ico',
         appVersion: '1.0.0',
-        appUrl: 'http://localhost:3000',
+        appUrl: 'http://127.0.0.1:3000',
       }
     };
-    const jsonMessage = JSON.stringify(message);
-    sendMessage(jsonMessage)
+    sendMessageToIframe(message, 5000).then((response) => {
+      console.log('initConfig response', response);
+    }).catch((error) => {
+      console.error('initConfig error', error);
+    });
   }
 
 
-  // 发起
-  const sendMessage = (message:any) => {
-    // todo 调起钱包
-    const iframe = document.getElementById('myIframe') as HTMLIFrameElement;
+  // 利用messageChannel通信
+  const sendMessageToIframe = async (message:object,timeout:number): Promise< MessageEvent|null > =>  {
+    const iframe = document.getElementById(dcWalletIframe) as HTMLIFrameElement;
+    // port2转移给iframe
     if(iframe){
-      iframe.contentWindow?.postMessage(message);
+      const messageChannel = new MessageChannel();
+      // 等待钱包iframe返回,并关闭channel,超时时间timeout
+      return  new Promise((resolve, reject) => {
+        const timer = setTimeout(() => {
+          reject('timeout');
+        }, timeout);
+        messageChannel.port1.onmessage = (event) => {
+          clearTimeout(timer);
+          messageChannel.port1.close();
+          resolve(event);
+        }
+        try {
+          iframe.contentWindow?.postMessage(message,walletOrigin,[messageChannel.port2]);
+        } catch (error) {
+          clearTimeout(timer);
+          messageChannel.port1.close();
+          reject(error);
+        }
+      });
+    }else{
+      console.error('iframe不存在');
+      return null;
     }
   }
 
@@ -75,9 +98,11 @@ export default function WalletEl() {
       console.log('未连接钱包');
       return;
     }
-    const newWindow = window.open(walletUrl, walletWindowName); 
+    const urlWithOrigin = walletUrl+'?origin='+window.location.origin;
+    initCommChannel();
+    walletWindow = window.open(urlWithOrigin, walletWindowName); 
+    // 每100ms发送一次消息,直到钱包加载完成
     const message = {
-      code: getMessageCode(),
       version: version,
       type: 'signMessage',
       data: {
@@ -89,8 +114,33 @@ export default function WalletEl() {
         message: 'test message',
       }
     };
-    const jsonMessage = JSON.stringify(message);
-    sendMessage(jsonMessage)
+    sendMessageToIframe(message, 60000).then((response) => {
+      console.log('signMessage response', response);
+    }).catch((error) => {
+      console.error('signMessage error', error);
+    }
+    );
+  }
+
+  function initCommChannel() {
+    const iframe = document.getElementById(dcWalletIframe) as HTMLIFrameElement;
+    // port1转移给iframe
+    if(iframe){
+      const message = {
+        code: '0', 
+        version: version,
+        type: 'channelPort',
+      }
+      try {
+        const messageChannel = new MessageChannel();
+        iframe.contentWindow?.postMessage(message,walletOrigin,[messageChannel.port1]);
+        channelPort2 = messageChannel.port2;
+      }catch(error){
+        console.error('initCommChannel error', error);
+      }
+    }else{
+      console.error('iframe不存在');
+    }
   }
 
   // 签名EIP712消息
@@ -99,16 +149,18 @@ export default function WalletEl() {
       console.log('未连接钱包');
       return;
     }
-    const newWindow = window.open(walletUrl, walletWindowName); 
+    const urlWithOrigin = walletUrl+'?origin='+window.location.origin;
+    initCommChannel();
+    walletWindow = window.open(urlWithOrigin, walletWindowName); 
+    // port1 转移给iframe
     const message = {
-      code: getMessageCode(),
       version: version,
       type: 'signEIP712Message',
       data: {
         account: accountInfo.account,
         appName:'test',
         appIcon:'',
-        appUrl: 'http://localhost:8080',
+        appUrl: 'http://localhost:3000',
         domain: {
           name: 'test',
           version: '1',
@@ -140,60 +192,56 @@ export default function WalletEl() {
           }, 
       }
     };
-    const jsonMessage = JSON.stringify(message);
-    sendMessage(jsonMessage)
+    sendMessageToIframe(message, 60000).then((response) => {
+      console.log('signEIP712Message response', response);
+    }).catch((error) => {
+      console.error('signEIP712Message error', error);
+    });
   }
 
- 
-  useEffect(() => {
-     // 父窗口监听消息
-    window.addEventListener('message', function(event) {
-      // if (event.origin !== "todo来源") return; // 可选：对源进行验证
-      try {
-        const data = JSON.parse(event.data);
-        if (data.code !== code) {
-          console.log('code不匹配', event.data, code);
+  function listenFromWallet(event:MessageEvent) {
+    // if (event.origin !== "todo来源") return; // 可选：对源进行验证
+    try {
+      const data = event.data;
+      if (!data.type ) {
+        //非钱包插件
+        return;
+      }
+      if (data.type === 'walletLoaded') {//钱包加载完成
+        if(event.origin !== walletOrigin){
+          console.log('来源不匹配', event.origin, walletOrigin);
           return;
         }
-        if (data.type === 'initConfigResponse') {
-          // 初始化成功
-          console.log('初始化成功', data.data);
-        }else if (data.type === 'walletConnected') {
-          // 连接成功
-          console.log('连接成功', data.data);
-          setAccountInfo(data.data);
-
-        }else if (data.type === 'signMessageResponse') {
-          // 签名
-          console.log('签名', data.data);
-        }else if (data.type === 'signEIP712MessageResponse') {
-          // Eip712签名
-          console.log('Eip712签名', data.data);
-        }else {
-          console.log('未知消息', data);
+        // 钱包打开成功
+        console.log('钱包打开成功', data.data);
+        if(channelPort2){//port2转移给钱包
+          const message = {
+            version: version,
+            type: 'channelPort',
+          }
+          if(walletWindow){
+            try {
+              walletWindow.postMessage(message, walletOrigin, [channelPort2]);
+            } catch (error) {
+              console.error('postMessage error', error);
+            }
+          }
         }
-      } catch (error) {
-    //    console.error('message error', error);
       }
-
-      // 处理消息
-      
-    });
-    // const message = {
-    //     type: 'init',
-    //     data: {
-    //       appName: 'testDAPP',
-    //       appIcon: 'https://dcnetio.cloud/ipfs/bafybeicco3kk3aq5to5l376npfosnvgwk6yr4azz35xinnilqvpa4hmbq4/favicon.ico',
-    //       appVersion: '1.0.0',
-    //       appUrl: 'http://localhost:3000',
-    //     }
-    //   };
-    //   const jsonMessage = JSON.stringify(message);
-    // // 初始化
-    // sendMessage(jsonMessage)
-  })
+    } catch (error) {
+      console.error('message error', error);
+    }}
+ 
+  useEffect(() => {
+     // 父窗口监听消息,只监听钱包加载完成消息
+    window.addEventListener('message',listenFromWallet);
+    return () => {
+      window.removeEventListener('message', listenFromWallet);
+    }
+  }, []);
   return (
     <>
+    
       <div>
         <span>{accountInfo.account}</span>
           <Button color="primary" fill="outline" onClick={openConnect}>
@@ -206,7 +254,7 @@ export default function WalletEl() {
             Eip712签名
           </Button>
       </div>
-      <iframe id="myIframe"  src="http://localhost:3000/iframe" onLoad={initConfig}></iframe>
+      <iframe id={dcWalletIframe}  src={"http://localhost:3000/iframe?parentOrigin="+ window.location.origin} onLoad={initConfig}></iframe>
     </>
   );
 }

@@ -15,17 +15,9 @@ let appName = '';
 let appIcon = '';
 let appVersion = '';
 
-console.log('**************iframejs')
-
-
-// 从localStorage中获取数据,判断是否支持window.opener
-
 // 将dcwallet_opener的值设置为true,并存入localStorage
-localStorage.setItem('dcwallet_opener', 'true');
+localStorage.setItem('dcwallet_opener', 'false');
 
-
-
-/*******************************移出iframe,改为直接调用方法***********************************/
 // 初始化DAPP
 const initDAPP = function(appName:string,appIcon:string,appVersion:string) {
     if (appName == '' ) {

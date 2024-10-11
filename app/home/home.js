@@ -338,7 +338,7 @@ async function _connectCmdHandler(message, bool,port = null) {
                 success: true,
                 account: wallet.address,
                 chainId: currentChain.chainId,
-                name: currentChain.name,
+                chainName: currentChain.name,
                 signature: signature,
             }
         };
@@ -359,7 +359,7 @@ async function _connectCmdHandler(message, bool,port = null) {
         }, 1000);
         // 连接记录存储到数据库
         const app = {
-            appname: connectingApp.appname,
+            appName: connectingApp.appName,
             appIcon: connectingApp.appIcon,
             appUrl: connectingApp.appUrl,
             appVersion: connectingApp.appVersion,

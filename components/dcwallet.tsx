@@ -2,7 +2,8 @@
 // 定义一个变量，用于存储BroadcastChannel对象
 const version = 'v_0_0_1';
 const walletOrigin = 'http://localhost:3000'; // 钱包地址
-const walletUrl = walletOrigin +'/'+version; // 钱包地址
+//const walletUrl = walletOrigin +'/'+version; // todo 钱包地址后门统一改成origin+version
+const walletUrl = walletOrigin +'/home'
 
 import utilHelper from '@/helpers/utilHelper';
 import ethersHelper from "@/helpers/ethersHelper";
@@ -11,22 +12,21 @@ import ethersHelper from "@/helpers/ethersHelper";
 const localStorageKey_dcwallet_opener = 'dcwallet_opener';
 const localStorageKey_recent_account = 'dcwallet_recent_account';
 const localStorageKey_recent_chain = 'dcwallet_recent_chain';
+//let walletLoadedFlag = false; //钱包已加载标志
 let appName = '';
 let appIcon = '';
 let appVersion = '';
 
-// 将dcwallet_opener的值设置为true,并存入localStorage
-localStorage.setItem('dcwallet_opener', 'false');
 
 // 初始化DAPP
-const initDAPP = function(appName:string,appIcon:string,appVersion:string) {
-    if (appName == '' ) {
+const initDAPP = function(name:string,icon:string,version:string):boolean {
+    if (name == '' ) {
         console.error('appName is null');
         return false;
     }
-    appName = appName;
-    appIcon = appIcon;
-    appVersion = appVersion;
+    appName = name;
+    appIcon = icon;
+    appVersion = version;
     return true;
 }
 
@@ -37,11 +37,11 @@ type ConnectReqMessage = {
     origin: string,
     data: {
         appName: string,
-        appIcon: string,
+        appIcon?: string,
         appUrl: string,
         appVersion: string,
-        account: string,
-        chainId: string,
+        account?: string,
+        chainId?: string,
     }
 }
 
@@ -53,6 +53,30 @@ type ConnectResponse = {
 }
 
 
+
+// const listenForWalletLoaded = (event:MessageEvent) => {
+//     //判断消息来源
+//     if (event.origin !== walletOrigin ) {
+//         return;
+//     }
+//     try {
+//         const data = event.data;
+//         if (!data.type ) {
+//           //非钱包插件
+//           return;
+//         }
+//         if (data.type === 'walletLoaded') {//钱包加载完成
+//             walletLoadedFlag = true;
+//             localStorage.setItem(localStorageKey_dcwallet_opener, 'true');
+//         }
+//       } catch (error) {
+//         console.error('message error', error);
+//       }
+// }
+// //添加监听事件
+// window.addEventListener('message', listenForWalletLoaded);
+
+
 // 连接钱包
 const connectWallet = async (timeout:number,account:string = "",chainId:string = ""):Promise<ConnectResponse> => {
     return new Promise<ConnectResponse>((resolve,reject) => {
@@ -61,8 +85,8 @@ const connectWallet = async (timeout:number,account:string = "",chainId:string =
             return;
         }
         const urlWithOrigin = walletUrl+'?origin='+window.location.origin;
-        const walletWindow = window.open(urlWithOrigin, '_blank'); 
-        waitForWalletLoaded(timeout).then((flag) => {
+        const walletWindow = window.open(urlWithOrigin, 'aaaa'); 
+        waitForWalletLoaded(walletWindow,timeout).then((flag) => {
             if (flag) {
                 // 像钱包网页发送连接命令
                 const message = {
@@ -80,9 +104,9 @@ const connectWallet = async (timeout:number,account:string = "",chainId:string =
                 }
                 //创建新的messageChannel
                 sendMessageToWallet(walletWindow,message,timeout).then((event) => {
-                    const message = event.data;
+                    const resMessage = event.data.data;
                      //签名校验,如果校验失败,则不处理
-                    const flag =  ethersHelper.verifySignature(window.location.origin,message.signature, message.account);
+                    const flag =  ethersHelper.verifySignature(window.location.origin,resMessage.signature, resMessage.account);
                     if (!flag) {
                         const connectResponse = {
                             success: false,
@@ -94,15 +118,15 @@ const connectWallet = async (timeout:number,account:string = "",chainId:string =
                         return ;
                     }
                     const connectResponse = {
-                        success: message.success,
-                        account: message.account,
-                        chainId: message.chainId,
-                        chainName: message.chainName,
+                        success: resMessage.success,
+                        account: resMessage.account,
+                        chainId: resMessage.chainId,
+                        chainName: resMessage.chainName,
                     }
                     //保存最近连接的账号
-                    localStorage.setItem(localStorageKey_recent_account, message.account);
+                    localStorage.setItem(localStorageKey_recent_account, resMessage.account);
                     //保存最近连接的链
-                    const chaininfo = message.chainId + '$$$$' + message.chainName;
+                    const chaininfo = resMessage.chainId + '$$$$' + resMessage.chainName;
                     localStorage.setItem(localStorageKey_recent_chain, chaininfo);
                     resolve(connectResponse);
                 }).catch((e) => {
@@ -116,17 +140,17 @@ const connectWallet = async (timeout:number,account:string = "",chainId:string =
   }
 
 
-type NeedSignMessage = {
+export type SignReqMessage = {
     version: string,
     type: string,
     origin: string,
     data: {
         appName: string,
-        appIcon: string,
+        appIcon?: string,
         appUrl: string,
         appVersion: string,
         account: string,
-        messageType: string,
+        messageType?: string,
         message: string,
     }
 }
@@ -164,7 +188,7 @@ const signMessage = async (message:string,account:string,timeout:number,messageT
         }
         const urlWithOrigin = walletUrl+'?origin='+window.location.origin;
         const walletWindow = window.open(urlWithOrigin, '_blank'); 
-        waitForWalletLoaded(timeout).then((flag) => {
+        waitForWalletLoaded(walletWindow,timeout).then((flag) => {
             if (flag) {
                 // 像钱包网页发送命令
                 const sendMessage = {
@@ -213,7 +237,7 @@ const signMessage = async (message:string,account:string,timeout:number,messageT
 
 
 // 签名消息验证
- function verifySignMessageResponse(orignMessage:NeedSignMessage,resMessage:SignMessageResponse):boolean {
+ function verifySignMessageResponse(orignMessage:SignReqMessage,resMessage:SignMessageResponse):boolean {
         if (resMessage.data.success){
             const waitData = orignMessage.data.message;
             if (orignMessage.type == 'hex') {
@@ -249,7 +273,7 @@ type EIP712SignReqMessage = {
 
 
 // 签名EIP712消息
-const signEIP712Message = async (message:string,account:string,domain:any,primaryType:string,types:any,timeout:number):Promise<SignMessageResponse> => {
+const signEIP712Message = async (message:any,account:string,domain:any,primaryType:string,types:any,timeout:number):Promise<SignMessageResponse> => {
     return new Promise<SignMessageResponse>((resolve,reject) => {
         if (appName == '' ) {
             reject('appName is null,please init first');
@@ -277,7 +301,7 @@ const signEIP712Message = async (message:string,account:string,domain:any,primar
         }
         const urlWithOrigin = walletUrl+'?origin='+window.location.origin;
         const walletWindow = window.open(urlWithOrigin, '_blank'); 
-        waitForWalletLoaded(timeout).then((flag) => {
+        waitForWalletLoaded(walletWindow,timeout).then((flag) => {
             if (flag) {
                 // 像钱包网页发送命令
                 const sendMessage = {
@@ -344,62 +368,59 @@ function verifySignEip712MessageResponse(orignMessage:EIP712SignReqMessage,resMe
 
 
   //等待钱包页面加载完成
-    const waitForWalletLoaded = async (timeout:number) => {
+    const waitForWalletLoaded = async (walletWindow:Window|null,timeout:number) => {
         // localStorage中获取是否支持window.opener
         const openerFlag = localStorage.getItem(localStorageKey_dcwallet_opener);
-        let waitTimeCount = 6;
+        let waitTimeCount = 1;
         if (openerFlag == 'true') {
-            waitTimeCount = 10;
+            waitTimeCount = 3;
         }
         // 开启定时器500ms检查一次,第一次等待3秒,如果没有加载完成,则发送轮询请求
         return new Promise((resolve) => {
-            let walletLoadedFlag = false;
-            let exitFlag = false;
-            const messageChannel = new MessageChannel();
-            messageChannel.port1.onmessage = (event) => {
+            let messageChannel = new MessageChannel();
+            const onMessage = (event:MessageEvent) => {
                 const message = event.data;
                 if (message.type === 'walletLoaded') {
                     clearInterval(interval);
                     clearTimeout(timeoutHandle);
-                    window.removeEventListener('message',function(){});//移除监听事件
                     messageChannel.port1.close();
+                    window.removeEventListener('message', listenForWalletLoaded);
                     resolve(true);
                 }
             }
+            messageChannel.port1.onmessage = onMessage;
+            const checkMessage = {
+                version: version,
+                type: 'checkWalletLoaded',
+                origin: window.location.origin,
+                data: { 
+                }
+            }
+            let walletLoadedFlag = false;
             const listenForWalletLoaded = (event:MessageEvent) => {
                 //判断消息来源
                 if (event.origin !== walletOrigin ) {
                     return;
                 }
-                try {
-                    const data = event.data;
-                    if (!data.type ) {
-                      //非钱包插件
-                      return;
-                    }
-                    if (data.type === 'walletLoaded') {//钱包加载完成
-                        walletLoadedFlag = true;
-                        clearInterval(interval);
-                        clearTimeout(timeoutHandle);
-                        messageChannel.port1.close();
-                        //移除监听事件
-                        window.removeEventListener('message',listenForWalletLoaded);
-                        localStorage.setItem(localStorageKey_dcwallet_opener, 'true');
-                        resolve(true);
-                    }
-                  } catch (error) {
-                    console.error('message error', error);
-                  }
-            }
+            
+                const data = event.data;
+                if (!data.type ) {
+                    //非钱包插件
+                    return;
+                }
+                if (data.type === 'walletLoaded') {//钱包加载完成
+                    walletLoadedFlag = true;
+                    localStorage.setItem(localStorageKey_dcwallet_opener, 'true');
+                    clearInterval(interval);
+                    clearTimeout(timeoutHandle);
+                    messageChannel.port1.close();
+                    window.removeEventListener('message', listenForWalletLoaded);
+                    resolve(true);
+                }
+            } 
+   
             //添加监听事件
             window.addEventListener('message', listenForWalletLoaded);
-            const checkMessage = {
-                version: version,
-                type: 'checkWalletLoaded',
-                data: {
-                    origin: window.location.origin,
-                }
-            }
             const interval = setInterval(() => {
                 if (walletLoadedFlag) {
                     clearInterval(interval);
@@ -409,8 +430,13 @@ function verifySignEip712MessageResponse(orignMessage:EIP712SignReqMessage,resMe
                         waitTimeCount--;
                     }else{
                         try{
-                            window.postMessage(checkMessage,walletOrigin,[messageChannel.port2]);
+                            walletWindow?.postMessage(checkMessage,walletOrigin,[messageChannel.port2]);
                         }catch (e) {//不做处理
+                            if (messageChannel) {
+                                messageChannel.port1.close();
+                            }   
+                            messageChannel = new MessageChannel();
+                            messageChannel.port1.onmessage = onMessage;
                         }
                     }
                 }
@@ -418,8 +444,8 @@ function verifySignEip712MessageResponse(orignMessage:EIP712SignReqMessage,resMe
             //添加超时处理
             const timeoutHandle =  setTimeout(() => {
                 clearInterval(interval);
-                window.removeEventListener('message',listenForWalletLoaded);//移除监听事件
                 messageChannel.port1.close();
+                window.removeEventListener('message', listenForWalletLoaded);
                 resolve(false);
             },timeout);
         });
@@ -427,10 +453,11 @@ function verifySignEip712MessageResponse(orignMessage:EIP712SignReqMessage,resMe
 
 
  // 通信,发送消息给钱包页面并等待返回
- const sendMessageToWallet = async (walletWindow:Window | null,message:NeedSignMessage|ConnectReqMessage|EIP712SignReqMessage,timeout:number) =>  {
+ const sendMessageToWallet = async (walletWindow:Window | null,message:SignReqMessage|ConnectReqMessage|EIP712SignReqMessage,timeout:number) =>  {
     const messageChannel = new MessageChannel();
     return  new Promise<MessageEvent>((resolve, reject) => {
         const timer = setTimeout(() => {
+            messageChannel.port1.close();
             reject('timeout');
         }, timeout);
         messageChannel.port1.onmessage = (event) => {
@@ -474,6 +501,10 @@ const getRecentChain = () => {
         return null;
     }
 }
+
+
+
+
 
 export default {
     initDAPP,

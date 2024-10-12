@@ -2,7 +2,7 @@
 import { Button } from "antd-mobile";
 import { useEffect, useState } from "react";
 
-
+import * as dcwallet from "./dcwallet";
 const dcWalletIframe = 'dcWalletIframe';
 const version = 'v_0_0_1';
 const walletOrigin = 'http://localhost:3000'; //
@@ -10,12 +10,92 @@ const walletUrl = walletOrigin +'/home'; // 钱包地址
 const walletWindowName = 'walletWindow'; // 窗口名称  
 let walletWindow:Window|null;
 let channelPort2: MessagePort | null;
+
+//绕过iframe向sdk初始化DAPP
+const initFlag = dcwallet.default.initDAPP("testApp","",version)
+console.log("initFlag:",initFlag)
+
+
+
 export default function WalletEl() {
   console.log('walletEl');
   const defaultAccount = {
     account: "",
   }
   const [accountInfo, setAccountInfo] = useState(defaultAccount)
+
+  //绕过iframe连接钱包
+  function noFrameConnectWallet(){
+    dcwallet.default.connectWallet(60000).then((response) => {
+      if(response){
+        setAccountInfo(response);
+      }else{
+        console.error('openConnect response is null');
+      }
+    }).catch((error) => {
+      console.error('openConnect error', error);
+    });
+  }
+
+  //绕过iframe签名
+  function noFrameSignMessage(){
+    dcwallet.default.signMessage("test message",accountInfo.account,60000,'string').then((response) => {
+      console.log('signMessage response', response);
+    }).catch((error) => {
+      console.error('signMessage error', error);
+    }).catch((error) => {
+      console.error('signMessage error', error);
+    });
+  }
+
+
+
+  //绕过iframe Eip712签名
+  function noFrameSignEIP712Message(){
+    const domain = {
+      name: 'test',
+      version: '1',
+      chainId: 1,
+      verifyingContract: '0x1234567890123456789012345678901234567890',
+    };
+    const types = {
+      Person: [
+          { name: 'name', type: 'string' },
+          { name: 'wallet', type: 'address' }
+      ],
+      Trans: [
+        { name: 'from', type: 'Person' },
+        { name: 'to', type: 'Person' },
+        { name: 'contents', type: 'string' }
+      ],
+    };
+    const primaryType = 'Trans';
+    const message = {
+      from: {
+          name: 'Cow',
+          wallet: '0x601C2e6cDE6917deF84Ee2eEe68DB92a7dD989C4'
+      },
+      to: {
+          name: 'Bob',
+          wallet: '0xFf64d3F6efE2317EE2807d223a0Bdc4c0c49dfDB'
+      },
+      contents: 'Hello, Bob!'
+    };
+
+    dcwallet.default.signEIP712Message(message,accountInfo.account,domain,primaryType,types,60000).then((response) => {
+      console.log('signEipMessage response', response);
+    }).catch((error) => {
+      console.error('signEipMessage error', error);
+    }).catch((error) => {
+      console.error('signEipMessage error', error);
+    });
+  }
+
+
+
+
+
+
   const openConnect = () => {
     const urlWithOrigin = walletUrl+'?origin='+window.location.origin;
     walletWindow = window.open(urlWithOrigin, walletWindowName); 
@@ -252,6 +332,15 @@ export default function WalletEl() {
           </Button>
           <Button color="primary" fill="outline" onClick={signEIP712Message}>
             Eip712签名
+          </Button>
+          <Button color="primary" fill="outline" onClick={noFrameConnectWallet}>
+            链接钱包
+          </Button>
+          <Button color="primary" fill="outline" onClick={noFrameSignMessage}>
+            签名2
+          </Button>
+          <Button color="primary" fill="outline" onClick={noFrameSignEIP712Message}>
+          Eip712签名2
           </Button>
       </div>
       <iframe id={dcWalletIframe}  src={"http://localhost:3000/iframe?parentOrigin="+ window.location.origin} onLoad={initConfig}></iframe>

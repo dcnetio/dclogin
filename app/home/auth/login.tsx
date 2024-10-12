@@ -12,6 +12,13 @@ import { store } from "@/lib/store";
 import { saveInitState } from "@/lib/slices/appSlice";
 import { appState } from "@/context/constant";
 
+
+// 获取查询字符串  
+const queryString = window.location.search;  
+const urlParams = new URLSearchParams(queryString);  
+let  location = urlParams.get('origin');
+const openerOrigin = location; 
+
 export default function Login() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -44,7 +51,7 @@ export default function Login() {
           
         },
       };
-      if (!window.opener) {
+      if (!openerOrigin) { //改为判断是否有origin参数,如果有则表示是从DAPP打开的
         const accountInfo = await connectCmdHandler(message, false);
         console.log('accountInfo====', accountInfo)
         store.dispatch(

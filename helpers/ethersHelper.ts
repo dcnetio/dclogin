@@ -4,7 +4,11 @@
 // Import everything
 import { ethers, Wallet,JsonRpcProvider} from "ethers";
 
-let jsonRpcProvider: ethers.JsonRpcProvider | null = null;
+let jsonRpcProvider: ethers.JsonRpcProvider|null;
+
+const getProvider = ():ethers.JsonRpcProvider|null => {
+  return jsonRpcProvider;
+}
 
 
 const connectWithHttps = async (url: string) => {
@@ -232,7 +236,7 @@ const  checkTransactionStatus = async (txHash:string) => {
 }  
 
 const ethersHelper = {
-  jsonRpcProvider,
+  getProvider,
   connectWithHttps,
   checkNetworkStatus,
   createWalletAccount,

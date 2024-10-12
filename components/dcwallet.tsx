@@ -2,7 +2,7 @@
 // 定义一个变量，用于存储BroadcastChannel对象
 const version = 'v_0_0_1';
 const walletOrigin = 'http://localhost:3000'; // 钱包地址
-//const walletUrl = walletOrigin +'/'+version; // todo 钱包地址后门统一改成origin+version
+//const walletUrl = walletOrigin +'/'+version; // todo 钱包地址后面统一改成origin+version
 const walletUrl = walletOrigin +'/home'
 
 import utilHelper from '@/helpers/utilHelper';
@@ -85,7 +85,7 @@ const connectWallet = async (timeout:number,account:string = "",chainId:string =
             return;
         }
         const urlWithOrigin = walletUrl+'?origin='+window.location.origin;
-        const walletWindow = window.open(urlWithOrigin, 'aaaa'); 
+        const walletWindow = window.open(urlWithOrigin, '_blank'); 
         waitForWalletLoaded(walletWindow,timeout).then((flag) => {
             if (flag) {
                 // 像钱包网页发送连接命令
@@ -368,88 +368,90 @@ function verifySignEip712MessageResponse(orignMessage:EIP712SignReqMessage,resMe
 
 
   //等待钱包页面加载完成
-    const waitForWalletLoaded = async (walletWindow:Window|null,timeout:number) => {
-        // localStorage中获取是否支持window.opener
-        const openerFlag = localStorage.getItem(localStorageKey_dcwallet_opener);
-        let waitTimeCount = 1;
-        if (openerFlag == 'true') {
-            waitTimeCount = 3;
-        }
-        // 开启定时器500ms检查一次,第一次等待3秒,如果没有加载完成,则发送轮询请求
-        return new Promise((resolve) => {
-            let messageChannel = new MessageChannel();
-            const onMessage = (event:MessageEvent) => {
-                const message = event.data;
-                if (message.type === 'walletLoaded') {
-                    clearInterval(interval);
-                    clearTimeout(timeoutHandle);
-                    messageChannel.port1.close();
-                    window.removeEventListener('message', listenForWalletLoaded);
-                    resolve(true);
-                }
-            }
-            messageChannel.port1.onmessage = onMessage;
-            const checkMessage = {
-                version: version,
-                type: 'checkWalletLoaded',
-                origin: window.location.origin,
-                data: { 
-                }
-            }
-            let walletLoadedFlag = false;
-            const listenForWalletLoaded = (event:MessageEvent) => {
-                //判断消息来源
-                if (event.origin !== walletOrigin ) {
-                    return;
-                }
-            
-                const data = event.data;
-                if (!data.type ) {
-                    //非钱包插件
-                    return;
-                }
-                if (data.type === 'walletLoaded') {//钱包加载完成
-                    walletLoadedFlag = true;
-                    localStorage.setItem(localStorageKey_dcwallet_opener, 'true');
-                    clearInterval(interval);
-                    clearTimeout(timeoutHandle);
-                    messageChannel.port1.close();
-                    window.removeEventListener('message', listenForWalletLoaded);
-                    resolve(true);
-                }
-            } 
-   
-            //添加监听事件
-            window.addEventListener('message', listenForWalletLoaded);
-            const interval = setInterval(() => {
-                if (walletLoadedFlag) {
-                    clearInterval(interval);
-                    messageChannel.port1.close();
-                }else {
-                    if (waitTimeCount >= 0) {
-                        waitTimeCount--;
-                    }else{
-                        try{
-                            walletWindow?.postMessage(checkMessage,walletOrigin,[messageChannel.port2]);
-                        }catch (e) {//不做处理
-                            if (messageChannel) {
-                                messageChannel.port1.close();
-                            }   
-                            messageChannel = new MessageChannel();
-                            messageChannel.port1.onmessage = onMessage;
-                        }
-                    }
-                }
-            },500);
-            //添加超时处理
-            const timeoutHandle =  setTimeout(() => {
+const waitForWalletLoaded = async (walletWindow:Window|null,timeout:number) => {
+    // localStorage中获取是否支持window.opener
+    const openerFlag = localStorage.getItem(localStorageKey_dcwallet_opener);
+    let waitTimeCount = 1;
+    if (openerFlag == 'true') {
+        waitTimeCount = 3;
+    }
+    // 开启定时器500ms检查一次,第一次等待3秒,如果没有加载完成,则发送轮询请求
+    return new Promise((resolve) => {
+        let messageChannel = new MessageChannel();
+        const onMessage = (event:MessageEvent) => {
+            const message = event.data;
+            if (message.type === 'walletLoaded') {
                 clearInterval(interval);
+                clearTimeout(timeoutHandle);
                 messageChannel.port1.close();
                 window.removeEventListener('message', listenForWalletLoaded);
-                resolve(false);
-            },timeout);
-        });
-    }
+                resolve(true);
+            }
+        }
+        messageChannel.port1.onmessage = onMessage;
+        const checkMessage = {
+            version: version,
+            type: 'checkWalletLoaded',
+            origin: window.location.origin,
+            data: { 
+            }
+        }
+        let walletLoadedFlag = false;
+        const listenForWalletLoaded = (event:MessageEvent) => {
+            //判断消息来源
+            if (event.origin !== walletOrigin ) {
+                return;
+            }
+            if (event.source != null && event.source != walletWindow) {//非当前操作打开的窗口
+                return;
+            }
+            const data = event.data;
+            if (!data.type ) {
+                //非钱包插件
+                return;
+            }
+            if (data.type === 'walletLoaded') {//钱包加载完成
+                walletLoadedFlag = true;
+                localStorage.setItem(localStorageKey_dcwallet_opener, 'true');
+                clearInterval(interval);
+                clearTimeout(timeoutHandle);
+                messageChannel.port1.close();
+                window.removeEventListener('message', listenForWalletLoaded);
+                resolve(true);
+            }
+        } 
+
+        //添加监听事件
+        window.addEventListener('message', listenForWalletLoaded);
+        const interval = setInterval(() => {
+            if (walletLoadedFlag) {
+                clearInterval(interval);
+                messageChannel.port1.close();
+            }else {
+                if (waitTimeCount >= 0) {
+                    waitTimeCount--;
+                }else{
+                    try{
+                        walletWindow?.postMessage(checkMessage,walletOrigin,[messageChannel.port2]);
+                    }catch (e) {//不做处理
+                        if (messageChannel) {
+                            messageChannel.port1.close();
+                        }   
+                        messageChannel = new MessageChannel();
+                        messageChannel.port1.onmessage = onMessage;
+                    }
+                }
+            }
+        },500);
+        //添加超时处理
+        const timeoutHandle =  setTimeout(() => {
+            clearInterval(interval);
+            messageChannel.port1.close();
+            window.removeEventListener('message', listenForWalletLoaded);
+            resolve(false);
+        },timeout);
+    });
+}
 
 
  // 通信,发送消息给钱包页面并等待返回

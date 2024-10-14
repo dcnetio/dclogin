@@ -31,8 +31,8 @@ export default function Home() {
     const accountInfo = getCurrentAccount();
     console.log('accountInfo1111', accountInfo)
     if(accountInfo && accountInfo.account){
-      const nbalance = await ethers.getUserBlance(accountInfo.account) || '0';
-      setBalance(nbalance);
+      let nb = await ethers.getUserBlance(accountInfo.account) || '0';
+      setBalance(nb);
     }
   };
   

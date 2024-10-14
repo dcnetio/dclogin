@@ -72,6 +72,11 @@ async function _initNetworks() {
         if (!flag) {
           networkStatus = NetworkStauts.disconnect;
         } else {
+          // 设置初始化账户信息+网络信息{key:"chosedAccount",value"aaaaa"}
+          await DBHelper.addData(DBHelper.store_keyinfo, {
+            key: "connectedChain",
+            value: currentChain,
+          });
           networkStatus = NetworkStauts.connected;
         }
       }
@@ -95,10 +100,10 @@ async function _initBaseinfo() {
         DBHelper.store_keyinfo,
         "connectedChain"
       );
-      if (netinfo) {
-        currentChain = netinfo;
+      if (netinfo && netinfo.value) {
+        currentChain = netinfo.value;
         //连接网络
-        const flag = await ethersHelper.connectWithHttps(netinfo.rpcUrl);
+        const flag = await ethersHelper.connectWithHttps(netinfo.value.rpcUrl);
         if (!flag) {
           networkStatus = NetworkStauts.disconnect;
         } else {
@@ -112,8 +117,8 @@ async function _initBaseinfo() {
         DBHelper.store_keyinfo,
         "chosedAccount"
       );
-      if (accountinfo) {
-        currentAccount = accountinfo;
+      if (accountinfo && accountinfo.value) {
+        currentAccount = accountinfo.value;
       }
     }
   } catch (e) {
@@ -242,6 +247,10 @@ async function checkAccountAndCreate() {
     //todo 跳出选择账号框,让用户选择账号
     return;
   }
+  await DBHelper.addData(DBHelper.store_keyinfo, {
+    key: 'chosedAccount',
+    value: accounts[0]
+  });
   currentAccount = accounts[0]; // 赋值
   return accounts[0];
 }
@@ -659,7 +668,7 @@ async function _switchChain(chainInfo: ChainInfo) {
   try {
     DBHelper.updateData(DBHelper.store_keyinfo, {
       key: "connectedChain",
-      value: currentChain,
+      value: chainInfo,
     });
     currentChain = chainInfo;
     //连接网络

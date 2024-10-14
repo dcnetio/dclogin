@@ -60,7 +60,8 @@ const getUserBlance = async (address:string) => {
   if(jsonRpcProvider){
       const balance = await jsonRpcProvider.getBalance(address);
       console.log('===============getUserBlance balance', balance);
-      return balance.toString()
+      const nb = balance > 0 ? (Number(balance) / 10000000000 / 100000000).toFixed(4) : '0';
+      return nb
     }
 
 };

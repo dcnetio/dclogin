@@ -1,7 +1,6 @@
 "use client";
 import { DotLoading, Toast } from "antd-mobile";
 import { useEffect, useState } from "react";
-import { saveAccountInfo } from "@/lib/slices/walletSlice";
 import { initializeDatabase } from "@/helpers/DBHelper";
 import {
   connectCmdHandler,
@@ -36,10 +35,10 @@ export default function Login() {
         });
         return;
       }
+      // 调用初始化函数(默认信息)
+      await initBaseinfo(); //初始化网络和账号信息
       // 初始化网络数据
       await initNetworks();
-      // 调用初始化函数
-      await initBaseinfo(); //初始化网络和账号信息
       //连接网络，并把用户信息保存下来
       const message: ConnectReqMessage = {
         origin: window.location.origin,

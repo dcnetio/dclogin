@@ -39,6 +39,7 @@ export default function Header(props: HeaderProps) {
   };
   const getNowNetwork = async () => {
     const info = getCurrentNetwork();
+    console.log("getCurrentNetwork info", info);
     if (info) {
       setNetworkName(info.name);
     }
@@ -52,8 +53,11 @@ export default function Header(props: HeaderProps) {
   };
 
   useEffect(() => {
-    if (initState == appState.init_success) getNowNetwork();
-    getNowAccount();
+    console.log('----initState', initState)
+    if (initState == appState.init_success) {
+      getNowNetwork();
+      getNowAccount();
+    }
   }, [initState]);
   return (
     <div className={styles.header}>

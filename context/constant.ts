@@ -23,7 +23,7 @@ const _defaultNetworks = {
     },
     {
       name: "DCCHAIN",
-      rpcUrl: "https://dcchain.baybird.cn",
+      rpcUrl: "https://chain.baybird.cn",
       chainId: 176,
       currencySymbol: "DCT",
       blockExplorerUrl: "https://dcnetio.baybird.cn",

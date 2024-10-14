@@ -48,7 +48,13 @@ export default function Login() {
         //改为判断是否有origin参数,如果有则表示是从DAPP打开的
         const accountInfo = await connectCmdHandler(message, false);
         console.log("accountInfo====", accountInfo);
-        store.dispatch(saveAccountInfo(accountInfo));
+        if(!accountInfo){
+          Toast.show({
+            content: "连接失败",
+            position: "bottom",
+          });
+          return;
+        }
         // 提示成功，并跳转到首页
         Toast.show({
           content: "连接成功",

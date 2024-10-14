@@ -208,7 +208,7 @@ const signMessage = async (message:string,account:string,timeout:number,messageT
                 //创建新的messageChannel
                 sendMessageToWallet(walletWindow,sendMessage,timeout).then((event) => {
                     const message = event.data;
-                    let resMesage = {
+                    const resMesage = {
                         version: message.version,
                         type: message.type,
                         origin: message.origin,
@@ -323,7 +323,7 @@ const signEIP712Message = async (message:any,account:string,domain:any,primaryTy
                 //创建新的messageChannel
                 sendMessageToWallet(walletWindow,sendMessage,timeout).then((event) => {
                     const message = event.data;
-                    let resMesage = {
+                    const resMesage = {
                         version: message.version,
                         type: message.type,
                         origin: message.origin,

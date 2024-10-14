@@ -7,13 +7,12 @@ import { useEffect, useState } from "react";
 import Header from "@/components/header";
 import { useAppSelector } from "@/lib/hooks";
 import { appState } from "@/context/constant";
-import { store } from "@/lib/store";
+import { getCurrentAccount } from "./home";
 
 export default function Home() {
   const router = useRouter();
   const [balance, setBalance] = useState("0");
   const initState = useAppSelector(state => state.app.initState)
-  const accountInfo = useAppSelector(state => state.wallet.account)
 
   const sendBlance = () => {
     console.log("sendBlance");
@@ -22,18 +21,14 @@ export default function Home() {
   const gotoActivity = () => {
     router.push("/activity");
   }
-  const changeNetworkSuccess = async () => {
-    // todo切换成功后，获取账号的余额
-    // const nbalance = await ethers.getUserBlance();
-    // setBalance(nbalance);
-  };
-  const changeAccountSuccess = async () => {
-    // todo 切换成功后，获取账号的余额
-    // const nbalance = await ethers.getUserBlance();
-    // setBalance(nbalance);
+  
+  const changeSuccess = async () => {
+    // todo 切换成功后，获取账户，切换余额
+    getUserBalance();
   };
 
   const getUserBalance = async () => {
+    const accountInfo = getCurrentAccount();
     console.log('accountInfo1111', accountInfo)
     if(accountInfo && accountInfo.account){
       const nbalance = await ethers.getUserBlance(accountInfo.account) || '0';
@@ -48,7 +43,7 @@ export default function Home() {
   }, [initState])
   return (
     <div>
-      <Header changeNetworkSuccess={changeNetworkSuccess} changeAccountSuccess={changeAccountSuccess}/>
+      <Header changeNetworkSuccess={changeSuccess} changeAccountSuccess={changeSuccess}/>
       <div className={styles.contentPage}>
         <h1 className={styles.balance}>{balance} DCT</h1>
         <div className={styles.btns}>

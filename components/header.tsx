@@ -7,12 +7,18 @@ import { useEffect, useState } from "react";
 import { useAppSelector } from "@/lib/hooks";
 import { getCurrentAccount, getCurrentNetwork } from "@/app/home/home";
 import { appState } from "@/context/constant";
-export default function Header({ changeNetworkSuccess, changeAccountSuccess }) {
+import { AccountInfo } from "@/types/walletTypes";
+interface HeaderProps {
+  changeNetworkSuccess: () => void;
+  changeAccountSuccess: () => void;
+}
+export default function Header(props: HeaderProps) {
+  const { changeNetworkSuccess, changeAccountSuccess } = props;
   const [networkName, setNetworkName] = useState("");
   const [networkVisible, setNetworkVisible] = useState(false);
   const [accountVisible, setAccountVisible] = useState(false);
-  const [accountInfo, setAccountInfo] = useState({});
-  const initState = useAppSelector(state => state.app.initState)
+  const [accountInfo, setAccountInfo] = useState<AccountInfo>();
+  const initState = useAppSelector((state) => state.app.initState);
   const showChangeNetwork = () => {
     console.log("showChangeNetwork");
     setNetworkVisible(true);
@@ -20,50 +26,50 @@ export default function Header({ changeNetworkSuccess, changeAccountSuccess }) {
   const showChangeAccount = () => {
     console.log("showChangeAccount");
     setAccountVisible(true);
-  }
-  const onNetworkSuccess = async (name) => {
+  };
+  const onNetworkSuccess = async (name: string) => {
     setNetworkName(name);
     setNetworkVisible(false);
-    changeNetworkSuccess && changeNetworkSuccess();
+    changeNetworkSuccess?.();
   };
-  const onAccountSuccess = async () => {
+  const onAccountSuccess = async (info: AccountInfo) => {
+    setAccountInfo(info);
     setAccountVisible(false);
-    changeAccountSuccess && changeAccountSuccess();
-  }
+    changeAccountSuccess?.();
+  };
   const getNowNetwork = async () => {
     const info = getCurrentNetwork();
-    if(info){
+    if (info) {
       setNetworkName(info.name);
     }
-  }
+  };
   const getNowAccount = async () => {
     const info = getCurrentAccount();
-    console.log('getCurrentAccount info', info)
-    if(info){
+    console.log("getCurrentAccount info", info);
+    if (info) {
       setAccountInfo(info);
     }
-  }
+  };
 
   useEffect(() => {
-    if(initState  == appState.init_success)
-    getNowNetwork();
+    if (initState == appState.init_success) getNowNetwork();
     getNowAccount();
-  }, [initState])
+  }, [initState]);
   return (
     <div className={styles.header}>
       <div className={styles.network} onClick={showChangeNetwork}>
         <GlobalOutline fontSize={16} />
-        <span className={styles.txt}>{networkName ? networkName : "网络"}</span>
+        <span className={styles.txt}>{networkName ? networkName.split(" ")[0] : "网络"}</span>
       </div>
       <div className={styles.accountD}>
         <div className={styles.account} onClick={showChangeAccount}>
-          {accountInfo.name}
+          {accountInfo?.name}
           <DownFill fontSize={12} className={styles.arrow} />
         </div>
         <Ellipsis
           direction="middle"
-          content={accountInfo.address}
-          className={styles.address}
+          content={accountInfo?.account || ''}
+          className={styles.account}
         />
       </div>
       <Popup

@@ -11,11 +11,21 @@ export type ChainInfo = {
     confirms?: number,
 };
 
+export type AccountInfo = {
+  name: string,
+  account: string,
+  credentialId: string,
+  iv: Uint8Array,
+  mnemonic: ArrayBuffer,
+  timeStamp: number,
+  type: string,
+};
+
 export type ConnectReqMessage = {
-    version: string,
-    type: string,
+    version?: string,
+    type?: string,
     origin: string,
-    data: {
+    data?: {
         appName: string,
         appIcon?: string,
         appUrl: string,

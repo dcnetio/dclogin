@@ -1,11 +1,8 @@
+import { AccountInfo } from "@/types/walletTypes";
 import { createSlice } from "@reduxjs/toolkit";
 
-interface accountInfo {
-    name: string,
-    address: string
-}
 const initialState = {
-    account: {} as accountInfo,
+    account: {} as AccountInfo,
 };
 
 // 创建一个名为 wallet 的 slice，包含初始状态和 reducers。

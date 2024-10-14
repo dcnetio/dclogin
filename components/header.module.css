@@ -29,6 +29,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    word-break: break-all;
     .arrow{
       margin-left: 6px;
     }

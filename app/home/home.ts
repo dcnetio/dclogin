@@ -3,7 +3,8 @@ import utilHelper from '@/helpers/utilHelper';
 import ethersHelper from "@/helpers/ethersHelper";
 import {defaultNetworks} from '@/context/constant';
 import { ChainInfo,ConnectReqMessage,SignReqMessage,EIP712SignReqMessage,
-        isConnectReqMessage,isSignReqMessage,isEIP712SignReqMessage} from './walletTypes';      
+        isConnectReqMessage,isSignReqMessage,isEIP712SignReqMessage,
+        AccountInfo} from '../../types/walletTypes';      
 
 
 
@@ -12,7 +13,7 @@ console.log('home.tsx');
 // 定义一个变量，用于存储BroadcastChannel对象
 const version = 'v0_0_1';
 let currentChain:ChainInfo|null = null; //当前网络
-let currentAccount:string | null = null ; //当前账号
+let currentAccount:AccountInfo | null = null ; //当前账号
 
 // 数据库
 import DBHelper from "@/helpers/DBHelper";
@@ -20,7 +21,7 @@ import DBHelper from "@/helpers/DBHelper";
 // 获取查询字符串  
 const queryString = window.location.search;  
 const urlParams = new URLSearchParams(queryString);  
-let  location = urlParams.get('origin');
+const  location = urlParams.get('origin');
 const openerOrigin = location; 
 
 const NetworkStauts = Object.freeze({  
@@ -44,7 +45,7 @@ window.addEventListener('message', function(event) {
 //初始化网络列表,并连接最近切换的网络
 async function _initNetworks() {
     try {
-        let chains = await DBHelper.getAllData(DBHelper.store_chain);
+        const chains = await DBHelper.getAllData(DBHelper.store_chain);
         if (chains.length == 0) {
             for (let i = 0; i < defaultNetworks.networks.length; i++) {
                 await DBHelper.addData(DBHelper.store_chain, defaultNetworks.networks[i]);
@@ -55,7 +56,7 @@ async function _initNetworks() {
     }
     if (currentChain == null) {
        //从数据库中获取第一个网络信息
-        let chains = await DBHelper.getAllData(DBHelper.store_chain);
+       const chains = await DBHelper.getAllData(DBHelper.store_chain);
         if (chains.length > 0) {
             currentChain = chains[0];
             if(currentChain){
@@ -71,7 +72,7 @@ async function _initNetworks() {
     }
     if (currentAccount == null){
         //从数据库中获取第一个账号信息
-        let accounts = await DBHelper.getAllData(DBHelper.store_account);
+        const accounts = await DBHelper.getAllData(DBHelper.store_account);
         if (accounts.length > 0) {
             currentAccount = accounts[0];
         }
@@ -86,11 +87,11 @@ async function _initBaseinfo() {
     try {
         if  (currentChain == null){
             //从数据库中获取上次打开的网络信息
-            let netinfo = await  DBHelper.getData(DBHelper.store_keyinfo, 'connectedChain');
+            const netinfo = await  DBHelper.getData(DBHelper.store_keyinfo, 'connectedChain');
             if (netinfo) {
                 currentChain = netinfo;
                 //连接网络
-                let flag = await ethersHelper.connectWithHttps(netinfo.rpcUrl);
+                const flag = await ethersHelper.connectWithHttps(netinfo.rpcUrl);
                 if (!flag) {
                     networkStatus = NetworkStauts.disconnect;
                 }else{
@@ -100,7 +101,7 @@ async function _initBaseinfo() {
         }
         if (currentAccount == null){
             //从数据库中获取上次打开的账号信息
-            let accountinfo = await DBHelper.getData(DBHelper.store_keyinfo, 'chosedAccount');
+            const accountinfo = await DBHelper.getData(DBHelper.store_keyinfo, 'chosedAccount');
             if (accountinfo) {
                 currentAccount = accountinfo;
             }
@@ -115,7 +116,7 @@ async function _initBaseinfo() {
 let checkCount = 0;
 setInterval(async () => {
     if (networkStatus != NetworkStauts.connected) {//如果网络状态为断开,则m每秒检查一次网络状态
-       let flag = await ethersHelper.checkNetworkStatus();
+        const flag = await ethersHelper.checkNetworkStatus();
        if (flag) {
            networkStatus = NetworkStauts.connected;
            checkCount = 0;
@@ -123,7 +124,7 @@ setInterval(async () => {
     }else{
         checkCount++;
         if (checkCount > 10) { //每10秒检查一次网络状态
-            let flag = await ethersHelper.checkNetworkStatus();
+            const flag = await ethersHelper.checkNetworkStatus();
             if (flag) {
                 networkStatus = NetworkStauts.connected;
             }else{
@@ -214,7 +215,7 @@ async function checkAccountAndCreate() {
         }
         if (accounts.length === 0) {
             //todo 跳出状态等待框,提示用户账号创建中
-            let account = await createWalletAccount();
+            const account = await createWalletAccount();
             //todo 关闭状态等待框
             if (!account){
                 //todo 跳出提示框,提示用户创建账号失败
@@ -241,8 +242,8 @@ async function _connectCmdHandler(message:ConnectReqMessage, bool:boolean,port:M
     if(!bool){
         return;
     }
-    let connectingApp = message.data;
-    let choseedAccount = await checkAccountAndCreate();
+    const connectingApp = message.data;
+    const choseedAccount = await checkAccountAndCreate();
     // 取出网络列表
     let chains = [];
     try {
@@ -289,7 +290,7 @@ async function _connectCmdHandler(message:ConnectReqMessage, bool:boolean,port:M
     //todo 账号存在后,跳出授权框,提示用户授权连接对应的APP(这个界面可以切换网络)
 
     //用户确认后,调出webauthn进行校验,并提取出userHandleHash
-    const userHandleHash = await authenticateWithPasskey(choseedAccount.credentialid);
+    const userHandleHash = await authenticateWithPasskey(choseedAccount.credentialId);
     if (!userHandleHash) {
         //todo 跳出提示框,提示用户授权失败
          // 关闭当前窗口,并返回原来的窗口
@@ -355,10 +356,10 @@ async function _connectCmdHandler(message:ConnectReqMessage, bool:boolean,port:M
         }, 1000);
         // 连接记录存储到数据库
         const app = {
-            appName: connectingApp.appName,
-            appIcon: connectingApp.appIcon,
-            appUrl: connectingApp.appUrl,
-            appVersion: connectingApp.appVersion,
+            appName: connectingApp?.appName,
+            appIcon: connectingApp?.appIcon,
+            appUrl: connectingApp?.appUrl,
+            appVersion: connectingApp?.appVersion,
             timestamp: new Date().getTime(),
         };
         DBHelper.updateData(DBHelper.store_apps, app).then(() => {
@@ -404,7 +405,7 @@ async function generateWalletAccount(seedAccount:string) {
     }
     //todo 跳出授权框,提示用户进行签名(显示所有签名信息,以及签名申请的APP信息)
     //用户确认后,调出webauthn进行校验,并提取出userHandleHash
-    const userHandleHash = await authenticateWithPasskey(account.credentialid);
+    const userHandleHash = await authenticateWithPasskey(account.credentialId);
     if (!userHandleHash) {
         //todo 跳出提示框,提示用户授权失败
         return null;
@@ -532,11 +533,11 @@ async function signMessageHandler(message:SignReqMessage,port:MessagePort|null=n
 //             message: {
 //                 from: {
 //                     name: 'Cow',
-//                     wallet: '0xCD2a3d9F
+//                     wallet: '',
 //                 },
 //                 to: {
 //                     name: 'Bob',
-//                     wallet: '0xbBbBBBBbb
+//                     wallet: '0xbBbBBBBbb',
 //                 },
 //                 contents: 'Hello, Bob!'
 //             }
@@ -590,7 +591,7 @@ async function signEIP712MessageHandler(message:EIP712SignReqMessage,port:Messag
 /*******************************基础功能***********************************/
 
 //添加网络
-async function addChain(chainInfo:ChainInfo) {
+async function _addChain(chainInfo:ChainInfo) {
     if (chainInfo == null ) {
         return;
     }
@@ -608,7 +609,7 @@ async function addChain(chainInfo:ChainInfo) {
 
 
 //修改网络
-async function updateChain(chainInfo:ChainInfo) {
+async function _updateChain(chainInfo:ChainInfo) {
     if (chainInfo == null ) {
         return;
     }
@@ -630,7 +631,7 @@ async function _switchChain(chainInfo:ChainInfo) {
         DBHelper.updateData(DBHelper.store_keyinfo, {key: 'connectedChain', value: currentChain});
         currentChain = chainInfo;
         //连接网络
-        let flag = await ethersHelper.connectWithHttps(currentChain.rpcUrl);
+        const flag = await ethersHelper.connectWithHttps(currentChain.rpcUrl);
         if (!flag) {
             networkStatus = NetworkStauts.disconnect;
             return;
@@ -645,7 +646,7 @@ async function _switchChain(chainInfo:ChainInfo) {
 }
 
 // 转账
-async function transfer(to:string, amount:string,gasLimit:number,gasPrice:string) {
+async function _transfer(to:string, amount:string,gasLimit:number,gasPrice:string) {
     if (currentChain == null || networkStatus != NetworkStauts.connected) {
         //todo 跳出提示框,提示用户未连接钱包
         return;
@@ -654,7 +655,7 @@ async function transfer(to:string, amount:string,gasLimit:number,gasPrice:string
         //todo 跳出提示框,提示用户没有可用账号
         return;
     }
-    const wallet = await generateWalletAccount(currentAccount);
+    const wallet = await generateWalletAccount(currentAccount.account);
     if (!wallet) {
         return;
     }
@@ -664,7 +665,7 @@ async function transfer(to:string, amount:string,gasLimit:number,gasPrice:string
         //todo 跳出提示框,提示用户转账失败
         return;
     }
-    let record = {
+    const record = {
         chainId: txResponse.chainId,
         hash: txResponse.hash,
         index: txResponse.index,
@@ -699,9 +700,9 @@ async function transfer(to:string, amount:string,gasLimit:number,gasPrice:string
 }
 
 //刷新指定交易记录状态,用户点击状态为等待中的交易记录时,调用此方法
-async function refreshRecordStatus(hash:string) {
+async function _refreshRecordStatus(hash:string) {
     //从数据库中获取交易记录
-    let record = await DBHelper.getData(DBHelper.store_record, hash);
+    const record = await DBHelper.getData(DBHelper.store_record, hash);
     if (!record) {
         //todo 跳出提示框,提示用户获取交易记录失败
         return;
@@ -709,7 +710,7 @@ async function refreshRecordStatus(hash:string) {
     if (currentChain == null || currentChain.chainId != record.chainId) {
         //跳出提示框,开始切换网络
         //数据库查出网络信息
-        let chainInfo = await DBHelper.getData(DBHelper.store_chain, record.chainId);
+        const chainInfo = await DBHelper.getData(DBHelper.store_chain, record.chainId);
         const flag = _switchChain(chainInfo);
         if (!flag) {
             //todo 跳出提示框,提示用户切换网络失败
@@ -730,7 +731,7 @@ async function refreshRecordStatus(hash:string) {
 // 创建钱包账号
 async function createWalletAccount() {
     let resAccount = {};
-    let accountInfo = await ethersHelper.createWalletAccount();
+    const accountInfo = await ethersHelper.createWalletAccount();
     if (accountInfo) {
         try {
              //调用webauthn进行账号信息加密,并存储到数据库
@@ -738,7 +739,7 @@ async function createWalletAccount() {
             // 提取 response 对象  
             const userHandle = credential.userHandle;  
             // 提取 userHandle 并进行 hash
-            let userHandleHash = await crypto.subtle.digest('SHA-256',userHandle); 
+            const userHandleHash = await crypto.subtle.digest('SHA-256',userHandle); 
             //用userHandleHash 生成aes256的密钥,来加密accountInfo.mnemonic
             const cryptoKey = await importAesKeyFromHash(userHandleHash); 
             const iv = window.crypto.getRandomValues(new Uint8Array(12));
@@ -754,7 +755,7 @@ async function createWalletAccount() {
             const account = {
                 account: accountInfo.address,
                 type: 'eth',
-                credentialid: credential.id,
+                credentialId: credential.id,
                 mnemonic: encryptedMnemonic,
                 iv: iv,
                 name: accountInfo.address.substring(0,6),
@@ -838,10 +839,10 @@ async function importAesKeyFromHash(userHandleHash: ArrayBuffer) {
 
  
   // 使用 Passkey 进行身份验证,并提取出userHandleHash
-  async function authenticateWithPasskey(credentialid:string) {
+  async function authenticateWithPasskey(credentialId:string) {
     const challenge = window.crypto.getRandomValues(new Uint8Array(32));
 
-    const arrayBuffer = utilHelper.base64UrlToArrayBuffer(credentialid);
+    const arrayBuffer = utilHelper.base64UrlToArrayBuffer(credentialId);
     if (!arrayBuffer) {
         return null;
     }
@@ -896,3 +897,7 @@ export const getCurrentNetwork = _getCurrentNetwork;
 export const getCurrentAccount = _getCurrentAccount;
 export const switchChain = _switchChain;
 export const initCommChannel = _initCommChannel;
+export const addChain = _addChain;
+export const updateChain = _updateChain;
+export const transfer = _transfer;
+export const refreshRecordStatus = _refreshRecordStatus;

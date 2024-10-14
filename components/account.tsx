@@ -1,52 +1,53 @@
-import { Button, List, Toast } from "antd-mobile";
+import { List, Toast } from "antd-mobile";
 import styles from "./account.module.css";
 import { useEffect, useState } from "react";
 import { getAllData, store_account } from "@/helpers/DBHelper";
-import { store } from "@/lib/store";
-import { saveAccountInfo } from "@/lib/slices/walletSlice";
-export default function Account({
-  onSuccess,
-}) {
+import { AccountInfo } from "@/types/walletTypes";
+interface AccountProps {
+  onSuccess: (info: AccountInfo) => void; // 定义onSuccess为一个无参数无返回值的函数
+}
+export default function Account(props: AccountProps) {
+  const { onSuccess } = props;
   const [list, setList] = useState([]);
-  const changeAccount = async (info) => {
+  const changeAccount = async (info: AccountInfo) => {
     console.log("changeAccount");
     // todo 切换账号，获取账号信息，并进行存储store
     const bool = true;
-    store.dispatch(
-      saveAccountInfo({
-        name: 'Account' + 1, // todo 暂时定1，后期根据account个数调整
-        address: 'wallet.address'
-      })
-    );
-    if(bool){
-      onSuccess && onSuccess();
+    // todo切换账号
+    if (bool) {
+      onSuccess?.(info);
       return;
     }
     Toast.show({
-      content: '切换失败',
-      position: 'bottom',
-    })
+      content: "切换失败",
+      position: "bottom",
+    });
   };
 
   const getAccounts = async () => {
-    const data = await getAllData(store_account) || []
-    setList(data)
-  }
+    const data = (await getAllData(store_account)) || [];
+    setList(data);
+  };
 
   useEffect(() => {
     getAccounts();
-  }, [])
+  }, []);
   return (
     <div>
       <List header="选择账号">
-        {list.map((item, index) => (
-          <List.Item key={"account" + index} arrowIcon={false} clickable onClick={()=>changeAccount(item)}>
-            {item.name} 
+        {list.map((item: AccountInfo, index) => (
+          <List.Item
+            key={"account" + index}
+            arrowIcon={false}
+            clickable
+            onClick={() => changeAccount(item)}
+          >
+            {item?.name}
           </List.Item>
         ))}
-        { list.length == 0 && <div className={styles.emptyTxt}>
-          暂无账号信息
-        </div>}
+        {list.length == 0 && (
+          <div className={styles.emptyTxt}>暂无账号信息</div>
+        )}
       </List>
     </div>
   );

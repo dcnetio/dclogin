@@ -1,14 +1,12 @@
 "use client";
-import { Button, DotLoading, Toast } from "antd-mobile";
-import ethers from "@/helpers/ethersHelper";
-import styles from "./login.module.css";
+import { DotLoading, Toast } from "antd-mobile";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { saveAccountInfo } from "@/lib/slices/walletSlice";
-import { useAppSelector } from "@/lib/hooks";
 import { initializeDatabase } from "@/helpers/DBHelper";
 import { connectCmdHandler, initBaseinfo, initNetworks } from "@/app/home/home";
 import { store } from "@/lib/store";
+import { ConnectReqMessage } from "@/types/walletTypes";
 
 export default function Login() {
   const router = useRouter();
@@ -30,15 +28,11 @@ export default function Login() {
         return;
       }
       // 初始化成功，连接网络，并把用户信息保存下来
-      const message = {
-        data: {
-          origin: window.location.origin,
-        },
+      const message: ConnectReqMessage = {
+        origin: window.location.origin,
       };
       const accountInfo = await connectCmdHandler(message, false);
-      store.dispatch(
-        saveAccountInfo(accountInfo)
-      );
+      store.dispatch(saveAccountInfo(accountInfo));
       // 提示成功，并跳转到首页
       Toast.show({
         content: "连接成功",

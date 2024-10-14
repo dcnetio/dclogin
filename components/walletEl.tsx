@@ -2,7 +2,7 @@
 import { Button } from "antd-mobile";
 import { useEffect, useState } from "react";
 
-import * as dcwallet from "./dcwallet";
+import * as dcwallet from "../helpers/dcwallet";
 const dcWalletIframe = 'dcWalletIframe';
 const version = 'v0_0_1';
 const walletOrigin = 'http://localhost:3000'; //

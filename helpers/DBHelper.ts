@@ -11,7 +11,7 @@ const _store_apps = "walletapps";
 const _store_keyinfo = "walletkeyinfo";
 const dbversion = 1;
 // 数据库实例
-let dbInstance:any = null;
+let dbInstance: IndexedDBHelper | null= null;
 
 
 // 初始化数据库并设置全局变量  
@@ -23,7 +23,7 @@ async function _initializeDatabase() {
             autoIncrement: false,
             indexes: [
                 { name: 'type', keyPath: 'type', unique: false },
-                { name: 'credentialid', keyPath: 'credentialid', unique: false },
+                { name: 'credentialId', keyPath: 'credentialId', unique: false },
                 { name: 'createtime', keyPath: 'createtime', unique: false }
             ]  
         },  

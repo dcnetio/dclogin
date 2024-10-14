@@ -1,10 +1,10 @@
 "use client";
-import { useRef } from "react";
 import { Provider } from "react-redux";
 import { persistor, store } from "@/lib/store";
 import { PersistGate } from "redux-persist/integration/react";
+import { PropsWithChildren } from "react";
 
-export default function StoreProvider({ children }) {
+export default function StoreProvider({ children }: PropsWithChildren) {
   return (
     <Provider store={store}>
       <PersistGate persistor={persistor}>{children}</PersistGate>

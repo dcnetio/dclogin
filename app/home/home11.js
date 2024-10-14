@@ -294,7 +294,7 @@ async function _connectCmdHandler(message, bool,port = null) {
     //todo 账号存在后,跳出授权框,提示用户授权连接对应的APP(这个界面可以切换网络)
 
     //用户确认后,调出webauthn进行校验,并提取出userHandleHash
-    const userHandleHash = await authenticateWithPasskey(choseedAccount.credentialid);
+    const userHandleHash = await authenticateWithPasskey(choseedAccount.credentialId);
     if (!userHandleHash) {
         //todo 跳出提示框,提示用户授权失败
          // 关闭当前窗口,并返回原来的窗口
@@ -409,7 +409,7 @@ async function generateWalletAccount(seedAccount) {
     }
     //todo 跳出授权框,提示用户进行签名(显示所有签名信息,以及签名申请的APP信息)
     //用户确认后,调出webauthn进行校验,并提取出userHandleHash
-    const userHandleHash = await authenticateWithPasskey(account.credentialid);
+    const userHandleHash = await authenticateWithPasskey(account.credentialId);
     if (!userHandleHash) {
         //todo 跳出提示框,提示用户授权失败
         return null;
@@ -759,7 +759,7 @@ async function createWalletAccount() {
             const account = {
                 account: accountInfo.address,
                 type: 'eth',
-                credentialid: credential.id,
+                credentialId: credential.id,
                 mnemonic: encryptedMnemonic,
                 iv: iv,
                 name: accountInfo.address.substring(0,6),
@@ -834,14 +834,14 @@ async function importAesKeyFromHash(userHandleHash) {
 
 
   // 使用 Passkey 进行身份验证,并提取出userHandleHash
-  async function authenticateWithPasskey(credentialid) {
+  async function authenticateWithPasskey(credentialId) {
     const challenge = window.crypto.getRandomValues(new Uint8Array(32));
 
     const getCredentialOptions = {
         challenge: challenge,
         rpId: window.location.hostname,
         allowCredentials: [{
-            id: utilHelper.base64UrlToArrayBuffer(credentialid),
+            id: utilHelper.base64UrlToArrayBuffer(credentialId),
             type: 'public-key',
         }],
         userVerification: "required",

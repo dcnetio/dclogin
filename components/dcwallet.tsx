@@ -1,6 +1,6 @@
 "use client";
 // 定义一个变量，用于存储BroadcastChannel对象
-const version = 'v_0_0_1';
+const version = 'v0_0_1';
 const walletOrigin = 'http://localhost:3000'; // 钱包地址
 //const walletUrl = walletOrigin +'/'+version; // todo 钱包地址后面统一改成origin+version
 const walletUrl = walletOrigin +'/home'

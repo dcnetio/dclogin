@@ -1,6 +1,6 @@
 "use client";
 // 定义一个变量，用于存储BroadcastChannel对象
-const version = 'v_0_0_1';
+const version = 'v0_0_1';
 import utilHelper from '@/helpers/utilHelper';
 import ethersHelper from "@/helpers/ethersHelper";
 let dcWalletChannel = null;

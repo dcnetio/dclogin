@@ -2,17 +2,12 @@
 import utilHelper from '@/helpers/utilHelper';
 import ethersHelper from "@/helpers/ethersHelper";
 import {defaultNetworks} from '@/context/constant';
-import { ChainInfo,ConnectReqMessage,SignReqMessage,EIP712SignReqMessage,
-        isConnectReqMessage,isSignReqMessage,isEIP712SignReqMessage} from './walletTypes';      
-
-
-
-console.log('home.tsx');
 
 // 定义一个变量，用于存储BroadcastChannel对象
 const version = 'v0_0_1';
-let currentChain:ChainInfo|null = null; //当前网络
-let currentAccount:string | null = null ; //当前账号
+let dcWalletIframeChannel = null;
+let currentChain = null; //当前网络
+let currentAccount = null; //当前账号
 
 // 数据库
 import DBHelper from "@/helpers/DBHelper";
@@ -21,24 +16,34 @@ import DBHelper from "@/helpers/DBHelper";
 const queryString = window.location.search;  
 const urlParams = new URLSearchParams(queryString);  
 let  location = urlParams.get('origin');
-const openerOrigin = location; 
+const origin = location; 
 
 const NetworkStauts = Object.freeze({  
     connecting: 0,
     connected: 1,
     disconnect: 2 
 });  
-let networkStatus:number = NetworkStauts.disconnect; //网络状态
+let networkStatus = NetworkStauts.disconnect; //网络状态
 
 /*******************************初始化需要完成操作***********************************/
 
 // 监听DAPP窗口发送的消息
 window.addEventListener('message', function(event) {
     //判断消息来源
-    if (event.origin !== openerOrigin) {
+    if (event.origin !== origin) {
         return;
     }
-    onDAPPMessage(event)
+    // const port2 = event.ports[0]; 
+    // if (!port2) {
+    //     return;
+    // }
+    // if(dcWalletIframeChannel){
+    //     dcWalletIframeChannel.onmessage = null;
+    //     dcWalletIframeChannel.close();
+    //     dcWalletIframeChannel = null;
+    // }
+    // dcWalletIframeChannel = port2;
+    onChannelMessage(event)
 });
 
 //初始化网络列表,并连接最近切换的网络
@@ -58,14 +63,12 @@ async function _initNetworks() {
         let chains = await DBHelper.getAllData(DBHelper.store_chain);
         if (chains.length > 0) {
             currentChain = chains[0];
-            if(currentChain){
-                //连接网络
-            const flag = await ethersHelper.connectWithHttps(currentChain.rpcUrl);
-                if (!flag) {
-                    networkStatus = NetworkStauts.disconnect;
-                }else{
-                    networkStatus = NetworkStauts.connected;
-                }
+            //连接网络
+           const flag = await ethersHelper.connectWithHttps(currentChain.rpcUrl);
+            if (!flag) {
+                networkStatus = NetworkStauts.disconnect;
+            }else{
+                networkStatus = NetworkStauts.connected;
             }
         }
     }
@@ -90,7 +93,7 @@ async function _initBaseinfo() {
             if (netinfo) {
                 currentChain = netinfo;
                 //连接网络
-                let flag = await ethersHelper.connectWithHttps(netinfo.rpcUrl);
+                let flag = await ethersHelper.connectWithHttps(currentChain.rpcUrl);
                 if (!flag) {
                     networkStatus = NetworkStauts.disconnect;
                 }else{
@@ -136,7 +139,7 @@ setInterval(async () => {
 
  
 
-// 通知DAPP,钱包加载完成
+//
 function _initCommChannel() {
      //通知DAPP,钱包加载完成
     const message = {
@@ -146,14 +149,31 @@ function _initCommChannel() {
         },
     };
     if (window.opener) {
-        window.opener.postMessage(message, openerOrigin);
+        window.opener.postMessage(message, origin);
+    }
+    _waitChannelCreate();
+}
+
+function _waitChannelCreate() {
+      // 等待dcWalletIframeChannel对象创建完成
+    if (!dcWalletIframeChannel) {
+        setTimeout(_waitChannelCreate, 100);
+        return;
+    }
+    dcWalletIframeChannel.onmessage = onChannelMessage;
+    const message = {
+        version: version,
+        type: 'loaded',
+        origin: origin,
+        data: {}
+    };
+    if (origin != null) {
+        dcWalletIframeChannel.postMessage(message);//发送加载成功消息
     }
 }
 
-
-
-// 来自DAPP的消息处理
-function onDAPPMessage(event: MessageEvent) {
+//创建一个BroadcastChannel的监听消息处理函数
+function onChannelMessage(event) {
     let message = null;
     // 对消息进行json解析
     message = event.data;
@@ -166,39 +186,26 @@ function onDAPPMessage(event: MessageEvent) {
     if (message.version !== version) {//判断版本号
         return;
     }
-    if (message.origin != openerOrigin) {//判断消息来源
+    if (message.origin != origin) {//判断消息来源
         return;
     }
+
     //判断消息类型,message格式为{type: 'getUserInfo', data: {}}
     switch (message.type) {
-        case 'checkWalletLoaded'://检查钱包是否加载完成请求
-            const sendMessage = {
-                type: 'walletLoaded',
-                data: {
-                origin: window.location.origin,
-                },
-            };
-            event.ports[0].postMessage(sendMessage); //利用messageChannel通知页面加载完成,当浏览器不支持window.opener会走这个流程
-            break;
         case 'connect': //连接钱包请求 
-            if(isConnectReqMessage(message)){
-                _connectCmdHandler(message, true,event.ports[0]);
-            }
+            _connectCmdHandler(message, true,event.ports[0]);
             break;
         case 'signMessage': //签名请求
-            if(isSignReqMessage(message)){
-                signMessageHandler(message,event.ports[0]);
-            }
+            signMessageHandler(message,event.ports[0]);
             break;
         case 'signEIP712Message': //签名EIP712请求
-            if(isEIP712SignReqMessage(message)){
-                signEIP712MessageHandler(message,event.ports[0]);
-            }
+            signEIP712MessageHandler(message,event.ports[0]);
             break;
         default:
             break;
     }
 }
+
 
 // 判断是否已经有账号,如果没有,则创建账号
 async function checkAccountAndCreate() {
@@ -221,6 +228,7 @@ async function checkAccountAndCreate() {
                 return;
 
             }
+            
             //todo 跳出账号创建成功提示框
             accounts.push(account);
         }
@@ -237,7 +245,7 @@ async function checkAccountAndCreate() {
 }
 
 // 收到连接钱包请求处理,message格式为{version:'v0_0_1',type: 'connect',data: {appname:'test',appIcon:'',appUrl: 'http://localhost:8080',appVersion: '1.0.0'}}
-async function _connectCmdHandler(message:ConnectReqMessage, bool:boolean,port:MessagePort|null = null) {
+async function _connectCmdHandler(message, bool,port = null) {
     if(!bool){
         return;
     }
@@ -259,15 +267,12 @@ async function _connectCmdHandler(message:ConnectReqMessage, bool:boolean,port:M
             rpcUrl: chains[0].rpcUrl,
             desc: chains[0].desc,
             confirms: chains[0].confirms,//确认数
-            currencySymbol: chains[0].currencySymbol,
         };
     }
-    const jsonRpcProvider  = ethersHelper.getProvider();
-    if (jsonRpcProvider != null ) {       // 获取网络信息  
-        const network = await jsonRpcProvider.getNetwork();  
-        const chanId = Number(network.chainId);
-        if (chanId != currentChain.chainId) {
-            const providerChainId = chanId;
+    if (ethersHelper.jsonRpcProvider != null ) {       // 获取网络信息  
+        const network = await provider.getNetwork();  
+        if (network.chainId != currentChain.chainId) {
+            providerChainId = network.chainId;
             // 将jsonRpcProvider网络切换到当前网络
             for (let i = 0; i < chains.length; i++) {
                 if (chains[i].chainId == providerChainId) {
@@ -277,12 +282,12 @@ async function _connectCmdHandler(message:ConnectReqMessage, bool:boolean,port:M
                         rpcUrl: chains[i].rpcUrl,
                         desc: chains[i].desc,
                         confirms: chains[i].confirms,//确认数
-                        currencySymbol: chains[i].currencySymbol,
                     };
                     break;
                 }
             }
         }
+        return;
     }
     //todo 异步获取当前网络状态,更新钱包网络状态
  
@@ -388,7 +393,7 @@ async function _connectCmdHandler(message:ConnectReqMessage, bool:boolean,port:M
 
 
 // 根据账号,生成签名的钱包账号对象
-async function generateWalletAccount(seedAccount:string) {
+async function generateWalletAccount(seedAccount) {
     let account = null;
     // 数据库里获取账号信息
     try {
@@ -434,7 +439,6 @@ async function generateWalletAccount(seedAccount:string) {
 {
     version:'v0_0_1',
     type: 'signMessage', 
-    origin: 'http://localhost:8080',
     data: {
             account: '0x1234567890123456789012345678901234567890',
             appName:'test',
@@ -446,20 +450,21 @@ async function generateWalletAccount(seedAccount:string) {
         }
 }
 **/
-async function signMessageHandler(message:SignReqMessage,port:MessagePort|null=null) {
+async function signMessageHandler(message,port=null) {
     const data = message.data;
     if (data.account == null) {//没有签名账号,不做处理
         return;
     }
+
    const wallet = await generateWalletAccount(data.account);
     if (!wallet) {
          return;
     }
    let signature = null;
    if (data.messageType == 'hex') {
-        const waitSignMessage = utilHelper.hexToUint8Array(data.message);
+        waitSignMessage = utilHelper.hexToUint8Array(data.message);
         // 执行签名
-        signature = await ethersHelper.signMessage(wallet,waitSignMessage);
+       signature = await ethersHelper.signMessage(wallet,waitSignMessage);
         if (!signature) {
             //todo 跳出提示框,提示用户签名失败
             return;
@@ -481,8 +486,8 @@ async function signMessageHandler(message:SignReqMessage,port:MessagePort|null=n
         data: {
             success: true,
             account: wallet.address,
-            chainId: currentChain?.chainId,
-            chainName: currentChain?.name,
+            chainId: currentChain.chainId,
+            name: currentChain.name,
             signature: signature,
         }
     };
@@ -542,7 +547,7 @@ async function signMessageHandler(message:SignReqMessage,port:MessagePort|null=n
 //             }
 //         }
 // }
-async function signEIP712MessageHandler(message:EIP712SignReqMessage,port:MessagePort|null=null) {
+async function signEIP712MessageHandler(message,port=null) {
     const data = message.data;
     if (data.account == null) {//没有签名账号,不做处理
         return;
@@ -565,8 +570,8 @@ async function signEIP712MessageHandler(message:EIP712SignReqMessage,port:Messag
         data: {
             success: true,
             account: wallet.address,
-            chainId: currentChain?.chainId,
-            name: currentChain?.name,
+            chainId: currentChain.chainId,
+            name: currentChain.name,
             signature: signature,
         }
     };
@@ -590,7 +595,7 @@ async function signEIP712MessageHandler(message:EIP712SignReqMessage,port:Messag
 /*******************************基础功能***********************************/
 
 //添加网络
-async function addChain(chainInfo:ChainInfo) {
+async function addChain(chainInfo) {
     if (chainInfo == null ) {
         return;
     }
@@ -608,7 +613,7 @@ async function addChain(chainInfo:ChainInfo) {
 
 
 //修改网络
-async function updateChain(chainInfo:ChainInfo) {
+async function updateChain(chainInfo) {
     if (chainInfo == null ) {
         return;
     }
@@ -625,7 +630,7 @@ async function updateChain(chainInfo:ChainInfo) {
 }
 
 // 切换网络
-async function _switchChain(chainInfo:ChainInfo) {
+async function _switchChain(chainInfo) {
     try {
         DBHelper.updateData(DBHelper.store_keyinfo, {key: 'connectedChain', value: currentChain});
         currentChain = chainInfo;
@@ -645,7 +650,7 @@ async function _switchChain(chainInfo:ChainInfo) {
 }
 
 // 转账
-async function transfer(to:string, amount:string,gasLimit:number,gasPrice:string) {
+async function transfer(to, amount,gasLimit,gasPrice) {
     if (currentChain == null || networkStatus != NetworkStauts.connected) {
         //todo 跳出提示框,提示用户未连接钱包
         return;
@@ -654,13 +659,13 @@ async function transfer(to:string, amount:string,gasLimit:number,gasPrice:string
         //todo 跳出提示框,提示用户没有可用账号
         return;
     }
-    const wallet = await generateWalletAccount(currentAccount);
+    const wallet = await generateWalletAccount(currentAccount.account);
     if (!wallet) {
         return;
     }
     // 执行转账
     const txResponse = await ethersHelper.transfer(wallet,to,amount,gasLimit,gasPrice);
-    if (!txResponse || !txResponse.hash || !txResponse.provider) {
+    if (!txResponse || !txResponse.hash || !txResponse.Proverder) {
         //todo 跳出提示框,提示用户转账失败
         return;
     }
@@ -690,8 +695,8 @@ async function transfer(to:string, amount:string,gasLimit:number,gasPrice:string
         //todo 界面提示用户转账待确认
         return;
     }
-    record.gasUsed = Number(receipt.gasUsed);
-    record.blobGasUsed = receipt.blobGasUsed ? Number(receipt.blobGasUsed) : 0;
+    record.gasUsed = receipt.gasUsed;
+    record.blobGasUsed = receipt.blobGasUsed;
     record.status = 1;
     record.timestamp = new Date().getTime();
     DBHelper.updateData(DBHelper.store_record, record);
@@ -699,7 +704,7 @@ async function transfer(to:string, amount:string,gasLimit:number,gasPrice:string
 }
 
 //刷新指定交易记录状态,用户点击状态为等待中的交易记录时,调用此方法
-async function refreshRecordStatus(hash:string) {
+async function refreshRecordStatus(hash) {
     //从数据库中获取交易记录
     let record = await DBHelper.getData(DBHelper.store_record, hash);
     if (!record) {
@@ -717,9 +722,9 @@ async function refreshRecordStatus(hash:string) {
         } 
     }
     const receipt =  await ethersHelper.checkTransactionStatus(hash)
-    record.gasUsed = receipt?.gasUsed;
-    record.blobGasUsed = receipt?.blobGasUsed;
-    record.status = receipt?.status;
+    record.gasUsed = receipt.gasUsed;
+    record.blobGasUsed = receipt.blobGasUsed;
+    record.status = receipt.status;
     record.timestamp = new Date().getTime();
     DBHelper.updateData(DBHelper.store_record, record);
 }
@@ -748,7 +753,7 @@ async function createWalletAccount() {
                     iv: iv,
                 },
                 cryptoKey,
-                new TextEncoder().encode(accountInfo.mnemonic?.phrase)
+                new TextEncoder().encode(accountInfo.mnemonic.phrase)
             );
             //将账号信息(助记词)存储到数据库
             const account = {
@@ -778,7 +783,7 @@ async function createWalletAccount() {
 
 
 
-async function importAesKeyFromHash(userHandleHash: ArrayBuffer) {  
+async function importAesKeyFromHash(userHandleHash) {  
     // Convert the userHandleHash (32-byte) into a CryptoKey object  
     return await crypto.subtle.importKey(  
         "raw",               // Raw format of the key  
@@ -795,10 +800,6 @@ async function importAesKeyFromHash(userHandleHash: ArrayBuffer) {
     //生成可识别的时间戳:格式为2021-01-01 12:00:00
     const timestamp = new Date().toLocaleString('en-GB', { timeZone: 'UTC' });
     const userHandle  = crypto.getRandomValues(new Uint8Array(32));
-    const publickeyrType:PublicKeyCredentialType = "public-key";
-    const required:UserVerificationRequirement = "required";
-    const asstention:AttestationConveyancePreference = "direct";
-    const platformAttachment:AuthenticatorAttachment = "platform";
     const createCredentialOptions = {
         challenge: challenge,
         rp: {
@@ -810,23 +811,21 @@ async function importAesKeyFromHash(userHandleHash: ArrayBuffer) {
             name: timestamp,
             displayName: timestamp
         },
-        pubKeyCredParams: [{ alg: -7, type: publickeyrType }],
+        pubKeyCredParams: [{ alg: -7, type: "public-key" }],
         authenticatorSelection: {
-            authenticatorAttachment: platformAttachment,
-            userVerification: required
+            authenticatorAttachment: "platform",
+            userVerification: "required"
         },
         timeout: 60000,
-        attestation: asstention
+        attestation: "direct"
     };
 
     try {
         const credential = await navigator.credentials.create({
             publicKey: createCredentialOptions
         });
-        if (!credential) {
-            throw new Error("Passkey registration failed");
-        }
-        return {id: credential?.id, userHandle: userHandle};
+        console.log("Passkey registered successfully");
+        return {id: credential.id, userHandle: userHandle};
     } catch (error) {
         console.error("Passkey registration failed", error);
         throw error;
@@ -834,28 +833,18 @@ async function importAesKeyFromHash(userHandleHash: ArrayBuffer) {
 }
 
 
-
-
- 
   // 使用 Passkey 进行身份验证,并提取出userHandleHash
-  async function authenticateWithPasskey(credentialid:string) {
+  async function authenticateWithPasskey(credentialid) {
     const challenge = window.crypto.getRandomValues(new Uint8Array(32));
 
-    const arrayBuffer = utilHelper.base64UrlToArrayBuffer(credentialid);
-    if (!arrayBuffer) {
-        return null;
-    }
-    const publickeyrType:PublicKeyCredentialType = "public-key";
-    const required:UserVerificationRequirement = "required";
-    const credentialidBuffer = arrayBuffer;
     const getCredentialOptions = {
         challenge: challenge,
         rpId: window.location.hostname,
         allowCredentials: [{
-            id: credentialidBuffer,
-            type: publickeyrType,
+            id: utilHelper.base64UrlToArrayBuffer(credentialid),
+            type: 'public-key',
         }],
-        userVerification: required,
+        userVerification: "required",
         timeout: 60000
     };
 
@@ -867,13 +856,8 @@ async function importAesKeyFromHash(userHandleHash: ArrayBuffer) {
             return null;
         }
         console.log("Authentication successful");
-        const response = (assertion as PublicKeyCredential).response as AuthenticatorAssertionResponse;
-        if (response.userHandle) {
-            const userHandleHash = await crypto.subtle.digest('SHA-256', response.userHandle);
-            return userHandleHash;
-        } else {
-           return null;
-        }
+        const userHandleHash = await crypto.subtle.digest('SHA-256', assertion.response.userHandle);
+        return userHandleHash;
     } catch (error) {
         console.error("Authentication failed", error);
         return null;

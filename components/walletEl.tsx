@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 import * as dcwallet from "./dcwallet";
 const dcWalletIframe = 'dcWalletIframe';
-const version = 'v_0_0_1';
+const version = 'v0_0_1';
 const walletOrigin = 'http://localhost:3000'; //
 const walletUrl = walletOrigin +'/home'; // 钱包地址
 const walletWindowName = 'walletWindow'; // 窗口名称  

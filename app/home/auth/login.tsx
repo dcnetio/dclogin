@@ -14,7 +14,10 @@ import { appState } from "@/context/constant";
 import { ConnectReqMessage } from "@/types/walletTypes";
 
 // 获取查询字符串
-const queryString = window.location.search;
+let queryString = '';
+if (typeof window !== 'undefined') {
+    queryString = window.location.search;
+}
 const urlParams = new URLSearchParams(queryString);
 const location = urlParams.get("origin");
 const openerOrigin = location;

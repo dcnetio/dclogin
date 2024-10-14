@@ -110,7 +110,6 @@ export default function WalletEl() {
     sendMessageToIframe(message, 60000).then((response) => {
       console.log('openConnect response', response);
       if(response){
-        const data = response.data;
         setAccountInfo(response.data.data);
       }else{
         console.error('openConnect response is null');
@@ -122,23 +121,23 @@ export default function WalletEl() {
   }
 
 
-  const initConfig = () => {
-    const message = {
-      version: version,
-      type: 'init',
-      data: {
-        appName: 'testDAPP',
-        appIcon: 'https://dcnetio.cloud/ipfs/bafybeicco3kk3aq5to5l376npfosnvgwk6yr4azz35xinnilqvpa4hmbq4/favicon.ico',
-        appVersion: '1.0.0',
-        appUrl: 'http://127.0.0.1:3000',
-      }
-    };
-    sendMessageToIframe(message, 5000).then((response) => {
-      console.log('initConfig response', response);
-    }).catch((error) => {
-      console.error('initConfig error', error);
-    });
-  }
+  // const initConfig = () => {
+  //   const message = {
+  //     version: version,
+  //     type: 'init',
+  //     data: {
+  //       appName: 'testDAPP',
+  //       appIcon: 'https://dcnetio.cloud/ipfs/bafybeicco3kk3aq5to5l376npfosnvgwk6yr4azz35xinnilqvpa4hmbq4/favicon.ico',
+  //       appVersion: '1.0.0',
+  //       appUrl: 'http://127.0.0.1:3000',
+  //     }
+  //   };
+  //   sendMessageToIframe(message, 5000).then((response) => {
+  //     console.log('initConfig response', response);
+  //   }).catch((error) => {
+  //     console.error('initConfig error', error);
+  //   });
+  // }
 
 
   // 利用messageChannel通信
@@ -343,7 +342,7 @@ export default function WalletEl() {
           Eip712签名2
           </Button>
       </div>
-      <iframe id={dcWalletIframe}  src={"http://localhost:3000/iframe?parentOrigin="+ window.location.origin} onLoad={initConfig}></iframe>
+      {/* <iframe id={dcWalletIframe}  src={"http://localhost:3000/iframe?parentOrigin="+ window.location.origin} onLoad={initConfig}></iframe> */}
     </>
   );
 }

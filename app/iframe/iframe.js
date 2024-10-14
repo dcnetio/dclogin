@@ -13,7 +13,10 @@ let appVersion = '';
 
 console.log('**************iframejs')
 /*******************************初始化需要完成操作***********************************/
-const queryString = window.location.search;  
+let queryString = '';
+if (typeof window !== 'undefined') {
+    queryString = window.location.search;
+}
 // 使用 URLSearchParams 解析查询字符串  
 const urlParams = new URLSearchParams(queryString);  
 let  location = urlParams.get('parentOrigin');
@@ -28,52 +31,54 @@ const parentOrigin = location;
 /*******************************接收父窗口指令消息***********************************/
 
 // 监听父窗口发送的消息
-window.addEventListener('message', function(event) {
-    //判断消息来源
-    if (event.origin !== parentOrigin || event.ports.length == 0) {
-        return;
-    }
-    // 对消息进行json解析
-    let message = {};
-    if (typeof event.data === 'object') {
-        try {
-            message = event.data;
-            if (message.version !== version) { //版本不一致,不处理
-                console.error('Received invalid version:', message.version,"expected version:",version);
-                return;
-            }
-            if (!message.type) { //type为空,不处理
-                console.error('Received invalid type: no type');
-                return;
-            }
-        } catch (e) {
-            console.error('Received invalid message:', event.data,e);
+if (typeof window !== 'undefined') {
+    window.addEventListener('message', function(event) {
+        //判断消息来源
+        if (event.origin !== parentOrigin || event.ports.length == 0) {
             return;
         }
-    }
-    if (message.type == 'channelPort') {//接收父窗口创建与钱包通信的通信通道
-        dcWalletChannel = event.ports[0];
-        dcWalletChannel.onmessage = onWalletChannelMessage;
-        return;
-    }
-    DAPPChannel = event.ports[0];
-    switch (message.type) {
-        case 'init': //初始化配置
-            initConfig(message.data);
-            break;
-        case 'connect': //连接钱包命令
-            connect();
-            break;
-        case 'signMessage': //签名消息
-            signMessage(message);
-            break;
-        case 'signEIP712Message': //签名EIP712消息
-            signEIP712Message(message);
-            break;
-        default:
-            break;
-    }
-});
+        // 对消息进行json解析
+        let message = {};
+        if (typeof event.data === 'object') {
+            try {
+                message = event.data;
+                if (message.version !== version) { //版本不一致,不处理
+                    console.error('Received invalid version:', message.version,"expected version:",version);
+                    return;
+                }
+                if (!message.type) { //type为空,不处理
+                    console.error('Received invalid type: no type');
+                    return;
+                }
+            } catch (e) {
+                console.error('Received invalid message:', event.data,e);
+                return;
+            }
+        }
+        if (message.type == 'channelPort') {//接收父窗口创建与钱包通信的通信通道
+            dcWalletChannel = event.ports[0];
+            dcWalletChannel.onmessage = onWalletChannelMessage;
+            return;
+        }
+        DAPPChannel = event.ports[0];
+        switch (message.type) {
+            case 'init': //初始化配置
+                initConfig(message.data);
+                break;
+            case 'connect': //连接钱包命令
+                connect();
+                break;
+            case 'signMessage': //签名消息
+                signMessage(message);
+                break;
+            case 'signEIP712Message': //签名EIP712消息
+                signEIP712Message(message);
+                break;
+            default:
+                break;
+        }
+    });
+}
 
 
 

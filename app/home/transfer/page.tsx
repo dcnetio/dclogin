@@ -1,5 +1,5 @@
 "use client";
-import { Button, Dialog, Ellipsis, Input, Toast } from "antd-mobile";
+import { Button, Dialog, Input, Toast } from "antd-mobile";
 import styles from "./transfer.module.css";
 import { useAppSelector } from "@/lib/hooks";
 import { useState } from "react";

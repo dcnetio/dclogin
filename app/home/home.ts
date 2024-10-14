@@ -1,3 +1,4 @@
+"use client";
 import utilHelper from "@/helpers/utilHelper";
 import ethersHelper from "@/helpers/ethersHelper";
 import { defaultNetworks } from "@/context/constant";
@@ -23,7 +24,10 @@ let currentAccount: AccountInfo | null = null; //当前账号
 import DBHelper from "@/helpers/DBHelper";
 
 // 获取查询字符串
-const queryString = window.location.search;
+let queryString = '';
+if (typeof window !== 'undefined') {
+    queryString = window.location.search;
+}
 const urlParams = new URLSearchParams(queryString);
 const location = urlParams.get("origin");
 const openerOrigin = location;
@@ -37,14 +41,16 @@ let networkStatus: number = NetworkStauts.disconnect; //网络状态
 
 /*******************************初始化需要完成操作***********************************/
 
-// 监听DAPP窗口发送的消息
-window.addEventListener("message", function (event) {
-  //判断消息来源
-  if (event.origin !== openerOrigin) {
-    return;
-  }
-  onDAPPMessage(event);
-});
+// 监听DAPP窗口发送的消息;
+if (typeof window !== 'undefined') {
+    window.addEventListener("message", function (event) {
+      //判断消息来源
+      if (event.origin !== openerOrigin) {
+        return;
+      }
+      onDAPPMessage(event);
+    });
+}
 
 //初始化网络列表,并连接最近切换的网络
 async function _initNetworks() {

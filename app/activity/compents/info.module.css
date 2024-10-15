@@ -1,0 +1,46 @@
+.header{
+  margin-bottom: 20px;
+  padding: 10px;
+  font-size: 1rem;
+  font-weight: bold;
+}
+.content {
+  padding: 10px 20px;
+
+  .info {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 10px;
+
+    .type {
+      color: #333;
+      font-weight: bold;
+      font-size: 1rem;
+      padding-bottom: 4px;
+    }
+
+    .status {
+      font-size: 0.9rem;
+      color: #6a2;
+      font-weight: bold;
+    }
+
+    .href {
+      color: #1e96f0;
+      padding-bottom: 6px;
+      text-align: right;
+    }
+    .account {
+      font-size: 1rem;
+    }
+    .greyTxt{
+      font-size: 1rem;
+      color: #888,
+    }
+  }
+  .bold{
+    font-weight: bold;
+    font-size: 1rem;
+  }
+}

@@ -38,8 +38,8 @@ export default function Transfer() {
         const res = await transfer(
           address,
           amount,
-          Number(amount) * 0.001, //gasLimit:
-          amount
+          21000, //todo gasLimit:
+          '21000' // todo gasPrice
         ); // gasPrice:
         if (res) {
           Toast.show({

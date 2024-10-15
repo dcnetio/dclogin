@@ -34,10 +34,10 @@ export default function RootLayout({
       >
         <div className={styles.container}>
           <StoreProvider>
-            <VConsole>
+            {/* <VConsole> */}
             <Login />
             {children}
-            </VConsole>
+            {/* </VConsole> */}
           </StoreProvider>
         </div>
       </body>

@@ -746,7 +746,7 @@ async function _transfer(
     status: 2, //0:失败,1:成功,2:等待确认
     timestamp: new Date().getTime(),
   };
-  DBHelper.updateData(DBHelper.store_record, record);
+  DBHelper.addData(DBHelper.store_record, record);
   //等待转账成功
   const receipt = await ethersHelper.waitTransactionConfirm(
     txResponse,

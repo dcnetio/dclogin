@@ -17,7 +17,8 @@
     "react-dom": "^18",
     "react-redux": "^9.1.2",
     "redux-logger": "^3.0.6",
-    "redux-persist": "^6.0.0"
+    "redux-persist": "^6.0.0",
+    "vconsole": "^3.15.1"
   },
   "devDependencies": {
     "@types/node": "^20",

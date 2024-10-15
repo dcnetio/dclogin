@@ -6,7 +6,7 @@ import * as dcwallet from "../helpers/dcwallet";
 const dcWalletIframe = 'dcWalletIframe';
 const version = 'v0_0_1';
 const walletOrigin = 'http://localhost:3000'; //
-const walletUrl = walletOrigin +'/home'; // 钱包地址
+const walletUrl = walletOrigin; // 钱包地址
 const walletWindowName = 'walletWindow'; // 窗口名称  
 let walletWindow:Window|null;
 let channelPort2: MessagePort | null;

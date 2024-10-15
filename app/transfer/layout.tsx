@@ -1,5 +1,5 @@
 "use client";
-import { NavBar, SafeArea } from "antd-mobile";
+import { NavBar } from "antd-mobile";
 import { useRouter } from "next/navigation";
 
 export default function TransferLayout({
@@ -14,14 +14,8 @@ export default function TransferLayout({
   }
   return (
     <section>
-      <div>
-        <SafeArea position="top" />
-      </div>
       <NavBar onBack={back}>转账</NavBar>
       {children}
-      <div>
-        <SafeArea position="bottom" />
-      </div>
     </section>
   );
 }

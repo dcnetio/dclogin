@@ -7,7 +7,7 @@ import {
   initBaseinfo,
   initNetworks,
   initCommChannel,
-} from "@/app/home/home";
+} from "@/app/index";
 import { store } from "@/lib/store";
 import { saveInitState } from "@/lib/slices/appSlice";
 import { appState } from "@/context/constant";

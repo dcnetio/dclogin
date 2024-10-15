@@ -5,7 +5,7 @@ import Account from "@/components/account";
 import { GlobalOutline, DownFill } from "antd-mobile-icons";
 import { useEffect, useState } from "react";
 import { useAppSelector } from "@/lib/hooks";
-import { getCurrentAccount, getCurrentNetwork } from "@/app/home/home";
+import { getCurrentAccount, getCurrentNetwork } from "@/app/index";
 import { appState } from "@/context/constant";
 import { AccountInfo } from "@/types/walletTypes";
 interface HeaderProps {

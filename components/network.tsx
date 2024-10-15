@@ -2,7 +2,7 @@ import { Button, List, Toast } from "antd-mobile";
 import styles from "./network.module.css";
 import { useEffect, useState } from "react";
 import { getAllData, store_chain } from "@/helpers/DBHelper";
-import { getCurrentNetwork, switchChain } from "@/app/home/home";
+import { getCurrentNetwork, switchChain } from "@/app/index";
 import { ChainInfo} from '../types/walletTypes';      
 interface NetworkProps {
   onSuccess: (name: string) => void; // 定义onSuccess为一个无参数无返回值的函数

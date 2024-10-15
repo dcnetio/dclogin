@@ -4,8 +4,25 @@
     border: 1px solid #ccc;
     border-radius: 5px;
     margin: 10px 0;
-    padding: 20px;
+    padding: 20px 10px;
+  }
+  .title{
+    font-size: 1rem;
+  }
+  .txt {
     font-size: 0.8rem;
+    color: #666;
+    word-break: break-all;
+  }
+  .balance{
+    font-size: 0.8rem;
+    color: #222;
+  }
+  .input{
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin: 10px 0;
+    padding: 10px 20px;
   }
   .btnD {
     margin: 40px 0;

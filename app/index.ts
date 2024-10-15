@@ -11,9 +11,7 @@ import {
   isSignReqMessage,
   isEIP712SignReqMessage,
   AccountInfo,
-} from "../../types/walletTypes";
-
-console.log("home.tsx");
+} from "../types/walletTypes";
 
 // 定义一个变量，用于存储BroadcastChannel对象
 const version = "v0_0_1";
@@ -24,9 +22,9 @@ let currentAccount: AccountInfo | null = null; //当前账号
 import DBHelper from "@/helpers/DBHelper";
 
 // 获取查询字符串
-let queryString = '';
-if (typeof window !== 'undefined') {
-    queryString = window.location.search;
+let queryString = "";
+if (typeof window !== "undefined") {
+  queryString = window.location.search;
 }
 const urlParams = new URLSearchParams(queryString);
 const location = urlParams.get("origin");
@@ -42,14 +40,14 @@ let networkStatus: number = NetworkStauts.disconnect; //网络状态
 /*******************************初始化需要完成操作***********************************/
 
 // 监听DAPP窗口发送的消息;
-if (typeof window !== 'undefined') {
-    window.addEventListener("message", function (event) {
-      //判断消息来源
-      if (event.origin !== openerOrigin) {
-        return;
-      }
-      onDAPPMessage(event);
-    });
+if (typeof window !== "undefined") {
+  window.addEventListener("message", function (event) {
+    //判断消息来源
+    if (event.origin !== openerOrigin) {
+      return;
+    }
+    onDAPPMessage(event);
+  });
 }
 
 //初始化网络列表,并连接最近切换的网络
@@ -254,8 +252,8 @@ async function checkAccountAndCreate() {
     return;
   }
   await DBHelper.addData(DBHelper.store_keyinfo, {
-    key: 'chosedAccount',
-    value: accounts[0]
+    key: "chosedAccount",
+    value: accounts[0],
   });
   currentAccount = accounts[0]; // 赋值
   return accounts[0];
@@ -320,6 +318,7 @@ async function _connectCmdHandler(
   const userHandleHash = await authenticateWithPasskey(
     choseedAccount.credentialId
   );
+  console.log("userHandleHash success", userHandleHash);
   if (!userHandleHash) {
     //todo 跳出提示框,提示用户授权失败
     if (bool) {
@@ -335,6 +334,7 @@ async function _connectCmdHandler(
   }
   //解密出助记词
   const cryptoKey = await importAesKeyFromHash(userHandleHash);
+  console.log("cryptoKey success", cryptoKey);
   const encodedMnemonic = await crypto.subtle.decrypt(
     {
       name: "AES-GCM",
@@ -343,16 +343,20 @@ async function _connectCmdHandler(
     cryptoKey,
     choseedAccount.mnemonic
   );
+  console.log("encodedMnemonic success", encodedMnemonic);
   const decoder = new TextDecoder();
   const mnemonic = decoder.decode(encodedMnemonic);
+  console.log("mnemonic success", mnemonic);
   // 通过助记词导入钱包,生成带私钥钱包账号
   const wallet = await ethersHelper.createWalletAccountWithMnemonic(mnemonic);
+  console.log("wallet success", wallet);
   if (!wallet) {
     //todo 跳出提示框,提示用户导入钱包失败
     return;
   }
   // 执行签名
   const signature = await ethersHelper.signMessage(wallet, message.origin);
+  console.log("signature success", signature);
   if (!signature) {
     //todo 跳出提示框,提示用户签名失败
     return;
@@ -758,6 +762,7 @@ async function _transfer(
   record.timestamp = new Date().getTime();
   DBHelper.updateData(DBHelper.store_record, record);
   //todo 界面提示转账成功
+  return true;
 }
 
 //刷新指定交易记录状态,用户点击状态为等待中的交易记录时,调用此方法
@@ -925,6 +930,23 @@ async function authenticateWithPasskey(credentialId: string) {
     console.log("Authentication successful");
     const response = (assertion as PublicKeyCredential)
       .response as AuthenticatorAssertionResponse;
+    console.log("response12 successful", response);
+    console.log(
+      "response.authenticatorData successful",
+      new TextDecoder("utf-8").decode(response.authenticatorData)
+    );
+    console.log(
+      "response.clientDataJSON successful",
+      new TextDecoder("utf-8").decode(response.clientDataJSON)
+    );
+    console.log(
+      "response.signature successful",
+      new TextDecoder().decode(response.signature)
+    );
+    console.log(
+      "response.userHandle successful",
+      response.userHandle ? new TextDecoder("utf-8").decode(response.userHandle) : '没有response.userHandle'
+    );
     if (response.userHandle) {
       const userHandleHash = await crypto.subtle.digest(
         "SHA-256",

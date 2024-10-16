@@ -2,6 +2,7 @@
 import utilHelper from "@/helpers/utilHelper";
 import ethersHelper from "@/helpers/ethersHelper";
 import { defaultNetworks } from "@/context/constant";
+import PermissionEl from '@/components/permissionEl';
 import {
   ChainInfo,
   ConnectReqMessage,
@@ -20,6 +21,9 @@ let currentAccount: AccountInfo | null = null; //当前账号
 
 // 数据库
 import DBHelper from "@/helpers/DBHelper";
+import { Dialog, Toast } from "antd-mobile";
+import React from "react";
+import { openInfo } from "@/types/pageType";
 
 // 获取查询字符串
 let queryString = "";
@@ -259,13 +263,39 @@ async function checkAccountAndCreate() {
   return accounts[0];
 }
 
-// 收到连接钱包请求处理,message格式为{version:'v0_0_1',type: 'connect',data: {appname:'test',appIcon:'',appUrl: 'http://localhost:8080',appVersion: '1.0.0'}}
+const confirmAllow = (info: openInfo) => {
+  return new Promise((resolve, reject) => {
+    Dialog.confirm({
+      content: React.createElement(PermissionEl, {info}),
+      cancelText: '拒绝',
+      onConfirm: async () => {
+        resolve(true)
+      },
+      onCancel: () => {
+        Toast.show("用户拒绝请求");
+        resolve(false)
+      },
+    });
+  });
+}
+
+// 收到连接钱包请求处理,message格式为{version:'v0_0_1',type: 'connect',data: {appName:'test',appIcon:'',appUrl: 'http://localhost:8080',appVersion: '1.0.0'}}
 async function _connectCmdHandler(
   message: ConnectReqMessage,
   bool: boolean,
   port: MessagePort | null = null
 ) {
   const connectingApp = message.data;
+  // 临时处理
+  // const connectingApp = {appName:'test',appIcon:'',appUrl: 'http://localhost:8080',appVersion: '1.0.0'};
+  // todo 提示
+  if (openerOrigin && connectingApp) {
+    const flag = await confirmAllow(connectingApp);
+    if(!flag){
+      window.close();
+      return;
+    }
+  }
   const choseedAccount = await checkAccountAndCreate();
   // 取出网络列表
   let chains = [];
@@ -725,17 +755,17 @@ async function _transfer(
       return;
     }
     const record = {
-      chainId: txResponse.chainId ? Number(txResponse.chainId) :'',
-      hash: txResponse.hash || '',
-      index: txResponse.index || '',
-      blockNumber: txResponse.blockNumber || '',
-      blockHash: txResponse.blockHash || '',
-      from: txResponse.from || '',
-      to: txResponse.to || '',
-      value: txResponse.value ? Number(txResponse.value) : '',
-      data: txResponse.data || '',
-      gasLimit: txResponse.gasLimit ? Number(txResponse.gasLimit) : '',
-      gasPrice: txResponse.gasPrice || '',
+      chainId: txResponse.chainId ? Number(txResponse.chainId) : "",
+      hash: txResponse.hash || "",
+      index: txResponse.index || "",
+      blockNumber: txResponse.blockNumber || "",
+      blockHash: txResponse.blockHash || "",
+      from: txResponse.from || "",
+      to: txResponse.to || "",
+      value: txResponse.value ? Number(txResponse.value) : "",
+      data: txResponse.data || "",
+      gasLimit: txResponse.gasLimit ? Number(txResponse.gasLimit) : "",
+      gasPrice: txResponse.gasPrice || "",
       gasUsed: 0,
       blobGasUsed: 0,
       type: txResponse.type,
@@ -764,7 +794,7 @@ async function _transfer(
     //todo 界面提示转账成功
     return true;
   } catch (error) {
-    console.log('transfer error', error)
+    console.log("transfer error", error);
     return false;
   }
 }

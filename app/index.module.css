@@ -31,3 +31,8 @@
 .popup {
   --min-width: 500px;
 }
+.note{
+  padding: 100px 40px;
+  text-align: center;
+  font-size: 1.2rem;
+}

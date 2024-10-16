@@ -31,7 +31,7 @@ export default function TransferConfirm() {
       return;
     }
     // 确认框
-    await Dialog.confirm({
+    Dialog.confirm({
       content: (
         <div className={styles.pop}>
           <div className={styles.sTitle}>确认转账：</div>

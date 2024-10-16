@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // reactStrictMode: false,
+  reactStrictMode: false,
   output: "export",// 导出静态页面
   assetPrefix: "/v0_0_1",
   // 控制URL尾部是否自动添加斜杠

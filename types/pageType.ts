@@ -8,3 +8,10 @@ export interface ActivityItem {
   to: string;
   from: string;
 }
+
+export interface openInfo {
+  appName?: string,
+  appIcon?: string,
+  appUrl?: string,
+  appVersion?: string
+}

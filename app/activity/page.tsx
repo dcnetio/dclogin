@@ -12,22 +12,29 @@ export default function ActivityList({}) {
   const [visible, setVisible] = useState(false);
   const [info, setInfo] = useState<ActivityItem>();
   const [currencySymbol, setCurrencySymbol] = useState("");
+  const [accountInfo, setAccountInfo] = useState<AccountInfo>();
   const getActivity = async () => {
     const network: ChainInfo | null = getCurrentNetwork();
     if (!network) {
       return;
     }
     setCurrencySymbol(network.currencySymbol);
-    const accountInfo: AccountInfo | null = getCurrentAccount();
+    const currentAccount: AccountInfo | null = getCurrentAccount();
+    if(!currentAccount){
+      return;
+    }
+    setAccountInfo(currentAccount);
     const data =
       (await queryData(
         store_record,
-        "chainId",
-        network?.chainId.toString() 
+        "from",
+        currentAccount?.account
       )) || [];
     const list = data.filter(
-      (item: ActivityItem) => item.from === accountInfo?.account
+      (item: ActivityItem) => Number(item.chainId) == Number(network?.chainId)
     );
+    list.sort((a: ActivityItem, b: ActivityItem) => b.timestamp - a.timestamp);
+
     setList(list);
   };
 
@@ -87,7 +94,7 @@ export default function ActivityList({}) {
           "--min-width": "320px",
         }}
       >
-        {info ? <ActivityInfo info={info} /> : <>暂无数据</>}
+        {info ? <ActivityInfo info={info} accountInfo={accountInfo} currencySymbol={currencySymbol}/> : <>暂无数据</>}
       </CenterPopup>
     </div>
   );

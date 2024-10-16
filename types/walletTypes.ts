@@ -12,6 +12,7 @@ export type ChainInfo = {
 };
 
 export type AccountInfo = {
+  url?: string;
   name: string,
   account: string,
   credentialId: string,

@@ -1,39 +1,39 @@
 .content {
   padding: 20px;
-  .account {
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    margin: 10px 0;
-    padding: 20px 10px;
-  }
-  .title{
-    font-size: 1rem;
-  }
-  .txt {
-    font-size: 0.8rem;
-    color: #666;
-    word-break: break-all;
-  }
-  .balance{
+
+  .balance {
     font-size: 0.8rem;
     color: #222;
   }
-  .input{
+
+  .input {
     border: 1px solid #ccc;
     border-radius: 5px;
     margin: 10px 0;
     padding: 10px 20px;
   }
+
   .btnD {
     margin: 40px 0;
     display: flex;
     justify-content: space-between;
   }
+
   .btn {
     width: 50%;
     padding: 10px;
   }
 }
-.address{
-  word-break: break-all;
+
+.pop {
+
+  .sTitle {
+    font-size: 1rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+
+  .address {
+    word-break: break-all;
+  }
 }

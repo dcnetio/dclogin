@@ -1,0 +1,17 @@
+
+.info {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  .account {
+    flex:1;
+    font-size: 1rem;
+    word-break: break-all;
+    display: flex;
+    justify-content: center;
+    margin: 6px 10px;
+    background-color: #f2f9fb;
+    border-radius: 4px;
+  }
+}

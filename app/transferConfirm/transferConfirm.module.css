@@ -1,0 +1,39 @@
+.content{
+  .tag{
+    padding: 5px 10px;
+    display:inline;
+    border: 1px solid #aaa;
+    border-radius:4px;
+  }
+  .balanceD{
+    padding: 20px;
+    background-color: aliceblue;
+  }
+  .balance{
+    margin-top: 10px;
+    font-size: 1rem;
+    font-weight: bold;
+  }
+}
+.btnD {
+  margin: 40px 0;
+  display: flex;
+  justify-content: space-between;
+}
+
+.btn {
+  width: 50%;
+  padding: 10px;
+}
+.pop {
+
+  .sTitle {
+    font-size: 1rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+
+  .address {
+    word-break: break-all;
+  }
+}

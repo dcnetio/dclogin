@@ -343,20 +343,16 @@ async function _connectCmdHandler(
     cryptoKey,
     choseedAccount.mnemonic
   );
-  console.log("encodedMnemonic success", encodedMnemonic);
   const decoder = new TextDecoder();
   const mnemonic = decoder.decode(encodedMnemonic);
-  console.log("mnemonic success", mnemonic);
   // 通过助记词导入钱包,生成带私钥钱包账号
   const wallet = await ethersHelper.createWalletAccountWithMnemonic(mnemonic);
-  console.log("wallet success", wallet);
   if (!wallet) {
     //todo 跳出提示框,提示用户导入钱包失败
     return;
   }
   // 执行签名
   const signature = await ethersHelper.signMessage(wallet, message.origin);
-  console.log("signature success", signature);
   if (!signature) {
     //todo 跳出提示框,提示用户签名失败
     return;
@@ -715,54 +711,62 @@ async function _transfer(
   if (!wallet) {
     return;
   }
-  // 执行转账
-  const txResponse = await ethersHelper.transfer(
-    wallet,
-    to,
-    amount,
-    gasLimit,
-    gasPrice
-  );
-  if (!txResponse || !txResponse.hash || !txResponse.provider) {
-    //todo 跳出提示框,提示用户转账失败
-    return;
+  try {
+    // 执行转账
+    const txResponse = await ethersHelper.transfer(
+      wallet,
+      to,
+      amount,
+      gasLimit,
+      gasPrice
+    );
+    if (!txResponse || !txResponse.hash || !txResponse.provider) {
+      //todo 跳出提示框,提示用户转账失败
+      return;
+    }
+    const record = {
+      chainId: txResponse.chainId ? Number(txResponse.chainId) :'',
+      hash: txResponse.hash || '',
+      index: txResponse.index || '',
+      blockNumber: txResponse.blockNumber || '',
+      blockHash: txResponse.blockHash || '',
+      from: txResponse.from || '',
+      to: txResponse.to || '',
+      value: txResponse.value ? Number(txResponse.value) : '',
+      data: txResponse.data || '',
+      gasLimit: txResponse.gasLimit ? Number(txResponse.gasLimit) : '',
+      gasPrice: txResponse.gasPrice || '',
+      gasUsed: 0,
+      blobGasUsed: 0,
+      type: txResponse.type,
+      contractAddress: "",
+      status: 2, //0:失败,1:成功,2:等待确认
+      timestamp: new Date().getTime(),
+    };
+    await DBHelper.addData(DBHelper.store_record, record);
+    // 等待转账成功
+    const receipt = await ethersHelper.waitTransactionConfirm(
+      txResponse,
+      currentChain.confirms
+    );
+    if (!receipt) {
+      //todo 界面提示用户转账待确认
+      return;
+    }
+    record.blockNumber = receipt.blockNumber;
+    record.blockHash = receipt.blockHash;
+    record.gasPrice = receipt.gasPrice;
+    record.gasUsed = receipt.gasUsed ? Number(receipt.gasUsed) : 0;
+    record.blobGasUsed = receipt.blobGasUsed ? Number(receipt.blobGasUsed) : 0;
+    record.status = 1;
+    record.timestamp = new Date().getTime();
+    DBHelper.updateData(DBHelper.store_record, record);
+    //todo 界面提示转账成功
+    return true;
+  } catch (error) {
+    console.log('transfer error', error)
+    return false;
   }
-  const record = {
-    chainId: txResponse.chainId,
-    hash: txResponse.hash,
-    index: txResponse.index,
-    blockNumber: txResponse.blockNumber,
-    blockHash: txResponse.blockHash,
-    from: txResponse.from,
-    to: txResponse.to,
-    value: txResponse.value,
-    data: txResponse.data,
-    gasLimit: txResponse.gasLimit,
-    gasPrice: txResponse.gasPrice,
-    gasUsed: 0,
-    blobGasUsed: 0,
-    type: txResponse.type,
-    contractAddress: "",
-    status: 2, //0:失败,1:成功,2:等待确认
-    timestamp: new Date().getTime(),
-  };
-  DBHelper.addData(DBHelper.store_record, record);
-  //等待转账成功
-  const receipt = await ethersHelper.waitTransactionConfirm(
-    txResponse,
-    currentChain.confirms
-  );
-  if (!receipt) {
-    //todo 界面提示用户转账待确认
-    return;
-  }
-  record.gasUsed = Number(receipt.gasUsed);
-  record.blobGasUsed = receipt.blobGasUsed ? Number(receipt.blobGasUsed) : 0;
-  record.status = 1;
-  record.timestamp = new Date().getTime();
-  DBHelper.updateData(DBHelper.store_record, record);
-  //todo 界面提示转账成功
-  return true;
 }
 
 //刷新指定交易记录状态,用户点击状态为等待中的交易记录时,调用此方法
@@ -880,6 +884,9 @@ async function registerPasskey() {
     },
     timeout: 60000,
     attestation: asstention,
+    extensions: {
+      hmacCreateSecret: true,
+    },
   };
 
   try {
@@ -889,6 +896,10 @@ async function registerPasskey() {
     if (!credential) {
       throw new Error("Passkey registration failed");
     }
+    const extensionResults = (
+      credential as PublicKeyCredential
+    ).getClientExtensionResults();
+    console.log("HMAC Secret Used:", extensionResults.hmacCreateSecret);
     return { id: credential?.id, userHandle: userHandle };
   } catch (error) {
     console.error("Passkey registration failed", error);
@@ -918,6 +929,9 @@ async function authenticateWithPasskey(credentialId: string) {
     ],
     userVerification: required,
     timeout: 60000,
+    extensions: {
+      hmacCreateSecret: true,
+    },
   };
 
   try {
@@ -927,6 +941,11 @@ async function authenticateWithPasskey(credentialId: string) {
     if (!assertion) {
       return null;
     }
+    // 检查 assertion 中的扩展数据
+    const clientExtensionResults = (
+      assertion as PublicKeyCredential
+    ).getClientExtensionResults();
+    console.log("HMAC Secret Used:", clientExtensionResults.hmacCreateSecret);
     console.log("Authentication successful");
     const response = (assertion as PublicKeyCredential)
       .response as AuthenticatorAssertionResponse;
@@ -945,7 +964,9 @@ async function authenticateWithPasskey(credentialId: string) {
     );
     console.log(
       "response.userHandle successful",
-      response.userHandle ? new TextDecoder("utf-8").decode(response.userHandle) : '没有response.userHandle'
+      response.userHandle
+        ? new TextDecoder("utf-8").decode(response.userHandle)
+        : "没有response.userHandle"
     );
     if (response.userHandle) {
       const userHandleHash = await crypto.subtle.digest(

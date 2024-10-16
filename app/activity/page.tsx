@@ -1,41 +1,34 @@
 "use client";
 import { CenterPopup, List } from "antd-mobile";
 import { useEffect, useState } from "react";
-// import { queryData, store_record } from "@/helpers/DBHelper";
-import { useRouter } from "next/navigation";
-// import { getCurrentAccount, getCurrentNetwork } from "@/app/index";
-// import { AccountInfo, ChainInfo } from "@/types/walletTypes";
+import { queryData, store_record } from "@/helpers/DBHelper";
+import { getCurrentAccount, getCurrentNetwork } from "@/app/index";
+import { AccountInfo, ChainInfo } from "@/types/walletTypes";
 import styles from "./activity.module.css";
 import { ActivityItem } from "@/types/pageType";
 import ActivityInfo from "./compents/info";
 export default function ActivityList({}) {
-  const router = useRouter();
   const [list, setList] = useState<ActivityItem[]>([]);
   const [visible, setVisible] = useState(false);
   const [info, setInfo] = useState<ActivityItem>();
+  const [currencySymbol, setCurrencySymbol] = useState("");
   const getActivity = async () => {
-    // todo 临时测试
-    const list = [
-      {
-        hash: "sadasdasdas",
-        status: 1,
-        chainId: "1",
-        blockNumber: 1,
-        value: 2,
-        timestamp: new Date().getTime(),
-        to: "account2",
-        from: "account1",
-      },
-    ];
+    const network: ChainInfo | null = getCurrentNetwork();
+    if (!network) {
+      return;
+    }
+    setCurrencySymbol(network.currencySymbol);
+    const accountInfo: AccountInfo | null = getCurrentAccount();
+    const data =
+      (await queryData(
+        store_record,
+        "chainId",
+        network?.chainId.toString() 
+      )) || [];
+    const list = data.filter(
+      (item: ActivityItem) => item.from === accountInfo?.account
+    );
     setList(list);
-    // const network: ChainInfo | null = getCurrentNetwork();
-    // if(!network){
-    //   return;
-    // }
-    // const accountInfo: AccountInfo | null = getCurrentAccount();
-    // const data = await queryData(store_record, 'chainId', network?.chainId.toString()) || []
-    // const list = data.filter((item: ActivityItem) => item.from === accountInfo?.account)
-    // setList(list)
   };
 
   useEffect(() => {
@@ -62,11 +55,19 @@ export default function ActivityList({}) {
               <div className={styles.item}>
                 <div>
                   <div className={styles.type}>发送</div>
-                  <div className={styles.status}>已确认</div>
+                  <div className={styles.statusFail}>
+                  {item.status == 0 ? "失败" : ""}
+                  </div>
+                  <div className={styles.statusSuccess}>
+                  {item.status == 1 ? "已确认" : ""}
+                  </div>
+                  <div className={styles.statusPending}>
+                  {item.status == 0 ? "待处理" : ""}
+                  </div>
                 </div>
                 <div>
-                  <div className={styles.amount}>-1 DCT</div>
-                  <div className={styles.gas}>-$0.0.7 USD</div>
+                  <div className={styles.amount}>{-(Number(item.value) / 10000000000 / 100000000).toFixed(4)} {currencySymbol}</div>
+                  <div className={styles.gas}>-</div>
                 </div>
               </div>
             </div>
@@ -80,7 +81,7 @@ export default function ActivityList({}) {
           setVisible(false);
         }}
         onClose={() => {
-          setVisible(false)
+          setVisible(false);
         }}
         style={{
           "--min-width": "320px",

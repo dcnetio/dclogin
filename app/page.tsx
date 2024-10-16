@@ -7,12 +7,14 @@ import { useEffect, useState } from "react";
 import Header from "@/components/header";
 import { useAppSelector } from "@/lib/hooks";
 import { appState } from "@/context/constant";
-import { getCurrentAccount } from "./index";
+import { getCurrentAccount, getCurrentNetwork } from "./index";
+import { ChainInfo } from "@/types/walletTypes";
 
 export default function Index() {
   const router = useRouter();
   const [balance, setBalance] = useState("0");
   const initState = useAppSelector(state => state.app.initState)
+  const [currencySymbol, setCurrencySymbol] = useState("");
 
   const sendBlance = () => {
     console.log("sendBlance");
@@ -31,7 +33,12 @@ export default function Index() {
     const accountInfo = getCurrentAccount();
     console.log('accountInfo1111', accountInfo)
     if(accountInfo && accountInfo.account){
-      const nb = await ethers.getUserBlance(accountInfo.account) || '0';
+      const network: ChainInfo | null = getCurrentNetwork();
+      if (!network) {
+        return;
+      }
+      setCurrencySymbol(network.currencySymbol);
+      const nb = await ethers.getUserBalance(accountInfo.account) || '0';
       setBalance(nb);
     }
   };
@@ -45,7 +52,7 @@ export default function Index() {
     <div>
       <Header changeNetworkSuccess={changeSuccess} changeAccountSuccess={changeSuccess}/>
       <div className={styles.contentPage}>
-        <h1 className={styles.balance}>{balance} DCT</h1>
+        <h1 className={styles.balance}>{balance} {currencySymbol}</h1>
         <div className={styles.btns}>
           <div className={styles.btnD}>
             <div className={styles.btn} onClick={sendBlance}>

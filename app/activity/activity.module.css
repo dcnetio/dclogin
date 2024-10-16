@@ -19,9 +19,17 @@
       font-size: 1rem;
     }
 
-    .status {
+    .statusSuccess {
       font-size: 0.9rem;
       color: #6a2
+    }
+    .statusFail {
+      font-size: 0.9rem;
+      color: rgb(252, 5, 5)
+    }
+    .statusPending {
+      font-size: 0.9rem;
+      color: rgb(146, 76, 48)
     }
 
     .amount {

@@ -32,20 +32,18 @@ export default function Transfer() {
       onConfirm: async () => {
         console.log("transferBN");
         // todo 调用js转账，需要auth认证
-        const nb =
-          (await ethers.getUserBlance(accountInfo?.account || "")) || "0";
-        setBalance(nb);
         const res = await transfer(
           address,
           amount,
           21000, //todo gasLimit:
-          '21000' // todo gasPrice
+          '0.5' // todo gasPrice
         ); // gasPrice:
         if (res) {
           Toast.show({
             content: "转账成功",
             position: "bottom",
           });
+          router.replace('/activity');
         } else {
           Toast.show({
             content: "转账失败",
@@ -60,6 +58,9 @@ export default function Transfer() {
     console.log("getCurrentAccount info", info);
     if (info) {
       setAccountInfo(info);
+      const nb =
+        (await ethers.getUserBalance(info?.account || "")) || "0";
+      setBalance(nb);
     }
   };
 

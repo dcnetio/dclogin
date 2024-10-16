@@ -1,3 +1,5 @@
+import { fail } from "assert";
+
 const _defaultNetworks = {
   networks: [
     {
@@ -73,5 +75,12 @@ const _appState = {
   init_failed: 3,
 };
 
+const _activeStatus = {
+  fail: 0, // 0:失败,
+  success: 1, // 1:成功,
+  pending: 2, // 2:等待确认
+};
+
 export const defaultNetworks = _defaultNetworks;
 export const appState = _appState;
+export const activeStatus = _activeStatus;

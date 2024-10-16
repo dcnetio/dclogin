@@ -47,8 +47,8 @@ class IndexedDBHelper {
                 resolve('数据添加成功');  
             };  
 
-            request.onerror = () => {  
-                reject('数据添加失败');  
+            request.onerror = (err) => {  
+                reject('数据添加失败', err);  
             };  
         });  
     }  

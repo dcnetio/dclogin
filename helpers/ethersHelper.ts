@@ -56,10 +56,10 @@ const getBlockNumber = async () => {
 };
 
 // 获取用户的余额
-const getUserBlance = async (address:string) => {
+const getUserBalance = async (address:string) => {
   if(jsonRpcProvider){
       const balance = await jsonRpcProvider.getBalance(address);
-      console.log('===============getUserBlance balance', balance);
+      console.log('===============getUserBalance balance', balance);
       const nb = balance > 0 ? (Number(balance) / 10000000000 / 100000000).toFixed(4) : '0';
       return nb
     }
@@ -243,7 +243,7 @@ const ethersHelper = {
   createWalletAccount,
   createWalletAccountWithMnemonic,
   getBlockNumber,
-  getUserBlance,
+  getUserBalance,
   transfer,
   waitTransactionConfirm,
   signMessage,

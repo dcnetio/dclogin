@@ -5,6 +5,7 @@ import styles from "./layout.module.css";
 import StoreProvider from "@/context/storeProvider";
 import VConsole from "@/components/vConsole";
 import Login from "@/components/login";
+import { baseUrl } from "@/context/constant";
 const geistSans = localFont({
   src: "../fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -19,7 +20,11 @@ const geistMono = localFont({
 export const metadata: Metadata = {
   title: "DC Wallet",
   description: "DC Wallet 钱包",
+  icons: [
+    { url: baseUrl + "/favicon.ico", type: "image/x-icon", sizes: "256x256" },
+  ],
 };
+console.log("baseUrl", baseUrl);
 
 export default function RootLayout({
   children,
@@ -34,8 +39,8 @@ export default function RootLayout({
         <div className={styles.container}>
           <StoreProvider>
             <VConsole>
-            <Login />
-            {children}
+              <Login />
+              {children}
             </VConsole>
           </StoreProvider>
         </div>

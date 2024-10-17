@@ -6,10 +6,10 @@ import {CheckShieldFill} from "antd-mobile-icons";
 
 interface AddDAPPNoteProps {
   info: OpenInfo;
-  confirmAdd: () => void;
+  confirmFun: () => void;
 }
 export default function AddDAPPNote(props: AddDAPPNoteProps) {
-  const { info, confirmAdd } = props;
+  const { info, confirmFun } = props;
   return (
     <div className={styles.page}>
       <div className={styles.icon}>
@@ -21,8 +21,8 @@ export default function AddDAPPNote(props: AddDAPPNoteProps) {
         <div className={styles.name}>
           应用：{info.appName} {info.appVersion}
         </div>
-        <div className={styles.note}>添加新网络前，请务必确认其安全性！</div>
       </div>
+      <div className={styles.note}>添加新网络前，请务必确认其安全性！</div>
       <div className={styles.btnD}>
         <div className={styles.btn}>
           <Button
@@ -37,7 +37,7 @@ export default function AddDAPPNote(props: AddDAPPNoteProps) {
           </Button>
         </div>
         <div className={styles.btn}>
-          <Button color="primary" fill="solid" onClick={confirmAdd} block>
+          <Button color="primary" fill="solid" onClick={confirmFun} block>
             允许添加
           </Button>
         </div>

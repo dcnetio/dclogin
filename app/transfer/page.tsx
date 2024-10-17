@@ -7,6 +7,7 @@ import ethers from "@/helpers/ethersHelper";
 import { getCurrentAccount, getCurrentNetwork } from "@/app/index";
 import { useRouter } from "next/navigation";
 import TransAccount from "@/components/transAccount";
+import { baseUrl } from "@/context/constant";
 export default function Transfer() {
   const router = useRouter();
   const [address, setAddress] = useState("");
@@ -23,7 +24,7 @@ export default function Transfer() {
       });
       return;
     }
-    router.push(`/transferConfirm?to=${address}&amount=${amount}&currencySymbol=${currencySymbol}`);
+    router.replace(`${baseUrl}/transferConfirm?to=${address}&amount=${amount}&currencySymbol=${currencySymbol}`);
   };
   const getUserBalance = async () => {
     const info = getCurrentAccount();

@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Header from "@/components/header";
 import { useAppSelector } from "@/lib/hooks";
-import { appState } from "@/context/constant";
+import { appState, baseUrl } from "@/context/constant";
 import { getCurrentAccount, getCurrentNetwork } from "./index";
 import { ChainInfo } from "@/types/walletTypes";
 
@@ -18,10 +18,10 @@ export default function Index() {
 
   const sendBlance = () => {
     console.log("sendBlance");
-    router.push("/transfer");
+    router.push(baseUrl + "/transfer");
   };
   const gotoActivity = () => {
-    router.push("/activity");
+    router.push(baseUrl + "/activity");
   };
 
   const changeSuccess = async () => {

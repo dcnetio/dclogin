@@ -3,6 +3,7 @@
  */
 
 import AddDAPPNote from "@/components/note/addDAPP";
+import SignatureDAPP from "@/components/note/signatureDAPP";
 import React from "react";
 import { createRoot } from "react-dom/client";
 
@@ -17,7 +18,29 @@ export const showAddDAPPNote = (
   root.render(
     React.createElement(AddDAPPNote, {
       info,
-      confirmAdd: () => {
+      confirmFun: () => {
+        document.body.removeChild(container);
+        // 确认结束
+        console.log("确认结束=====");
+        confirmCallback();
+      },
+    })
+  );
+};
+
+export const showSignatureDAPPNote = (
+  appUrl: string,
+  msg: string | Object,
+  confirmCallback: () => void
+) => {
+  const container = document.createElement("div");
+  document.body.appendChild(container);
+  const root = createRoot(container);
+  root.render(
+    React.createElement(SignatureDAPP, {
+      appUrl,
+      msg,
+      confirmFun: () => {
         document.body.removeChild(container);
         // 确认结束
         console.log("确认结束=====");

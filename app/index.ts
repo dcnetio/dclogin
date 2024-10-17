@@ -20,7 +20,7 @@ let currentAccount: AccountInfo | null = null; //当前账号
 
 // 数据库
 import DBHelper from "@/helpers/DBHelper";
-import { showAddDAPPNote } from "@/helpers/noteHelper";
+import { showAddDAPPNote, showSignatureDAPPNote } from "@/helpers/noteHelper";
 
 // 获取查询字符串
 let queryString = "";
@@ -216,12 +216,31 @@ function onDAPPMessage(event: MessageEvent) {
       break;
     case "signMessage": //签名请求
       if (isSignReqMessage(message)) {
-        signMessageHandler(message, event.ports[0]);
+        const data = message.data;
+        if (openerOrigin && data) {
+          //显示提示页面
+          showSignatureDAPPNote(data.appUrl, data.message, () => {
+            signMessageHandler(message, event.ports[0]);
+          });
+          return;
+        } else {
+          signMessageHandler(message, event.ports[0]);
+        }
       }
       break;
     case "signEIP712Message": //签名EIP712请求
       if (isEIP712SignReqMessage(message)) {
-        signEIP712MessageHandler(message, event.ports[0]);
+        const data = message.data;
+        if (openerOrigin && data) {
+          //显示提示页面
+          showSignatureDAPPNote(data.appUrl, data.message, () => {
+            signEIP712MessageHandler(message, event.ports[0]);
+          });
+          return;
+        } else {
+          signEIP712MessageHandler(message, event.ports[0]);
+        }
+        
       }
       break;
     default:

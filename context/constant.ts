@@ -81,6 +81,12 @@ const _activeStatus = {
   pending: 2, // 2:等待确认
 };
 
+let _baseUrl = '/v0_0_1'
+if (process.env.NODE_ENV === 'development') {
+  _baseUrl =''
+}
+
 export const defaultNetworks = _defaultNetworks;
 export const appState = _appState;
 export const activeStatus = _activeStatus;
+export const baseUrl = _baseUrl;

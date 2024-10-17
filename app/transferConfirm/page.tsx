@@ -8,6 +8,7 @@ import { getCurrentAccount, transfer } from "@/app/index";
 import GASItem from '@/components/gasItem'
 import GASTotal from '@/components/gasTotal'
 import { Button, Dialog, Toast } from "antd-mobile";
+import { baseUrl } from "@/context/constant";
 export default function TransferConfirm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -54,7 +55,7 @@ export default function TransferConfirm() {
             content: "转账成功",
             position: "bottom",
           });
-          router.replace('/activity');
+          router.replace(baseUrl + '/activity');
         } else {
           Toast.show({
             content: "转账失败",

@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import { queryData, store_record } from "@/helpers/DBHelper";
 import { getCurrentAccount, getCurrentNetwork } from "@/app/index";
 import { AccountInfo, ChainInfo } from "@/types/walletTypes";
-import styles from "./activity.module.css";
+import styles from "./page.module.css";
 import { ActivityItem } from "@/types/pageType";
-import ActivityInfo from "./compents/info";
+import ActivityInfo from "./components/info";
 export default function ActivityList({}) {
   const [list, setList] = useState<ActivityItem[]>([]);
   const [visible, setVisible] = useState(false);

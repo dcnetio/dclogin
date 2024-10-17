@@ -1,10 +1,10 @@
 "use client";
-import { Button, Dialog, Input, Toast } from "antd-mobile";
-import styles from "./transfer.module.css";
+import { Button, Input, Toast } from "antd-mobile";
+import styles from "./page.module.css";
 import { useEffect, useState } from "react";
 import { AccountInfo, ChainInfo } from "@/types/walletTypes";
 import ethers from "@/helpers/ethersHelper";
-import { getCurrentAccount, getCurrentNetwork, transfer } from "@/app/index";
+import { getCurrentAccount, getCurrentNetwork } from "@/app/index";
 import { useRouter } from "next/navigation";
 import TransAccount from "@/components/transAccount";
 export default function Transfer() {

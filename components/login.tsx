@@ -12,7 +12,6 @@ import { store } from "@/lib/store";
 import { saveInitState } from "@/lib/slices/appSlice";
 import { appState } from "@/context/constant";
 import { ConnectReqMessage } from "@/types/walletTypes";
-import { useAppSelector } from "@/lib/hooks";
 
 // 获取查询字符串
 let queryString = '';

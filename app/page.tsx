@@ -1,6 +1,6 @@
 "use client";
 import ethers from "@/helpers/ethersHelper";
-import styles from "./index.module.css";
+import styles from "./page.module.css";
 import { SendOutline, FileOutline } from "antd-mobile-icons";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";

@@ -9,7 +9,7 @@ export interface ActivityItem {
   from: string;
 }
 
-export interface openInfo {
+export interface OpenInfo {
   appName?: string,
   appIcon?: string,
   appUrl?: string,

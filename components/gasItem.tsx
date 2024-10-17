@@ -1,5 +1,4 @@
 "use client";
-import { Ellipsis } from 'antd-mobile';
 import { useEffect } from 'react';
 import styles from './gasItem.module.css'
 interface GASItemProps {

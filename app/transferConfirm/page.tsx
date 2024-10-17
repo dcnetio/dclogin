@@ -1,5 +1,5 @@
 "use client";
-import styles from "./transferConfirm.module.css";
+import styles from "./page.module.css";
 import { useRouter, useSearchParams } from "next/navigation";
 import TransItem from "@/components/transItem";
 import { useEffect, useState } from "react";

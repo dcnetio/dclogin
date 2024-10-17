@@ -5,7 +5,7 @@ import "antd-mobile/es/global";
 import styles from "./layout.module.css";
 import StoreProvider from "@/context/storeProvider";
 // import VConsole from "@/components/vConsole";
-import Login from "./auth/login";
+import Login from "@/components/login";
 const geistSans = localFont({
   src: "../fonts/GeistVF.woff",
   variable: "--font-geist-sans",

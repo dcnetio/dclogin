@@ -26,7 +26,7 @@ export default function Index() {
   };
 
   const changeSuccess = async () => {
-    // todo 切换成功后，获取账户，切换余额
+    // 切换成功后，获取账户，切换余额
     getUserBalance();
   };
 

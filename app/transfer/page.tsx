@@ -7,10 +7,12 @@ import ethers from "@/helpers/ethersHelper";
 import { getCurrentAccount, getCurrentNetwork } from "@/app/index";
 import { useRouter } from "next/navigation";
 import TransAccount from "@/components/transAccount";
-import { baseUrl } from "@/context/constant";
+import { appState, baseUrl } from "@/context/constant";
+import { useAppSelector } from "@/lib/hooks";
 export default function Transfer() {
   const router = useRouter();
   const [address, setAddress] = useState("");
+  const initState = useAppSelector((state) => state.app.initState);
   const [accountInfo, setAccountInfo] = useState<AccountInfo>();
   const [balance, setBalance] = useState("0");
   const [amount, setAmount] = useState("");
@@ -45,6 +47,11 @@ export default function Transfer() {
   useEffect(() => {
     getUserBalance();
   }, []);
+  useEffect(() => {
+    if (initState == appState.init_success) {
+      getUserBalance();
+    }
+  }, [initState]);
   return (
     <div className={styles.content}>
       <p>自</p>

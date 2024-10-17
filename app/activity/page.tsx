@@ -7,7 +7,10 @@ import { AccountInfo, ChainInfo } from "@/types/walletTypes";
 import styles from "./page.module.css";
 import { ActivityItem } from "@/types/pageType";
 import ActivityInfo from "./components/info";
+import { useAppSelector } from "@/lib/hooks";
+import { appState } from "@/context/constant";
 export default function ActivityList({}) {
+  const initState = useAppSelector((state) => state.app.initState);
   const [list, setList] = useState<ActivityItem[]>([]);
   const [visible, setVisible] = useState(false);
   const [info, setInfo] = useState<ActivityItem>();
@@ -34,13 +37,18 @@ export default function ActivityList({}) {
     setList(list);
   };
 
-  useEffect(() => {
-    getActivity();
-  }, []);
   const gotoDetail = async (item: ActivityItem) => {
     setVisible(true);
     setInfo(item);
   };
+  useEffect(() => {
+    getActivity();
+  }, []);
+  useEffect(() => {
+    if (initState == appState.init_success) {
+      getActivity();
+    }
+  }, [initState]);
   return (
     <div>
       <List>

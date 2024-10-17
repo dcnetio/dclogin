@@ -8,9 +8,11 @@ import { getCurrentAccount, transfer } from "@/app/index";
 import GASItem from '@/components/gasItem'
 import GASTotal from '@/components/gasTotal'
 import { Button, Dialog, Toast } from "antd-mobile";
-import { baseUrl } from "@/context/constant";
+import { appState, baseUrl } from "@/context/constant";
+import { useAppSelector } from "@/lib/hooks";
 export default function TransferConfirm() {
   const router = useRouter();
+  const initState = useAppSelector((state) => state.app.initState);
   const searchParams = useSearchParams();
   const to = searchParams.get("to") || "";
   const amount = searchParams.get("amount") || "";
@@ -69,6 +71,11 @@ export default function TransferConfirm() {
   useEffect(() => {
     getUserBalance();
   }, []);
+  useEffect(() => {
+    if (initState == appState.init_success) {
+      getUserBalance();
+    }
+  }, [initState]);
   return (
     <div>
       <TransItem fromItem={accountInfo} to={to} />

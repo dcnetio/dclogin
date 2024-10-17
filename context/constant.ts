@@ -82,9 +82,10 @@ const _activeStatus = {
 };
 
 let _baseUrl = '/v0_0_1'
-// if (process.env.NODE_ENV === 'development') {
-//   _baseUrl =''
-// }
+if (process.env.NODE_ENV === 'development') {
+  _baseUrl =''
+}
+console.log('_baseUrl === ', _baseUrl)
 
 export const defaultNetworks = _defaultNetworks;
 export const appState = _appState;

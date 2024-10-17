@@ -31,6 +31,9 @@ export default function Header(props: HeaderProps) {
     setNetworkName(name);
     setNetworkVisible(false);
     changeNetworkSuccess?.();
+    if(!accountInfo || !accountInfo.account){
+      getNowAccount();
+    }
   };
   const onAccountSuccess = async (info: AccountInfo) => {
     setAccountInfo(info);

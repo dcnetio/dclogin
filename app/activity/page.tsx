@@ -1,5 +1,5 @@
 "use client";
-import { CenterPopup, List } from "antd-mobile";
+import { CenterPopup, ErrorBlock, List, Space } from "antd-mobile";
 import { useEffect, useState } from "react";
 import { queryData, store_record } from "@/helpers/DBHelper";
 import { getCurrentAccount, getCurrentNetwork } from "@/app/index";
@@ -20,16 +20,12 @@ export default function ActivityList({}) {
     }
     setCurrencySymbol(network.currencySymbol);
     const currentAccount: AccountInfo | null = getCurrentAccount();
-    if(!currentAccount){
+    if (!currentAccount) {
       return;
     }
     setAccountInfo(currentAccount);
     const data =
-      (await queryData(
-        store_record,
-        "from",
-        currentAccount?.account
-      )) || [];
+      (await queryData(store_record, "from", currentAccount?.account)) || [];
     const list = data.filter(
       (item: ActivityItem) => Number(item.chainId) == Number(network?.chainId)
     );
@@ -63,17 +59,20 @@ export default function ActivityList({}) {
                 <div>
                   <div className={styles.type}>发送</div>
                   <div className={styles.statusFail}>
-                  {item.status == 0 ? "失败" : ""}
+                    {item.status == 0 ? "失败" : ""}
                   </div>
                   <div className={styles.statusSuccess}>
-                  {item.status == 1 ? "已确认" : ""}
+                    {item.status == 1 ? "已确认" : ""}
                   </div>
                   <div className={styles.statusPending}>
-                  {item.status == 0 ? "待处理" : ""}
+                    {item.status == 0 ? "待处理" : ""}
                   </div>
                 </div>
                 <div>
-                  <div className={styles.amount}>{-(Number(item.value) / 10000000000 / 100000000).toFixed(4)} {currencySymbol}</div>
+                  <div className={styles.amount}>
+                    {-(Number(item.value) / 10000000000 / 100000000).toFixed(4)}{" "}
+                    {currencySymbol}
+                  </div>
                   <div className={styles.gas}>-</div>
                 </div>
               </div>
@@ -81,6 +80,9 @@ export default function ActivityList({}) {
           </List.Item>
         ))}
       </List>
+      {list.length == 0 && (
+          <ErrorBlock status="default" className={styles.empty} title="暂无数据" fullPage={true}/>
+      )}
       <CenterPopup
         showCloseButton
         visible={visible}
@@ -94,7 +96,15 @@ export default function ActivityList({}) {
           "--min-width": "320px",
         }}
       >
-        {info ? <ActivityInfo info={info} accountInfo={accountInfo} currencySymbol={currencySymbol}/> : <>暂无数据</>}
+        {info ? (
+          <ActivityInfo
+            info={info}
+            accountInfo={accountInfo}
+            currencySymbol={currencySymbol}
+          />
+        ) : (
+          <>暂无数据</>
+        )}
       </CenterPopup>
     </div>
   );

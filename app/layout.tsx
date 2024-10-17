@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import "antd-mobile/es/global";
 import styles from "./layout.module.css";
 import StoreProvider from "@/context/storeProvider";
 import VConsole from "@/components/vConsole";

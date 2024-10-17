@@ -53,33 +53,31 @@ export default function Index() {
       {initState == appState.init_failed ? (
         <div className={styles.note}>空</div>
       ) : (
-        initState == appState.init_success && (
-          <div>
-            <Header
-              changeNetworkSuccess={changeSuccess}
-              changeAccountSuccess={changeSuccess}
-            />
-            <div className={styles.contentPage}>
-              <h1 className={styles.balance}>
-                {balance} {currencySymbol}
-              </h1>
-              <div className={styles.btns}>
-                <div className={styles.btnD}>
-                  <div className={styles.btn} onClick={sendBlance}>
-                    <SendOutline fontSize={24} />
-                  </div>
-                  <span className={styles.txt}>转账</span>
+        <div>
+          <Header
+            changeNetworkSuccess={changeSuccess}
+            changeAccountSuccess={changeSuccess}
+          />
+          <div className={styles.contentPage}>
+            <h1 className={styles.balance}>
+              {balance} {currencySymbol}
+            </h1>
+            <div className={styles.btns}>
+              <div className={styles.btnD}>
+                <div className={styles.btn} onClick={sendBlance}>
+                  <SendOutline fontSize={24} />
                 </div>
-                <div className={styles.btnD}>
-                  <div className={styles.btn} onClick={gotoActivity}>
-                    <FileOutline fontSize={24} />
-                  </div>
-                  <span className={styles.txt}>活动</span>
+                <span className={styles.txt}>转账</span>
+              </div>
+              <div className={styles.btnD}>
+                <div className={styles.btn} onClick={gotoActivity}>
+                  <FileOutline fontSize={24} />
                 </div>
+                <span className={styles.txt}>活动</span>
               </div>
             </div>
           </div>
-        )
+        </div>
       )}
     </div>
   );

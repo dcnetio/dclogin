@@ -4,7 +4,7 @@ import "./globals.css";
 import "antd-mobile/es/global";
 import styles from "./layout.module.css";
 import StoreProvider from "@/context/storeProvider";
-// import VConsole from "@/components/vConsole";
+import VConsole from "@/components/vConsole";
 import Login from "@/components/login";
 const geistSans = localFont({
   src: "../fonts/GeistVF.woff",
@@ -34,10 +34,10 @@ export default function RootLayout({
       >
         <div className={styles.container}>
           <StoreProvider>
-            {/* <VConsole> */}
+            <VConsole>
             <Login />
             {children}
-            {/* </VConsole> */}
+            </VConsole>
           </StoreProvider>
         </div>
       </body>

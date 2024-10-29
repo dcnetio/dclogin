@@ -10,7 +10,7 @@ import {
 } from "@/app/index";
 import { store } from "@/lib/store";
 import { saveInitState } from "@/lib/slices/appSlice";
-import { appState } from "@/context/constant";
+import { appState } from "@/config/constant";
 import { ConnectReqMessage } from "@/types/walletTypes";
 
 // 获取查询字符串
@@ -93,9 +93,7 @@ export default function Login() {
   return (
     <>
       {loading && (
-        // <div className={styles.loginPage}></div>
         <DotLoading color="currentColor" />
-        // </div>
       )}
     </>
   );

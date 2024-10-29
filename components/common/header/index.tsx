@@ -1,12 +1,12 @@
 import { Ellipsis, Popup } from "antd-mobile";
-import styles from "./header.module.css";
-import Network from "@/components/network";
-import Account from "@/components/account";
+import styles from "./index.module.css";
+import Network from "@/components/common/network";
+import Account from "@/components/common/account";
 import { GlobalOutline, DownFill } from "antd-mobile-icons";
 import { useEffect, useState } from "react";
 import { useAppSelector } from "@/lib/hooks";
 import { getCurrentAccount, getCurrentNetwork } from "@/app/index";
-import { appState } from "@/context/constant";
+import { appState } from "@/config/constant";
 import { AccountInfo } from "@/types/walletTypes";
 interface HeaderProps {
   changeNetworkSuccess: () => void;

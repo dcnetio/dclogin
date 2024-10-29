@@ -5,9 +5,9 @@ import "antd-mobile/es/global";
 import { SendOutline, FileOutline } from "antd-mobile-icons";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import Header from "@/components/header";
+import Header from "@/components/common/header";
 import { useAppSelector } from "@/lib/hooks";
-import { appState, baseUrl } from "@/context/constant";
+import { appState, baseUrl } from "@/config/constant";
 import { getCurrentAccount, getCurrentNetwork } from "./index";
 import { ChainInfo } from "@/types/walletTypes";
 

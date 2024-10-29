@@ -1,6 +1,6 @@
 "use client";
 import { useEffect } from 'react';
-import styles from './gasItem.module.css'
+import styles from './index.module.css'
 interface GASItemProps {
   amount: string | undefined;
   currencySymbol: string;

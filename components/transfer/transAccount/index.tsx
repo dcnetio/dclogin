@@ -1,7 +1,7 @@
 "use client";
 import { Ellipsis } from 'antd-mobile';
 import { useEffect } from 'react';
-import styles from './transAccount.module.css'
+import styles from './index.module.css'
 import { AccountInfo } from '@/types/walletTypes';
 interface TransAccountProps {
   accountInfo: AccountInfo | undefined;

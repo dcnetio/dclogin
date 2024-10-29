@@ -1,14 +1,14 @@
 "use client";
 import styles from "./page.module.css";
 import { useRouter, useSearchParams } from "next/navigation";
-import TransItem from "@/components/transItem";
+import TransItem from "@/components/transfer/transItem";
 import { useEffect, useState } from "react";
 import { AccountInfo } from "@/types/walletTypes";
 import { getCurrentAccount, transfer } from "@/app/index";
-import GASItem from '@/components/gasItem'
-import GASTotal from '@/components/gasTotal'
+import GASItem from '@/components/transfer/gasItem'
+import GASTotal from '@/components/transfer/gasTotal'
 import { Button, Dialog, Toast } from "antd-mobile";
-import { appState, baseUrl } from "@/context/constant";
+import { appState, baseUrl } from "@/config/constant";
 import { useAppSelector } from "@/lib/hooks";
 export default function TransferConfirm() {
   const router = useRouter();

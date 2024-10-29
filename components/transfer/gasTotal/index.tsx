@@ -1,6 +1,6 @@
 "use client";
 import { useEffect } from 'react';
-import styles from './gasTotal.module.css'
+import styles from './index.module.css'
 interface GASTotalProps {
   amount: string | undefined;
   currencySymbol: string;

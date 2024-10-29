@@ -8,7 +8,7 @@ import styles from "./page.module.css";
 import { ActivityItem } from "@/types/pageType";
 import ActivityInfo from "./components/info";
 import { useAppSelector } from "@/lib/hooks";
-import { appState } from "@/context/constant";
+import { appState } from "@/config/constant";
 export default function ActivityList({}) {
   const initState = useAppSelector((state) => state.app.initState);
   const [list, setList] = useState<ActivityItem[]>([]);

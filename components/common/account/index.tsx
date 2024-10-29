@@ -1,5 +1,5 @@
 import { List, Toast } from "antd-mobile";
-import styles from "./account.module.css";
+import styles from "./index.module.css";
 import { useEffect, useState } from "react";
 import { getAllData, store_account } from "@/helpers/DBHelper";
 import { AccountInfo } from "@/types/walletTypes";

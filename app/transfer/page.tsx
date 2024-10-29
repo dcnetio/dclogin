@@ -6,8 +6,8 @@ import { AccountInfo, ChainInfo } from "@/types/walletTypes";
 import ethers from "@/helpers/ethersHelper";
 import { getCurrentAccount, getCurrentNetwork } from "@/app/index";
 import { useRouter } from "next/navigation";
-import TransAccount from "@/components/transAccount";
-import { appState, baseUrl } from "@/context/constant";
+import TransAccount from "@/components/transfer/transAccount";
+import { appState, baseUrl } from "@/config/constant";
 import { useAppSelector } from "@/lib/hooks";
 export default function Transfer() {
   const router = useRouter();

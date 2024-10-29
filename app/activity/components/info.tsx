@@ -2,7 +2,7 @@
 import { ActivityItem } from "@/types/pageType";
 import styles from "./info.module.css";
 import { Toast } from "antd-mobile";
-import TransItem from "@/components/transItem";
+import TransItem from "@/components/transfer/transItem";
 import { AccountInfo } from "@/types/walletTypes";
 interface ActivityProps {
   info: ActivityItem;

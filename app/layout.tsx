@@ -4,8 +4,8 @@ import "./globals.css";
 import styles from "./layout.module.css";
 import StoreProvider from "@/context/storeProvider";
 import VConsole from "@/components/vConsole";
-import Login from "@/components/login";
-import { baseUrl } from "@/context/constant";
+import Login from "@/components/auth/login";
+import { baseUrl } from "@/config/constant";
 const geistSans = localFont({
   src: "../fonts/GeistVF.woff",
   variable: "--font-geist-sans",

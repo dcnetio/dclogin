@@ -1,7 +1,7 @@
 "use client";
 import utilHelper from "@/helpers/utilHelper";
 import ethersHelper from "@/helpers/ethersHelper";
-import { defaultNetworks } from "@/context/constant";
+import { defaultNetworks } from "@/config/constant";
 import {
   ChainInfo,
   ConnectReqMessage,

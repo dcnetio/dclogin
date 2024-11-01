@@ -1,31 +1,62 @@
 {
   "common": {
-    "confirm": "confirm",
-    "cancel": "cancel"
+    "confirm": "确认",
+    "cancel": "取消",
+    "continue": "继续",
+    "edit": "编辑",
+    "from": "自",
+    "to": "至"
   },
   "transfer": {
-    "transfer": "transfer",
-    "amount": "amount",
-    "currency": "currency",
-    "to": "to",
-    "balance": "balance",
-    "activity": "activity",
+    "transfer": "转账",
+    "number": "数额",
+    "amount": "金额",
+    "maximum_amount": "最大金额",
+    "current_amount": "当前金额",
+    "currency": "币种",
+    "to": "收款人",
+    "balance": "余额",
+    "activity": "活动",
     "estimated_cost": "预估费用",
-    "maximum_cost": "最大费用"
+    "maximum_cost": "最大费用",
+    "fuel_cost": "燃料费",
+    "total": "总计",
+    "transaction": "交易",
+    "transaction_time": "交易时间",
+    "enter_info": "请输入转账信息",
+    "enter_address": "输入公钥或者地址",
+    "enter_number": "输入转账数量",
+    "confirm_transfer": "确认转账",
+    "confirm_to": "确认给账户",
+    "transfer_success": "转账成功",
+    "transfer_failed": "转账失败",
+    "transfer_pending": "转账待确认",
+    "get_transferlist_failed": "获取交易记录失败"
   },
   "network": {
-    "network": "network",
-    "choose": "Network choose",
-    "add": "Add network",
-    "connect_failed": "Network connect failed"
+    "network": "网络",
+    "choose": "选择网络",
+    "add": "添加网络",
+    "connect_failed": "连接失败",
+    "get_failed": "用户获取网络信息失败",
+    "switch_failed": "切换网络失败"
   },
   "account": {
-    "choose": "Account choose",
-    "switch_failed": "Switch account failed",
-    "empty": "No account info"
+    "choose": "选择账号",
+    "switch_failed": "切换账号失败",
+    "empty": "暂无账号信息",
+    "creating": "账号正在创建中，请稍后",
+    "create_success": "创建账号成功",
+    "create_failed": "创建账号失败",
+    "auth_failed": "用户授权失败",
+    "import_wallet_failed": "导入钱包失败",
+    "wallet_no_account": "钱包里的用户账号不存在",
+    "get_info_failed": "用户获取账号信息失败",
+    "wallet_not_connect": "用户未连接钱包",
+    "no_account": "用户没有可用账号"
   },
   "DAPP": {
-    "app": "app:",
+    "app": "应用：",
     "add_title": "是否允许添加新的网络?",
     "add_tip": "添加新网络前，请务必确认其安全性！",
     "allow_add": "允许添加"
@@ -37,6 +68,23 @@
     "sign_tip": "确认开始签名前，请务必确认其安全性！",
     "allow_sign": "允许签名",
     "sign_account": "签名账号：",
-    "sign_msg": "签名消息："
+    "sign_msg": "签名消息：",
+    "sign_failed": "签名失败"
+  },
+  "status": {
+    "success": "成功",
+    "failed": "失败",
+    "waiting": "待处理",
+    "pending": "等待中",
+    "confirmed": "已确认"
+  },
+  "activity": {
+    "copy_success": "复制成功",
+    "copy_transaction_id": "复制交易ID",
+    "send": "发送",
+    "sending": "正在发送"
+  },
+  "empty": {
+    "no_data": "暂无数据"
   }
 }

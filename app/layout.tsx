@@ -20,7 +20,7 @@ const geistMono = localFont({
 
 export const metadata: Metadata = {
   title: "DC Wallet",
-  description: "DC Wallet 钱包",
+  description: "DC Wallet",
   icons: [
     { url: baseUrl + "/favicon.ico", type: "image/x-icon", sizes: "256x256" },
   ],

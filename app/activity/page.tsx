@@ -9,7 +9,9 @@ import { ActivityItem } from "@/types/pageType";
 import ActivityInfo from "./components/info";
 import { useAppSelector } from "@/lib/hooks";
 import { appState } from "@/config/constant";
+import { useTranslation} from 'react-i18next';
 export default function ActivityList({}) {
+  const {t} = useTranslation();
   const initState = useAppSelector((state) => state.app.initState);
   const [list, setList] = useState<ActivityItem[]>([]);
   const [visible, setVisible] = useState(false);
@@ -65,15 +67,15 @@ export default function ActivityList({}) {
               </div>
               <div className={styles.item}>
                 <div>
-                  <div className={styles.type}>发送</div>
+                  <div className={styles.type}>{t('activity.send')}</div>
                   <div className={styles.statusFail}>
-                    {item.status == 0 ? "失败" : ""}
+                    {item.status == 0 ? t('status.failed') : ""}
                   </div>
                   <div className={styles.statusSuccess}>
-                    {item.status == 1 ? "已确认" : ""}
+                    {item.status == 1 ? t('status.confirmed') : ""}
                   </div>
                   <div className={styles.statusPending}>
-                    {item.status == 0 ? "待处理" : ""}
+                    {item.status == 0 ? t('status.waiting') : ""}
                   </div>
                 </div>
                 <div>
@@ -89,7 +91,7 @@ export default function ActivityList({}) {
         ))}
       </List>
       {list.length == 0 && (
-          <ErrorBlock status="default" className={styles.empty} title="暂无数据" fullPage={true}/>
+          <ErrorBlock status="default" className={styles.empty} title={t('empty.no_data')} fullPage={true}/>
       )}
       <CenterPopup
         showCloseButton
@@ -111,7 +113,7 @@ export default function ActivityList({}) {
             currencySymbol={currencySymbol}
           />
         ) : (
-          <>暂无数据</>
+          <>{t('empty.no_data')}</>
         )}
       </CenterPopup>
     </div>

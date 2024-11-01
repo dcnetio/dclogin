@@ -1,9 +1,42 @@
 {
+  "common": {
+    "confirm": "confirm",
+    "cancel": "cancel"
+  },
   "transfer": {
     "transfer": "transfer",
     "amount": "amount",
     "currency": "currency",
     "to": "to",
-    "balance": "balance"
+    "balance": "balance",
+    "activity": "activity",
+    "estimated_cost": "预估费用",
+    "maximum_cost": "最大费用"
+  },
+  "network": {
+    "network": "network",
+    "choose": "Network choose",
+    "add": "Add network",
+    "connect_failed": "Network connect failed"
+  },
+  "account": {
+    "choose": "Account choose",
+    "switch_failed": "Switch account failed",
+    "empty": "No account info"
+  },
+  "DAPP": {
+    "app": "app:",
+    "add_title": "是否允许添加新的网络?",
+    "add_tip": "添加新网络前，请务必确认其安全性！",
+    "allow_add": "允许添加"
+  },
+  "sign": {
+    "sign_title": "是否允许传入的信息进行签名?",
+    "sign_tip0": "将对",
+    "sign_tip1": "发送的以下消息进行签名：",
+    "sign_tip": "确认开始签名前，请务必确认其安全性！",
+    "allow_sign": "允许签名",
+    "sign_account": "签名账号：",
+    "sign_msg": "签名消息："
   }
 }

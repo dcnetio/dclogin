@@ -3,11 +3,13 @@ import styles from "./index.module.css";
 import { useEffect, useState } from "react";
 import { getAllData, store_account } from "@/helpers/DBHelper";
 import { AccountInfo } from "@/types/walletTypes";
+import { useTranslation} from 'react-i18next';
 interface AccountProps {
   onSuccess: (info: AccountInfo) => void; // 定义onSuccess为一个无参数无返回值的函数
 }
 export default function Account(props: AccountProps) {
   const { onSuccess } = props;
+  const { t } = useTranslation();
   const [list, setList] = useState([]);
   const changeAccount = async (info: AccountInfo) => {
     console.log("changeAccount");
@@ -19,7 +21,7 @@ export default function Account(props: AccountProps) {
       return;
     }
     Toast.show({
-      content: "切换失败",
+      content: t('account.switch_failed'),
       position: "bottom",
     });
   };
@@ -34,7 +36,7 @@ export default function Account(props: AccountProps) {
   }, []);
   return (
     <div>
-      <List header="选择账号">
+      <List header={t('account.choose')}>
         {list.map((item: AccountInfo, index) => (
           <List.Item
             key={"account" + index}
@@ -46,7 +48,7 @@ export default function Account(props: AccountProps) {
           </List.Item>
         ))}
         {list.length == 0 && (
-          <div className={styles.emptyTxt}>暂无账号信息</div>
+          <div className={styles.emptyTxt}>{t('account.empty')}</div>
         )}
       </List>
     </div>

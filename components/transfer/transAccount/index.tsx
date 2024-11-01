@@ -1,8 +1,8 @@
 "use client";
 import { Ellipsis } from 'antd-mobile';
-import { useEffect } from 'react';
 import styles from './index.module.css'
 import { AccountInfo } from '@/types/walletTypes';
+import { useTranslation} from 'react-i18next';
 interface TransAccountProps {
   accountInfo: AccountInfo | undefined;
   balance: string;
@@ -10,8 +10,7 @@ interface TransAccountProps {
 }
 export default function TransAccount(props: TransAccountProps) {
   const {accountInfo, balance, currencySymbol} = props;
-  useEffect(() => {
-  }, []);
+  const {t} = useTranslation();
  
   return (
     <div className={styles.account}>
@@ -21,7 +20,7 @@ export default function TransAccount(props: TransAccountProps) {
         content={accountInfo?.account || ""}
         className={styles.txt}
       />
-      <div className={styles.balance}>当前余额：{balance} {currencySymbol}</div>
+      <div className={styles.balance}>{t('transfer.current_amount')}：{balance} {currencySymbol}</div>
     </div>
   );
 }

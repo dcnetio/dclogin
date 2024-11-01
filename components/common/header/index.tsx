@@ -8,12 +8,14 @@ import { useAppSelector } from "@/lib/hooks";
 import { getCurrentAccount, getCurrentNetwork } from "@/app/index";
 import { appState } from "@/config/constant";
 import { AccountInfo } from "@/types/walletTypes";
+import { useTranslation} from 'react-i18next';
 interface HeaderProps {
   changeNetworkSuccess: () => void;
   changeAccountSuccess: () => void;
 }
 export default function Header(props: HeaderProps) {
   const { changeNetworkSuccess, changeAccountSuccess } = props;
+  const { t } = useTranslation()
   const [networkName, setNetworkName] = useState("");
   const [networkVisible, setNetworkVisible] = useState(false);
   const [accountVisible, setAccountVisible] = useState(false);
@@ -66,7 +68,7 @@ export default function Header(props: HeaderProps) {
     <div className={styles.header}>
       <div className={styles.network} onClick={showChangeNetwork}>
         <GlobalOutline fontSize={16} />
-        <span className={styles.txt}>{networkName ? networkName.split(" ")[0] : "网络"}</span>
+        <span className={styles.txt}>{networkName ? networkName.split(" ")[0] : t('network.network')}</span>
       </div>
       <div className={styles.accountD}>
         <div className={styles.account} onClick={showChangeAccount}>

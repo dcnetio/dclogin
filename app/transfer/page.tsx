@@ -9,8 +9,10 @@ import { useRouter } from "next/navigation";
 import TransAccount from "@/components/transfer/transAccount";
 import { appState, baseUrl } from "@/config/constant";
 import { useAppSelector } from "@/lib/hooks";
+import { useTranslation} from 'react-i18next';
 export default function Transfer() {
   const router = useRouter();
+  const {t} = useTranslation();
   const [address, setAddress] = useState("");
   const initState = useAppSelector((state) => state.app.initState);
   const [accountInfo, setAccountInfo] = useState<AccountInfo>();
@@ -21,7 +23,7 @@ export default function Transfer() {
   const gotoConfirm = () => {
     if (!balance || !amount) {
       Toast.show({
-        content: "请输入转账信息",
+        content: t('transfer.enter_info'),
         position: "bottom",
       });
       return;
@@ -54,12 +56,12 @@ export default function Transfer() {
   }, [initState]);
   return (
     <div className={styles.content}>
-      <p>自</p>
+      <p>{t('common.from')}</p>
       <TransAccount accountInfo={accountInfo} balance={balance} currencySymbol={currencySymbol}/>
-      <p>至</p>
+      <p>{t('common.to')}</p>
       <div className={styles.input}>
         <Input
-          placeholder="输入公钥或者地址"
+          placeholder={t('transfer.enter_address')}
           value={address}
           onChange={setAddress}
           onEnterPress={gotoConfirm}
@@ -68,7 +70,7 @@ export default function Transfer() {
       </div>
       <div className={styles.input}>
         <Input
-          placeholder={"输入转账数量" + currencySymbol}
+          placeholder={t('transfer.enter_number') + currencySymbol}
           value={amount}
           onChange={setAmount}
           onEnterPress={gotoConfirm}
@@ -85,12 +87,12 @@ export default function Transfer() {
             }}
             block
           >
-            取消
+            {t('common.cancel')}
           </Button>
         </div>
         <div className={styles.btn}>
           <Button color="primary" fill="solid" onClick={gotoConfirm} block>
-            继续
+          {t('common.continue')}
           </Button>
         </div>
       </div>

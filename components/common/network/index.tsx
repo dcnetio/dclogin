@@ -3,12 +3,14 @@ import styles from "./index.module.css";
 import { useEffect, useState } from "react";
 import { getAllData, store_chain } from "@/helpers/DBHelper";
 import { getCurrentNetwork, switchChain } from "@/app/index";
-import { ChainInfo} from '@/types/walletTypes';      
+import { ChainInfo} from '@/types/walletTypes';   
+import { useTranslation} from 'react-i18next';   
 interface NetworkProps {
   onSuccess: (name: string) => void; // 定义onSuccess为一个无参数无返回值的函数
 }
 export default function Network(props: NetworkProps) {
   const { onSuccess } = props;
+  const { t } = useTranslation();
   const [list, setList] = useState([]);
   const [chainId, setChainId] = useState(0);
   const getNetworks = async () => {
@@ -35,13 +37,13 @@ export default function Network(props: NetworkProps) {
       return;
     }
     Toast.show({
-      content: "连接失败",
+      content: t("network.connect_failed"),
       position: "bottom",
     });
   };
   return (
     <div>
-      <List header="选择网络">
+      <List header={t("network.choose")}>
         {list.map((item: ChainInfo, index) => (
           <List.Item
             key={"network" + index}
@@ -57,7 +59,7 @@ export default function Network(props: NetworkProps) {
       </List>
       <div className={styles.btn}>
         <Button color="primary" size="large" block>
-          添加网络
+          {t("network.add" )}
         </Button>
       </div>
     </div>

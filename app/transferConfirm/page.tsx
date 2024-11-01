@@ -10,8 +10,10 @@ import GASTotal from '@/components/transfer/gasTotal'
 import { Button, Dialog, Toast } from "antd-mobile";
 import { appState, baseUrl } from "@/config/constant";
 import { useAppSelector } from "@/lib/hooks";
+import { useTranslation } from "react-i18next";
 export default function TransferConfirm() {
   const router = useRouter();
+  const { t } = useTranslation();
   const initState = useAppSelector((state) => state.app.initState);
   const searchParams = useSearchParams();
   const to = searchParams.get("to") || "";
@@ -28,7 +30,7 @@ export default function TransferConfirm() {
   const transferBN = async () => {
     if (!amount) {
       Toast.show({
-        content: "请输入转账信息",
+        content: t('transfer.enter_info'),
         position: "bottom",
       });
       return;
@@ -37,12 +39,12 @@ export default function TransferConfirm() {
     Dialog.confirm({
       content: (
         <div className={styles.pop}>
-          <div className={styles.sTitle}>确认转账：</div>
-          <div className={styles.address}>确认给账户 {to} 转账 {amount} {currencySymbol}</div>
+          <div className={styles.sTitle}>{t('transfer.confirm_transfer')}：</div>
+          <div className={styles.address}>{t('transfer.confirm_to')} {to} {t('transfer.transfer')} {amount} {currencySymbol}</div>
         </div>
       ),
-      confirmText: "确认",
-      cancelText: "取消",
+      confirmText: t('common.confirm'),
+      cancelText: t('common.cancel'),
       onConfirm: async () => {
         console.log("transferBN");
         // todo 调用js转账，需要auth认证
@@ -54,13 +56,13 @@ export default function TransferConfirm() {
         ); // gasPrice:
         if (res) {
           Toast.show({
-            content: "转账成功",
+            content: t('transfer.transfer_success'),
             position: "bottom",
           });
           router.replace(baseUrl + '/activity');
         } else {
           Toast.show({
-            content: "转账失败",
+            content: t('transfer.transfer_failed'),
             position: "bottom",
           });
         }
@@ -82,7 +84,7 @@ export default function TransferConfirm() {
       <div className={styles.content}>
         <div className={styles.balanceD}>
           <div className={styles.tag}>
-            正在发送{currencySymbol}
+            {t('activity.sending')}{currencySymbol}
           </div>
           <div className={styles.balance}>{amount} {currencySymbol}</div>
         </div>
@@ -99,12 +101,12 @@ export default function TransferConfirm() {
             }}
             block
           >
-            取消
+            {t('common.cancel')}
           </Button>
         </div>
         <div className={styles.btn}>
           <Button color="primary" fill="solid" onClick={transferBN} block>
-            确认
+            {t('common.confirm')}
           </Button>
         </div>
       </div>

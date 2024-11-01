@@ -10,7 +10,7 @@ import { useAppSelector } from "@/lib/hooks";
 import { appState, baseUrl } from "@/config/constant";
 import { getCurrentAccount, getCurrentNetwork } from "./index";
 import { ChainInfo } from "@/types/walletTypes";
-import { useTranslation, Trans } from 'react-i18next';
+import { useTranslation} from 'react-i18next';
 
 
 
@@ -79,7 +79,7 @@ export default function Index() {
                 <div className={styles.btn} onClick={gotoActivity}>
                   <FileOutline fontSize={24} />
                 </div>
-                <span className={styles.txt}>活动</span>
+                <span className={styles.txt}>{t('transfer.activity')}</span>
               </div>
             </div>
           </div>

@@ -1,0 +1,9 @@
+{
+  "transfer": {
+    "transfer": "transfer",
+    "amount": "amount",
+    "currency": "currency",
+    "to": "to",
+    "balance": "balance"
+  }
+}

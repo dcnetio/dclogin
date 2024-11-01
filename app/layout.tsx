@@ -6,6 +6,7 @@ import StoreProvider from "@/context/storeProvider";
 import VConsole from "@/components/vConsole";
 import Login from "@/components/auth/login";
 import { baseUrl } from "@/config/constant";
+import Locales from "./locales";
 const geistSans = localFont({
   src: "../fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -38,10 +39,12 @@ export default function RootLayout({
       >
         <div className={styles.container}>
           <StoreProvider>
-            <VConsole>
-              <Login />
-              {children}
-            </VConsole>
+            <Locales>
+              <VConsole>
+                <Login />
+                {children}
+              </VConsole>
+            </Locales>
           </StoreProvider>
         </div>
       </body>

@@ -10,15 +10,20 @@ import { useAppSelector } from "@/lib/hooks";
 import { appState, baseUrl } from "@/config/constant";
 import { getCurrentAccount, getCurrentNetwork } from "./index";
 import { ChainInfo } from "@/types/walletTypes";
+import { useTranslation, Trans } from 'react-i18next';
+
+
+
+
 
 export default function Index() {
   const router = useRouter();
+  const { t } = useTranslation();
+  console.log("t(transfer)", t('transfer.transfer'));
   const [balance, setBalance] = useState("0");
   const initState = useAppSelector((state) => state.app.initState);
   const [currencySymbol, setCurrencySymbol] = useState("");
-
-  const sendBlance = () => {
-    console.log("sendBlance");
+  const sendBalance = () => {
     router.push(baseUrl + "/transfer");
   };
   const gotoActivity = () => {
@@ -65,10 +70,10 @@ export default function Index() {
             </h1>
             <div className={styles.btns}>
               <div className={styles.btnD}>
-                <div className={styles.btn} onClick={sendBlance}>
+                <div className={styles.btn} onClick={sendBalance}>
                   <SendOutline fontSize={24} />
                 </div>
-                <span className={styles.txt}>转账</span>
+                <span className={styles.txt}>{t('transfer.transfer')}</span>
               </div>
               <div className={styles.btnD}>
                 <div className={styles.btn} onClick={gotoActivity}>

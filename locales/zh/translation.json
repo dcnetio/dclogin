@@ -1,0 +1,9 @@
+{
+  "transfer": {
+    "transfer": "转账",
+    "amount": "金额",
+    "currency": "币种",
+    "to": "收款人",
+    "balance": "余额"
+  }
+}

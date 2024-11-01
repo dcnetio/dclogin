@@ -1,4 +1,8 @@
-import { fail } from "assert";
+
+const _I18N_LANGUAGES = {
+  ZH: 'zh',
+  EN: 'en', 
+}
 
 const _defaultNetworks = {
   networks: [
@@ -91,3 +95,4 @@ export const defaultNetworks = _defaultNetworks;
 export const appState = _appState;
 export const activeStatus = _activeStatus;
 export const baseUrl = _baseUrl;
+export const I18N_LANGUAGES = _I18N_LANGUAGES;

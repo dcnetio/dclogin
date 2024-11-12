@@ -39,7 +39,8 @@
     "add": "添加网络",
     "connect_failed": "连接失败",
     "get_failed": "用户获取网络信息失败",
-    "switch_failed": "切换网络失败"
+    "switch_failed": "切换网络失败",
+    "disconnect": "断开连接"
   },
   "account": {
     "choose": "选择账号",
@@ -48,6 +49,7 @@
     "creating": "账号正在创建中，请稍后",
     "create_success": "创建账号成功",
     "create_failed": "创建账号失败",
+    "auth_doing": "用户授权中，请稍后",
     "auth_failed": "用户授权失败",
     "import_wallet_failed": "导入钱包失败",
     "wallet_no_account": "钱包里的用户账号不存在",

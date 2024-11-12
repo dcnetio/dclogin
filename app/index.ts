@@ -298,16 +298,20 @@ async function checkAccountAndCreate() {
     return;
   }
   if (accounts.length > 1) {
-    //todo 跳出选择账号框,让用户选择账号
-    // todo wq 选择账号？？
-    return;
+    //todo 跳出选择账号框,让用户选择账号， wq 选择账号？？觉得不需要选择，应该是之前切换的账号
+    const accountinfo = await DBHelper.getData(
+      DBHelper.store_keyinfo,
+      "chosedAccount"
+    );
+    currentAccount = accountinfo; // 赋值
+    return currentAccount;
   }
   await DBHelper.addData(DBHelper.store_keyinfo, {
     key: "chosedAccount",
     value: accounts[0],
   });
   currentAccount = accounts[0]; // 赋值
-  return accounts[0];
+  return currentAccount;
 }
 
 // 收到连接钱包请求处理,message格式为{version:'v0_0_1',type: 'connect',data: {appName:'test',appIcon:'',appUrl: 'http://localhost:8080',appVersion: '1.0.0'}}
@@ -316,18 +320,6 @@ async function _connectCmdHandler(
   bool: boolean,
   port: MessagePort | null = null
 ) {
-  // todo 临时处理
-  // const connectingApp = {
-  //   appName: "test",
-  //   appIcon: "",
-  //   appUrl: "http://localhost:8080",
-  //   appVersion: "1.0.0",
-  // };
-  // //显示提示页面
-  // showAddDAPPNote(connectingApp, () => {
-  //   console.log('asdasds')
-  // });
-  // return;
   const connectingApp = message.data;
   const choseedAccount = await checkAccountAndCreate();
   // 取出网络列表
@@ -377,15 +369,37 @@ async function _connectCmdHandler(
       }
     }
   }
-  //todo 异步获取当前网络状态,更新钱包网络状态
+  // 异步获取当前网络状态,更新钱包网络状态
+  const flag = await ethersHelper.checkNetworkStatus();
+  if (flag) {
+    networkStatus = NetworkStauts.connected;
+  } else {
+    networkStatus = NetworkStauts.disconnect;
+  }
+  if(networkStatus == NetworkStauts.disconnect){
+    // 网络问题，则提示不继续
+    Toast.show({
+      content: i18n.t('network.disconnect'),
+      position: 'bottom',
+    });
+    return;
+  }
 
-  //todo 账号存在后,跳出授权框,提示用户授权连接对应的APP(这个界面可以切换网络)
+  //todo 账号存在后,跳出授权框,提示用户授权连接对应的APP(这个界面可以切换网络)，wq？？觉得应该是提示，不需要用户确认，如果app进来的则前面已经提示确认过了，直接签名即可
 
+  Toast.show({
+    content: i18n.t('account.auth_doing'),
+    position: 'bottom',
+    duration: 0
+  });
+  
   //用户确认后,调出webauthn进行校验,并提取出userHandleHash
   const userHandleHash = await authenticateWithPasskey(
     choseedAccount.credentialId
   );
   console.log("userHandleHash success", userHandleHash);
+  //待测试 关闭状态等待框
+  Toast.clear();
   if (!userHandleHash) {
     //待测试 跳出提示框,提示用户授权失败
     Toast.show({
@@ -524,9 +538,18 @@ async function generateWalletAccount(seedAccount: string) {
     });
     return null;
   }
-  //todo 跳出授权框,提示用户进行签名(显示所有签名信息,以及签名申请的APP信息)
+  //todo 跳出授权框,提示用户进行签名(显示所有签名信息,以及签名申请的APP信息)，wq ？？觉得应该是提示，不需要用户确认，如果app进来的则前面已经提示确认过了，直接签名即可
+
+  Toast.show({
+    content: i18n.t('account.auth_doing'),
+    position: 'bottom',
+    duration: 0
+  });
+  
   //用户确认后,调出webauthn进行校验,并提取出userHandleHash
   const userHandleHash = await authenticateWithPasskey(account.credentialId);
+  //待测试 关闭状态等待框
+  Toast.clear();
   if (!userHandleHash) {
     //待测试 跳出提示框,提示用户授权失败
     Toast.show({

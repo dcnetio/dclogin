@@ -2,8 +2,8 @@
  * 提醒
  */
 
-import AddDAPPNote from "@/components/note/addDAPP";
-import SignatureDAPP from "@/components/note/signatureDAPP";
+import AddDAPPNote from "./addDAPP";
+import SignatureDAPP from "./signatureDAPP";
 import React from "react";
 import { createRoot } from "react-dom/client";
 

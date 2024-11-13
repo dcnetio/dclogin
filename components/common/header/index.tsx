@@ -89,22 +89,10 @@ export default function Header(props: HeaderProps) {
         onClose={() => {
           setNetworkVisible(false);
         }}
-        bodyClassName={styles.popup}
       >
-        <Network onSuccess={onNetworkSuccess} />
+        <Network onSuccess={onNetworkSuccess}/>
       </Popup>
-      <Popup
-        visible={accountVisible}
-        onMaskClick={() => {
-          setAccountVisible(false);
-        }}
-        onClose={() => {
-          setAccountVisible(false);
-        }}
-        bodyClassName={styles.popup}
-      >
-        <Account onSuccess={onAccountSuccess} />
-      </Popup>
+      <Account onSuccess={onAccountSuccess} visible={accountVisible}/>
     </div>
   );
 }

@@ -86,8 +86,11 @@ export default function Login() {
   };
 
   useEffect(() => {
-    console.log("===============login");
-    init();
+    console.log("===============login", window.location.href);
+    if(window.location.href.indexOf('/test') == -1 && window.location.href.indexOf('/iframe') == -1){
+      console.log("===============login1111", window.location.href);
+      init();
+    }
   }, []);
 
   return (

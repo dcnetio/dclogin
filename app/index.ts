@@ -127,7 +127,7 @@ async function _initBaseinfo() {
     //   //从数据库中获取上次打开的账号信息
     //   const accountinfo = await DBHelper.getData(
     //     DBHelper.store_keyinfo,
-    //     "chosedAccount"
+    //     "choosedAccount"
     //   );
     //   if (accountinfo && accountinfo.value) {
     //     currentAccount = accountinfo.value;
@@ -336,21 +336,21 @@ async function checkAccountAndCreate(
     return currentAccount;
   } else {
     // 钱包页面自己打开
-    console.log("11111111111111111111钱包页面自己打开， 默认选择chosedAccount");
+    console.log("11111111111111111111钱包页面自己打开， 默认选择choosedAccount");
     const accountinfo = await DBHelper.getData(
       DBHelper.store_keyinfo,
-      "chosedAccount"
+      "choosedAccount"
     );
     if (accountinfo && accountinfo.value) {
       currentAccount = accountinfo.value;
       console.log(
-        "11111111111111111111钱包页面自己打开， 默认选择chosedAccount currentAccount",
+        "11111111111111111111钱包页面自己打开， 默认选择choosedAccount currentAccount",
         currentAccount
       );
       return currentAccount;
     } else {
       await DBHelper.addData(DBHelper.store_keyinfo, {
-        key: "chosedAccount",
+        key: "choosedAccount",
         value: accounts[0],
       });
       currentAccount = accounts[0]; // 赋值

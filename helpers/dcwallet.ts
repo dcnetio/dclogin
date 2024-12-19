@@ -375,7 +375,7 @@ const waitForWalletLoaded = async (walletWindow:Window|null,timeout:number) => {
     if (openerFlag == 'true') {
         waitTimeCount = 3;
     }
-    // 开启定时器500ms检查一次,第一次等待3秒,如果没有加载完成,则发送轮询请求
+    // 开启定时器500ms检查一次,第一次等待1.5秒,如果没有加载完成,则发送轮询请求
     return new Promise((resolve) => {
         let messageChannel = new MessageChannel();
         const onMessage = (event:MessageEvent) => {

@@ -321,7 +321,6 @@ export default function WalletEl() {
   }, []);
   return (
     <>
-    
       <div>
         <span>{accountInfo.account}</span>
           <Button color="primary" fill="outline" onClick={openConnect}>

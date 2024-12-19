@@ -17,7 +17,7 @@ export default function Account(props: AccountProps) {
     console.log("changeAccount");
     // todo 切换账号，获取账号信息，并进行存储store
     await DBHelper.updateData(DBHelper.store_keyinfo, {
-      key: "chosedAccount",
+      key: "choosedAccount",
       value: info,
     });
     const bool = true;

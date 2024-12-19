@@ -123,17 +123,17 @@ async function _initBaseinfo() {
         }
       }
     }
-    // if (currentAccount == null) {
-    //   //从数据库中获取上次打开的账号信息
-    //   const accountinfo = await DBHelper.getData(
-    //     DBHelper.store_keyinfo,
-    //     "choosedAccount"
-    //   );
-    //   if (accountinfo && accountinfo.value) {
-    //     currentAccount = accountinfo.value;
-    //     console.log("111111111111111 _initBaseinfo currentAccount", currentAccount);
-    //   }
-    // }
+    if (currentAccount == null) {
+      //从数据库中获取上次打开的账号信息
+      const accountinfo = await DBHelper.getData(
+        DBHelper.store_keyinfo,
+        "choosedAccount"
+      );
+      if (accountinfo && accountinfo.value) {
+        currentAccount = accountinfo.value;
+        console.log("111111111111111 _initBaseinfo currentAccount", currentAccount);
+      }
+    }
   } catch (e) {
     console.error("获取网络信息失败:", e);
   }

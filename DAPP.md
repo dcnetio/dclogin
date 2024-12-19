@@ -19,3 +19,17 @@ subgraph DAPP签名:
 签名消息验证是否通过 -- 通过 --> 返回签名信息
 end
 ```
+
+DAPP交互逻辑
+```mermaid
+graph TD
+subgraph DAPP交互逻辑:
+打开钱包页面 --> 创建MessageChannel --> port1监听 --> walletLoaded
+打开钱包页面 --> onMessage监听 --> walletLoaded
+打开钱包页面 --> 定时任务0.5s
+定时任务0.5s --> 1.5s内等待walletLoaded --> walletLoaded
+定时任务0.5s --> 1.5s后发送checkWalletLoaded --> walletLoaded
+定时任务0.5s --> 超时 --> 清除0.5s定时任务+移除port1监听+移除onMessage监听
+walletLoaded --> 清除0.5s定时任务+移除port1监听+移除onMessage监听
+end
+```

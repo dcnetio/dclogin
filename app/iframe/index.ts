@@ -1,6 +1,6 @@
 "use client";
 // 定义一个变量，用于存储BroadcastChannel对象
-const version = 'v_0_0_1';
+const version = 'v0_0_1';
 import utilHelper from '@/helpers/utilHelper';
 import ethersHelper from "@/helpers/ethersHelper";
 let dcWalletChannel = null;
@@ -23,21 +23,30 @@ const parentOrigin = location;
 
 
 
-
+const urlWithOrigin = 'http://127.0.0.1:3000';
+const walletWindow1 = window.open(urlWithOrigin, 'walletWindow'); 
+let ii = 0;
+setInterval(() => {
+    const messageChannel = new MessageChannel();
+    messageChannel.port1 = window.opener.postMessage({aaa:ii++}, 'http://127.0.0.1:3000');
+    // walletWindow1?.postMessage({aaa:ii++}, 'http://127.0.0.1:3000');
+}, 10000)
 
 /*******************************接收父窗口指令消息***********************************/
 
 // 监听父窗口发送的消息
 window.addEventListener('message', function(event) {
+    console.log('========onParentMessage event', event);
     //判断消息来源
-    if (event.origin !== parentOrigin || event.ports.length == 0) {
-        return;
-    }
+    // if (event.origin !== parentOrigin || event.ports.length == 0) {
+    //     return;
+    // }
     // 对消息进行json解析
     let message = {};
     if (typeof event.data === 'object') {
         try {
             message = event.data;
+            console.log('========onParentMessage message', message);
             if (message.version !== version) { //版本不一致,不处理
                 console.error('Received invalid version:', message.version,"expected version:",version);
                 return;
@@ -54,6 +63,7 @@ window.addEventListener('message', function(event) {
     if (message.type == 'channelPort') {//接收父窗口创建与钱包通信的通信通道
         dcWalletChannel = event.ports[0];
         dcWalletChannel.onmessage = onWalletChannelMessage;
+        dcWalletChannel.postMessage({type: 'loaded1111'});
         return;
     }
     DAPPChannel = event.ports[0];
@@ -108,6 +118,9 @@ function initConfigResponse(flag, message) {
 function connect() {
     // 等待钱包加载完成
     walletLoadedFlag = false;
+    // todo 临时测试
+    walletLoadedFlag = true;
+    // todo end
     waitForFlagToTrue(() => walletLoadedFlag)
     .then((flag) => { //钱包已经加载完成
         if (flag) {
@@ -115,7 +128,7 @@ function connect() {
         } 
     }).catch((e) => {  //超时不处理
       console.log(e);
-      walletConnected(false, "", "",err);
+      walletConnected(false, "", "", e);
       return e;
     });
 }

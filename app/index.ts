@@ -44,21 +44,27 @@ const NetworkStauts = Object.freeze({
 });
 let networkStatus: number = NetworkStauts.disconnect; //网络状态
 
+
 /*******************************初始化需要完成操作***********************************/
 
 // 监听DAPP窗口发送的消息;
 if (typeof window !== "undefined") {
-  window.addEventListener("message", function (event) {
-    //判断消息来源
-    if (event.origin !== openerOrigin) {
-      return;
-    }
-    onDAPPMessage(event);
-  });
+  if (window.location.href.indexOf('/test') == -1 && window.location.href.indexOf('/iframe') == -1) {
+    console.log("===============监听DAPP窗口发送的消息 11111", window.location.href);
+
+    window.addEventListener("message", function (event) {
+      console.log('========onDAPPMessage event', event.data);
+      //判断消息来源
+      if (event.origin !== openerOrigin) {
+        return;
+      }
+      onDAPPMessage(event);
+    });
+  }
 }
 
 //初始化网络列表,并连接最近切换的网络
-async function _initNetworks() {
+async function _initNetworks () {
   try {
     const chains = await DBHelper.getAllData(DBHelper.store_chain);
     if (chains.length == 0) {
@@ -104,7 +110,7 @@ async function _initNetworks() {
 }
 
 // 初始化基本信息(初始化网络为最近切换的网络,账号为最近切换的账号)
-async function _initBaseinfo() {
+async function _initBaseinfo () {
   try {
     if (currentChain == null) {
       //从数据库中获取上次打开的网络信息
@@ -141,31 +147,34 @@ async function _initBaseinfo() {
 
 //启动定时器,定时检查网络状态,如果网络状态为断开,则重新连接
 let checkCount = 0;
-setInterval(async () => {
-  if (networkStatus != NetworkStauts.connected) {
-    //如果网络状态为断开,则m每秒检查一次网络状态
-    const flag = await ethersHelper.checkNetworkStatus();
-    if (flag) {
-      networkStatus = NetworkStauts.connected;
-      checkCount = 0;
-    }
-  } else {
-    checkCount++;
-    if (checkCount > 10) {
-      //每10秒检查一次网络状态
+if (window.location.href.indexOf('/test') == -1 && window.location.href.indexOf('/iframe') == -1) {
+  console.log("===============启动定时器 11111", window.location.href);
+
+  setInterval(async () => {
+    if (networkStatus != NetworkStauts.connected) {
+      //如果网络状态为断开,则m每秒检查一次网络状态
       const flag = await ethersHelper.checkNetworkStatus();
       if (flag) {
         networkStatus = NetworkStauts.connected;
-      } else {
-        networkStatus = NetworkStauts.disconnect;
+        checkCount = 0;
       }
-      checkCount = 0;
+    } else {
+      checkCount++;
+      if (checkCount > 10) {
+        //每10秒检查一次网络状态
+        const flag = await ethersHelper.checkNetworkStatus();
+        if (flag) {
+          networkStatus = NetworkStauts.connected;
+        } else {
+          networkStatus = NetworkStauts.disconnect;
+        }
+        checkCount = 0;
+      }
     }
-  }
-}, 1000);
-
+  }, 1000);
+}
 // 通知DAPP,钱包加载完成
-function _initCommChannel() {
+function _initCommChannel () {
   //通知DAPP,钱包加载完成
   const message = {
     type: "walletLoaded",
@@ -179,7 +188,7 @@ function _initCommChannel() {
 }
 
 // 来自DAPP的消息处理
-function onDAPPMessage(event: MessageEvent) {
+function onDAPPMessage (event: MessageEvent) {
   let message = null;
   // 对消息进行json解析
   message = event.data;
@@ -193,10 +202,10 @@ function onDAPPMessage(event: MessageEvent) {
     //判断版本号
     return;
   }
-  if (message.origin != openerOrigin) {
-    //判断消息来源
-    return;
-  }
+  // if (message.origin != openerOrigin) {
+  //   //判断消息来源
+  //   return;
+  // }
   //判断消息类型,message格式为{type: 'getUserInfo', data: {}}
   switch (message.type) {
     case "checkWalletLoaded": //检查钱包是否加载完成请求
@@ -209,6 +218,8 @@ function onDAPPMessage(event: MessageEvent) {
       event.ports[0].postMessage(sendMessage); //利用messageChannel通知页面加载完成,当浏览器不支持window.opener会走这个流程
       break;
     case "connect": //连接钱包请求
+      console.log("connect=====", message);
+      console.log("event=====", event);
       if (isConnectReqMessage(message)) {
         const connectingApp = message.data;
         if (openerOrigin && connectingApp) {
@@ -256,16 +267,16 @@ function onDAPPMessage(event: MessageEvent) {
 }
 
 // 判断是否已经有账号,如果没有,则创建账号
-async function checkAccountAndCreate(
+async function checkAccountAndCreate (
   connectingApp:
     | {
-        appName: string;
-        appIcon?: string;
-        appUrl: string;
-        appVersion: string;
-        account?: string;
-        chainId?: string;
-      }
+      appName: string;
+      appIcon?: string;
+      appUrl: string;
+      appVersion: string;
+      account?: string;
+      chainId?: string;
+    }
     | undefined
 ) {
   if (currentAccount) {
@@ -364,7 +375,7 @@ async function checkAccountAndCreate(
 }
 
 // 收到连接钱包请求处理,message格式为{version:'v0_0_1',type: 'connect',data: {appName:'test',appIcon:'',appUrl: 'http://localhost:8080',appVersion: '1.0.0'}}
-async function _connectCmdHandler(
+async function _connectCmdHandler (
   message: ConnectReqMessage,
   bool: boolean,
   port: MessagePort | null = null
@@ -572,7 +583,7 @@ async function _connectCmdHandler(
 }
 
 // 根据账号,生成签名的钱包账号对象
-async function generateWalletAccount(seedAccount: string) {
+async function generateWalletAccount (seedAccount: string) {
   let account = null;
   // 数据库里获取账号信息
   try {
@@ -653,7 +664,7 @@ async function generateWalletAccount(seedAccount: string) {
         }
 }
 **/
-async function signMessageHandler(
+async function signMessageHandler (
   message: SignReqMessage,
   port: MessagePort | null = null
 ) {
@@ -761,7 +772,7 @@ async function signMessageHandler(
 //             }
 //         }
 // }
-async function signEIP712MessageHandler(
+async function signEIP712MessageHandler (
   message: EIP712SignReqMessage,
   port: MessagePort | null = null
 ) {
@@ -821,7 +832,7 @@ async function signEIP712MessageHandler(
 /*******************************基础功能***********************************/
 
 //添加网络
-async function _addChain(chainInfo: ChainInfo) {
+async function _addChain (chainInfo: ChainInfo) {
   if (chainInfo == null) {
     return;
   }
@@ -838,7 +849,7 @@ async function _addChain(chainInfo: ChainInfo) {
 }
 
 //修改网络
-async function _updateChain(chainInfo: ChainInfo) {
+async function _updateChain (chainInfo: ChainInfo) {
   if (chainInfo == null) {
     return;
   }
@@ -855,7 +866,7 @@ async function _updateChain(chainInfo: ChainInfo) {
 }
 
 // 切换网络
-async function _switchChain(chainInfo: ChainInfo) {
+async function _switchChain (chainInfo: ChainInfo) {
   try {
     DBHelper.updateData(DBHelper.store_keyinfo, {
       key: "connectedChain",
@@ -878,7 +889,7 @@ async function _switchChain(chainInfo: ChainInfo) {
 }
 
 // 转账
-async function _transfer(
+async function _transfer (
   to: string,
   amount: string,
   gasLimit: number,
@@ -975,7 +986,7 @@ async function _transfer(
 }
 
 //刷新指定交易记录状态,用户点击状态为等待中的交易记录时,调用此方法
-async function _refreshRecordStatus(hash: string) {
+async function _refreshRecordStatus (hash: string) {
   //从数据库中获取交易记录
   const record = await DBHelper.getData(DBHelper.store_record, hash);
   if (!record) {
@@ -987,7 +998,7 @@ async function _refreshRecordStatus(hash: string) {
     return;
   }
   if (currentChain == null || currentChain.chainId != record.chainId) {
-    //跳出提示框,开始切换网络
+    //todo 跳出提示框,开始切换网络
     //数据库查出网络信息
     const chainInfo = await DBHelper.getData(
       DBHelper.store_chain,
@@ -1012,7 +1023,7 @@ async function _refreshRecordStatus(hash: string) {
 }
 
 // 创建钱包账号
-async function createWalletAccount() {
+async function createWalletAccount () {
   let resAccount = {};
   const accountInfo = await ethersHelper.createWalletAccount();
   if (accountInfo) {
@@ -1058,7 +1069,7 @@ async function createWalletAccount() {
   }
 }
 
-async function importAesKeyFromHash(userHandleHash: ArrayBuffer) {
+async function importAesKeyFromHash (userHandleHash: ArrayBuffer) {
   // Convert the userHandleHash (32-byte) into a CryptoKey object
   return await crypto.subtle.importKey(
     "raw", // Raw format of the key
@@ -1070,7 +1081,7 @@ async function importAesKeyFromHash(userHandleHash: ArrayBuffer) {
 }
 
 // 注册新的 Passkey
-async function registerPasskey() {
+async function registerPasskey () {
   const challenge = window.crypto.getRandomValues(new Uint8Array(32));
   //生成可识别的时间戳:格式为2021-01-01 12:00:00
   const timestamp = new Date().toLocaleString("en-GB", { timeZone: "UTC" });
@@ -1121,7 +1132,7 @@ async function registerPasskey() {
 }
 
 // 使用 Passkey 进行身份验证,并提取出userHandleHash
-async function authenticateWithPasskey(credentialId: string) {
+async function authenticateWithPasskey (credentialId: string) {
   const challenge = window.crypto.getRandomValues(new Uint8Array(32));
 
   const arrayBuffer = utilHelper.base64UrlToArrayBuffer(credentialId);

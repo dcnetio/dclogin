@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import Header from "@/components/common/header";
 import { useAppSelector } from "@/lib/hooks";
 import { appState, baseUrl } from "@/config/constant";
-import { getCurrentAccount, getCurrentNetwork } from "./index";
+import { getCurrentAccount, getCurrentNetwork } from "@/app/index";
 import { ChainInfo } from "@/types/walletTypes";
 import { useTranslation} from 'react-i18next';
 

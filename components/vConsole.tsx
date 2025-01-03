@@ -9,7 +9,7 @@ export default function VConsoleEl({children}: { children: React.ReactNode }) {
         const VConsole = (await import('vconsole')).default;
         vConsole = new VConsole();
       };
-      loadVConsole();
+      // loadVConsole();
       return () => {
         if (vConsole) vConsole.destroy();
       };

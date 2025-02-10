@@ -149,31 +149,33 @@ async function _initBaseinfo () {
 
 //启动定时器,定时检查网络状态,如果网络状态为断开,则重新连接
 let checkCount = 0;
-if (window.location.href.indexOf('/test') == -1 && window.location.href.indexOf('/iframe') == -1) {
-  console.log("===============启动定时器 11111", window.location.href);
+if (typeof window !== "undefined") {
+  if (window.location.href.indexOf('/test') == -1 && window.location.href.indexOf('/iframe') == -1) {
+    console.log("===============启动定时器 11111", window.location.href);
 
-  setInterval(async () => {
-    if (networkStatus != NetworkStauts.connected) {
-      //如果网络状态为断开,则m每秒检查一次网络状态
-      const flag = await ethersHelper.checkNetworkStatus();
-      if (flag) {
-        networkStatus = NetworkStauts.connected;
-        checkCount = 0;
-      }
-    } else {
-      checkCount++;
-      if (checkCount > 10) {
-        //每10秒检查一次网络状态
+    setInterval(async () => {
+      if (networkStatus != NetworkStauts.connected) {
+        //如果网络状态为断开,则m每秒检查一次网络状态
         const flag = await ethersHelper.checkNetworkStatus();
         if (flag) {
           networkStatus = NetworkStauts.connected;
-        } else {
-          networkStatus = NetworkStauts.disconnect;
+          checkCount = 0;
         }
-        checkCount = 0;
+      } else {
+        checkCount++;
+        if (checkCount > 10) {
+          //每10秒检查一次网络状态
+          const flag = await ethersHelper.checkNetworkStatus();
+          if (flag) {
+            networkStatus = NetworkStauts.connected;
+          } else {
+            networkStatus = NetworkStauts.disconnect;
+          }
+          checkCount = 0;
+        }
       }
-    }
-  }, 1000);
+    }, 1000);
+  }
 }
 // 通知DAPP,钱包加载完成
 function _initCommChannel () {

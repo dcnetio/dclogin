@@ -30,9 +30,11 @@ import { ChooseAccount } from "@/components/common/accountHelper";
 
 // 获取查询字符串
 let queryString = "";
+console.log("window1111");
 if (typeof window !== "undefined") {
   queryString = window.location.search;
 }
+console.log("window2222");
 const urlParams = new URLSearchParams(queryString);
 const location = urlParams.get("origin");
 const openerOrigin = location;

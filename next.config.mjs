@@ -1,7 +1,17 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: false,
+  // 7. 禁用不需要的功能  
+  reactStrictMode: false,  
+  poweredByHeader: false,  
+  // reactStrictMode: false,
+  // 1. 启用静态导出  
   output: "export",// 导出静态页面
+  
+  // 2. 禁用服务端特性  
+  experimental: {  
+    serverActions: false,  
+    serverComponents: false,  
+  },  
   assetPrefix: "/v0_0_1",
   // 控制URL尾部是否自动添加斜杠
   trailingSlash: true, // 或者false，根据你的需求

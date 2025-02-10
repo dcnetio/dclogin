@@ -1,4 +1,4 @@
-import { Ellipsis, Popup } from "antd-mobile";
+import { Popup } from "antd-mobile";
 import styles from "./index.module.css";
 import Network from "@/components/common/network";
 import Account from "@/components/common/account";
@@ -76,11 +76,6 @@ export default function Header(props: HeaderProps) {
           {accountInfo?.account && accountInfo?.account.length > 8 ? `${accountInfo?.account.slice(0, 6)}...${accountInfo?.account.slice(-4)}` : ''}
           <DownFill fontSize={12} className={styles.arrow} />
         </div>
-        {/* <Ellipsis
-          direction="middle"
-          content={accountInfo?.account || ''}
-          className={styles.account}
-        /> */}
       </div>
       <Popup
         visible={networkVisible}

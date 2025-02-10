@@ -3,8 +3,8 @@
 const version = 'v0_0_1';
 import utilHelper from '@/helpers/utilHelper';
 import ethersHelper from "@/helpers/ethersHelper";
-let dcWalletChannel = null;
-let DAPPChannel = null;
+let dcWalletChannel: MessagePort | null = null;
+let DAPPChannel: MessagePort | null = null;
 let walletLoadedFlag = false; //钱包已加载标志
 // Dapp信息
 let appName = '';
@@ -16,21 +16,21 @@ console.log('**************iframejs')
 const queryString = window.location.search;  
 // 使用 URLSearchParams 解析查询字符串  
 const urlParams = new URLSearchParams(queryString);  
-let  location = urlParams.get('parentOrigin');
+const  location = urlParams.get('parentOrigin');
 // 获取特定参数的值  
 const parentOrigin = location;
 
 
 
 
-const urlWithOrigin = 'http://127.0.0.1:3000';
-const walletWindow1 = window.open(urlWithOrigin, 'walletWindow'); 
-let ii = 0;
-setInterval(() => {
-    const messageChannel = new MessageChannel();
-    messageChannel.port1 = window.opener.postMessage({aaa:ii++}, 'http://127.0.0.1:3000');
-    // walletWindow1?.postMessage({aaa:ii++}, 'http://127.0.0.1:3000');
-}, 10000)
+// const urlWithOrigin = 'http://127.0.0.1:3000';
+// const walletWindow1 = window.open(urlWithOrigin, 'walletWindow'); 
+// let ii = 0;
+// setInterval(() => {
+//     const messageChannel = new MessageChannel();
+//     messageChannel.port1 = window.opener.postMessage({aaa:ii++}, 'http://127.0.0.1:3000');
+//     // walletWindow1?.postMessage({aaa:ii++}, 'http://127.0.0.1:3000');
+// }, 10000)
 
 /*******************************接收父窗口指令消息***********************************/
 
@@ -42,7 +42,7 @@ window.addEventListener('message', function(event) {
     //     return;
     // }
     // 对消息进行json解析
-    let message = {};
+    let message = {version: '', type: '', data: null};
     if (typeof event.data === 'object') {
         try {
             message = event.data;
@@ -88,7 +88,7 @@ window.addEventListener('message', function(event) {
 
 
 // Dapp初始化配置
-function initConfig(config) {
+function initConfig(config: any) {
     // 初始化配置
     if (config.appUrl != parentOrigin){
         initConfigResponse(false, 'The appUrl is not equal to the parentOrigin');
@@ -101,8 +101,8 @@ function initConfig(config) {
 }
 
 // 发送初始化结果消息给父窗口
-function initConfigResponse(flag, message) {
-    let sendMessage = {
+function initConfigResponse(flag: boolean, message: any) {
+    const sendMessage = {
         version: version,
         type: 'initConfigResponse',
         data: {
@@ -134,7 +134,7 @@ function connect() {
 }
 
 //发送钱包连接成功消息给父窗口
-function walletConnected(successFlag,account, chainId,responseData) {
+function walletConnected(successFlag: boolean,account: string, chainId: string,responseData: any) {
     const sendMessage = {
         version: version,
         type: 'walletConnected',
@@ -156,7 +156,7 @@ function walletConnected(successFlag,account, chainId,responseData) {
     message: 'test message',
 }
 **/
-function signMessage(message) {
+function signMessage(message: any) {
     const data = message.data;
     if ( data.message == null) {
         signMessageResponse(false, 'The message is null');
@@ -176,7 +176,7 @@ function signMessage(message) {
 }
 
 //发送签名成功消息给父窗口
-function signMessageResponse(successFlag, message) {
+function signMessageResponse(successFlag: boolean, message: any) {
     const sendMessage = {
         version: version,
         type: 'signMessageResponse',
@@ -196,7 +196,7 @@ function signMessageResponse(successFlag, message) {
     message: 'test message',
 }
 **/
-function signEIP712Message(message) {
+function signEIP712Message(message: any) {
     const data = message.data;
     //校验数据
     if (data.message == null ) {
@@ -227,7 +227,7 @@ function signEIP712Message(message) {
 
 
 //发送签名EIP712成功消息给父窗口
-function signEIP712MessageResponse(successFlag, message) {
+function signEIP712MessageResponse(successFlag: boolean, message: any) {
     const sendMessage = {
         version: version,
         type: 'signEIP712MessageResponse',
@@ -241,7 +241,7 @@ function signEIP712MessageResponse(successFlag, message) {
 
 
 // 发送反馈结果消息给父窗口的DAPP
-function responseToDAPP(message) {
+function responseToDAPP(message: any) {
     if (DAPPChannel != null) {
         const needCloseChannel = DAPPChannel
         DAPPChannel = null;
@@ -259,7 +259,7 @@ function responseToDAPP(message) {
 /*********************************与钱包页面通信处理************************************/
 
  // 利用messageChannel通信,发送消息给钱包页面并等待返回
- const sendMessageToWallet = async (message,timeout) =>  {
+ const sendMessageToWallet = async (message: any,timeout: number) =>  {
     if (!dcWalletChannel) {
       console.error('dcWalletChannel is null');
       return null;
@@ -276,7 +276,7 @@ function responseToDAPP(message) {
             resolve(event);
         }
         try {
-            dcWalletChannel.postMessage(message,[messageChannel.port2]);
+            dcWalletChannel?.postMessage(message,[messageChannel.port2]);
         }catch (e) {
             clearTimeout(timer);
             messageChannel.port1.close();
@@ -300,7 +300,7 @@ function connectWallet() {
         }
     }
     //创建新的messageChannel
-    sendMessageToWallet(message,60000).then((event) => {
+    sendMessageToWallet(message,60000).then((event: any) => {
         const message = event.data;
         connectResponse(message.data);
     }).catch((e) => {
@@ -311,10 +311,14 @@ function connectWallet() {
 }
 
 // 钱包页面响应连接消息处理,data格式为 {success: true, account: '', chainId: '', signature: ''}
-async function connectResponse(message) {
+async function connectResponse(message: any) {
     try {
+        if(parentOrigin == null || parentOrigin == "") {
+            walletConnected(false, "", "",message);
+            return;
+        }
        //签名校验,如果校验失败,则不处理
-       const flag = await ethersHelper.verifySignature(parentOrigin,message.signature, message.account);
+       const flag = ethersHelper.verifySignature(parentOrigin, message.signature, message.account);
        if (!flag) {
            console.log('verifySignature failed');
             return;
@@ -328,7 +332,7 @@ async function connectResponse(message) {
 }
 
 // 发送签名消息给钱包页面,并等待返回
-function requsetForSignMessage(orignMessage) {
+function requsetForSignMessage(orignMessage: any) {
     const data = orignMessage.data;
     // 向钱包网页发送签名消息
     const message = {
@@ -346,7 +350,7 @@ function requsetForSignMessage(orignMessage) {
         }
     }
     //创建新的messageChannel
-    sendMessageToWallet(message,60000).then((event) => {
+    sendMessageToWallet(message,60000).then((event: any) => {
         const message = event.data;
         responseForsignMessage(orignMessage,message.data);
     }).catch((e) => {
@@ -357,19 +361,19 @@ function requsetForSignMessage(orignMessage) {
 
 
 // 钱包页面响应签名消息处理
-async function responseForsignMessage(orignMessage,message) {
+async function responseForsignMessage(orignMessage: any,message: any) {
     try {
         if (message.success){
             const waitData = orignMessage.data;
             if (orignMessage.type == 'hex') {
                 orignMessage = utilHelper.hexToUint8Array(waitData.message);
-                const flag =  await ethersHelper.verifySignature(waitData,message.signature, waitData.account);
+                const flag =  ethersHelper.verifySignature(waitData, message.signature, waitData.account);
                 if (!flag) {
                     console.log('verifySignature failed');
                     return;
                 }
             }else {
-                const flag =  await ethersHelper.verifySignature(waitData.message,message.signature, waitData.account);
+                const flag =  ethersHelper.verifySignature(waitData.message, message.signature, waitData.account);
                 if (!flag) {
                     console.log('verifySignature failed');
                     return;
@@ -385,7 +389,7 @@ async function responseForsignMessage(orignMessage,message) {
 }
 
 // 发送签名EIP712消息给钱包页面
-function requestSignEIP712Message(orignMessage) {
+function requestSignEIP712Message(orignMessage: any) {
     const data = orignMessage.data;
     // 向钱包网页发送签名消息
     const message = {
@@ -406,7 +410,7 @@ function requestSignEIP712Message(orignMessage) {
         }
     }
    //创建新的messageChannel
-    sendMessageToWallet(message,60000).then((event) => {
+    sendMessageToWallet(message,60000).then((event: any) => {
         const message = event.data;
         responseForSignEIP712Message(orignMessage,message.data);
     }).catch((e) => {
@@ -416,12 +420,12 @@ function requestSignEIP712Message(orignMessage) {
 
 
 // 钱包页面响应签名EIP712消息处理
-async function responseForSignEIP712Message(orignMessage,message) {
+async function responseForSignEIP712Message(orignMessage: any,message: any) {
     try {
         const waitData = orignMessage.data;
         if (message.success){
-            const flag =  await ethersHelper.verifyEIP712Signature(waitData.primaryType,waitData.domain,
-                waitData.types,waitData.message,message.signature, waitData.account);
+            const flag =  ethersHelper.verifyEIP712Signature(waitData.primaryType, waitData.domain,
+                waitData.types, waitData.message, message.signature, waitData.account);
             if (!flag) {
                 console.log('verifyEIP712Signature failed');
                 return;
@@ -441,7 +445,7 @@ async function responseForSignEIP712Message(orignMessage,message) {
 /*********************************接收钱包页面响应信息处理************************************/
 
 // 钱包页面发送的消息处理,只处理加载成功消息,其他消息通过messageChannel处理
-function onWalletChannelMessage(event) {
+function onWalletChannelMessage(event: MessageEvent) {
     const message = event.data;
     // 对消息进行json解析
     if (!message) {
@@ -471,11 +475,11 @@ function onWalletChannelMessage(event) {
 /*********************************其他处理************************************/
 
 //等待标志位变化
-function waitForFlagToTrue(getWalletLoadedFlag) {  
+function waitForFlagToTrue(getWalletLoadedFlag: any) {
     return new Promise((resolve,reject) => {  
         const interval = setInterval(() => { 
            //发送是否加载完成确认请求
-           let flag = getWalletLoadedFlag();
+           const flag = getWalletLoadedFlag();
             if (flag) {  
                 clearInterval(interval);  
                 clearTimeout(timeout);

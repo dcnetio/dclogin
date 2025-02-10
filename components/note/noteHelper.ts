@@ -30,7 +30,7 @@ export const showAddDAPPNote = (
 
 export const showSignatureDAPPNote = (
   appUrl: string,
-  msg: string | Object,
+  msg: string | object,
   confirmCallback: () => void
 ) => {
   const container = document.createElement("div");

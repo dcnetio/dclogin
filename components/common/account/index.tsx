@@ -1,6 +1,6 @@
 import { List, Popup, Toast } from "antd-mobile";
 import styles from "./index.module.css";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import DBHelper, { getAllData, store_account } from "@/helpers/DBHelper";
 import { AccountInfo } from "@/types/walletTypes";
 import { useTranslation } from "react-i18next";

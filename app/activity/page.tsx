@@ -1,5 +1,5 @@
 "use client";
-import { CenterPopup, ErrorBlock, List, Space } from "antd-mobile";
+import { CenterPopup, ErrorBlock, List } from "antd-mobile";
 import { useEffect, useState } from "react";
 import { queryData, store_record } from "@/helpers/DBHelper";
 import { getCurrentAccount, getCurrentNetwork } from "@/app/index";

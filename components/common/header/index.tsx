@@ -72,14 +72,15 @@ export default function Header(props: HeaderProps) {
       </div>
       <div className={styles.accountD}>
         <div className={styles.account} onClick={showChangeAccount}>
-          {accountInfo?.name}
+          {/* {accountInfo?.name} */}
+          {accountInfo?.account && accountInfo?.account.length > 8 ? `${accountInfo?.account.slice(0, 6)}...${accountInfo?.account.slice(-4)}` : ''}
           <DownFill fontSize={12} className={styles.arrow} />
         </div>
-        <Ellipsis
+        {/* <Ellipsis
           direction="middle"
           content={accountInfo?.account || ''}
           className={styles.account}
-        />
+        /> */}
       </div>
       <Popup
         visible={networkVisible}

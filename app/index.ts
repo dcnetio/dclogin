@@ -38,6 +38,7 @@ console.log("window2222");
 const urlParams = new URLSearchParams(queryString);
 const location = urlParams.get("origin");
 const openerOrigin = location;
+let iframeChannel = null;
 
 const NetworkStauts = Object.freeze({
   connecting: 0,
@@ -220,6 +221,16 @@ function onDAPPMessage (event: MessageEvent) {
         },
       };
       event.ports[0].postMessage(sendMessage); //利用messageChannel通知页面加载完成,当浏览器不支持window.opener会走这个流程
+      break;
+    case "channelPort": 
+      iframeChannel = event.ports[0];
+      iframeChannel.onmessage = onDAPPMessage;
+      const loadedMessage = {
+        type: "loaded",
+        version: version,
+        origin: openerOrigin,
+      };
+      iframeChannel.postMessage(loadedMessage); //利用messageChannel通知页面加载完成,当浏览器不支持window.opener会走这个流程
       break;
     case "connect": //连接钱包请求
       console.log("connect=====", message);

@@ -1,5 +1,5 @@
 "use client";
-// import iframe from "./index";
+import "./index";
 export default function Iframe() {
   // console.log("Iframe", iframe);
   return (

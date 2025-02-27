@@ -6,6 +6,7 @@ import ethersHelper from "@/helpers/ethersHelper";
 let dcWalletChannel: MessagePort | null = null;
 let DAPPChannel: MessagePort | null = null;
 let walletLoadedFlag = false; //钱包已加载标志
+const walletOrigin = "http://localhost:3000"; //
 // Dapp信息
 let appName = '';
 let appIcon = '';
@@ -26,13 +27,13 @@ const parentOrigin = location;
 
 
 
-// const urlWithOrigin = 'http://127.0.0.1:3000';
+// const urlWithOrigin = 'http://locahost:3000';
 // const walletWindow1 = window.open(urlWithOrigin, 'walletWindow'); 
 // let ii = 0;
 // setInterval(() => {
 //     const messageChannel = new MessageChannel();
-//     messageChannel.port1 = window.opener.postMessage({aaa:ii++}, 'http://127.0.0.1:3000');
-//     // walletWindow1?.postMessage({aaa:ii++}, 'http://127.0.0.1:3000');
+//     messageChannel.port1 = window.opener.postMessage({aaa:ii++}, 'http://locahost:3000');
+//     // walletWindow1?.postMessage({aaa:ii++}, 'http://locahost:3000');
 // }, 10000)
 
 /*******************************接收父窗口指令消息***********************************/
@@ -67,7 +68,7 @@ if (typeof window !== "undefined") {
         if (message.type == 'channelPort') {//接收父窗口创建与钱包通信的通信通道
             dcWalletChannel = event.ports[0];
             dcWalletChannel.onmessage = onWalletChannelMessage;
-            dcWalletChannel.postMessage({type: 'loaded1111'});
+            dcWalletChannel.postMessage({type: 'loaded'});
             return;
         }
         DAPPChannel = event.ports[0];
@@ -123,9 +124,6 @@ function initConfigResponse(flag: boolean, message: any) {
 function connect() {
     // 等待钱包加载完成
     walletLoadedFlag = false;
-    // todo 临时测试
-    walletLoadedFlag = true;
-    // todo end
     waitForFlagToTrue(() => walletLoadedFlag)
     .then((flag) => { //钱包已经加载完成
         if (flag) {
@@ -281,7 +279,8 @@ function responseToDAPP(message: any) {
             resolve(event);
         }
         try {
-            dcWalletChannel?.postMessage(message,[messageChannel.port2]);
+            // window.postMessage(message, walletOrigin, [messageChannel.port2])
+            dcWalletChannel?.postMessage(message,  [messageChannel.port2]);
         }catch (e) {
             clearTimeout(timer);
             messageChannel.port1.close();
@@ -301,7 +300,7 @@ function connectWallet() {
             appName: appName,
             appIcon: appIcon,
             appUrl: parentOrigin,
-            appversion: appVersion
+            appVersion: appVersion
         }
     }
     //创建新的messageChannel
@@ -348,7 +347,7 @@ function requsetForSignMessage(orignMessage: any) {
             appName: appName,
             appIcon: appIcon,
             appUrl: parentOrigin,
-            appversion: appVersion,
+            appVersion: appVersion,
             account: data.account,
             messagetype: data.type,
             message: data.message
@@ -405,7 +404,7 @@ function requestSignEIP712Message(orignMessage: any) {
             appName: appName,
             appIcon: appIcon,
             appUrl: parentOrigin,
-            appversion: appVersion,
+            appVersion: appVersion,
             account: data.account,
             messagetype: data.type,
             domain: data.domain,

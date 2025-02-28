@@ -56,9 +56,14 @@ if (typeof window !== "undefined") {
     console.log("===============监听DAPP窗口发送的消息 11111", window.location.href);
 
     window.addEventListener("message", function (event) {
-      console.log('========onDAPPMessage event', event.data);
       //判断消息来源
-      if (event.origin !== openerOrigin) {
+    if (
+      !(
+        event.origin === openerOrigin ||
+        (event.origin === "null" && openerOrigin === "file://")
+      ) ||
+      event.ports.length == 0
+    ) {
         return;
       }
       onDAPPMessage(event);
@@ -188,7 +193,11 @@ function _initCommChannel () {
     },
   };
   if (window.opener) {
-    window.opener.postMessage(message, openerOrigin);
+    let origin = openerOrigin;
+    if(openerOrigin?.indexOf('file://') !== -1) {
+      origin = '*'
+    }
+    window.opener.postMessage(message, origin);
   }
 }
 
@@ -207,10 +216,10 @@ function onDAPPMessage (event: MessageEvent) {
     //判断版本号
     return;
   }
-  // if (message.origin != openerOrigin) {
-  //   //判断消息来源
-  //   return;
-  // }
+  if (message.origin != openerOrigin) {
+    //判断消息来源
+    return;
+  }
   //判断消息类型,message格式为{type: 'getUserInfo', data: {}}
   switch (message.type) {
     case "checkWalletLoaded": //检查钱包是否加载完成请求
@@ -222,7 +231,7 @@ function onDAPPMessage (event: MessageEvent) {
       };
       event.ports[0].postMessage(sendMessage); //利用messageChannel通知页面加载完成,当浏览器不支持window.opener会走这个流程
       break;
-    case "channelPort": 
+    case "channelPort2": 
       iframeChannel = event.ports[0];
       iframeChannel.onmessage = onDAPPMessage;
       const loadedMessage = {

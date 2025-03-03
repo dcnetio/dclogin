@@ -57,6 +57,7 @@ if (typeof window !== "undefined") {
 
     window.addEventListener("message", function (event) {
       //判断消息来源
+    console.log("===============监听DAPP窗口发送的消息 event", event);
     if (
       !(
         event.origin === openerOrigin ||
@@ -547,7 +548,7 @@ async function _connectCmdHandler (
     const resMessage = {
       version: version,
       type: "connected",
-      origin: origin,
+      origin: message.origin,
       data: {
         success: true,
         account: wallet.address,
@@ -731,7 +732,7 @@ async function signMessageHandler (
   const resMessage = {
     version: version,
     type: "signSuccess",
-    origin: origin,
+    origin: message.origin,
     data: {
       success: true,
       account: wallet.address,
@@ -829,7 +830,7 @@ async function signEIP712MessageHandler (
   const resMessage = {
     version: version,
     type: "signEIP712Success",
-    origin: origin,
+    origin: message.origin,
     data: {
       success: true,
       account: wallet.address,

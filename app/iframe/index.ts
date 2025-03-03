@@ -33,8 +33,7 @@ if (typeof window !== "undefined") {
     if (
       !(
         event.origin === parentOrigin ||
-        (event.origin === "null" && parentOrigin === "file://") ||
-        (event.origin === "null" && parentOrigin === "")
+        (event.origin === "null" && parentOrigin === "file://")
       ) ||
       event.ports.length == 0
     ) {
@@ -490,7 +489,7 @@ function onWalletChannelMessage(event: MessageEvent) {
     );
     return;
   }
-  if (!(message.origin === parentOrigin || message.origin == 'file://')) {
+  if (message.origin !== parentOrigin) {
     //不是发给当前应用,不处理
     console.error(
       "Received invalid origin:",
@@ -502,9 +501,7 @@ function onWalletChannelMessage(event: MessageEvent) {
   }
   switch (message.type) {
     case "loaded": //钱包页面加载成功
-        if (message.origin == parentOrigin) { 
-            walletLoadedFlag = true;
-        }
+        walletLoadedFlag = true;
       break;
     default:
       break;

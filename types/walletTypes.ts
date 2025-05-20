@@ -27,6 +27,7 @@ export type ConnectReqMessage = {
     type?: string,
     origin: string,
     data?: {
+        appId: string,
         appName: string,
         appIcon?: string,
         appUrl: string,

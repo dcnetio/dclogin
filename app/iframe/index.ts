@@ -6,6 +6,7 @@ import ethersHelper from "@/helpers/ethersHelper";
 let dcWalletChannel: MessagePort | null = null;
 let DAPPChannel: MessagePort | null = null;
 let walletLoadedFlag = false; //钱包已加载标志
+import {DC, Ed25519PrivKey} from 'web-dc-api';
 // Dapp信息
 let appName = "";
 let appIcon = "";
@@ -22,6 +23,9 @@ const urlParams = new URLSearchParams(queryString);
 const location = urlParams.get("parentOrigin");
 // 获取特定参数的值
 const parentOrigin = location;
+
+// 私钥
+let privateKey: Ed25519PrivKey | null = null;
 
 /*******************************接收父窗口指令消息***********************************/
 
@@ -79,6 +83,9 @@ if (typeof window !== "undefined") {
         break;
       case "connect": //连接钱包命令
         connect();
+        break;
+      case 'sign': //签名
+        sign(message);
         break;
       case "signMessage": //签名消息
         signMessage(message);
@@ -152,6 +159,35 @@ function walletConnected(
       account: account,
       chainId: chainId,
       responseData: responseData,
+    },
+  };
+  responseToDAPP(sendMessage);
+}
+
+// 父窗口发送的签名处理,打开钱包页面前调用
+function sign(message: any) {
+  const data = message.data;
+  if (data.message == null) {
+    signResponse(false, "The message is null");
+    return;
+  }
+  //签名
+  if(privateKey == null){
+    signResponse(false, "The privateKey is null");
+    return;
+  }
+  const signature = privateKey.sign(data.message)
+  signResponse(true, signature);
+}
+
+//发送签名成功消息给父窗口
+function signResponse(successFlag: boolean, message: any) {
+  const sendMessage = {
+    version: version,
+    type: "signResponse",
+    data: {
+      success: successFlag,
+      message: message,
     },
   };
   responseToDAPP(sendMessage);
@@ -313,7 +349,16 @@ function connectWallet() {
   sendMessageToWallet(message, 60000)
     .then((event: any) => {
       const message = event.data;
-      connectResponse(message.data);
+      console.log("connectWallet response:", message);
+      // 保存私钥
+      const priKey = message.data.privateKey;
+      privateKey =new Ed25519PrivKey(priKey.raw) 
+      delete message.data.privateKey;
+      connectResponse({
+        ...message.data,
+        privateKey: null,
+        publicKey: privateKey?.publicKey,
+      });
     })
     .catch((e) => {
       console.log("connectWallet error:", e);

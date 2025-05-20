@@ -27,6 +27,7 @@ import {
 import { Toast } from "antd-mobile";
 import i18n from "@/locales/i18n";
 import { ChooseAccount } from "@/components/common/accountHelper";
+import { Ed25519PrivKey, KeyManager } from "web-dc-api";
 
 // 获取查询字符串
 let queryString = "";
@@ -544,6 +545,12 @@ async function _connectCmdHandler (
   }
   if (bool) {
     // DCAPP进入
+    const keymanager = new KeyManager();
+    //const privKey1 = await keymanager.getEd25519KeyFromMnemonic(mnemonic);
+    const privKey: Ed25519PrivKey = await keymanager.getEd25519KeyFromMnemonic(
+      mnemonic,
+      connectingApp?.appId
+    );
     //签名成功后,发送链接成功消息给APP
     const resMessage = {
       version: version,
@@ -555,6 +562,7 @@ async function _connectCmdHandler (
         chainId: currentChain.chainId,
         chainName: currentChain.name,
         signature: signature,
+        privateKey: privKey,
       },
     };
     if (!port) {

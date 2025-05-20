@@ -9,19 +9,25 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@libp2p/interface": "^2.9.0",
     "@reduxjs/toolkit": "^2.2.7",
+    "@stablelib/random": "^2.0.1",
     "antd-mobile": "^5.37.1",
     "ethers": "^6.13.2",
     "i18next": "^23.16.4",
     "i18next-browser-languagedetector": "^8.0.0",
     "i18next-http-backend": "^2.6.2",
+    "jsbn": "^1.1.0",
+    "multiformats": "^13.3.4",
     "next": "14.2.11",
     "next-i18next": "^15.3.1",
+    "protobufjs": "^7.5.2",
     "react": "^18",
     "react-dom": "^18",
     "react-redux": "^9.1.2",
     "redux-logger": "^3.0.6",
     "redux-persist": "^6.0.0",
+    "tweetnacl": "^1.0.3",
     "vconsole": "^3.15.1"
   },
   "devDependencies": {

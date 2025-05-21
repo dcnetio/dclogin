@@ -7,9 +7,9 @@ import SignatureDAPP from "./signatureDAPP";
 import React from "react";
 import { createRoot } from "react-dom/client";
 
-import { OpenInfo } from "@/types/pageType";
+import { APPInfo } from "@/types/pageType";
 export const showAddDAPPNote = (
-  info: OpenInfo,
+  info: APPInfo,
   confirmCallback: () => void
 ) => {
   const container = document.createElement("div");

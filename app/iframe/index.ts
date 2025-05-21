@@ -6,11 +6,16 @@ import ethersHelper from "@/helpers/ethersHelper";
 let dcWalletChannel: MessagePort | null = null;
 let DAPPChannel: MessagePort | null = null;
 let walletLoadedFlag = false; //钱包已加载标志
-import {DC, Ed25519PrivKey} from 'web-dc-api';
+import {Ed25519PrivKey} from 'web-dc-api';
+import { APPInfo } from "@/types/pageType";
 // Dapp信息
-let appName = "";
-let appIcon = "";
-let appVersion = "";
+const appInfo: APPInfo = {
+  appId: "",
+  appName: "",
+  appIcon: "",
+  appUrl: "",
+  appVersion: "",
+};
 
 console.log("**************iframejs");
 /*******************************初始化需要完成操作***********************************/
@@ -106,9 +111,11 @@ function initConfig(config: any) {
     initConfigResponse(false, "The appUrl is not equal to the parentOrigin");
     return;
   }
-  appName = config.appName;
-  appIcon = config.appIcon;
-  appVersion = config.appVersion;
+  appInfo.appUrl = config.appUrl;
+  appInfo.appId = config.appId;
+  appInfo.appName = config.appName;
+  appInfo.appIcon = config.appIcon;
+  appInfo.appVersion = config.appVersion;
   initConfigResponse(true, "success");
 }
 
@@ -339,10 +346,11 @@ function connectWallet() {
     type: "connect",
     origin: parentOrigin,
     data: {
-      appName: appName,
-      appIcon: appIcon,
+      appId: appInfo.appId,
+      appName: appInfo.appName,
+      appIcon: appInfo.appIcon,
       appUrl: parentOrigin,
-      appVersion: appVersion,
+      appVersion: appInfo.appVersion,
     },
   };
   //创建新的messageChannel
@@ -401,10 +409,10 @@ function requsetForSignMessage(orignMessage: any) {
     type: "signMessage",
     origin: parentOrigin,
     data: {
-      appName: appName,
-      appIcon: appIcon,
+      appName: appInfo.appName,
+      appIcon: appInfo.appIcon,
       appUrl: parentOrigin,
-      appVersion: appVersion,
+      appVersion: appInfo.appVersion,
       account: data.account,
       messagetype: data.type,
       message: data.message,
@@ -466,10 +474,10 @@ function requestSignEIP712Message(orignMessage: any) {
     type: "signEIP712Message",
     origin: parentOrigin,
     data: {
-      appName: appName,
-      appIcon: appIcon,
+      appName: appInfo.appName,
+      appIcon: appInfo.appIcon,
       appUrl: parentOrigin,
-      appVersion: appVersion,
+      appVersion: appInfo.appVersion,
       account: data.account,
       messagetype: data.type,
       domain: data.domain,

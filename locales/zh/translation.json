@@ -88,5 +88,25 @@
   },
   "empty": {
     "no_data": "暂无数据"
+  },
+  "login": {
+    "login": "登录",
+    "account": "账号",
+    "password": "密码",
+    "safecode": "安全码",
+    "account_empty": "请输入账号",
+    "password_empty": "请输入密码",
+    "safecode_empty": "请输入安全码",
+    "success": "登录成功",
+    "failed": "登录失败"
+  },
+  "register": {
+    "register": "注册",
+    "account": "注册账号",
+    "password": "注册密码",
+    "account_empty": "请输入账号",
+    "password_empty": "请输入密码",
+    "success": "注册成功",
+    "failed": "注册失败"
   }
 }

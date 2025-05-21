@@ -1,12 +1,12 @@
 "use client";
-import { OpenInfo } from "@/types/pageType";
+import { APPInfo } from "@/types/pageType";
 import styles from "./index.module.css";
 import { Button } from "antd-mobile";
 import {CheckShieldFill} from "antd-mobile-icons";
 import { useTranslation} from 'react-i18next';
 
 interface AddDAPPNoteProps {
-  info: OpenInfo;
+  info: APPInfo;
   confirmFun: () => void;
 }
 export default function AddDAPPNote(props: AddDAPPNoteProps) {

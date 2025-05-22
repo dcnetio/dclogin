@@ -7,6 +7,10 @@
   right: 0;
   left: 0;
   bottom: 0;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  background: #f2f2f2;
 
   .title {
     font-size: 1.4rem;
@@ -14,22 +18,20 @@
     margin-bottom: 10px;
   }
 
-  .content {
-    background: fixed;
-
-    .input {
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      margin: 10px 0;
-      padding: 10px 20px;
-    }
+  .input {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin: 10px 0;
+    padding: 10px 20px;
+    background: #fff;
   }
 
   .note {
-    margin-top: 32px;
+    margin-top: 8px;
     font-size: 0.8rem;
     font-weight: bold;
-    color: rgb(229, 87, 44)
+    color: rgb(229, 87, 44);
+    text-align: left;
   }
 
   .btnD {
@@ -39,7 +41,7 @@
   }
 
   .btn {
-    width: 50%;
+    width: 100%;
     padding: 10px;
   }
 }

@@ -59,7 +59,7 @@
     "no_account": "用户没有可用账号",
     "give_space_failed": "赠送空间失败",
     "bind_nft_account": "绑定NFT账号",
-    "bind_nft_account_failed": "绑定NFT账号失败",
+    "bind_nft_account_failed": "绑定NFT账号失败"
   },
   "DAPP": {
     "app": "应用：",

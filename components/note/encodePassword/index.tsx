@@ -37,11 +37,13 @@ export default function EncodePassword(props: EncodePasswordProps) {
           clearable
         />
       </div>
-      <div className={styles.note}>{t('encode.set_tip')}</div>
+      <div className={styles.note}>
+        {type === EncodePasswordType.SET ? t('encode.set_tip') : t('encode.verify_tip')}
+      </div>
       <div className={styles.btnD}>
         <div className={styles.btn}>
           <Button color="primary" fill="solid" onClick={gotoConfirm} block>
-          {type === EncodePasswordType.SET ? t('common.set_tip') : t('common.verify_tip')}
+            {t('common.confirm')}
           </Button>
         </div>
       </div>

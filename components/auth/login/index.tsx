@@ -14,7 +14,7 @@ import { appState } from "@/config/constant";
 import { ConnectReqMessage } from "@/types/walletTypes";
 import {DC} from 'web-dc-api';
 import { useRouter } from 'next/navigation'
-import { NavigationService } from "@/lib/navigation";
+import NavigationService from "@/lib/navigation";
 
 // 获取查询字符串
 let queryString = '';
@@ -92,10 +92,6 @@ export default function Login() {
     const dc = new DC({
       wssUrl: 'ws://192.168.31.31:9944',
       backWssUrl: 'ws://192.168.31.31:9944',
-      appInfo: {
-        id: 'DCAPP',
-        name: 'DCAPP Name',
-      },
     })
     dc.init()
     globalThis.dc = dc
@@ -105,16 +101,12 @@ export default function Login() {
     console.log("===============login", window.location.href);
     if(typeof window !== "undefined") {
       if(window.location.href.indexOf('/test') == -1 && 
-      window.location.href.indexOf('/iframe') == -1 && 
-      window.location.href.indexOf('/login') == -1) {
+      window.location.href.indexOf('/iframe') == -1) {
         console.log("===============login1111", window.location.href);
         init();
-      }
-      if(window.location.href.indexOf('/login') != -1) {
-        console.log("===============login2222", window.location.href);
         initDC();
       }
-      NavigationService.initialize(router)
+      NavigationService.init(router)
     }
   }, []);
 

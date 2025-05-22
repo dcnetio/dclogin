@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation} from 'react-i18next';
 import { Button, Input, Toast } from "antd-mobile";
+import { createAccountWithLogin } from "@/app/index";
 export default function Login() {
   const router = useRouter();
   const {t} = useTranslation();
@@ -42,11 +43,20 @@ export default function Login() {
         return;
       }
       try {
-        const res = await globalThis.dc.auth.accountLogin(account, password, safecode);
+        const res = await createAccountWithLogin(account, password, safecode)
         console.log("accountLogin res", res);
         // todo 登录成功，跳转到首页
+        if(res && res.success) {
+          Toast.show({
+            content: t('login.success'),
+            position: "bottom",
+          });
+          // 跳转到首页
+          router.push("/");
+          return;
+        }
         Toast.show({
-          content: t('login.success'),
+          content: t('login.failed'),
           position: "bottom",
         });
       } catch (error) {

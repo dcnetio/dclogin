@@ -13,6 +13,8 @@ import { saveInitState } from "@/lib/slices/appSlice";
 import { appState } from "@/config/constant";
 import { ConnectReqMessage } from "@/types/walletTypes";
 import {DC} from 'web-dc-api';
+import { useRouter } from 'next/navigation'
+import { NavigationService } from "@/lib/navigation";
 
 // 获取查询字符串
 let queryString = '';
@@ -24,6 +26,7 @@ const location = urlParams.get("origin");
 const openerOrigin = location;
 
 export default function Login() {
+  const router = useRouter()
   const [loading, setLoading] = useState(false);
   const init = async () => {
     try {
@@ -111,6 +114,7 @@ export default function Login() {
         console.log("===============login2222", window.location.href);
         initDC();
       }
+      NavigationService.initialize(router)
     }
   }, []);
 

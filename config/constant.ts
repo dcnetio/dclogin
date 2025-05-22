@@ -103,3 +103,8 @@ export const appState = _appState;
 export const activeStatus = _activeStatus;
 export const baseUrl = _baseUrl;
 export const I18N_LANGUAGES = _I18N_LANGUAGES;
+
+export enum EncodePasswordType {
+  SET = 1,
+  VERIFY = 2,
+}

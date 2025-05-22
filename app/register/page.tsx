@@ -4,8 +4,12 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation} from 'react-i18next';
 import { Button, Input, Toast } from "antd-mobile";
-import { KeyManager } from "web-dc-api";
-export default function Register() {
+import { accountBindNFTAccount, createAccountWithRegister } from "@/app/index";
+interface RegisterProps {
+  bind: boolean;
+}
+export default function Register(props: RegisterProps) {
+  const {bind, mnemonic} = props;
   const router = useRouter();
   const {t} = useTranslation();
   const [account, setAccount] = useState("");
@@ -35,9 +39,38 @@ export default function Register() {
         return;
       }
       try {
+        if(bind) {
+          // 绑定nft账号
+          const bindRes = await accountBindNFTAccount(account, password, "000000", mnemonic);
+          // todo bind成功，跳转到首页
+          if(bindRes && bindRes.success) {
+            Toast.show({
+              content: t('bind.success'),
+              position: "bottom",
+            });
+            // 跳转到首页
+            router.push("/");
+            return;
+          }
+          Toast.show({
+            content: t('bind.failed'),
+            position: "bottom",
+          });
+          return;
+        }
+        const res = await createAccountWithRegister(account, password, "000000");
         // todo 登录成功，跳转到首页
+        if(res && res.success) {
+          Toast.show({
+            content: t('register.success'),
+            position: "bottom",
+          });
+          // 跳转到首页
+          router.push("/");
+          return;
+        }
         Toast.show({
-          content: t('register.success'),
+          content: t('register.failed'),
           position: "bottom",
         });
       } catch (error) {

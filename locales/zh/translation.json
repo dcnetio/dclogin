@@ -5,7 +5,8 @@
     "continue": "继续",
     "edit": "编辑",
     "from": "自",
-    "to": "至"
+    "to": "至",
+    "set": "设置"
   },
   "transfer": {
     "transfer": "转账",
@@ -51,11 +52,14 @@
     "create_failed": "创建账号失败",
     "auth_doing": "用户授权中，请稍后",
     "auth_failed": "用户授权失败",
-    "import_wallet_failed": "导入钱包失败",
+    "unlock_wallet_failed": "解锁钱包失败",
     "wallet_no_account": "钱包里的用户账号不存在",
     "get_info_failed": "用户获取账号信息失败",
     "wallet_not_connect": "用户未连接钱包",
-    "no_account": "用户没有可用账号"
+    "no_account": "用户没有可用账号",
+    "give_space_failed": "赠送空间失败",
+    "bind_nft_account": "绑定NFT账号",
+    "bind_nft_account_failed": "绑定NFT账号失败",
   },
   "DAPP": {
     "app": "应用：",
@@ -108,5 +112,17 @@
     "password_empty": "请输入密码",
     "success": "注册成功",
     "failed": "注册失败"
+  },
+  "encode": {
+    "password": "加密密码",
+    "password_empty": "请输入加密密码",
+    "set_success": "加密密码设置成功",
+    "set_failed": "加密密码设置失败",
+    "set_tip": "只有输入正确的密码才能解锁钱包",
+    "verify_tip": "请输入正确的密码，解锁钱包"
+  },
+  "bind": {
+    "success": "绑定成功",
+    "failed": "绑定失败"
   }
 }

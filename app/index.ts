@@ -34,6 +34,7 @@ import { Ed25519PrivKey, KeyManager, NFTBindStatus, User } from "web-dc-api";
 import { APPInfo } from "@/types/pageType";
 import NavigationService from "@/lib/navigation";
 import { Mnemonic } from "ethers/wallet";
+import { applyFreeSpace } from "./tools/subSpace";
 
 
 // 获取查询字符串
@@ -255,6 +256,17 @@ function onDAPPMessage (event: MessageEvent) {
       if (isConnectReqMessage(message)) {
         const connectingApp = message.data;
         if (openerOrigin && connectingApp) {
+          // 保存dappinfo
+          if(globalThis.dc ){
+            const dappInfo = {
+              appId: connectingApp?.appId,
+              appName: connectingApp?.appName,
+              appIcon: connectingApp?.appIcon,
+              appUrl: connectingApp?.appUrl,
+              appVersion: connectingApp?.appVersion,
+            };
+            globalThis.dc.setAppInfo(dappInfo);
+          }
           //显示提示页面
           showAddDAPPNote(connectingApp, () => {
             _connectCmdHandler(message, true, event.ports[0]);
@@ -472,8 +484,8 @@ async function _createAccountWithRegister (
     return;
   }
   // 赠送套餐
-  const giveFlag = await giveSpace();
-  if(!giveFlag) {
+  const giveFlag = await applyFreeSpace();
+  if(giveFlag[1]) {
     //待测试 跳出提示框,提示用户赠送套餐失败
     Toast.show({
       content: i18n.t("account.give_space_failed"), // todo
@@ -788,7 +800,10 @@ async function resPonseWallet(
     });
     return;
   }
-  const connectingApp = message.data;
+  let connectingApp = message.data;
+  if(!connectingApp) {
+    connectingApp = globalThis.dc.appInfo;
+  }
   // 通过助记词导入钱包,生成带私钥钱包账号
   const wallet = await ethersHelper.createWalletAccountWithMnemonic(mnemonic);
   if (!wallet) {
@@ -811,8 +826,8 @@ async function resPonseWallet(
   const userInfo: User = await globalThis.dc.auth.getUserInfoWithAccount();
   if(!userInfo.subscribeSpace){ // 订阅空间不存在
     // todo 赠送套餐逻辑
-    const giveFlag = await giveSpace();
-    if(!giveFlag) {
+    const giveFlag = await applyFreeSpace();
+    if(giveFlag[1]) {
       //待测试 跳出提示框,提示用户赠送套餐失败
       Toast.show({
         content: i18n.t("account.give_space_failed"), // todo

@@ -1,12 +1,11 @@
 "use client";
 // 定义一个变量，用于存储BroadcastChannel对象
-const version = "v0_0_1";
 import utilHelper from "@/helpers/utilHelper";
 import ethersHelper from "@/helpers/ethersHelper";
 let dcWalletChannel: MessagePort | null = null;
 let DAPPChannel: MessagePort | null = null;
 let walletLoadedFlag = false; //钱包已加载标志
-import {Ed25519PrivKey} from 'web-dc-api';
+import {Ed25519PrivKey, version} from 'web-dc-api';
 import { APPInfo } from "@/types/pageType";
 // Dapp信息
 const appInfo: APPInfo = {
@@ -107,7 +106,7 @@ if (typeof window !== "undefined") {
 // Dapp初始化配置
 function initConfig(config: any) {
   // 初始化配置
-  if (config.appUrl != parentOrigin) {
+  if (config.appUrl.indexOf(parentOrigin) ===  -1) {
     initConfigResponse(false, "The appUrl is not equal to the parentOrigin");
     return;
   }

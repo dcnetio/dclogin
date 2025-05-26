@@ -5,11 +5,16 @@ import { useRouter } from "next/navigation";
 import { useTranslation} from 'react-i18next';
 import { Button, Input, Toast } from "antd-mobile";
 import { accountBindNFTAccount, createAccountWithRegister } from "@/app/index";
+import Link from "next/link";
 interface RegisterProps {
-  bind: boolean;
+  bind?: boolean;
+  origin?: string;
 }
-export default function Register(props: RegisterProps) {
-  const {bind, mnemonic} = props;
+export default function Register(props: {searchParams: RegisterProps}) {
+    const {searchParams} = props;
+    const origin = searchParams?.origin || '';
+    const bind = searchParams?.bind ? true : false;
+
   const router = useRouter();
   const {t} = useTranslation();
   const [account, setAccount] = useState("");
@@ -41,7 +46,7 @@ export default function Register(props: RegisterProps) {
       try {
         if(bind) {
           // 绑定nft账号
-          const bindRes = await accountBindNFTAccount(account, password, "000000", mnemonic);
+          const bindRes = await accountBindNFTAccount(account, password, "000000", origin);
           // todo bind成功，跳转到首页
           if(bindRes && bindRes.success) {
             Toast.show({
@@ -109,6 +114,9 @@ export default function Register(props: RegisterProps) {
         {t('register.register')}
         </Button>
       </div>
+      { !bind && <Link href={`/login?origin=${origin}`} >
+        {t('login.login')}
+      </Link>}
     </div>
   );
 }

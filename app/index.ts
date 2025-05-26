@@ -16,7 +16,6 @@ import * as buffer from "buffer/";
 const { Buffer } = buffer;
 
 // 定义一个变量，用于存储BroadcastChannel对象
-const version = "v0_0_1";
 let currentChain: ChainInfo | null = null; //当前网络
 let currentAccount: AccountInfo | null = null; //当前账号
 
@@ -30,7 +29,7 @@ import {
 import { Toast } from "antd-mobile";
 import i18n from "@/locales/i18n";
 import { ChooseAccount } from "@/components/common/accountHelper";
-import { Ed25519PrivKey, KeyManager, NFTBindStatus, User } from "web-dc-api";
+import { Ed25519PrivKey, KeyManager, NFTBindStatus, User, version } from "web-dc-api";
 import { APPInfo } from "@/types/pageType";
 import NavigationService from "@/lib/navigation";
 import { Mnemonic } from "ethers/wallet";
@@ -55,6 +54,8 @@ const NetworkStauts = Object.freeze({
   disconnect: 2,
 });
 let networkStatus: number = NetworkStauts.disconnect; //网络状态
+let messageData: ConnectReqMessage = {};
+let portData: MessagePort | null = null;
 
 /*******************************初始化需要完成操作***********************************/
 
@@ -436,8 +437,63 @@ async function _accountBindNFTAccount (
   account: string, 
   password : string, 
   safecode : string,
-  mnemonic: string
+  origin?: string
 ) {
+  // 获取mnemonic
+  const connectingApp = messageData.data;
+  let chooseAccount = await chooseStoredAccount(connectingApp);
+  if(!chooseAccount) {
+    return;
+  }
+  // 获取当前网络
+  const chain = await getCurrentChain();
+  if(!chain || !currentChain){
+    //待测试 跳出提示框,提示用户获取网络信息失败
+    Toast.show({
+      content: i18n.t("network.get_failed"),
+      position: "bottom",
+    });
+    return;
+  }
+  //todo 账号存在后,跳出授权框,提示用户授权连接对应的APP(这个界面可以切换网络)，wq？？觉得应该是提示，不需要用户确认，如果app进来的则前面已经提示确认过了，直接签名即可
+  Toast.show({
+    content: i18n.t("account.auth_doing"),
+    position: "bottom",
+    duration: 0,
+  });
+  //用户确认后,调出webauthn进行校验,并提取出userHandleHash
+  let userHandleHash = await authenticateWithPasskey(
+    chooseAccount.credentialId
+  );
+  console.log("userHandleHash success", userHandleHash);
+  //待测试 关闭状态等待框
+  Toast.clear();
+  if (!userHandleHash) {
+    //todo 跳出密码设置框,提示用户输入密码加密
+    const password = await getEncodePwd(EncodePasswordType.VERIFY);
+    if(password) {
+      // todo password 转 userHandleHash
+      const userHandle = Buffer.from(password);
+      userHandleHash = await crypto.subtle.digest("SHA-256", userHandle);
+    }
+  }
+  if(!userHandleHash) {
+    //待测试 跳出提示框,提示用户解锁钱包失败
+    Toast.show({
+      content: i18n.t("account.unlock_wallet_failed"),
+      position: "bottom",
+    });
+    return;
+  }
+  //解密出助记词
+  const mnemonic = await decryptMnemonic(chooseAccount.iv, chooseAccount.mnemonic, userHandleHash);
+  if(!mnemonic){
+    Toast.show({
+      content: i18n.t("account.unlock_wallet_failed"),
+      position: "bottom",
+    });
+    return;
+  }
   // bind nft
   const bindFlag = await bindNFTAccount(
     account,
@@ -466,26 +522,41 @@ async function _accountBindNFTAccount (
       return;
     }
   }
-  return await resPonseWallet(mnemonic);
+  if(origin || messageData.origin) {
+    const message: ConnectReqMessage = {
+      origin: origin || '',
+    };
+    const res = await resPonseWallet(mnemonic, messageData.origin ? messageData :message, true, portData);
+    return res;
+  }else {
+    return await resPonseWallet(mnemonic);
+  }
 }
 // 创建账号(注册)
 async function _createAccountWithRegister (
   account: string, 
   password : string, 
   safecode : string,
+  origin?: string,
 ) {
   const res = await ethersHelper.createWalletAccount();
   if(!res || !res.mnemonic) {
     return;
   }
-  const mnemonicObj =  res.mnemonic;
+  const mnemonicObj =  res.mnemonic; // 对象
   const address =  res.address;
   const accountInfo = await createAccount(mnemonicObj, address);
   if(!accountInfo){
     return;
   }
+  const keymanager = new KeyManager();
+  const privKey: Ed25519PrivKey = await keymanager.getEd25519KeyFromMnemonic(
+    mnemonicObj.phrase,
+    ''
+  );
+  const pubKeyStr = privKey.publicKey.toString();
   // 赠送套餐
-  const giveFlag = await applyFreeSpace();
+  const giveFlag = await applyFreeSpace('0x' + pubKeyStr);
   if(giveFlag[1]) {
     //待测试 跳出提示框,提示用户赠送套餐失败
     Toast.show({
@@ -510,7 +581,7 @@ async function _createAccountWithRegister (
     return;
   }
   // 子账号创建
-  if(globalThis.dc.appInfo) {
+  if(globalThis.dc.appInfo && globalThis.dc.appInfo.appId) {
     const appId = globalThis.dc.appInfo.appId;
     const generateAppAccountRes = await globalThis.dc.auth.generateAppAccount(appId, mnemonicObj.phrase);
     if(generateAppAccountRes[1]) {
@@ -522,13 +593,22 @@ async function _createAccountWithRegister (
       return;
     }
   }
-  return await resPonseWallet(mnemonicObj.phrase);
+  if(origin || messageData.origin) {
+    const message: ConnectReqMessage = {
+      origin: origin || '',
+    };
+    const res = await resPonseWallet(mnemonicObj.phrase, messageData.origin ? messageData :message, true, portData);
+    return res;
+  }else {
+    return await resPonseWallet(mnemonicObj.phrase);
+  }
 }
 // 创建账号(登录)
 async function _createAccountWithLogin (
   account: string, 
   password : string, 
   safecode : string,
+  origin?: string,
 ) {
   const res = await globalThis.dc.auth.accountLogin(account, password, safecode);
   if(!res || !res.mnemonic) {
@@ -544,7 +624,15 @@ async function _createAccountWithLogin (
     if(!accountInfo){
       return;
     }
-    return await resPonseWallet(mnemonic);
+    if(origin || messageData.origin) {
+      const message: ConnectReqMessage = {
+        origin: origin || '',
+      };
+      const res = await resPonseWallet(mnemonic, messageData.origin ? messageData :message, true, portData);
+      return res;
+    }else {
+      return await resPonseWallet(mnemonic);
+    }
 }
 // 创建账号
 async function createAccount (
@@ -672,7 +760,11 @@ async function _connectCmdHandler (
   let chooseAccount = await chooseStoredAccount(connectingApp);
   if (!chooseAccount) {
     // todo没有用户的时候，需要跳转到登录页面
-    NavigationService.navigate("login");
+    messageData = message;
+    portData = port;
+    NavigationService.navigate("login", {
+      origin: message.origin,
+    });
     return;
   }
   unlockWallet (
@@ -702,28 +794,32 @@ const getCurrentChain = async () => {
       currencySymbol: chains[0].currencySymbol,
     };
   }
-  const jsonRpcProvider = ethersHelper.getProvider();
-  if (jsonRpcProvider != null) {
+  try {
     // 获取网络信息
-    const network = await jsonRpcProvider.getNetwork();
-    const chanId = Number(network.chainId);
-    if (chanId != currentChain.chainId) {
-      const providerChainId = chanId;
-      // 将jsonRpcProvider网络切换到当前网络
-      for (let i = 0; i < chains.length; i++) {
-        if (chains[i].chainId == providerChainId) {
-          currentChain = {
-            chainId: chains[i].chainId,
-            name: chains[i].name,
-            rpcUrl: chains[i].rpcUrl,
-            desc: chains[i].desc,
-            confirms: chains[i].confirms, //确认数
-            currencySymbol: chains[i].currencySymbol,
-          };
-          break;
+    const jsonRpcProvider = ethersHelper.getProvider();
+    if (jsonRpcProvider != null) {
+      const network = await jsonRpcProvider.getNetwork();
+      const chanId = Number(network.chainId);
+      if (chanId != currentChain.chainId) {
+        const providerChainId = chanId;
+        // 将jsonRpcProvider网络切换到当前网络
+        for (let i = 0; i < chains.length; i++) {
+          if (chains[i].chainId == providerChainId) {
+            currentChain = {
+              chainId: chains[i].chainId,
+              name: chains[i].name,
+              rpcUrl: chains[i].rpcUrl,
+              desc: chains[i].desc,
+              confirms: chains[i].confirms, //确认数
+              currencySymbol: chains[i].currencySymbol,
+            };
+            break;
+          }
         }
       }
     }
+  } catch (error) {
+    
   }
   return currentChain;
 }
@@ -827,7 +923,7 @@ async function resPonseWallet(
   const userInfo: User = await globalThis.dc.auth.getUserInfoWithAccount("0x" + globalThis.dc.publicKey.toString());
   if(!userInfo.subscribeSpace){ // 订阅空间不存在
     // todo 赠送套餐逻辑
-    const giveFlag = await applyFreeSpace();
+    const giveFlag = await applyFreeSpace("0x" + globalThis.dc.publicKey.toString());
     if(giveFlag[1]) {
       //待测试 跳出提示框,提示用户赠送套餐失败
       Toast.show({
@@ -843,12 +939,15 @@ async function resPonseWallet(
       position: "bottom",
     });
     // todo跳转到nft注册页面
-    NavigationService.navigate("/register", {bind: true, mnemonic});
+    NavigationService.navigate("register", {
+      origin: message.origin,
+      bind: true, 
+    });
     return;
   }
 
   // 子账号创建
-  if(globalThis.dc.appInfo) {
+  if(globalThis.dc.appInfo && globalThis.dc.appInfo.appId) {
     const appId = globalThis.dc.appInfo.appId;
     const generateAppAccountRes = await globalThis.dc.auth.generateAppAccount(appId, mnemonic);
     if(generateAppAccountRes[1]) {

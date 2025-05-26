@@ -5,7 +5,13 @@ import { useRouter } from "next/navigation";
 import { useTranslation} from 'react-i18next';
 import { Button, Input, Toast } from "antd-mobile";
 import { createAccountWithLogin } from "@/app/index";
-export default function Login() {
+import Link from "next/link";
+interface LoginProps {
+  origin?: string;
+}
+export default function Login(props: {searchParams: LoginProps}) {
+  const {searchParams} = props;
+  const origin = searchParams?.origin || '';
   const router = useRouter();
   const {t} = useTranslation();
   const [account, setAccount] = useState("");
@@ -43,7 +49,7 @@ export default function Login() {
         return;
       }
       try {
-        const res = await createAccountWithLogin(account, password, safecode)
+        const res = await createAccountWithLogin(account, password, safecode, origin)
         console.log("accountLogin res", res);
         // todo 登录成功，跳转到首页
         if(res && res.success) {
@@ -104,6 +110,9 @@ export default function Login() {
         {t('login.login')}
         </Button>
       </div>
+      <Link href="/register" >
+        {t('register.register')}
+      </Link>
     </div>
   );
 }

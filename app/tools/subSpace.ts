@@ -9,13 +9,13 @@ import { AccountError } from '../../../dcapi/lib/implements/account/manager';
  * Apply for free storage space for new users
  * @returns Promise resolving to [success, error]
  */
-export async function applyFreeSpace(): Promise<[boolean, Error | null]> {
+export async function applyFreeSpace(publicKey: string): Promise<[boolean, Error | null]> {
     if(!globalThis.dc) {
       return [false, new AccountError("Wallet not connected")]
     }
   try {
     // Check if this is a new account without space
-    const userInfo = await globalThis.dc.auth.getUserInfoWithAccount("0x" + globalThis.dc.publicKey.toString());
+    const userInfo = await globalThis.dc.auth.getUserInfoWithAccount(publicKey);
     if (userInfo && userInfo.subscribeSpace > 0) {
       return [false, new AccountError("User already has space")];
     }

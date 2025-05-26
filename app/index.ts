@@ -322,11 +322,12 @@ async function chooseStoredAccount (
   }
   //判断用户是否已经创建过钱包账号,如果没有,则跳出状态等待框,提示用户账号创建中
   const accounts = await DBHelper.getAllData(DBHelper.store_account);
-  if (!accounts) {
+  if (!accounts || accounts.length == 0) {
     Toast.show({
       content: i18n.t("account.get_failed"),
       position: "bottom",
     });
+    return;
   }
   console.log("11111111111111111111accounts 数据", accounts);
   //todo 跳出选择账号框,让用户选择账号
@@ -453,7 +454,7 @@ async function _accountBindNFTAccount (
     return;
   }
   // 子账号创建
-  if(globalThis.dc.appInfo) {
+  if(globalThis.dc.appInfo && globalThis.dc.appInfo.appId) {
     const appId = globalThis.dc.appInfo.appId;
     const generateAppAccountRes = await globalThis.dc.auth.generateAppAccount(appId, mnemonic);
     if(generateAppAccountRes[1]) {
@@ -823,7 +824,7 @@ async function resPonseWallet(
     return;
   }
   // 获取用户信息，判断是否有空间
-  const userInfo: User = await globalThis.dc.auth.getUserInfoWithAccount();
+  const userInfo: User = await globalThis.dc.auth.getUserInfoWithAccount("0x" + globalThis.dc.publicKey.toString());
   if(!userInfo.subscribeSpace){ // 订阅空间不存在
     // todo 赠送套餐逻辑
     const giveFlag = await applyFreeSpace();
@@ -1435,9 +1436,8 @@ async function createWalletAccount (mnemonic: Mnemonic | null = null, address: s
         timeStamp: new Date().getTime(),
       };
       resAccount = account;
-      DBHelper.updateData(DBHelper.store_account, account).then(() => {
-        console.log("账号信息存储成功");
-      });
+      const res = await DBHelper.updateData(DBHelper.store_account, account);
+      console.log("账号信息存储成功", res);
       return resAccount;
     } catch (e) {
       console.error("账号信息加密失败:", e);

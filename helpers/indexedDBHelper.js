@@ -64,8 +64,8 @@ class IndexedDBHelper {
                 resolve('数据更新成功');  
             };  
 
-            request.onerror = () => {  
-                reject('数据更新失败');  
+            request.onerror = (err) => {  
+                reject('数据更新失败', err);  
             };  
         });  
     }  
@@ -81,8 +81,8 @@ class IndexedDBHelper {
                 resolve('数据删除成功');  
             };  
 
-            request.onerror = () => {  
-                reject('数据删除失败');  
+            request.onerror = (err) => {  
+                reject('数据删除失败', err);  
             };  
         });  
     }  
@@ -98,8 +98,8 @@ class IndexedDBHelper {
                 resolve(request.result);  
             };  
 
-            request.onerror = () => {  
-                reject('读取数据失败');  
+            request.onerror = (err) => {  
+                reject('读取数据失败',err);  
             };  
         });  
     }  
@@ -115,8 +115,8 @@ class IndexedDBHelper {
                 resolve(request.result);  
             };  
 
-            request.onerror = () => {  
-                reject('读取所有数据失败');  
+            request.onerror = (err) => {  
+                reject('读取所有数据失败', err);  
             };  
         });  
     }  
@@ -133,8 +133,8 @@ class IndexedDBHelper {
                 resolve(request.result);  
             };  
 
-            request.onerror = () => {  
-                reject('查询数据失败');  
+            request.onerror = (err) => {  
+                reject('查询数据失败', err);  
             };  
         });  
     }  

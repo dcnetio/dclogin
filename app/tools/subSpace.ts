@@ -15,7 +15,7 @@ export async function applyFreeSpace(): Promise<[boolean, Error | null]> {
     }
   try {
     // Check if this is a new account without space
-    const userInfo = await globalThis.dc.auth.getUserInfoWithAccount(globalThis.dc.publicKey.toString());
+    const userInfo = await globalThis.dc.auth.getUserInfoWithAccount("0x" + globalThis.dc.publicKey.toString());
     if (userInfo && userInfo.subscribeSpace > 0) {
       return [false, new AccountError("User already has space")];
     }
@@ -98,7 +98,7 @@ export async function applyFreeSpace(): Promise<[boolean, Error | null]> {
     try {
       // Get updated user info
       const userInfo = await globalThis.dc.dcChain?.getUserInfoWithAccount(
-        globalThis.dc.publicKey.toString()
+       "0x" + globalThis.dc.publicKey.toString()
       );
       
       if (!userInfo) continue;

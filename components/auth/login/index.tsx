@@ -103,8 +103,8 @@ export default function Login() {
       if(window.location.href.indexOf('/test') == -1 && 
       window.location.href.indexOf('/iframe') == -1) {
         console.log("===============login1111", window.location.href);
-        init();
         initDC();
+        init();
       }
       NavigationService.init(router)
     }

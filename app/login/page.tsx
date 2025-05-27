@@ -110,7 +110,7 @@ export default function Login(props: {searchParams: LoginProps}) {
         {t('login.login')}
         </Button>
       </div>
-      <Link href="/register" >
+      <Link href={`/register?origin=${origin}`}>
         {t('register.register')}
       </Link>
     </div>

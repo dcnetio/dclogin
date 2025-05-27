@@ -58,8 +58,9 @@
     "wallet_not_connect": "用户未连接钱包",
     "no_account": "用户没有可用账号",
     "give_space_failed": "赠送空间失败",
-    "bind_nft_account": "绑定NFT账号",
-    "bind_nft_account_failed": "绑定NFT账号失败"
+    "bind_nft_account": "绑定账号",
+    "bind_nft_account_failed": "绑定账号失败",
+    "bind_nft_account_timeout": "绑定账号超时"
   },
   "DAPP": {
     "app": "应用：",

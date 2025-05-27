@@ -5,26 +5,30 @@
 import i18n from '@/locales/i18n';
 import { AccountError } from '../../../dcapi/lib/implements/account/manager';
 
+import { Ed25519PubKey} from "web-dc-api";
 /**
  * Apply for free storage space for new users
  * @returns Promise resolving to [success, error]
  */
-export async function applyFreeSpace(publicKey: string): Promise<[boolean, Error | null]> {
-    if(!globalThis.dc) {
-      return [false, new AccountError("Wallet not connected")]
-    }
+export async function applyFreeSpace(pubKey: Ed25519PubKey): Promise<[boolean, Error | null]> {
+  if(!globalThis.dc) {
+    return [false, new AccountError("Wallet not connected")]
+  }
+  // Get public key for request
+  if (!pubKey) {
+    return [false, new AccountError("User public key not available")];
+  }
   try {
     // Check if this is a new account without space
-    const userInfo = await globalThis.dc.auth.getUserInfoWithAccount(publicKey);
-    if (userInfo && userInfo.subscribeSpace > 0) {
-      return [false, new AccountError("User already has space")];
+    try {
+      const userInfo = await globalThis.dc.auth.getUserInfoWithAccount('0x' + pubKey.toString());
+      if (userInfo && userInfo.subscribeSpace > 0) {
+        return [false, new AccountError("User already has space")];
+      }
+    } catch (error) {
+      console.warn("Error getUserInfoWithAccount :", error);
     }
     
-    // Get public key for request
-    const pubKey =  globalThis.dc.getPublicKey();
-    if (!pubKey) {
-      return [false, new AccountError("User public key not available")];
-    }
     
     // Make request to storage service
     // Use a fallback for browsers that don't support navigator.language
@@ -32,13 +36,14 @@ export async function applyFreeSpace(publicKey: string): Promise<[boolean, Error
     
     // Use native fetch with proper error handling
     try {
-      const response = await fetch(`storage/give`, {
+      const baseUrl = 'http://127.0.0.1:9001/api'
+      const response = await fetch(`${baseUrl}/storage/give`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          account: pubKey.toString() || '',
+          account: '0x' + pubKey.toString() || '',
           address: pubKey.toBase58() || '',
           lang: lang
         })
@@ -64,11 +69,11 @@ export async function applyFreeSpace(publicKey: string): Promise<[boolean, Error
       
       // Check if storage was actually allocated
       // Wait for blockchain confirmation (max 30 seconds)
-      const lastExpire = userInfo?.expireNumber || 0;
-      const lastSubscribeSize = userInfo?.subscribeSpace || 0;
+      const lastExpire = 0;
+      const lastSubscribeSize = 0;
       
       // Verify subscription was successful
-      const subscribeSuccess = await checkSubscription(lastExpire, lastSubscribeSize);
+      const subscribeSuccess = await checkSubscription(pubKey, lastExpire, lastSubscribeSize);
       
       return subscribeSuccess ? [true, null] : [false, new AccountError("Storage allocation timed out")];
       
@@ -89,6 +94,7 @@ export async function applyFreeSpace(publicKey: string): Promise<[boolean, Error
  * @returns Promise resolving to boolean indicating success
  */
  async function checkSubscription(
+  publicKey: Ed25519PubKey,
   lastExpire: number, 
   lastSubscribeSize: number
 ): Promise<boolean> {
@@ -98,7 +104,7 @@ export async function applyFreeSpace(publicKey: string): Promise<[boolean, Error
     try {
       // Get updated user info
       const userInfo = await globalThis.dc.dcChain?.getUserInfoWithAccount(
-       "0x" + globalThis.dc.publicKey.toString()
+       "0x" + publicKey.toString()
       );
       
       if (!userInfo) continue;

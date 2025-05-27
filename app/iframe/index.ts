@@ -353,7 +353,7 @@ function connectWallet() {
     },
   };
   //创建新的messageChannel
-  sendMessageToWallet(message, 60000)
+  sendMessageToWallet(message, 600000)// 10分钟
     .then((event: any) => {
       const message = event.data;
       console.log("connectWallet response:", message);

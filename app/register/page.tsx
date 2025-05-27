@@ -4,16 +4,14 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation} from 'react-i18next';
 import { Button, Input, Toast } from "antd-mobile";
-import { accountBindNFTAccount, createAccountWithRegister } from "@/app/index";
+import { createAccountWithRegister } from "@/app/index";
 import Link from "next/link";
 interface RegisterProps {
-  bind?: boolean;
   origin?: string;
 }
 export default function Register(props: {searchParams: RegisterProps}) {
     const {searchParams} = props;
     const origin = searchParams?.origin || '';
-    const bind = searchParams?.bind ? true : false;
 
   const router = useRouter();
   const {t} = useTranslation();
@@ -44,25 +42,6 @@ export default function Register(props: {searchParams: RegisterProps}) {
         return;
       }
       try {
-        if(bind) {
-          // 绑定nft账号
-          const bindRes = await accountBindNFTAccount(account, password, "000000", origin);
-          // todo bind成功，跳转到首页
-          if(bindRes && bindRes.success) {
-            Toast.show({
-              content: t('bind.success'),
-              position: "bottom",
-            });
-            // 跳转到首页
-            router.push("/");
-            return;
-          }
-          Toast.show({
-            content: t('bind.failed'),
-            position: "bottom",
-          });
-          return;
-        }
         const res = await createAccountWithRegister(account, password, "000000");
         // todo 登录成功，跳转到首页
         if(res && res.success) {
@@ -71,7 +50,7 @@ export default function Register(props: {searchParams: RegisterProps}) {
             position: "bottom",
           });
           // 跳转到首页
-          router.push("/");
+          router.push("/login?origin=" + origin);
           return;
         }
         Toast.show({
@@ -114,9 +93,9 @@ export default function Register(props: {searchParams: RegisterProps}) {
         {t('register.register')}
         </Button>
       </div>
-      { !bind && <Link href={`/login?origin=${origin}`} >
+      <Link href={`/login?origin=${origin}`} >
         {t('login.login')}
-      </Link>}
+      </Link>
     </div>
   );
 }

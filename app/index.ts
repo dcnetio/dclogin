@@ -325,7 +325,7 @@ async function chooseStoredAccount (
   const accounts = await DBHelper.getAllData(DBHelper.store_account);
   if (!accounts || accounts.length == 0) {
     Toast.show({
-      content: i18n.t("account.get_failed"),
+      content: i18n.t("account.get_info_failed"),
       position: "bottom",
     });
     return;
@@ -382,21 +382,22 @@ const bindNFTAccount = async (
   account: string = '',
   password: string = '',
   safecode: string = '',
-  mnemonic: string = ''
-): Promise<boolean> => {
-  const bindFlag = await globalThis.dc.auth.bindNFTAccount(account, password, safecode, mnemonic);
-  if(bindFlag !== NFTBindStatus.Success) {
-    return false;
+  mnemonic: string = '',
+  pubKeyStr: string = '',
+): Promise<[boolean, Error | null]> => {
+  const bindRes = await globalThis.dc.auth.bindNFTAccount(account, password, safecode, mnemonic);
+  if(bindRes[0] !== NFTBindStatus.Success) {
+    return bindRes;
   }
   // 循环checkNFT绑定状态
-  const checkFlag = await _checkBind(account);
+  const checkFlag = await _checkBind(account, pubKeyStr);
   if(!checkFlag) {
-    return false;
+    return [false, new Error(i18n.t("account.bind_nft_account_timeout"))];
   }
-  return true;
+  return [true, null];
 }
 
-const _checkBind = (account: string) => {
+const _checkBind = (account: string, pubKeyStr: string) => {
   const maxNum = 20;
   let interval: any = null, // 定时器
     intervalNum = 0; // 定时判断是否绑定成功
@@ -407,14 +408,15 @@ const _checkBind = (account: string) => {
     interval = setInterval(async () => {
       intervalNum++;
       // 判断是否绑定成功
-      let ifNftAccountBindSuccessData = await globalThis.dc.auth.isNftAccountBindSuccess(
+      let bindFlag = await globalThis.dc.auth.isNftAccountBindSuccess(
         account,
+        pubKeyStr,
       );
       // console.log(
       //   '---------ifNftAccountBindSuccessData',
       //   ifNftAccountBindSuccessData,
       // );
-      if (ifNftAccountBindSuccessData.bind) {
+      if (bindFlag) {
         // 绑定成功停止定时任务
         clearInterval(interval);
         intervalNum = 0;
@@ -429,135 +431,55 @@ const _checkBind = (account: string) => {
   });
 };
 
-
-
-
-// 创建账号(绑定)
-async function _accountBindNFTAccount (
-  account: string, 
-  password : string, 
-  safecode : string,
-  origin?: string
-) {
-  // 获取mnemonic
-  const connectingApp = messageData.data;
-  let chooseAccount = await chooseStoredAccount(connectingApp);
-  if(!chooseAccount) {
-    return;
-  }
-  // 获取当前网络
-  const chain = await getCurrentChain();
-  if(!chain || !currentChain){
-    //待测试 跳出提示框,提示用户获取网络信息失败
-    Toast.show({
-      content: i18n.t("network.get_failed"),
-      position: "bottom",
-    });
-    return;
-  }
-  //todo 账号存在后,跳出授权框,提示用户授权连接对应的APP(这个界面可以切换网络)，wq？？觉得应该是提示，不需要用户确认，如果app进来的则前面已经提示确认过了，直接签名即可
-  Toast.show({
-    content: i18n.t("account.auth_doing"),
-    position: "bottom",
-    duration: 0,
-  });
-  //用户确认后,调出webauthn进行校验,并提取出userHandleHash
-  let userHandleHash = await authenticateWithPasskey(
-    chooseAccount.credentialId
-  );
-  console.log("userHandleHash success", userHandleHash);
-  //待测试 关闭状态等待框
-  Toast.clear();
-  if (!userHandleHash) {
-    //todo 跳出密码设置框,提示用户输入密码加密
-    const password = await getEncodePwd(EncodePasswordType.VERIFY);
-    if(password) {
-      // todo password 转 userHandleHash
-      const userHandle = Buffer.from(password);
-      userHandleHash = await crypto.subtle.digest("SHA-256", userHandle);
-    }
-  }
-  if(!userHandleHash) {
-    //待测试 跳出提示框,提示用户解锁钱包失败
-    Toast.show({
-      content: i18n.t("account.unlock_wallet_failed"),
-      position: "bottom",
-    });
-    return;
-  }
-  //解密出助记词
-  const mnemonic = await decryptMnemonic(chooseAccount.iv, chooseAccount.mnemonic, userHandleHash);
-  if(!mnemonic){
-    Toast.show({
-      content: i18n.t("account.unlock_wallet_failed"),
-      position: "bottom",
-    });
-    return;
-  }
-  // bind nft
-  const bindFlag = await bindNFTAccount(
-    account,
-    password,
-    safecode,
-    mnemonic,
-  );
-  if(!bindFlag) {
-    //待测试 跳出提示框,提示用户赠送套餐失败
-    Toast.show({
-      content: i18n.t("account.bind_nft_account_failed"), // todo
-      position: "bottom",
-    });
-    return;
-  }
-  // 子账号创建
-  if(globalThis.dc.appInfo && globalThis.dc.appInfo.appId) {
-    const appId = globalThis.dc.appInfo.appId;
-    const generateAppAccountRes = await globalThis.dc.auth.generateAppAccount(appId, mnemonic);
-    if(generateAppAccountRes[1]) {
-      //待测试 跳出提示框,提示用户赠送套餐失败
-      Toast.show({
-        content: i18n.t("account.bind_app_account_failed"), // todo
-        position: "bottom",
-      });
-      return;
-    }
-  }
-  if(origin || messageData.origin) {
-    const message: ConnectReqMessage = {
-      origin: origin || '',
-    };
-    const res = await resPonseWallet(mnemonic, messageData.origin ? messageData :message, true, portData);
-    return res;
-  }else {
-    return await resPonseWallet(mnemonic);
-  }
-}
 // 创建账号(注册)
 async function _createAccountWithRegister (
   account: string, 
   password : string, 
   safecode : string,
-  origin?: string,
 ) {
-  const res = await ethersHelper.createWalletAccount();
+  // 判断account是否已经存在
+  const nftBinded = await globalThis.dc.auth.isNftAccountBinded(account);
+  if(nftBinded) {
+    //todo 跳出提示框,提示用户该账号已经绑定了NFT
+    Toast.show({
+      content: i18n.t("account.nft_account_binded"),
+      position: "bottom",
+    });
+    return;
+  }
+  let res = await ethersHelper.createWalletAccount();
   if(!res || !res.mnemonic) {
     return;
   }
-  const mnemonicObj =  res.mnemonic; // 对象
-  const address =  res.address;
-  const accountInfo = await createAccount(mnemonicObj, address);
-  if(!accountInfo){
-    return;
+  let mnemonicObj =  res.mnemonic; // 对象
+  let mnemonic = mnemonicObj.phrase ; // 助记词
+  let address =  res.address;
+  const pubKey  = localStorage.getItem("publicKey");
+  if(pubKey) {
+    // 读取webauthhash
+    const chooseAccount = await chooseStoredAccount(undefined);
+    if (chooseAccount) {
+      const resMnemonic = await unlockWallet (chooseAccount);
+      if (resMnemonic) {
+        mnemonic = resMnemonic;
+        address = chooseAccount.account;
+      }
+    }
+    localStorage.removeItem("publicKey");
   }
   const keymanager = new KeyManager();
   const privKey: Ed25519PrivKey = await keymanager.getEd25519KeyFromMnemonic(
-    mnemonicObj.phrase,
+    mnemonic,
     ''
   );
-  const pubKeyStr = privKey.publicKey.toString();
+  // 保存公钥
+  localStorage.setItem(
+    "publicKey",
+    privKey.publicKey.toString(),
+  );
   // 赠送套餐
-  const giveFlag = await applyFreeSpace('0x' + pubKeyStr);
-  if(giveFlag[1]) {
+  const giveFlag = await applyFreeSpace(privKey.publicKey);
+  if(giveFlag[1] && giveFlag[1].message && giveFlag[1].message.indexOf('User already has space') === -1) {
     //待测试 跳出提示框,提示用户赠送套餐失败
     Toast.show({
       content: i18n.t("account.give_space_failed"), // todo
@@ -566,41 +488,30 @@ async function _createAccountWithRegister (
     return;
   }
   // bind nft
-  const bindFlag = await bindNFTAccount(
+  const bindRes = await bindNFTAccount(
     account,
     password,
     safecode,
-    mnemonicObj.phrase,
+    mnemonic,
+    '0x' + privKey.publicKey.toString(),
   );
-  if(!bindFlag) {
+  if(bindRes[0] !== true) {
     //待测试 跳出提示框,提示用户赠送套餐失败
     Toast.show({
       content: i18n.t("account.bind_nft_account_failed"), // todo
       position: "bottom",
     });
+    if(bindRes[1] && bindRes[1].message && bindRes[1].message.indexOf('user has binded an account') !== -1) {
+      localStorage.removeItem("publicKey");
+    }
     return;
   }
-  // 子账号创建
-  if(globalThis.dc.appInfo && globalThis.dc.appInfo.appId) {
-    const appId = globalThis.dc.appInfo.appId;
-    const generateAppAccountRes = await globalThis.dc.auth.generateAppAccount(appId, mnemonicObj.phrase);
-    if(generateAppAccountRes[1]) {
-      //待测试 跳出提示框,提示用户赠送套餐失败
-      Toast.show({
-        content: i18n.t("account.bind_app_account_failed"), // todo
-        position: "bottom",
-      });
-      return;
-    }
-  }
-  if(origin || messageData.origin) {
-    const message: ConnectReqMessage = {
-      origin: origin || '',
-    };
-    const res = await resPonseWallet(mnemonicObj.phrase, messageData.origin ? messageData :message, true, portData);
-    return res;
-  }else {
-    return await resPonseWallet(mnemonicObj.phrase);
+  Toast.show({
+    content: i18n.t("register.success"), // todo
+    position: "bottom",
+  });
+  return {
+    success: true,
   }
 }
 // 创建账号(登录)
@@ -614,29 +525,28 @@ async function _createAccountWithLogin (
   if(!res || !res.mnemonic) {
     return;
   }
-    // 登录成功，得到私钥
-    const privKey = res.privKey;
-    const mnemonic = res.mnemonic;
-    const address = privKey.publicKey.toBase58();
-    // 助记词信息， 私钥转助记词
-    const mnemonicObj = Mnemonic.fromPhrase(mnemonic);
-    const accountInfo = await createAccount(mnemonicObj, address);
-    if(!accountInfo){
-      return;
-    }
-    if(origin || messageData.origin) {
-      const message: ConnectReqMessage = {
-        origin: origin || '',
-      };
-      const res = await resPonseWallet(mnemonic, messageData.origin ? messageData :message, true, portData);
-      return res;
-    }else {
-      return await resPonseWallet(mnemonic);
-    }
+  // 登录成功，得到私钥
+  const privKey = res.privKey;
+  const mnemonic = res.mnemonic;
+  const address = privKey.publicKey.toBase58();
+  // 助记词信息， 私钥转助记词
+  const accountInfo = await createAccount(mnemonic, address);
+  if(!accountInfo){
+    return;
+  }
+  if(origin || messageData.origin) {
+    const message: ConnectReqMessage = {
+      origin: origin || '',
+    };
+    const res = await resPonseWallet(mnemonic, messageData.origin ? messageData :message, true, portData);
+    return res;
+  }else {
+    return await resPonseWallet(mnemonic);
+  }
 }
 // 创建账号
 async function createAccount (
-  mnemonicObj: Mnemonic | null = null,
+  mnemonic: string | null = null,
   address: string = '',
   connectingApp:
     | APPInfo
@@ -651,16 +561,11 @@ async function createAccount (
         duration: 0,
       });
       // 保存用户信息
-      const account = await createWalletAccount(mnemonicObj, address);
+      const account = await createWalletAccount(mnemonic, address);
       console.log("11111111111111111111account 创建", account);
       //待测试 关闭状态等待框
       Toast.clear();
       if (!account) {
-        //待测试 跳出提示框,提示用户创建账号失败
-        Toast.show({
-          content: i18n.t("account.create_failed"),
-          position: "bottom",
-        });
         return;
       }
       //待测试 跳出账号创建成功提示框
@@ -767,11 +672,11 @@ async function _connectCmdHandler (
     });
     return;
   }
-  unlockWallet (
-    chooseAccount, 
-    message,
-    bool,
-    port);
+  const mnemonic = await unlockWallet (chooseAccount);
+  if(!mnemonic) {
+    return;
+  }
+  return await resPonseWallet(mnemonic, message, bool, port);
 }
 
 const getCurrentChain = async () => {
@@ -826,10 +731,7 @@ const getCurrentChain = async () => {
 
 // 解锁钱包并返回数据信息
 async function unlockWallet (
-  chooseAccount: AccountInfo, 
-  message: ConnectReqMessage,
-  bool: boolean,
-  port: MessagePort | null = null) {
+  chooseAccount: AccountInfo, ) {
   // 获取当前网络
   const chain = await getCurrentChain();
   if(!chain || !currentChain){
@@ -879,8 +781,7 @@ async function unlockWallet (
     });
     return;
   }
-  // todo
-  return await resPonseWallet(mnemonic, message, bool, port);
+  return mnemonic;
 }
 
 async function resPonseWallet(
@@ -892,7 +793,7 @@ async function resPonseWallet(
   if(!currentChain){
     //待测试 跳出提示框,提示用户获取网络信息失败
     Toast.show({
-      content: i18n.t("network.get_failed"),
+      content: i18n.t("network.get_info_failed"),
       position: "bottom",
     });
     return;
@@ -920,44 +821,20 @@ async function resPonseWallet(
     return;
   }
   // 获取用户信息，判断是否有空间
-  const userInfo: User = await globalThis.dc.auth.getUserInfoWithAccount("0x" + globalThis.dc.publicKey.toString());
-  if(!userInfo.subscribeSpace){ // 订阅空间不存在
-    // todo 赠送套餐逻辑
-    const giveFlag = await applyFreeSpace("0x" + globalThis.dc.publicKey.toString());
-    if(giveFlag[1]) {
-      //待测试 跳出提示框,提示用户赠送套餐失败
-      Toast.show({
-        content: i18n.t("account.give_space_failed"), // todo
-        position: "bottom",
-      });
-      return;
-    }
+  let publicKey = globalThis.dc.publicKey;
+  if(publicKey == null) {
+    // DCAPP进入
+    const keymanager = new KeyManager();
+    const privKey: Ed25519PrivKey = await keymanager.getEd25519KeyFromMnemonic(
+      mnemonic,
+      connectingApp?.appId || ''
+    );
+    publicKey = privKey.publicKey;
   }
-  if(!userInfo.encNftAccount){ // nft账号不存在
-    Toast.show({
-      content: i18n.t("account.bind_nft_account"),
-      position: "bottom",
-    });
-    // todo跳转到nft注册页面
-    NavigationService.navigate("register", {
-      origin: message.origin,
-      bind: true, 
-    });
-    return;
-  }
-
-  // 子账号创建
-  if(globalThis.dc.appInfo && globalThis.dc.appInfo.appId) {
-    const appId = globalThis.dc.appInfo.appId;
-    const generateAppAccountRes = await globalThis.dc.auth.generateAppAccount(appId, mnemonic);
-    if(generateAppAccountRes[1]) {
-      //待测试 跳出提示框,提示用户赠送套餐失败
-      Toast.show({
-        content: i18n.t("account.bind_app_account_failed"), // todo
-        position: "bottom",
-      });
-      return;
-    }
+  let userInfo: User | null = null;
+  try {
+    userInfo = await globalThis.dc.auth.getUserInfoWithAccount("0x" + publicKey.toString());
+  } catch (error) {
   }
   // 执行签名
   const signature = await ethersHelper.signMessage(wallet, message.origin);
@@ -1493,7 +1370,7 @@ async function _refreshRecordStatus (hash: string) {
 }
 
 // 创建钱包账号
-async function createWalletAccount (mnemonic: Mnemonic | null = null, address: string = '') {
+async function createWalletAccount (mnemonic: string | null = null, address: string = '') {
   let resAccount = {};
   if (mnemonic) {
     try {
@@ -1522,7 +1399,7 @@ async function createWalletAccount (mnemonic: Mnemonic | null = null, address: s
           iv: iv,
         },
         cryptoKey,
-        new TextEncoder().encode(mnemonic?.phrase)
+        new TextEncoder().encode(mnemonic)
       );
       //将账号信息(助记词)存储到数据库
       const account = {
@@ -1706,4 +1583,3 @@ export const transfer = _transfer;
 export const refreshRecordStatus = _refreshRecordStatus;
 export const createAccountWithLogin = _createAccountWithLogin;
 export const createAccountWithRegister = _createAccountWithRegister;
-export const accountBindNFTAccount = _accountBindNFTAccount;

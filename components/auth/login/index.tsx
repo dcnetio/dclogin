@@ -12,7 +12,7 @@ import { store } from "@/lib/store";
 import { saveInitState } from "@/lib/slices/appSlice";
 import { appState } from "@/config/constant";
 import { ConnectReqMessage } from "@/types/walletTypes";
-import {DC} from 'web-dc-api';
+// import {DC} from 'web-dc-api';
 import { useRouter } from 'next/navigation'
 import NavigationService from "@/lib/navigation";
 
@@ -89,6 +89,7 @@ export default function Login() {
     }
   };
   const initDC = async () => {
+    const { DC } = await import('web-dc-api');
     const dc = new DC({
       wssUrl: 'ws://192.168.31.31:9944',
       backWssUrl: 'ws://192.168.31.31:9944',

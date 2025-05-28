@@ -653,6 +653,11 @@ async function _connectCmdHandler (
   if(!mnemonic) {
     return;
   }
+  if(globalThis.dc){
+    if(connectingApp && connectingApp.appId){
+      await globalThis.dc.auth.generateAppAccount(connectingApp.appId, mnemonic);
+    }
+  }
   return await resPonseWallet(mnemonic, message, bool, port);
 }
 
@@ -978,6 +983,12 @@ async function generateWalletAccount (seedAccount: string) {
       content: i18n.t("account.unlock_wallet_failed"),
       position: "bottom",
     });
+  }
+  if(globalThis.dc){
+    const connectingApp = globalThis.dc.appInfo;
+    if(connectingApp && connectingApp.appId){
+      await globalThis.dc.auth.generateAppAccount(connectingApp.appId, mnemonic);
+    }
   }
   // 通过助记词导入钱包,生成带私钥钱包账号
   const wallet = await ethersHelper.createWalletAccountWithMnemonic(mnemonic);

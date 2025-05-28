@@ -5,7 +5,7 @@ import ethersHelper from "@/helpers/ethersHelper";
 let dcWalletChannel: MessagePort | null = null;
 let DAPPChannel: MessagePort | null = null;
 let walletLoadedFlag = false; //钱包已加载标志
-import {Ed25519PrivKey} from 'web-dc-api';
+import {Ed25519PrivKey} from './ed25519';
 import { APPInfo } from "@/types/pageType";
 import { version } from "@/config/constant";
 // Dapp信息

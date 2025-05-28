@@ -1,5 +1,5 @@
 "use client";
-import { NavBar, SafeArea } from "antd-mobile";
+import { NavBar } from "antd-mobile"; // 移除 SafeArea 引入
 import { useRouter } from "next/navigation";
 import { useTranslation} from 'react-i18next';
 import { useEffect, useState } from 'react';
@@ -33,17 +33,11 @@ export default function RegisterLayout({
     return <section className={styles.pcContainer}>{children}</section>;
   }
 
-  // 移动端显示导航栏
+  // 移动端显示导航栏 - 移除SafeArea
   return (
     <section className={styles.mobileContainer}>
-      <div>
-        <SafeArea position="top" />
-      </div>
       <NavBar onBack={back}>{t('register.register')}</NavBar>
       {children}
-      <div>
-        <SafeArea position="bottom" />
-      </div>
     </section>
   );
 }

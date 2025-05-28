@@ -719,7 +719,7 @@ async function unlockWallet (
     return;
   }
   let userHandleHash: ArrayBuffer | null = null;
-  if(chooseAccount.credentialId){
+  if(chooseAccount.credentialId && typeof window.PublicKeyCredential !== "undefined") {
     Toast.show({
       content: i18n.t("account.auth_doing"),
       position: "bottom",
@@ -940,7 +940,7 @@ async function generateWalletAccount (seedAccount: string) {
   }
 
   let userHandleHash: ArrayBuffer | null = null;
-  if(account.credentialId){
+  if(account.credentialId && typeof window.PublicKeyCredential !== "undefined") {
     Toast.show({
       content: i18n.t("account.auth_doing"),
       position: "bottom",
@@ -1369,11 +1369,14 @@ async function createWalletAccount (mnemonic: string | null = null, address: str
   let resAccount = {};
   if (mnemonic) {
     try {
-      let userHandle: Uint8Array;
-      //调用webauthn进行账号信息加密,并存储到数据库
-      const credential = await registerPasskey();
-      // 提取 response 对象
-      userHandle = credential.userHandle;
+      let userHandle: Uint8Array | null = null;
+
+      if (typeof window.PublicKeyCredential !== "undefined") { 
+        //调用webauthn进行账号信息加密,并存储到数据库
+        const credential = await registerPasskey();
+        // 提取 response 对象
+        userHandle = credential.userHandle;
+      }
       // todo 判断userHandle是否存在
       if (!userHandle) {
         //todo 跳出密码设置框,提示用户输入密码加密

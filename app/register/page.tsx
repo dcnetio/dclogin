@@ -124,13 +124,20 @@ export default function Register() {
       </div>
       
       <div className={styles.registerContainer}>
-        <div className={styles.logoSection}>
-          <div className={styles.logo}>
-            <div className={styles.logoIcon}></div>
-          </div>
-          <h2 className={styles.title}>{t('register.register')}</h2>
-          <p className={styles.subtitle}>{t('register.subtitle', '创建跨应用账户，开启您的Web3之旅')}</p>
-        </div>
+       <div className={styles.logoSection}>
+  <div className={styles.logo}>
+    <div className={styles.logoIcon}></div>
+  </div>
+  <h2 className={styles.title}>{t('register.register')}</h2>
+  <p className={styles.subtitle}>{t('register.subtitle', '创建私人账户，开启您的Web3之旅')}</p>
+  
+  {/* Add mobile description here */}
+  {isMobile && (
+    <div className={styles.mobileDescription}>
+      {t('wallet.mobile_description', '无需记忆助记词和私钥，一个账号掌控个人所有数据，畅游Web3应用。')}
+    </div>
+  )}
+</div>
         
         <div className={styles.formSection}>
           <div className={styles.input}>

@@ -9,6 +9,10 @@ import { createRoot } from "react-dom/client";
 
 import { APPInfo } from "@/types/pageType";
 import EncodePassword from "./encodePassword";
+import utilHelper from "@/helpers/utilHelper";
+import { Toast } from "antd-mobile";
+import i18n from "@/locales/i18n";
+import { EncodePasswordType } from "@/config/constant";
 export const showAddDAPPNote = (
   info: APPInfo,
   confirmCallback: () => void
@@ -53,20 +57,52 @@ export const showSignatureDAPPNote = (
 
 
 export const showEncodePassword = (
-  type: number, // 类型，1设置，2验证
-  confirmCallback: (password: string) => void
+  info: {iv: Uint8Array, encodeMnimonic: ArrayBuffer},
+  confirmCallback: (userHandleHash: ArrayBuffer) => void
 ) => {
   const container = document.createElement("div");
   document.body.appendChild(container);
   const root = createRoot(container);
   root.render(
     React.createElement(EncodePassword, {
-      type,
-      confirmFun: (password: string) => {
-        document.body.removeChild(container);
+      type: EncodePasswordType.VERIFY,
+      confirmFun: async (password: string) => {
         // 确认结束
         console.log("确认EncodePassword=====");
-        confirmCallback(password);
+        // 解密
+        const userHandle = Buffer.from(password);
+        const userHandleHash = await crypto.subtle.digest("SHA-256", userHandle);
+        const mnemonic = await utilHelper.decryptMnemonic(info.iv, info.encodeMnimonic, userHandleHash);
+        if(!mnemonic){
+          Toast.show({
+            content: i18n.t("account.unlock_wallet_failed"),
+            position: "bottom",
+          });
+          return;
+        }
+        confirmCallback(userHandleHash);
+        document.body.removeChild(container);
+      },
+    })
+  );
+};
+
+export const showSetEncodePassword = (
+  confirmCallback: (userHandle: Uint8Array) => void
+) => {
+  const container = document.createElement("div");
+  document.body.appendChild(container);
+  const root = createRoot(container);
+  root.render(
+    React.createElement(EncodePassword, {
+      type: EncodePasswordType.SET,
+      confirmFun: async (password: string) => {
+        // 确认结束
+        console.log("确认EncodePassword=====");
+        // 解密
+        const userHandle = Buffer.from(password);
+        confirmCallback(userHandle);
+        document.body.removeChild(container);
       },
     })
   );

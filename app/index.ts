@@ -1,7 +1,7 @@
 "use client";
 import utilHelper from "@/helpers/utilHelper";
 import ethersHelper from "@/helpers/ethersHelper";
-import { defaultNetworks, EncodePasswordType } from "@/config/constant";
+import { defaultNetworks } from "@/config/constant";
 import {
   ChainInfo,
   ConnectReqMessage,
@@ -24,6 +24,7 @@ import DBHelper from "@/helpers/DBHelper";
 import {
   showAddDAPPNote,
   showEncodePassword,
+  showSetEncodePassword,
   showSignatureDAPPNote,
 } from "@/components/note/noteHelper";
 import { Toast } from "antd-mobile";
@@ -32,7 +33,6 @@ import { ChooseAccount } from "@/components/common/accountHelper";
 import { Ed25519PrivKey, KeyManager, NFTBindStatus, User, version } from "web-dc-api";
 import { APPInfo } from "@/types/pageType";
 import NavigationService from "@/lib/navigation";
-import { Mnemonic } from "ethers/wallet";
 import { applyFreeSpace } from "./tools/subSpace";
 
 
@@ -54,7 +54,7 @@ const NetworkStauts = Object.freeze({
   disconnect: 2,
 });
 let networkStatus: number = NetworkStauts.disconnect; //网络状态
-let messageData: ConnectReqMessage = {};
+let messageData: ConnectReqMessage = {origin: ""};
 let portData: MessagePort | null = null;
 
 /*******************************初始化需要完成操作***********************************/
@@ -324,10 +324,6 @@ async function chooseStoredAccount (
   //判断用户是否已经创建过钱包账号,如果没有,则跳出状态等待框,提示用户账号创建中
   const accounts = await DBHelper.getAllData(DBHelper.store_account);
   if (!accounts || accounts.length == 0) {
-    Toast.show({
-      content: i18n.t("account.get_info_failed"),
-      position: "bottom",
-    });
     return;
   }
   console.log("11111111111111111111accounts 数据", accounts);
@@ -607,27 +603,6 @@ async function createAccount (
   return currentAccount
 }
 
- // 解密助记词
-async function decryptMnemonic (iv: Uint8Array, encryptedMnemonic: ArrayBuffer, userHandleHash: ArrayBuffer) {
-  //解密出助记词
-  try {
-    const cryptoKey = await importAesKeyFromHash(userHandleHash);
-    console.log("cryptoKey success", cryptoKey);
-    const encodedMnemonic = await crypto.subtle.decrypt(
-      {
-        name: "AES-GCM",
-        iv: iv,
-      },
-      cryptoKey,
-      encryptedMnemonic
-    );
-    const decoder = new TextDecoder();
-    const mnemonic = decoder.decode(encodedMnemonic);
-    return mnemonic;
-  } catch (error) {
-    return;
-  }
-}
 
 // 收到连接钱包请求处理,message格式为{version:'v0_0_1',type: 'connect',data: {appName:'test',appIcon:'',appUrl: 'http://localhost:8080',appVersion: '1.0.0'}}
 async function _connectCmdHandler (
@@ -742,27 +717,27 @@ async function unlockWallet (
     });
     return;
   }
-  //todo 账号存在后,跳出授权框,提示用户授权连接对应的APP(这个界面可以切换网络)，wq？？觉得应该是提示，不需要用户确认，如果app进来的则前面已经提示确认过了，直接签名即可
-  Toast.show({
-    content: i18n.t("account.auth_doing"),
-    position: "bottom",
-    duration: 0,
-  });
-  //用户确认后,调出webauthn进行校验,并提取出userHandleHash
-  let userHandleHash = await authenticateWithPasskey(
-    chooseAccount.credentialId
-  );
-  console.log("userHandleHash success", userHandleHash);
-  //待测试 关闭状态等待框
-  Toast.clear();
+  let userHandleHash: ArrayBuffer | null = null;
+  if(chooseAccount.credentialId){
+    Toast.show({
+      content: i18n.t("account.auth_doing"),
+      position: "bottom",
+      duration: 0,
+    });
+    //用户确认后,调出webauthn进行校验,并提取出userHandleHash
+    userHandleHash = await authenticateWithPasskey(
+      chooseAccount.credentialId
+    );
+    console.log("userHandleHash success", userHandleHash);
+    //待测试 关闭状态等待框
+    Toast.clear();
+  }
   if (!userHandleHash) {
     //todo 跳出密码设置框,提示用户输入密码加密
-    const password = await getEncodePwd(EncodePasswordType.VERIFY);
-    if(password) {
-      // todo password 转 userHandleHash
-      const userHandle = Buffer.from(password);
-      userHandleHash = await crypto.subtle.digest("SHA-256", userHandle);
-    }
+    userHandleHash = await getEncodePwd({
+      iv: chooseAccount.iv,
+      encodeMnimonic: chooseAccount.mnemonic,
+    });
   }
   if(!userHandleHash) {
     //待测试 跳出提示框,提示用户解锁钱包失败
@@ -773,7 +748,7 @@ async function unlockWallet (
     return;
   }
   //解密出助记词
-  const mnemonic = await decryptMnemonic(chooseAccount.iv, chooseAccount.mnemonic, userHandleHash);
+  const mnemonic = await utilHelper.decryptMnemonic(chooseAccount.iv, chooseAccount.mnemonic, userHandleHash);
   if(!mnemonic){
     Toast.show({
       content: i18n.t("account.unlock_wallet_failed"),
@@ -919,16 +894,26 @@ async function resPonseWallet(
 }
 
 // 获取用户加密密码
-async function getEncodePwd(type: number): Promise<string> { 
+async function getEncodePwd(info: {iv: Uint8Array, encodeMnimonic: ArrayBuffer}): Promise<ArrayBuffer> { 
   return new Promise((resolve, reject) => {
     // todo 显示用户加密密码页面
-    showEncodePassword(type, (password) => {
+    showEncodePassword(info, (password) => {
       // 处理结果
       resolve(password);
     });
   })
 }
 
+// 设置用户加密密码
+async function setEncodePwd(): Promise<Uint8Array> { 
+  return new Promise((resolve, reject) => {
+    // todo 显示用户加密密码页面
+    showSetEncodePassword((userHandle: Uint8Array) => {
+      // 处理结果
+      resolve(userHandle);
+    });
+  })
+}
 // 根据账号,生成签名的钱包账号对象
 async function generateWalletAccount (seedAccount: string) {
   let account = null;
@@ -952,37 +937,46 @@ async function generateWalletAccount (seedAccount: string) {
     });
     return null;
   }
-  //todo 跳出授权框,提示用户进行签名(显示所有签名信息,以及签名申请的APP信息)，wq ？？觉得应该是提示，不需要用户确认，如果app进来的则前面已经提示确认过了，直接签名即可
-  Toast.show({
-    content: i18n.t("account.auth_doing"),
-    position: "bottom",
-    duration: 0,
-  });
 
-  //用户确认后,调出webauthn进行校验,并提取出userHandleHash
-  const userHandleHash = await authenticateWithPasskey(account.credentialId);
-  //待测试 关闭状态等待框
-  Toast.clear();
-  if (!userHandleHash) {
-    //待测试 跳出提示框,提示用户授权失败
+  let userHandleHash: ArrayBuffer | null = null;
+  if(account.credentialId){
     Toast.show({
-      content: i18n.t("account.auth_failed"),
+      content: i18n.t("account.auth_doing"),
+      position: "bottom",
+      duration: 0,
+    });
+    //用户确认后,调出webauthn进行校验,并提取出userHandleHash
+    userHandleHash = await authenticateWithPasskey(
+      account.credentialId
+    );
+    console.log("userHandleHash success", userHandleHash);
+    //待测试 关闭状态等待框
+    Toast.clear();
+  }
+  if (!userHandleHash) {
+    //todo 跳出密码设置框,提示用户输入密码加密
+    userHandleHash = await getEncodePwd( {
+      iv: account.iv,
+      encodeMnimonic: account.mnemonic,
+    });
+  }
+  if(!userHandleHash) {
+    //待测试 跳出提示框,提示用户解锁钱包失败
+    Toast.show({
+      content: i18n.t("account.unlock_wallet_failed"),
       position: "bottom",
     });
-    return null;
+    return;
   }
   //解密出助记词
-  const cryptoKey = await importAesKeyFromHash(userHandleHash);
-  const encodedMnemonic = await crypto.subtle.decrypt(
-    {
-      name: "AES-GCM",
-      iv: account.iv,
-    },
-    cryptoKey,
-    account.mnemonic
-  );
-  const decoder = new TextDecoder();
-  const mnemonic = decoder.decode(encodedMnemonic);
+  const mnemonic = await utilHelper.decryptMnemonic (account.iv, account.mnemonic, userHandleHash);
+  if (!mnemonic) {
+    //待测试 跳出提示框,提示用户导入钱包失败
+    Toast.show({
+      content: i18n.t("account.unlock_wallet_failed"),
+      position: "bottom",
+    });
+  }
   // 通过助记词导入钱包,生成带私钥钱包账号
   const wallet = await ethersHelper.createWalletAccountWithMnemonic(mnemonic);
   if (!wallet) {
@@ -1374,33 +1368,24 @@ async function createWalletAccount (mnemonic: string | null = null, address: str
   let resAccount = {};
   if (mnemonic) {
     try {
+      let userHandle: Uint8Array;
       //调用webauthn进行账号信息加密,并存储到数据库
       const credential = await registerPasskey();
       // 提取 response 对象
-      let userHandle = credential.userHandle;
+      userHandle = credential.userHandle;
       // todo 判断userHandle是否存在
       if (!userHandle) {
         //todo 跳出密码设置框,提示用户输入密码加密
-        const password = await getEncodePwd(EncodePasswordType.SET);
-        if(!password) {
+        userHandle = await setEncodePwd();
+        if(!userHandle) {
           return ;
         }
-        // todo password 转 userHandleHash
-        userHandle = Buffer.from(password);
       }
       // 提取 userHandle 并进行 hash
       const userHandleHash = await crypto.subtle.digest("SHA-256", userHandle);
-      //用userHandleHash 生成aes256的密钥,来加密accountInfo.mnemonic
-      const cryptoKey = await importAesKeyFromHash(userHandleHash);
       const iv = window.crypto.getRandomValues(new Uint8Array(12));
-      const encryptedMnemonic = await crypto.subtle.encrypt(
-        {
-          name: "AES-GCM",
-          iv: iv,
-        },
-        cryptoKey,
-        new TextEncoder().encode(mnemonic)
-      );
+      //用userHandleHash 生成aes256的密钥,来加密accountInfo.mnemonic
+      const encryptedMnemonic = await utilHelper.encryptMnemonic(iv, mnemonic, userHandleHash);
       //将账号信息(助记词)存储到数据库
       const account = {
         account: address,
@@ -1422,17 +1407,6 @@ async function createWalletAccount (mnemonic: string | null = null, address: str
   } else {
     return ;
   }
-}
-
-async function importAesKeyFromHash (userHandleHash: ArrayBuffer) {
-  // Convert the userHandleHash (32-byte) into a CryptoKey object
-  return await crypto.subtle.importKey(
-    "raw", // Raw format of the key
-    userHandleHash, // The ArrayBuffer or TypedArray
-    { name: "AES-GCM" }, // Algorithm to use for the key
-    false, // Not extractable
-    ["encrypt", "decrypt"] // Key usages
-  );
 }
 
 // 注册新的 Passkey
@@ -1482,7 +1456,8 @@ async function registerPasskey () {
     return { id: credential?.id, userHandle: userHandle };
   } catch (error) {
     console.error("Passkey registration failed", error);
-    throw error;
+    // throw error;
+    return { id: '', userHandle: '' };
   }
 }
 

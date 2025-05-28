@@ -50,9 +50,64 @@ function _base64UrlToArrayBuffer(base64Url:string) {
     }  
 }  
 
+async function importAesKeyFromHash (userHandleHash: ArrayBuffer) {
+    // Convert the userHandleHash (32-byte) into a CryptoKey object
+    return await crypto.subtle.importKey(
+      "raw", // Raw format of the key
+      userHandleHash, // The ArrayBuffer or TypedArray
+      { name: "AES-GCM" }, // Algorithm to use for the key
+      false, // Not extractable
+      ["encrypt", "decrypt"] // Key usages
+    );
+  }
+  
+ // 加密助记词
+async function _encryptMnemonic (iv: Uint8Array, mnemonic: string, userHandleHash: ArrayBuffer): Promise<ArrayBuffer| null> {
+  //解密出助记词
+  try {
+    const cryptoKey = await importAesKeyFromHash(userHandleHash);
+    const encryptedMnemonic = await crypto.subtle.encrypt(
+      {
+        name: "AES-GCM",
+        iv: iv,
+      },
+      cryptoKey,
+      new TextEncoder().encode(mnemonic)
+    );
+    
+    return encryptedMnemonic;
+  } catch (error) {
+    return null;
+  }
+}
+
+ // 解密助记词
+async function _decryptMnemonic (iv: Uint8Array, encryptedMnemonic: ArrayBuffer, userHandleHash: ArrayBuffer): Promise<string> {
+  //解密出助记词
+  try {
+    const cryptoKey = await importAesKeyFromHash(userHandleHash);
+    console.log("cryptoKey success", cryptoKey);
+    const encodedMnemonic = await crypto.subtle.decrypt(
+      {
+        name: "AES-GCM",
+        iv: iv,
+      },
+      cryptoKey,
+      encryptedMnemonic
+    );
+    const decoder = new TextDecoder();
+    const mnemonic = decoder.decode(encodedMnemonic);
+    return mnemonic;
+  } catch (error) {
+    return '';
+  }
+}
+
 const utilHelper = {
     hexToUint8Array: _hexToUint8Array,
     base64UrlToArrayBuffer: _base64UrlToArrayBuffer,
+    encryptMnemonic: _encryptMnemonic,
+    decryptMnemonic: _decryptMnemonic
     };
 
 export default utilHelper;

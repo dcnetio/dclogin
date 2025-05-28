@@ -226,57 +226,65 @@ return (
         )}
       </div>
 
-      {/* 表单区域 */}
-      <div className={styles.formWrapper}>
-        <div className={styles.formSection}>
-          <div className={styles.inputGroup}>
-            <Input
-              placeholder={t("login.account")}
-              value={account}
-              onChange={setAccount}
-              onEnterPress={gotoConfirm}
-              clearable
-            />
-          </div>
-          
-          <div className={styles.inputGroup}>
-            <Input
-              placeholder={t("login.password")}
-              value={password}
-              onChange={setPassword}
-              onEnterPress={gotoConfirm}
-              clearable
-              type="password"
-            />
-          </div>
+     {/* 表单区域 - 更新类名 */}
+<div className={styles.formWrapper}>
+  <div className={styles.formSection}>
+    <div className={`${styles.inputGroup} ${styles.accountInput}`}>
+      <Input
+        placeholder={t("login.account")}
+        value={account}
+        onChange={setAccount}
+        onEnterPress={gotoConfirm}
+        clearable
+        className={styles.inputField}
+      />
+    </div>
 
-          {/* 安全码区域 */}
-          <div className={styles.safecodeSection}>
-            {showSafecode ? (
-              <div className={styles.inputGroup}>
-                <Input
-                  placeholder={t("login.safecode")}
-                  value={safecode}
-                  onChange={setSafecode}
-                  onEnterPress={gotoConfirm}
-                  clearable
-                />
-              </div>
-            ) : (
-              <div className={styles.safecodeToggle} onClick={toggleSafecode}>
-                 {t("login.input_safecode", "输入安全码")}
-              </div>
-            )}
-          </div>
+    <div className={`${styles.inputGroup} ${styles.passwordInput}`}>
+      <Input
+        placeholder={t("login.password")}
+        value={password}
+        onChange={setPassword}
+        onEnterPress={gotoConfirm}
+        clearable
+        type="password"
+        className={styles.inputField}
+      />
+    </div>
+
+    {/* 安全码区域不变 */}
+    <div className={styles.safecodeSection}>
+      {showSafecode ? (
+        <div className={`${styles.inputGroup} ${styles.safecodeInput}`}>
+          <Input
+            placeholder={t("login.safecode")}
+            value={safecode}
+            onChange={setSafecode}
+            onEnterPress={gotoConfirm}
+            clearable
+          />
         </div>
-      </div>
+      ) : (
+        <div className={styles.safecodeToggle} onClick={toggleSafecode}>
+          {t("login.input_safecode", "输入安全码")}
+        </div>
+      )}
+    </div>
+  </div>
+</div>
 
       {/* 按钮区域 - 移到容器底部 */}
-      <div className={styles.buttonGroup}>
-        <Button color="primary" fill="solid" onClick={gotoConfirm} block>
-          {t("login.login", "登录")}
-        </Button>
-      </div>
+     <div className={styles.buttonGroup}>
+  <Button 
+    color="primary" 
+    fill="solid" 
+    onClick={gotoConfirm} 
+    block
+    className={styles.loginButton}  // 添加自定义类名
+  >
+    {t("login.login", "登录")}
+  </Button>
+</div>
 
       {/* 注册提示 - 确保可见 */}
       <div className={styles.registerPrompt} onClick={gotoRegister}>

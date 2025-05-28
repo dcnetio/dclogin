@@ -109,8 +109,8 @@
   },
   "register": {
     "register": "注册",
-    "account": "注册账号",
-    "password": "注册密码",
+    "account": "账号",
+    "password": "密码",
     "account_empty": "请输入账号",
     "password_empty": "请输入密码",
     "success": "注册成功",

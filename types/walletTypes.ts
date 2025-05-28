@@ -14,6 +14,7 @@ export type ChainInfo = {
 export type AccountInfo = {
   url?: string;
   name: string,
+  nftAccount: string,
   account: string,
   credentialId: string,
   iv: Uint8Array,

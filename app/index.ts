@@ -528,7 +528,7 @@ async function _createAccountWithLogin (
   // 助记词信息， 私钥转助记词
   const wallet = await ethersHelper.createWalletAccountWithMnemonic(mnemonic);
   const address = wallet.address;
-  const accountInfo = await createAccount(mnemonic, address);
+  const accountInfo = await createAccount(mnemonic, account, address);
   if(!accountInfo){
     return;
   }
@@ -545,6 +545,7 @@ async function _createAccountWithLogin (
 // 创建账号
 async function createAccount (
   mnemonic: string | null = null,
+  nftAccount: string,
   address: string = '',
   connectingApp:
     | APPInfo
@@ -559,7 +560,7 @@ async function createAccount (
         duration: 0,
       });
       // 保存用户信息
-      const account = await createWalletAccount(mnemonic, address);
+      const account = await createWalletAccount(mnemonic, nftAccount, address);
       console.log("11111111111111111111account 创建", account);
       //待测试 关闭状态等待框
       Toast.clear();
@@ -842,6 +843,7 @@ async function resPonseWallet(
       origin: message.origin,
       data: {
         success: true,
+        nftAccount: currentAccount?.nftAccount,
         account: wallet.address,
         chainId: currentChain.chainId,
         chainName: currentChain.name,
@@ -1064,6 +1066,7 @@ async function signMessageHandler (
     origin: message.origin,
     data: {
       success: true,
+      nftAccount: currentAccount?.nftAccount,
       account: wallet.address,
       chainId: currentChain?.chainId,
       chainName: currentChain?.name,
@@ -1162,6 +1165,7 @@ async function signEIP712MessageHandler (
     origin: message.origin,
     data: {
       success: true,
+      nftAccount: currentAccount?.nftAccount,
       account: wallet.address,
       chainId: currentChain?.chainId,
       name: currentChain?.name,
@@ -1377,7 +1381,7 @@ async function _refreshRecordStatus (hash: string) {
 }
 
 // 创建钱包账号
-async function createWalletAccount (mnemonic: string | null = null, address: string = '') {
+async function createWalletAccount (mnemonic: string | null = null, nftAccount: string, address: string = '') {
   let resAccount = {};
   if (mnemonic) {
     try {
@@ -1406,6 +1410,7 @@ async function createWalletAccount (mnemonic: string | null = null, address: str
       const encryptedMnemonic = await utilHelper.encryptMnemonic(iv, mnemonic, userHandleHash);
       //将账号信息(助记词)存储到数据库
       const account = {
+        nftAccount,
         account: address,
         type: "eth", // todo 账号类型
         credentialId: credentialId,

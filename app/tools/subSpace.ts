@@ -6,6 +6,7 @@ import i18n from '@/locales/i18n';
 import { AccountError } from '../../../dcapi/lib/implements/account/manager';
 
 import { Ed25519PubKey} from "web-dc-api";
+import { apiUrl } from '@/config/constant';
 /**
  * Apply for free storage space for new users
  * @returns Promise resolving to [success, error]
@@ -36,8 +37,7 @@ export async function applyFreeSpace(pubKey: Ed25519PubKey): Promise<[boolean, E
     
     // Use native fetch with proper error handling
     try {
-      const baseUrl = 'http://127.0.0.1:9001/api'
-      const response = await fetch(`${baseUrl}/storage/give`, {
+      const response = await fetch(`${apiUrl}/storage/give`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

@@ -1,7 +1,7 @@
 "use client";
 import utilHelper from "@/helpers/utilHelper";
 import ethersHelper from "@/helpers/ethersHelper";
-import { defaultNetworks } from "@/config/constant";
+import { baseUrl, defaultNetworks, version } from "@/config/constant";
 import {
   ChainInfo,
   ConnectReqMessage,
@@ -30,7 +30,7 @@ import {
 import { Toast } from "antd-mobile";
 import i18n from "@/locales/i18n";
 import { ChooseAccount } from "@/components/common/accountHelper";
-import { Ed25519PrivKey, KeyManager, NFTBindStatus, User, version } from "web-dc-api";
+import { Ed25519PrivKey, KeyManager, NFTBindStatus, User} from "web-dc-api";
 import { APPInfo } from "@/types/pageType";
 import NavigationService from "@/lib/navigation";
 import { applyFreeSpace } from "./tools/subSpace";
@@ -222,6 +222,7 @@ function onDAPPMessage (event: MessageEvent) {
   if (event.ports.length == 0) {
     return;
   }
+  console.log("===============onDAPPMessage version", version);
   if (message.version !== version) {
     //判断版本号
     return;
@@ -643,7 +644,7 @@ async function _connectCmdHandler (
     // todo没有用户的时候，需要跳转到登录页面
     messageData = message;
     portData = port;
-    NavigationService.navigate("login", {
+    NavigationService.navigate(baseUrl + "login", {
       origin: message.origin,
     });
     return;
@@ -1370,12 +1371,14 @@ async function createWalletAccount (mnemonic: string | null = null, address: str
   if (mnemonic) {
     try {
       let userHandle: Uint8Array | null = null;
+      let credentialId = "";
 
       if (typeof window.PublicKeyCredential !== "undefined") { 
         //调用webauthn进行账号信息加密,并存储到数据库
         const credential = await registerPasskey();
         // 提取 response 对象
         userHandle = credential.userHandle;
+        credentialId = credential.id
       }
       // todo 判断userHandle是否存在
       if (!userHandle) {
@@ -1394,7 +1397,7 @@ async function createWalletAccount (mnemonic: string | null = null, address: str
       const account = {
         account: address,
         type: "eth", // todo 账号类型
-        credentialId: credential.id,
+        credentialId: credentialId,
         mnemonic: encryptedMnemonic,
         iv: iv,
         name: address.substring(0, 6),

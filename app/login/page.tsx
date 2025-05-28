@@ -6,6 +6,7 @@ import { useTranslation} from 'react-i18next';
 import { Button, Input, Toast } from "antd-mobile";
 import { createAccountWithLogin } from "@/app/index";
 import Link from "next/link";
+import { baseUrl } from "@/config/constant";
 interface LoginProps {
   origin?: string;
 }
@@ -75,7 +76,7 @@ export default function Login(props: {searchParams: LoginProps}) {
     }
   };
   const gotoRegister = () => {
-    router.push(`/register?origin=${origin}`);
+    router.push(baseUrl + `/register?origin=${origin}`);
   }
   useEffect(() => {
   }, []);

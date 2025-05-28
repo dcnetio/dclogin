@@ -6,6 +6,7 @@ import { useTranslation} from 'react-i18next';
 import { Button, Input, Toast } from "antd-mobile";
 import { createAccountWithRegister } from "@/app/index";
 import Link from "next/link";
+import { baseUrl } from "@/config/constant";
 interface RegisterProps {
   origin?: string;
 }
@@ -50,7 +51,7 @@ export default function Register(props: {searchParams: RegisterProps}) {
             position: "bottom",
           });
           // 跳转到首页
-          router.push("/login?origin=" + origin);
+          router.push(baseUrl + "/login?origin=" + origin);
           return;
         }
         Toast.show({
@@ -67,7 +68,7 @@ export default function Register(props: {searchParams: RegisterProps}) {
     }
   };
   const gotoLogin = () => {
-    router.push("/login?origin=" + origin);
+    router.push(baseUrl + "/login?origin=" + origin);
   };
   useEffect(() => {
   }, []);

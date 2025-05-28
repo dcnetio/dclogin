@@ -99,7 +99,7 @@
     "login": "登录",
     "account": "账号",
     "password": "密码",
-    "safecode": "安全码",
+    "safecode": "安全码,默认6个0",
     "account_empty": "请输入账号",
     "password_empty": "请输入密码",
     "safecode_empty": "请输入安全码",

@@ -1,14 +1,443 @@
+/* 基础样式 */
 .content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
   padding: 20px;
-  background: fixed;
-  .input{
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    margin: 10px 0;
-    padding: 10px 20px;
-    background: #fff;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.backgroundPattern {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle at 20% 80%, rgba(149, 128, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(106, 130, 251, 0.1) 0%, transparent 50%);
+  background-size: 800px 800px, 600px 600px;
+  background-position: 0 0, 100% 100%;
+}
+
+.registerContainer {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 450px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+}
+
+.logoSection {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.logo {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.logoIcon {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 16px;
+  position: relative;
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+}
+
+.logoIcon::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 24px;
+  height: 24px;
+  background: white;
+  border-radius: 6px;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 8px;
+  letter-spacing: -0.5px;
+}
+
+.subtitle {
+  color: #666;
+  font-size: 16px;
+  font-weight: 400;
+  margin: 0;
+}
+
+.formSection {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.input {
+  position: relative;
+  border: 1px solid #e5e9f2;
+  border-radius: 12px;
+  margin: 10px 0;
+  overflow: hidden;
+  background: #f5f7fa;
+  transition: all 0.3s ease;
+}
+
+.input:focus-within {
+  border-color: #667eea;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.input :global(.adm-input) {
+  padding: 14px 16px;
+  font-size: 16px;
+  color: #333;
+}
+
+.input :global(.adm-input::placeholder) {
+  color: #aab2c0;
+}
+
+.input :global(.adm-input-clear) {
+  color: #aab2c0;
+}
+
+.btn {
+  margin-top: 14px;
+}
+
+.btn :global(.adm-button) {
+  height: 48px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn :global(.adm-button[data-color="primary"]) {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  box-shadow: 0 4px 10px rgba(102, 126, 234, 0.2);
+  border: none;
+}
+
+.btn :global(.adm-button[data-color="primary"]:active) {
+  transform: translateY(1px);
+  box-shadow: 0 2px 5px rgba(102, 126, 234, 0.2);
+}
+
+.btn :global(.adm-button[data-color="default"]) {
+  background: #ffffff;
+  color: #667eea;
+  border: 1px solid #667eea;
+}
+
+.btn :global(.adm-button[data-color="default"]:active) {
+  background: rgba(102, 126, 234, 0.05);
+}
+
+/* PC端优化 */
+@media (min-width: 769px) {
+  .content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+    height: 100vh;
+    padding: 0;
+    margin: 0;
+    gap: 0;
+    align-items: stretch;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
   }
-  .btn{
-    margin-top: 20px;
+  
+  .backgroundPattern {
+    grid-column: 1;
+    position: relative;
+    background: 
+      radial-gradient(circle at 30% 60%, rgba(106, 130, 251, 0.15) 0%, transparent 60%),
+      radial-gradient(circle at 70% 30%, rgba(118, 75, 162, 0.15) 0%, transparent 60%),
+      linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
   }
+  
+  /* 几何装饰元素 */
+  .geoDecor1, .geoDecor2, .geoDecor3 {
+    position: absolute;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    opacity: 0.1;
+  }
+  
+  .geoDecor1 {
+    width: 300px;
+    height: 300px;
+    top: -150px;
+    left: -150px;
+  }
+  
+  .geoDecor2 {
+    width: 200px;
+    height: 200px;
+    bottom: -100px;
+    right: 10%;
+  }
+  
+  .geoDecor3 {
+    width: 150px;
+    height: 150px;
+    top: 40%;
+    left: 10%;
+  }
+  
+  /* 圆环装饰 */
+  .circleDecor {
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    border-radius: 50%;
+    border: 1px solid rgba(106, 130, 251, 0.1);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  
+  /* 品牌信息块 */
+  .brandInfo {
+    position: relative;
+    text-align: center;
+    z-index: 5;
+    width: 80%;
+    max-width: 500px;
+  }
+  
+  .brandLogo {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 30px;
+  }
+  
+  .brandTitle {
+    font-size: 42px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 16px;
+    letter-spacing: -0.5px;
+  }
+  
+  .brandTagline {
+    font-size: 18px;
+    color: #666;
+    margin-bottom: 30px;
+    line-height: 1.6;
+  }
+  
+  .brandFeatures {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 30px;
+  }
+  
+  .featureItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #555;
+    font-size: 16px;
+  }
+  
+  .featureIcon {
+    width: 20px;
+    height: 20px;
+    background: rgba(106, 130, 251, 0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #667eea;
+  }
+  
+  /* 登录容器 */
+  .registerContainer {
+    grid-column: 2;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0 60px;
+    border-radius: 0;
+    background: #ffffff;
+    border: none;
+    box-shadow: -5px 0 20px rgba(0, 0, 0, 0.05);
+    position: relative;
+    overflow-y: auto;
+    max-width: none;
+  }
+  
+  .logoSection {
+    margin-bottom: 40px;
+  }
+  
+  .logoIcon {
+    width: 80px;
+    height: 80px;
+    border-radius: 20px;
+  }
+  
+  .logoIcon::before {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+  }
+  
+  .title {
+    font-size: 32px;
+    color: #333;
+    margin-bottom: 12px;
+  }
+  
+  .subtitle {
+    font-size: 18px;
+    color: #666;
+  }
+  
+  .formSection {
+    width: 100%;
+    max-width: 380px;
+    gap: 24px;
+  }
+  
+  .input {
+    border-radius: 14px;
+  }
+  
+  .input :global(.adm-input) {
+    padding: 16px 20px;
+    font-size: 16px;
+  }
+  
+  .btn {
+    gap: 16px;
+    margin-top: 16px;
+  }
+  
+  .btn :global(.adm-button) {
+    height: 54px;
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 14px;
+  }
+}
+
+/* 移动端优化 */
+@media (max-width: 480px) {
+  .content {
+    padding: 0;
+    padding-top: 20px;
+    align-items: flex-start;
+    background: #ffffff;
+  }
+  
+  .registerContainer {
+    margin: 10px;
+    padding: 30px 20px;
+    border-radius: 16px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    background: #ffffff;
+  }
+}
+
+.pcContainer {
+  width: 100%;
+  height: 100vh;
+  overflow-x: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.mobileContainer {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* 移动端优化 */
+@media (max-width: 480px) {
+  .content {
+    padding: 0;
+    padding-top: 20px;
+    align-items: center; /* Change from flex-start to center */
+    justify-content: center;
+    background: #ffffff;
+    width: 100%;
+  }
+  
+  .registerContainer {
+    margin: 10px;
+    padding: 30px 20px;
+    width: 90%; /* Adjust width to take more screen space */
+    max-width: 420px;
+    border-radius: 16px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    background: #ffffff;
+  }
+  
+  .logoSection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .formSection {
+    width: 100%;
+  }
+  
+  .input {
+    width: 100%;
+  }
+  
+  .btn {
+    width: 100%;
+  }
+}
+
+.mobileDescription {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.4;
+  margin: 16px auto 0;
+  padding: 10px 15px;
+  background-color: rgba(106, 130, 251, 0.05);
+  border-left: 3px solid #667eea;
+  border-radius: 6px;
+  text-align: left;
 }

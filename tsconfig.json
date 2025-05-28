@@ -33,8 +33,9 @@
       ],
       "web-dc-api": [
         "../dcapi/lib/index"
-      ],
-    }
+      ]
+    },
+    "target": "ES2017"
   },
   "include": [
     "next-env.d.ts",

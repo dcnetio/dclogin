@@ -9,10 +9,12 @@ import { getCurrentAccount, getCurrentNetwork } from "@/app/index";
 import { appState } from "@/config/constant";
 import { AccountInfo } from "@/types/walletTypes";
 import { useTranslation} from 'react-i18next';
+
 interface HeaderProps {
   changeNetworkSuccess: () => void;
   changeAccountSuccess: () => void;
 }
+
 export default function Header(props: HeaderProps) {
   const { changeNetworkSuccess, changeAccountSuccess } = props;
   const { t } = useTranslation()
@@ -21,14 +23,17 @@ export default function Header(props: HeaderProps) {
   const [accountVisible, setAccountVisible] = useState(false);
   const [accountInfo, setAccountInfo] = useState<AccountInfo>();
   const initState = useAppSelector((state) => state.app.initState);
+  
   const showChangeNetwork = () => {
     console.log("showChangeNetwork");
     setNetworkVisible(true);
   };
+  
   const showChangeAccount = () => {
     console.log("showChangeAccount");
     setAccountVisible(true);
   };
+  
   const onNetworkSuccess = async (name: string) => {
     setNetworkName(name);
     setNetworkVisible(false);
@@ -37,11 +42,13 @@ export default function Header(props: HeaderProps) {
       getNowAccount();
     }
   };
+  
   const onAccountSuccess = async (info: AccountInfo) => {
     setAccountInfo(info);
     setAccountVisible(false);
     changeAccountSuccess?.();
   };
+  
   const getNowNetwork = async () => {
     const info = getCurrentNetwork();
     console.log("getCurrentNetwork info", info);
@@ -49,6 +56,7 @@ export default function Header(props: HeaderProps) {
       setNetworkName(info.name);
     }
   };
+  
   const getNowAccount = async () => {
     const info = getCurrentAccount();
     console.log("getCurrentAccount info", info);
@@ -64,19 +72,23 @@ export default function Header(props: HeaderProps) {
       getNowAccount();
     }
   }, [initState]);
+  
   return (
     <div className={styles.header}>
       <div className={styles.network} onClick={showChangeNetwork}>
         <GlobalOutline fontSize={16} />
         <span className={styles.txt}>{networkName ? networkName.split(" ")[0] : t('network.network')}</span>
       </div>
+      
       <div className={styles.accountD}>
         <div className={styles.account} onClick={showChangeAccount}>
-          {/* {accountInfo?.name} */}
-          {accountInfo?.account && accountInfo?.account.length > 8 ? `${accountInfo?.account.slice(0, 6)}...${accountInfo?.account.slice(-4)}` : ''}
+          {accountInfo?.account && accountInfo?.account.length > 8 ? 
+            `${accountInfo?.account.slice(0, 6)}...${accountInfo?.account.slice(-4)}` : 
+            t('account.select_account', '选择账户')}
           <DownFill fontSize={12} className={styles.arrow} />
         </div>
       </div>
+      
       <Popup
         visible={networkVisible}
         onMaskClick={() => {
@@ -88,6 +100,7 @@ export default function Header(props: HeaderProps) {
       >
         <Network onSuccess={onNetworkSuccess}/>
       </Popup>
+      
       <Account onSuccess={onAccountSuccess} visible={accountVisible}/>
     </div>
   );

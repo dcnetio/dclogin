@@ -66,6 +66,9 @@ export default function Register(props: {searchParams: RegisterProps}) {
       }
     }
   };
+  const gotoLogin = () => {
+    router.push("/login?origin=" + origin);
+  };
   useEffect(() => {
   }, []);
   return (
@@ -93,9 +96,11 @@ export default function Register(props: {searchParams: RegisterProps}) {
         {t('register.register')}
         </Button>
       </div>
-      <Link href={`/login?origin=${origin}`} >
-        {t('login.login')}
-      </Link>
+      <div className={styles.btn}>
+        <Button color="default" fill="solid" onClick={gotoLogin} block>
+        {t('register.go_login')}
+        </Button>
+      </div>
     </div>
   );
 }

@@ -524,8 +524,9 @@ async function _createAccountWithLogin (
   // 登录成功，得到私钥
   const privKey = res.privKey;
   const mnemonic = res.mnemonic;
-  const address = privKey.publicKey.toBase58();
   // 助记词信息， 私钥转助记词
+  const wallet = await ethersHelper.createWalletAccountWithMnemonic(mnemonic);
+  const address = wallet.address;
   const accountInfo = await createAccount(mnemonic, address);
   if(!accountInfo){
     return;
@@ -1389,7 +1390,7 @@ async function createWalletAccount (mnemonic: string | null = null, address: str
       //将账号信息(助记词)存储到数据库
       const account = {
         account: address,
-        type: "dc", // todo 账号类型
+        type: "eth", // todo 账号类型
         credentialId: credential.id,
         mnemonic: encryptedMnemonic,
         iv: iv,

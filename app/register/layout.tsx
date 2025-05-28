@@ -19,7 +19,7 @@ export default function RegisterLayout({
       <div>
         <SafeArea position="top" />
       </div>
-      <NavBar>{t('register.register')}</NavBar>
+      <NavBar onBack={back}>{t('register.register')}</NavBar>
       {children}
       <div>
         <SafeArea position="bottom" />

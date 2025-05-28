@@ -19,7 +19,7 @@ export default function LoginLayout({
       <div>
         <SafeArea position="top" />
       </div>
-      <NavBar>{t('login.login')}</NavBar>
+      <NavBar onBack={back}>{t('login.login')}</NavBar>
       {children}
       <div>
         <SafeArea position="bottom" />

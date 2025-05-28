@@ -61,7 +61,7 @@
     "bind_nft_account": "绑定账号",
     "bind_nft_account_failed": "绑定账号失败",
     "nft_account_binded": "当前账号已被绑定",
-    "generate_app_account_failed": "生成应用账号失败"
+    "bind_nft_account_timeout": "绑定账号超时"
   },
   "DAPP": {
     "app": "应用：",
@@ -104,7 +104,8 @@
     "password_empty": "请输入密码",
     "safecode_empty": "请输入安全码",
     "success": "登录成功",
-    "failed": "登录失败"
+    "failed": "登录失败",
+    "go_register": "前往注册"
   },
   "register": {
     "register": "注册",
@@ -113,7 +114,8 @@
     "account_empty": "请输入账号",
     "password_empty": "请输入密码",
     "success": "注册成功",
-    "failed": "注册失败"
+    "failed": "注册失败",
+    "go_login": "前往登录"
   },
   "encode": {
     "password": "加密密码",

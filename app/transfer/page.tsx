@@ -7,9 +7,10 @@ import ethers from "@/helpers/ethersHelper";
 import { getCurrentAccount, getCurrentNetwork } from "@/app/index";
 import { useRouter } from "next/navigation";
 import TransAccount from "@/components/transfer/transAccount";
-import { appState, baseUrl } from "@/config/constant";
+import { appState } from "@/config/constant";
 import { useAppSelector } from "@/lib/hooks";
 import { useTranslation} from 'react-i18next';
+import { baseUrl } from "@/config/define";
 export default function Transfer() {
   const router = useRouter();
   const {t} = useTranslation();

@@ -17,7 +17,7 @@ export default function AddDAPPNote(props: AddDAPPNoteProps) {
       <div className={styles.icon}>
         <CheckShieldFill fontSize={48}/>
       </div>
-      <div className={styles.title}>{t('DAPP.add_title')}</div>
+      {/* <div className={styles.title}>{t('DAPP.add_title')}</div> */}
       <div className={styles.content}>
         <div className={styles.url}>{info.appUrl}</div>
         <div className={styles.name}>
@@ -40,7 +40,7 @@ export default function AddDAPPNote(props: AddDAPPNoteProps) {
         </div>
         <div className={styles.btn}>
           <Button color="primary" fill="solid" onClick={confirmFun} block>
-          {t('DAPP.allow_add')}
+          {/* {t('DAPP.allow_add')} */}
           </Button>
         </div>
       </div>

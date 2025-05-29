@@ -4,6 +4,7 @@ import storage from 'redux-persist/lib/storage';
 import {configureStore, combineReducers} from '@reduxjs/toolkit'
 import {appSlice} from "@/lib/slices/appSlice";
 import {walletSlice} from "@/lib/slices/walletSlice";
+import { authSlice } from "./slices/authSlice";
 import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
 
 // 1.创建persist配置
@@ -15,6 +16,7 @@ const persistConfig = {
 const rootReducer = combineReducers({
     [walletSlice.name]: walletSlice.reducer,
     [appSlice.name]: appSlice.reducer,
+    [authSlice.name]: authSlice.reducer
 })
 const persistedReducer = persistReducer(persistConfig, rootReducer);
  

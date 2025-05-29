@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslation} from 'react-i18next';
 import { Button, Input, Toast } from "antd-mobile";
 import { createAccountWithRegister } from "@/app/index";
-import { baseUrl } from "@/config/constant";
+import { baseUrl } from "@/config/define";
 
 export default function Register() {
   const searchParams = useSearchParams();

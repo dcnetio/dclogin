@@ -8,9 +8,10 @@ import { getCurrentAccount, transfer } from "@/app/index";
 import GASItem from '@/components/transfer/gasItem'
 import GASTotal from '@/components/transfer/gasTotal'
 import { Button, Dialog, Toast } from "antd-mobile";
-import { appState, baseUrl } from "@/config/constant";
+import { appState } from "@/config/constant";
 import { useAppSelector } from "@/lib/hooks";
 import { useTranslation } from "react-i18next";
+import { baseUrl } from "@/config/define";
 export default function TransferConfirm() {
   const router = useRouter();
   const { t } = useTranslation();

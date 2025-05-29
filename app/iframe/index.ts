@@ -110,11 +110,17 @@ function initConfig(config: any) {
 
 // 发送初始化结果消息给父窗口
 function initConfigResponse(flag: boolean, message: any) {
+
+  // 创建私钥
+  const seed = crypto.getRandomValues(new Uint8Array(32))  
+  privateKey = Ed25519PrivKey.fromSeed(seed)
+  const publicKey = privateKey.publicKey;
   const sendMessage = {
     type: "initConfigResponse",
     data: {
       success: flag,
       message: message,
+      publicKey,
     },
   };
   responseToDAPP(sendMessage);

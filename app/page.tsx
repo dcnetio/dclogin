@@ -1,344 +1,179 @@
 "use client";
-import ethers from "@/helpers/ethersHelper";
+import React from "react";
 import styles from "./page.module.css";
-import "antd-mobile/es/global";
-import {
-  SendOutline,
-  FileOutline,
-  AddOutline,
-  UnorderedListOutline,
-  PayCircleOutline,
-  LockOutline,
-  AppstoreOutline,
-  UserOutline,
-  LeftOutline,
-  RightOutline,
-} from "antd-mobile-icons";
-
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import Header from "@/components/common/header";
 import { useAppSelector } from "@/lib/hooks";
-import { appState, baseUrl } from "@/config/constant";
-import { getCurrentAccount, getCurrentNetwork } from "@/app/index";
-import { ChainInfo } from "@/types/walletTypes";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
+import { useSearchParams, useRouter } from "next/navigation";
+import { User, Shield, ExternalLink } from "lucide-react";
 
-export default function Index() {
+export default function Auth() {
+  const searchParams = useSearchParams();
+  const origin = searchParams?.get("origin") || "";
   const router = useRouter();
   const { t } = useTranslation();
-  const initState = useAppSelector((state) => state.app.initState);
-  const [currencySymbol, setCurrencySymbol] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
-  const [accountName, setAccountName] = useState("");
-  const [accountAddress, setAccountAddress] = useState("");
-  const [storageSpace, setStorageSpace] = useState("0 GB");
-  const [usedStorageSpace, setUsedStorageSpace] = useState("0 GB");
-  const [storagePercentage, setStoragePercentage] = useState(0);
-  const [tokenAmount, setTokenAmount] = useState("0");
-  const [isMobile, setIsMobile] = useState(true);
-  const [activeView, setActiveView] = useState("account"); // "account" or "wallet"
-  const [appAccounts, setAppAccounts] = useState([]);
-
-  // Mock app accounts data
-  const mockAppAccounts = [
-    { appName: "DeCert", appId: "decert-123", appAccount: "0x8721...3d91", appDomain: "decert.network" },
-    { appName: "DataVault", appId: "datavault-456", appAccount: "0x6532...7e22", appDomain: "datavault.io" },
-    { appName: "FileShare", appId: "fileshare-789", appAccount: "0x3251...9f43", appDomain: "fileshare.app" },
-  ];
-
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
-
-  // Navigation functions
-  const goToWallet = () => {
-    setActiveView("wallet");
+  const authInfo = useAppSelector((state) => state.auth.authInfo);
+  const appInfo = useAppSelector((state) => state.auth.appInfo);
+  const handleLogin = () => {
+    router.push("/login?origin=" + origin);
   };
-
-  const goToAccount = () => {
-    setActiveView("account");
+  const handleRegister = () => {
+    router.push("/register?origin=" + origin);
   };
-
-  const sendBalance = () => {
-    router.push(baseUrl + "/transfer");
-  };
-
-  const gotoActivity = () => {
-    router.push(baseUrl + "/activity");
-  };
-
-  const buyTokens = () => {
-    // Implement token purchase flow
-    console.log("Buy tokens");
-  };
-
-  const upgradeStorage = () => {
-    // Implement storage upgrade flow
-    console.log("Upgrade storage");
-  };
-
-  const changeSuccess = async () => {
-    // 切换成功后，获取账户信息
-    getUserInfo();
-  };
-
-  const getUserInfo = async () => {
-    setIsLoading(true);
-    const accountInfo = getCurrentAccount();
-    if (accountInfo && accountInfo.account) {
-      setAccountAddress(accountInfo.account);
-      setAccountName(accountInfo.name || accountInfo.account.substring(0, 6));
-
-      const network: ChainInfo | null = getCurrentNetwork();
-      if (!network) {
-        setIsLoading(false);
-        return;
-      }
-      setCurrencySymbol(network.currencySymbol);
-
-      // Simulate getting storage info from the DC API
-      if (globalThis.dc && globalThis.dc.auth) {
-        try {
-          const userInfo = await globalThis.dc.auth.getUserInfoWithAccount(
-            "0x" + accountInfo.account
-          );
-          if (userInfo && userInfo.space) {
-            const totalSpaceGB = (userInfo.space / (1024 * 1024 * 1024)).toFixed(2);
-            setStorageSpace(`${totalSpaceGB} GB`);
-            
-            // Mock used storage (30% of total for demo)
-            const usedSpace = userInfo.space * 0.3;
-            const usedSpaceGB = (usedSpace / (1024 * 1024 * 1024)).toFixed(2);
-            setUsedStorageSpace(`${usedSpaceGB} GB`);
-            setStoragePercentage(30);
-            
-            // Mock token amount
-            setTokenAmount("150");
-            
-            // Set app accounts (mock data for now)
-            setAppAccounts(mockAppAccounts);
-          }
-        } catch (error) {
-          console.error("Failed to get user storage info", error);
-          setStorageSpace("0 GB");
-          setUsedStorageSpace("0 GB");
-          setStoragePercentage(0);
-        }
-      }
-    }
-    setIsLoading(false);
-  };
-
-  useEffect(() => {
-    if (initState == appState.init_success) {
-      getUserInfo();
-    }
-  }, [initState]);
-
-  // Account Info View Component
-  const AccountInfoView = () => (
-    <div className={styles.accountInfoView}>
-      {/* Account Card */}
-      <div className={styles.sectionCard}>
-        <div className={styles.sectionHeader}>
-          <h2>{t("account.details", "账户详情")}</h2>
-        </div>
-        <div className={styles.accountDetails}>
-          <div className={styles.accountAvatar}>
-            {accountName.charAt(0).toUpperCase()}
-          </div>
-          <div className={styles.accountInfo}>
-            <div className={styles.accountName}>{accountName}</div>
-            <div className={styles.accountAddress}>{accountAddress}</div>
-          </div>
-        </div>
-      </div>
-
-      {/* Storage Space Card */}
-      <div className={styles.sectionCard}>
-        <div className={styles.sectionHeader}>
-          <h2>{t("storage.title", "云存储空间")}</h2>
-          <button className={styles.actionButton} onClick={upgradeStorage}>
-            {t("storage.upgrade", "升级")}
-          </button>
-        </div>
-        <div className={styles.storageDetails}>
-          <div className={styles.storageInfo}>
-            <div className={styles.storageValue}>
-              <span className={styles.usedStorage}>{usedStorageSpace}</span>
-              <span className={styles.totalStorage}>/ {storageSpace}</span>
-            </div>
-            <div className={styles.storageLabel}>
-              {t("storage.used", "已使用")}
-            </div>
-          </div>
-          <div className={styles.storageProgress}>
-            <div
-              className={styles.storageProgressBar}
-              style={{ width: `${storagePercentage}%` }}
-            ></div>
-          </div>
-        </div>
-      </div>
-
-      {/* Token Card */}
-      <div className={styles.sectionCard}>
-        <div className={styles.sectionHeader}>
-          <h2>{t("tokens.title", "云服务代币")}</h2>
-          <button className={styles.actionButton} onClick={buyTokens}>
-            {t("tokens.buy", "购买")}
-          </button>
-        </div>
-        <div className={styles.tokenDetails}>
-          <div className={styles.tokenAmount}>{tokenAmount}</div>
-          <div className={styles.tokenLabel}>
-            {t("tokens.available", "可用代币")}
-          </div>
-          <div className={styles.tokenDescription}>
-            {t("tokens.description", "代币可用于升级存储空间和购买高级服务")}
-          </div>
-        </div>
-      </div>
-
-      {/* App Accounts Card */}
-      <div className={styles.sectionCard}>
-        <div className={styles.sectionHeader}>
-          <h2>{t("appAccounts.title", "应用账号")}</h2>
-        </div>
-        <div className={styles.appAccountsList}>
-          {appAccounts.length > 0 ? (
-            appAccounts.map((app, index) => (
-              <div key={index} className={styles.appAccountItem}>
-                <div className={styles.appIcon}>
-                  <AppstoreOutline />
-                </div>
-                <div className={styles.appDetails}>
-                  <div className={styles.appName}>{app.appName}</div>
-                  <div className={styles.appAccount}>{app.appAccount}</div>
-                  <div className={styles.appMeta}>
-                    <span className={styles.appId}>{app.appId}</span>
-                    <span className={styles.appDomain}>{app.appDomain}</span>
-                  </div>
-                </div>
-              </div>
-            ))
-          ) : (
-            <div className={styles.emptyState}>
-              {t("appAccounts.empty", "暂无应用账号")}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Wallet Entry Button */}
-      <button className={styles.walletEntryButton} onClick={goToWallet}>
-        <LockOutline className={styles.walletEntryIcon} />
-        <span>{t("wallet.enter", "进入加密钱包")}</span>
-        <RightOutline />
-      </button>
-    </div>
-  );
-
-  // Wallet View Component
-  const WalletView = () => (
-    <div className={styles.walletView}>
-      {/* Back button to return to account view */}
-      <button className={styles.backButton} onClick={goToAccount}>
-        <LeftOutline />
-        <span>{t("wallet.back_to_account", "返回账户")}</span>
-      </button>
-
-      {/* Wallet Balance Card */}
-      <div className={styles.sectionCard}>
-        <div className={styles.sectionHeader}>
-          <h2>{t("wallet.balance", "钱包余额")}</h2>
-        </div>
-        <div className={styles.balanceDetails}>
-          <div className={styles.balanceLabel}>
-            {t("wallet.current_balance", "当前余额")}
-          </div>
-          <div className={styles.balance}>
-            <span className={styles.balanceAmount}>0.0</span>
-            <span className={styles.currencySymbol}>{currencySymbol}</span>
-          </div>
-          <div className={styles.walletActions}>
-            <button className={styles.primaryButton} onClick={sendBalance}>
-              <SendOutline />
-              {t("transfer.transfer", "转账")}
-            </button>
-            <button className={styles.secondaryButton} onClick={buyTokens}>
-              <AddOutline />
-              {t("wallet.buy", "购买")}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Transaction History Card */}
-      <div className={styles.sectionCard}>
-        <div className={styles.sectionHeader}>
-          <h2>{t("wallet.transactions", "交易记录")}</h2>
-          <button className={styles.actionButton} onClick={gotoActivity}>
-            {t("wallet.view_all", "查看全部")}
-          </button>
-        </div>
-        <div className={styles.transactionsList}>
-          <div className={styles.emptyState}>
-            {t("wallet.no_transactions", "暂无交易记录")}
-          </div>
-        </div>
-      </div>
-
-      {/* Wallet Accounts Card */}
-      <div className={styles.sectionCard}>
-        <div className={styles.sectionHeader}>
-          <h2>{t("wallet.accounts", "钱包账户")}</h2>
-        </div>
-        <div className={styles.walletAccountsList}>
-          <div className={styles.walletAccountItem}>
-            <div className={styles.accountAvatar}>
-              {accountName.charAt(0).toUpperCase()}
-            </div>
-            <div className={styles.accountInfo}>
-              <div className={styles.accountName}>{accountName}</div>
-              <div className={styles.accountAddress}>{accountAddress}</div>
-            </div>
-            <div className={styles.accountIndicator}>
-              <span className={styles.currentIndicator}>
-                {t("wallet.current", "当前")}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
   return (
-    <div>
-      {initState == appState.init_failed ? (
-        <div className={styles.note}>
-          {t("wallet.initialization_failed", "初始化失败")}
-        </div>
-      ) : (
-        <>
-          <Header
-            changeNetworkSuccess={changeSuccess}
-            changeAccountSuccess={changeSuccess}
-          />
+    <div className={styles["min-h-screen"]}>
+      {/* 响应式容器 */}
+      <div
+        className={`${styles["min-h-screen"]} ${styles.flex} ${styles["items-center"]} ${styles["justify-center"]} px-3 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-8`}
+      >
+        <div className="w-full max-w-xs sm:max-w-2xl md:max-w-4xl lg:max-w-6xl mx-auto">
+          {/* 主要内容区域 */}
+          <div
+            className={`${styles["mobile-stack"]} flex flex-col `}
+          >
+            {/* DCWallet介绍区域 */}
+            <div className="text-center mobile-order-1">
+              {/* Logo和标题 */}
+              <div className="mb-4 sm:mb-6 lg:mb-8">
+                <h1 className="text-2xl sm:text-3xl lg:text-5xl font-bold text-purple-600 mb-2 sm:mb-3 lg:mb-4">
+                  DCWallet
+                </h1>
+                <p className="text-gray-600 text-sm sm:text-base lg:text-xl leading-relaxed">
+                  您通往新一代互联网的安全入口
+                </p>
+              </div>
 
-          <div className={styles.contentPage}>
-            {activeView === "account" ? <AccountInfoView /> : <WalletView />}
+              {/* DCWallet描述 */}
+              <div className="mb-4 sm:mb-6 lg:mb-8">
+                <p className="text-gray-700 leading-relaxed text-sm sm:text-base lg:text-lg">
+                  DCWallet
+                  是基于去中心化云服务开发的统一登录工具，不存储任何用户隐私信息。
+                </p>
+              </div>
+
+            </div>
+            {/* 授权状态区域 */}
+            <div className="flex justify-center items-center mobile-order-2 sm:mt-8 lg:mt-0">
+              <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 lg:p-10 w-full max-w-sm sm:max-w-md lg:max-w-lg xl:max-w-xl">
+                  {/* 头部区域 */}
+                  <div className="text-center mb-8">
+                    <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <User className="w-8 h-8 text-white" />
+                    </div>
+                    <p className="text-gray-600 text-sm sm:text-base">
+                      {authInfo.content}
+                    </p>
+                  </div>
+
+                  {/* 应用信息卡片 */}
+                  {!!appInfo && (
+                    <div className="bg-gray-50 rounded-xl p-4 mb-6 border border-gray-100">
+                      <div className="flex items-center justify-between mb-3">
+                        <h3 className="text-lg font-semibold text-gray-800 flex items-center">
+                          <ExternalLink className="w-5 h-5 mr-2 text-blue-600" />
+                          应用信息
+                        </h3>
+                      </div>
+
+                      <div className="space-y-2">
+                        {appInfo.appId && (
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-gray-600">
+                              应用名称
+                            </span>
+                            <div className="flex items-center">
+                              <span className="text-sm font-medium text-gray-800">
+                                {appInfo.appName} ({appInfo.appId})
+                              </span>
+                              {appInfo.appIcon && (
+                                <img
+                                  src={appInfo.appIcon}
+                                  alt="App Icon"
+                                  className="w-5 h-5 ml-2 rounded"
+                                />
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        {appInfo.appUrl && (
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-gray-600">
+                              应用地址
+                            </span>
+                            <span className="text-sm font-medium text-gray-800 truncate max-w-48">
+                              {appInfo.appUrl}
+                            </span>
+                          </div>
+                        )}
+
+                        {appInfo.appVersion && (
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-gray-600">
+                              版本号
+                            </span>
+                            <span className="text-sm font-medium text-gray-800">
+                              {appInfo.appVersion}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="mt-3 pt-3 border-t border-gray-200">
+                        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                          <p className="text-amber-800 text-xs sm:text-sm font-medium">
+                            ⚠️ {t("DAPP.warning")}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 登录注册按钮 */}
+                  <div className="space-y-3 mb-6">
+                    <button
+                      onClick={handleLogin}
+                      className="w-full py-3 px-6 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl font-medium shadow-lg hover:from-blue-700 hover:to-blue-800 transform hover:scale-[1.02] transition-all duration-200 ease-in-out"
+                    >
+                      <div className="flex items-center justify-center">
+                        <User className="w-5 h-5 mr-2" />
+                        登录账户
+                      </div>
+                    </button>
+
+                    <button
+                      onClick={handleRegister}
+                      className="w-full py-3 px-6 bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-xl font-medium shadow-lg hover:from-emerald-700 hover:to-emerald-800 transform hover:scale-[1.02] transition-all duration-200 ease-in-out"
+                    >
+                      <div className="flex items-center justify-center">
+                        <User className="w-5 h-5 mr-2" />
+                        注册新账户
+                      </div>
+                    </button>
+                  </div>
+
+                  {/* 安全提示 */}
+                  <div className="text-center">
+                    <div className="inline-flex items-center px-4 py-2 bg-green-50 rounded-full border border-green-200">
+                      <Shield className="w-4 h-4 text-green-600 mr-2" />
+                      <span className="text-sm text-green-700 font-medium">
+                        您的隐私信息受到完全保护
+                      </span>
+                    </div>
+                  </div>
+               
+              </div>
+            </div>
           </div>
-        </>
-      )}
+
+
+          {/* DCWallet开源地址 */}
+          <div className="text-center mt-6 sm:mt-8 lg:mt-10">
+            <p className="text-sm text-gray-400">
+              DCWallet 开源地址 • Powered by Decentralized Cloud Services
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

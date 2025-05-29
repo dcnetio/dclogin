@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import { Button, Input, Toast } from "antd-mobile";
 import { createAccountWithLogin } from "@/app/index";
 import Link from "next/link";
-import { baseUrl } from "@/config/constant";
+import { baseUrl } from "@/config/define";
 
 export default function Login() {
   // 保持现有的 state 和 hooks

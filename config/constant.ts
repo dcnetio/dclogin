@@ -92,20 +92,24 @@ const _activeStatus = {
   pending: 2, // 2:等待确认
 };
 
-let _baseUrl = '/v0_0_1'
-if (process.env.NODE_ENV === 'development') {
-  _baseUrl =''
-}
-console.log('_baseUrl === ', _baseUrl)
 
 export const defaultNetworks = _defaultNetworks;
 export const appState = _appState;
 export const activeStatus = _activeStatus;
-export const baseUrl = _baseUrl;
 export const I18N_LANGUAGES = _I18N_LANGUAGES;
-export const apiUrl = 'http://127.0.0.1:9001/api';
 
 export enum EncodePasswordType {
   SET = 1,
   VERIFY = 2,
+}
+
+export const NetworkStauts = Object.freeze({
+  connecting: 0,
+  connected: 1,
+  disconnect: 2,
+});
+
+export enum MsgStatus  {
+  success = 0,
+  failed = 1
 }

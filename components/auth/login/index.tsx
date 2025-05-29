@@ -33,14 +33,15 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const init = async () => {
     try {
+      
       setLoading(true);
-      router.push('/');
       store.dispatch(saveInitState(appState.initing));
       // 授权开始
       store.dispatch(updateAuthStep({
         type: MsgStatus.failed,
         content: t("auth.begin"),
       }));
+
       // 初始化数据库
       const bool = await initializeDatabase();
       if (!bool) {

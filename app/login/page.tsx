@@ -4,10 +4,9 @@ import styles from "./page.module.css";
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslation } from "react-i18next";
-import { Button, Input, Toast } from "antd-mobile";
+import { Button, Input } from "antd-mobile";
 import { createAccountWithLogin } from "@/app/index";
-import Link from "next/link";
-import { baseUrl } from "@/config/constant";
+import { baseUrl } from "@/config/define";
 
 export default function Login() {
   // 保持现有的 state 和 hooks
@@ -34,7 +33,7 @@ export default function Login() {
   const gotoConfirm = async () => {
     // 登录逻辑保持不变
     if (!account) {
-      Toast.show({
+      window.showToast({
         content: t("login.account_empty"),
         position: "bottom",
       });
@@ -42,7 +41,7 @@ export default function Login() {
     }
     if (globalThis.dc) {
       if (!globalThis.dc.auth) {
-        Toast.show({
+        window.showToast({
           content: t("login.failed"),
           position: "bottom",
         });
@@ -57,20 +56,20 @@ export default function Login() {
         );
         console.log("accountLogin res", res);
         if (res && res.success) {
-          Toast.show({
+          window.showToast({
             content: t("login.success"),
             position: "bottom",
           });
           router.push("/");
           return;
         }
-        Toast.show({
+        window.showToast({
           content: t("login.failed"),
           position: "bottom",
         });
       } catch (error) {
         console.log("accountLogin error", error);
-        Toast.show({
+        window.showToast({
           content: t("login.failed"),
           position: "bottom",
         });

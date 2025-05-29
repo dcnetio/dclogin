@@ -2,29 +2,28 @@
  * 空间订阅相关
  * 
  */
+import { apiUrl } from '@/config/define';
 import i18n from '@/locales/i18n';
-import { AccountError } from '../../../dcapi/lib/implements/account/manager';
 
 import { Ed25519PubKey} from "web-dc-api";
-import { apiUrl } from '@/config/constant';
 /**
  * Apply for free storage space for new users
  * @returns Promise resolving to [success, error]
  */
 export async function applyFreeSpace(pubKey: Ed25519PubKey): Promise<[boolean, Error | null]> {
   if(!globalThis.dc) {
-    return [false, new AccountError("Wallet not connected")]
+    return [false, new Error("Wallet not connected")]
   }
   // Get public key for request
   if (!pubKey) {
-    return [false, new AccountError("User public key not available")];
+    return [false, new Error("User public key not available")];
   }
   try {
     // Check if this is a new account without space
     try {
       const userInfo = await globalThis.dc.auth.getUserInfoWithAccount('0x' + pubKey.toString());
       if (userInfo && userInfo.subscribeSpace > 0) {
-        return [false, new AccountError("User already has space")];
+        return [false, new Error("User already has space")];
       }
     } catch (error) {
       console.warn("Error getUserInfoWithAccount :", error);
@@ -52,7 +51,7 @@ export async function applyFreeSpace(pubKey: Ed25519PubKey): Promise<[boolean, E
       // Handle network errors
       if (!response.ok) {
         const errorText = await response.text().catch(() => "Unknown error");
-        return [false, new AccountError(`Failed to request free space: ${response.status} ${errorText}`)];
+        return [false, new Error(`Failed to request free space: ${response.status} ${errorText}`)];
       }
       
       // Parse JSON safely
@@ -60,11 +59,11 @@ export async function applyFreeSpace(pubKey: Ed25519PubKey): Promise<[boolean, E
       try {
         result = await response.json();
       } catch (jsonError: any) {
-        return [false, new AccountError("Invalid response format: " + jsonError.message)];
+        return [false, new Error("Invalid response format: " + jsonError.message)];
       }
       
       if (!result || result.error) {
-        return [false, new AccountError("Storage giving error: " + (result?.error || "Unknown error"))];
+        return [false, new Error("Storage giving error: " + (result?.error || "Unknown error"))];
       }
       
       // Check if storage was actually allocated
@@ -75,10 +74,10 @@ export async function applyFreeSpace(pubKey: Ed25519PubKey): Promise<[boolean, E
       // Verify subscription was successful
       const subscribeSuccess = await checkSubscription(pubKey, lastExpire, lastSubscribeSize);
       
-      return subscribeSuccess ? [true, null] : [false, new AccountError("Storage allocation timed out")];
+      return subscribeSuccess ? [true, null] : [false, new Error("Storage allocation timed out")];
       
     } catch (fetchError: any) {
-      return [false, new AccountError(`Network error: ${fetchError.message || "Failed to connect to server"}`)];
+      return [false, new Error(`Network error: ${fetchError.message || "Failed to connect to server"}`)];
     }
     
   } catch (error) {

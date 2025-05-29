@@ -1,7 +1,6 @@
 "use client";
 import { ActivityItem } from "@/types/pageType";
 import styles from "./info.module.css";
-import { Toast } from "antd-mobile";
 import TransItem from "@/components/transfer/transItem";
 import { AccountInfo } from "@/types/walletTypes";
 import { useTranslation} from 'react-i18next';
@@ -18,7 +17,7 @@ export default function ActivityInfo(props: ActivityProps) {
 
   const copy = () => {
     navigator.clipboard.writeText(info?.hash || "");
-    Toast.show({
+    window.showToast({
       content: t('activity.copy_success'),
       position: 'bottom'
     });

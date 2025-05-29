@@ -43,7 +43,6 @@ export function isConnectReqMessage(obj: any): obj is ConnectReqMessage {
     return (  
       typeof obj === "object" &&  
       obj !== null &&  
-      typeof obj.version === "string" &&  
       typeof obj.type === "string" &&  
       typeof obj.origin === "string" &&  
       typeof obj.data === "object" &&  

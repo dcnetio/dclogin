@@ -98,6 +98,9 @@ if (typeof window !== "undefined") {
       case "signEIP712Message": //签名EIP712消息
         signEIP712Message(message);
         break;
+      case "decrypt": //用私钥解密
+        decrypt(message);
+        break;
       default:
         break;
     }
@@ -187,7 +190,7 @@ function sign(message: any) {
   signResponse(true, signature);
 }
 
-//发送签名成功消息给父窗口
+//发送签名结果消息给父窗口
 function signResponse(successFlag: boolean, message: any) {
   const sendMessage = {
     version: version,
@@ -293,6 +296,40 @@ function signEIP712MessageResponse(successFlag: boolean, message: any) {
   };
   responseToDAPP(sendMessage);
 }
+
+
+
+
+async function decrypt(message: any)  {
+  const data = message.data;
+  if (data.message == null) {
+    decryptResponse(false, "The message is null");
+    return;
+  }
+  //签名
+  if(privateKey == null){
+    decryptResponse(false, "The privateKey is null");
+    return;
+  }
+  const signature = await privateKey.decrypt(data.message)
+  decryptResponse(true, signature);
+  
+}
+
+//发送解密结果消息给父窗口
+function decryptResponse(successFlag: boolean, message: any) {
+  const sendMessage = {
+    version: version,
+    type: "decryptResponse",
+    data: {
+      success: successFlag,
+      message: message,
+    },
+  };
+  responseToDAPP(sendMessage);
+}
+
+
 
 // 发送反馈结果消息给父窗口的DAPP
 function responseToDAPP(message: any) {
@@ -581,3 +618,5 @@ function waitForFlagToTrue(getWalletLoadedFlag: any) {
     }, 60000); // 60秒超时
   });
 }
+
+

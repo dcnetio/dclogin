@@ -20,7 +20,7 @@ export class Encryption {
  
      // 将字节数组转换为BigInteger  
      private static bytesToBigInt(bytes: Uint8Array): BigInteger {  
-         let hex = Array.from(bytes)  
+         const hex = Array.from(bytes)  
              .map(b => b.toString(16).padStart(2, '0'))  
              .join('');  
          return new BigInteger(hex, 16);  
@@ -100,7 +100,7 @@ private static ed25519PublicKeyToCurve25519(publicKey: Uint8Array): Uint8Array {
         const denominatorInv = this.safeModInverse(denominator, this.CURVE25519_P);  
         
         // 计算 u  
-        let u = numerator.multiply(denominatorInv).mod(this.CURVE25519_P);  
+        const u = numerator.multiply(denominatorInv).mod(this.CURVE25519_P);  
 
         // 4. 转换回little endian  
         const result = this.bigIntToBytes(u, 32);  
@@ -344,7 +344,7 @@ static async decrypt(
             try {  
                 console.log('Decrypted Text:', new TextDecoder().decode(decrypted));  
             } catch (e) {  
-                console.log('(Binary data - could not decode as text)');  
+                console.log('(Binary data - could not decode as text)', e);  
             }  
         }  
 
@@ -409,7 +409,7 @@ static async decrypt(
                 const text = new TextDecoder().decode(decrypted);  
                 console.log('Decrypted as text:', text);  
             } catch (e) {  
-                console.log('(Data is not valid UTF-8 text)');  
+                console.log('(Data is not valid UTF-8 text)', e);  
             }  
         } catch (error) {  
             console.error('Decryption failed:', error);  

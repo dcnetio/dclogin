@@ -252,6 +252,7 @@ export class Ed25519PrivKey implements Ed25519PrivateKey {
         return decrypted 
     } 
  
+ 
 
     equals(other: Ed25519PrivKey): boolean {  
         return arrayEquals(this.bytes(),other.bytes())

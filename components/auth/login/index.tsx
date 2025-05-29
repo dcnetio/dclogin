@@ -34,6 +34,7 @@ export default function Login() {
   const init = async () => {
     try {
       setLoading(true);
+      router.push('/');
       store.dispatch(saveInitState(appState.initing));
       // 授权开始
       store.dispatch(updateAuthStep({
@@ -79,6 +80,7 @@ export default function Login() {
         }));
         // 初始化成功，
         store.dispatch(saveInitState(appState.init_success));
+        router.push('/home');
       } else {
         initCommChannel();
       }

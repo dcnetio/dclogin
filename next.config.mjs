@@ -1,28 +1,40 @@
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // 7. 禁用不需要的功能  
-  reactStrictMode: false,  
-  poweredByHeader: false,  
-  // reactStrictMode: false,
-  // 1. 启用静态导出  
-  output: "export",// 导出静态页面
+  // 基本配置
+  reactStrictMode: false,
+  poweredByHeader: false,
   
-  // 2. 禁用服务端特性  
-  experimental: {  
-    serverActions: false,  
-    serverComponents: false,  
-  },  
+  // 静态导出配置
+  output: "export",
+  
+  // 资源前缀和路径配置
   assetPrefix: "/v0_0_1",
-  // 控制URL尾部是否自动添加斜杠
-  trailingSlash: true, // 或者false，根据你的需求
-  // distDir: "build",// 打包server
-  // generateBuildId: async () => { // 构建ID
-  //   // For example get the latest git commit hash here
+  trailingSlash: true,
+  
+  // 在 Next.js 15 中，如果使用 output: "export"，
+  // Server Actions 和 Server Components 会自动禁用
+  // 不需要显式配置 experimental.serverActions 和 serverComponents
+  
+  // 可选：如果需要显式禁用某些功能（仅在非 export 模式下有效）
+  // experimental: {
+  //   // Next.js 15 中大部分功能已稳定，experimental 选项较少
+  // },
+  
+  // 其他可用配置
+  // distDir: "build", // 自定义构建目录
+  // generateBuildId: async () => {
   //   return 'wallet0.1'
   // },
-  // // generateBuildId: () => null, // 使用 `null` 禁用 SSR
-  // generateEtags: false, // 禁用 etags
-  // swcMinify: true // 启用 swc 代码压缩
+  // generateEtags: false, // 禁用 ETags
+  
+  // 编译和优化配置
+  // swcMinify: true, // Next.js 15 默认启用，无需显式设置
+  
+  // 图片优化配置（静态导出时需要禁用）
+  images: {
+    unoptimized: true // 静态导出时必须设置为 true
+  }
 };
 
 export default nextConfig;

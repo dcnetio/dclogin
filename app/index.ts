@@ -1,7 +1,7 @@
 "use client";
 import utilHelper from "@/helpers/utilHelper";
 import ethersHelper from "@/helpers/ethersHelper";
-import { baseUrl, defaultNetworks, version } from "@/config/constant";
+import { baseUrl, defaultNetworks} from "@/config/constant";
 import {
   ChainInfo,
   ConnectReqMessage,
@@ -27,13 +27,15 @@ import {
   showSetEncodePassword,
   showSignatureDAPPNote,
 } from "@/components/note/noteHelper";
-import { Toast } from "antd-mobile";
 import i18n from "@/locales/i18n";
 import { ChooseAccount } from "@/components/common/accountHelper";
 import { Ed25519PrivKey, KeyManager, NFTBindStatus, User} from "web-dc-api";
 import { APPInfo } from "@/types/pageType";
 import NavigationService from "@/lib/navigation";
 import { applyFreeSpace } from "./tools/subSpace";
+import { Toast } from "antd-mobile";
+console.log("==================================================================");
+console.log("Toast", Toast);
 
 
 // 获取查询字符串
@@ -222,11 +224,6 @@ function onDAPPMessage (event: MessageEvent) {
   if (event.ports.length == 0) {
     return;
   }
-  console.log("===============onDAPPMessage version", version);
-  if (message.version !== version) {
-    //判断版本号
-    return;
-  }
   if (message.origin != openerOrigin) {
     //判断消息来源
     return;
@@ -247,7 +244,6 @@ function onDAPPMessage (event: MessageEvent) {
       iframeChannel.onmessage = onDAPPMessage;
       const loadedMessage = {
         type: "loaded",
-        version: version,
         origin: openerOrigin,
       };
       iframeChannel.postMessage(loadedMessage); //利用messageChannel通知页面加载完成,当浏览器不支持window.opener会走这个流程
@@ -607,7 +603,7 @@ async function createAccount (
 }
 
 
-// 收到连接钱包请求处理,message格式为{version:'v0_0_1',type: 'connect',data: {appName:'test',appIcon:'',appUrl: 'http://localhost:8080',appVersion: '1.0.0'}}
+// 收到连接钱包请求处理,message格式为{type: 'connect',data: {appName:'test',appIcon:'',appUrl: 'http://localhost:8080',appVersion: '1.0.0'}}
 async function _connectCmdHandler (
   message: ConnectReqMessage,
   bool: boolean,
@@ -838,7 +834,6 @@ async function resPonseWallet(
     );
     //签名成功后,发送链接成功消息给APP
     const resMessage = {
-      version: version,
       type: "connected",
       origin: message.origin,
       data: {
@@ -1006,7 +1001,6 @@ async function generateWalletAccount (seedAccount: string) {
 
 /** 收到签名请求处理,message格式为
 {
-    version:'v0_0_1',
     type: 'signMessage', 
     origin: 'http://localhost:8080',
     data: {
@@ -1061,7 +1055,6 @@ async function signMessageHandler (
 
   //签名成功后,发送签名成功消息给APP,并返回签名结果
   const resMessage = {
-    version: version,
     type: "signSuccess",
     origin: message.origin,
     data: {
@@ -1091,7 +1084,6 @@ async function signMessageHandler (
 //收到签名EIP712请求处理,message格式为
 // {
 //     code: 'CxzQW5n8k0',
-//     version:'v0_0_1',
 //     type: 'signEIP712Message',
 //     data: {
 //             appname:'test',
@@ -1160,7 +1152,6 @@ async function signEIP712MessageHandler (
   }
   //签名成功后,发送签名成功消息给APP,并返回签名结果
   const resMessage = {
-    version: version,
     type: "signEIP712Success",
     origin: message.origin,
     data: {

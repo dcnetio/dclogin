@@ -7,7 +7,6 @@ let DAPPChannel: MessagePort | null = null;
 let walletLoadedFlag = false; //钱包已加载标志
 import {Ed25519PrivKey} from './ed25519';
 import { APPInfo } from "@/types/pageType";
-import { version } from "@/config/constant";
 // Dapp信息
 const appInfo: APPInfo = {
   appId: "",
@@ -49,21 +48,11 @@ if (typeof window !== "undefined") {
       return;
     }
     // 对消息进行json解析
-    let message = { version: "", type: "", data: null };
+    let message = { type: "", data: null };
     if (typeof event.data === "object") {
       try {
         message = event.data;
         console.log("========onParentMessage message", message);
-        if (message.version !== version) {
-          //版本不一致,不处理
-          console.error(
-            "Received invalid version:",
-            message.version,
-            "expected version:",
-            version
-          );
-          return;
-        }
         if (!message.type) {
           //type为空,不处理
           console.error("Received invalid type: no type");
@@ -122,7 +111,6 @@ function initConfig(config: any) {
 // 发送初始化结果消息给父窗口
 function initConfigResponse(flag: boolean, message: any) {
   const sendMessage = {
-    version: version,
     type: "initConfigResponse",
     data: {
       success: flag,
@@ -159,7 +147,6 @@ function walletConnected(
   responseData: any
 ) {
   const sendMessage = {
-    version: version,
     type: "walletConnected",
     data: {
       success: successFlag,
@@ -190,7 +177,6 @@ function sign(message: any) {
 //发送签名成功消息给父窗口
 function signResponse(successFlag: boolean, message: any) {
   const sendMessage = {
-    version: version,
     type: "signResponse",
     data: {
       success: successFlag,
@@ -232,7 +218,6 @@ function signMessage(message: any) {
 //发送签名成功消息给父窗口
 function signMessageResponse(successFlag: boolean, message: any) {
   const sendMessage = {
-    version: version,
     type: "signMessageResponse",
     data: {
       success: successFlag,
@@ -284,7 +269,6 @@ function signEIP712Message(message: any) {
 //发送签名EIP712成功消息给父窗口
 function signEIP712MessageResponse(successFlag: boolean, message: any) {
   const sendMessage = {
-    version: version,
     type: "signEIP712MessageResponse",
     data: {
       success: successFlag,
@@ -342,7 +326,6 @@ const sendMessageToWallet = async (message: any, timeout: number) => {
 function connectWallet() {
   // 像钱包网页发送连接命令
   const message = {
-    version: version,
     type: "connect",
     origin: parentOrigin,
     data: {
@@ -405,7 +388,6 @@ function requsetForSignMessage(orignMessage: any) {
   const data = orignMessage.data;
   // 向钱包网页发送签名消息
   const message = {
-    version: version,
     type: "signMessage",
     origin: parentOrigin,
     data: {
@@ -470,7 +452,6 @@ function requestSignEIP712Message(orignMessage: any) {
   const data = orignMessage.data;
   // 向钱包网页发送签名消息
   const message = {
-    version: version,
     type: "signEIP712Message",
     origin: parentOrigin,
     data: {
@@ -530,16 +511,6 @@ function onWalletChannelMessage(event: MessageEvent) {
   const message = event.data;
   // 对消息进行json解析
   if (!message) {
-    return;
-  }
-  if (message.version !== version) {
-    //版本不一致,不处理
-    console.error(
-      "Received invalid version:",
-      message.version,
-      "expected version:",
-      version
-    );
     return;
   }
   if (message.origin !== parentOrigin) {

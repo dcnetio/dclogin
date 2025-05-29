@@ -1,4 +1,4 @@
-import { Button, List, Toast } from "antd-mobile";
+import { Button, List } from "antd-mobile";
 import styles from "./index.module.css";
 import { useEffect, useState } from "react";
 import { getAllData, store_chain } from "@/helpers/DBHelper";
@@ -36,7 +36,7 @@ export default function Network(props: NetworkProps) {
       onSuccess?.(info.name);
       return;
     }
-    Toast.show({
+    window.showToast({
       content: t("network.connect_failed"),
       position: "bottom",
     });

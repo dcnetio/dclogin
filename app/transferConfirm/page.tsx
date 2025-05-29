@@ -7,7 +7,7 @@ import { AccountInfo } from "@/types/walletTypes";
 import { getCurrentAccount, transfer } from "@/app/index";
 import GASItem from '@/components/transfer/gasItem'
 import GASTotal from '@/components/transfer/gasTotal'
-import { Button, Dialog, Toast } from "antd-mobile";
+import { Button, Dialog } from "antd-mobile";
 import { appState } from "@/config/constant";
 import { useAppSelector } from "@/lib/hooks";
 import { useTranslation } from "react-i18next";
@@ -30,7 +30,7 @@ export default function TransferConfirm() {
   };
   const transferBN = async () => {
     if (!amount) {
-      Toast.show({
+      window.showToast({
         content: t('transfer.enter_info'),
         position: "bottom",
       });
@@ -56,13 +56,13 @@ export default function TransferConfirm() {
           '0.5' // todo gasPrice
         ); // gasPrice:
         if (res) {
-          Toast.show({
+          window.showToast({
             content: t('transfer.transfer_success'),
             position: "bottom",
           });
           router.replace(baseUrl + '/activity');
         } else {
-          Toast.show({
+          window.showToast({
             content: t('transfer.transfer_failed'),
             position: "bottom",
           });

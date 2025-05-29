@@ -14,6 +14,13 @@ const _defaultNetworks = {
       blockExplorerUrl: "https://dcnetio.baybird.cn",
     },
     {
+      name: "DCCHAIN31",
+      rpcUrl: "http://192.168.31.31:9944",
+      chainId: 176,
+      currencySymbol: "DCT",
+      blockExplorerUrl: "https://dcnetio.baybird.cn",
+    },
+    {
       name: "Ethereum Mainnet",
       rpcUrl: "https://mainnet.infura.io/v3/5cc3dc24825a4a06a5f39e21e4cbc03e",
       chainId: 1,

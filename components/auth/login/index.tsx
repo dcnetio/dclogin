@@ -15,7 +15,7 @@ import { ConnectReqMessage } from "@/types/walletTypes";
 // import {DC} from 'web-dc-api';
 import { useRouter } from 'next/navigation'
 import NavigationService from "@/lib/navigation";
-import { updateAuthStep } from "@/lib/slices/authSlice";
+import { updateAppInfo, updateAuthStep } from "@/lib/slices/authSlice";
 import { useTranslation } from "next-i18next";
 
 // 获取查询字符串
@@ -50,6 +50,13 @@ export default function Login() {
         }));
         return;
       }
+      store.dispatch(updateAppInfo({
+        appId: '',
+        appName: '',
+        appIcon: '',
+        appUrl: '',
+        appVersion: '',
+      }));
       // 调用初始化函数(默认信息)
       await initBaseinfo(); //初始化网络和账号信息
       // 初始化网络数据
@@ -63,10 +70,6 @@ export default function Login() {
         const accountInfo = await connectCmdHandler(message, false);
         console.log("accountInfo====", accountInfo);
         if(!accountInfo){
-          store.dispatch(updateAuthStep({
-            type: MsgStatus.failed,
-            content: t('auth.failed'),
-          }));
           return;
         }
         // 提示成功，并跳转到首页

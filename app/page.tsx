@@ -13,6 +13,7 @@ export default function Auth() {
   const { t } = useTranslation();
   const authInfo = useAppSelector((state) => state.auth.authInfo);
   const appInfo = useAppSelector((state) => state.auth.appInfo);
+  console.log("authInfo=========", authInfo);
   const handleLogin = () => {
     router.push("/login?origin=" + origin);
   };
@@ -65,7 +66,7 @@ export default function Auth() {
                   </div>
 
                   {/* 应用信息卡片 */}
-                  {!!appInfo && (
+                  {!!appInfo && !!appInfo.appId  && (
                     <div className="bg-gray-50 rounded-xl p-4 mb-6 border border-gray-100">
                       <div className="flex items-center justify-between mb-3">
                         <h3 className="text-lg font-semibold text-gray-800 flex items-center">
@@ -127,9 +128,8 @@ export default function Auth() {
                       </div>
                     </div>
                   )}
-
                   {/* 登录注册按钮 */}
-                  <div className="space-y-3 mb-6">
+                  {!!authInfo.needLogin && (<div className="space-y-3 mb-6">
                     <button
                       onClick={handleLogin}
                       className="w-full py-3 px-6 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl font-medium shadow-lg hover:from-blue-700 hover:to-blue-800 transform hover:scale-[1.02] transition-all duration-200 ease-in-out"
@@ -149,7 +149,7 @@ export default function Auth() {
                         注册新账户
                       </div>
                     </button>
-                  </div>
+                  </div>)}
 
                   {/* 安全提示 */}
                   <div className="text-center">

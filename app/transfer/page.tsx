@@ -1,5 +1,5 @@
 "use client";
-import { Button, Input, Toast } from "antd-mobile";
+import { Button, Input } from "antd-mobile";
 import styles from "./page.module.css";
 import { useEffect, useState } from "react";
 import { AccountInfo, ChainInfo } from "@/types/walletTypes";
@@ -23,7 +23,7 @@ export default function Transfer() {
 
   const gotoConfirm = () => {
     if (!balance || !amount) {
-      Toast.show({
+      window.showToast({
         content: t('transfer.enter_info'),
         position: "bottom",
       });

@@ -3,7 +3,7 @@ import styles from "./page.module.css";
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslation} from 'react-i18next';
-import { Button, Input, Toast } from "antd-mobile";
+import { Button, Input } from "antd-mobile";
 import { createAccountWithRegister } from "@/app/index";
 import { baseUrl } from "@/config/define";
 
@@ -33,7 +33,7 @@ export default function Register() {
     try {
       // 检查账号是否为空
       if (!account) {
-        Toast.show({
+        window.showToast({
           content: t('register.account_empty', '请输入账号'),
           position: "bottom",
         });
@@ -42,7 +42,7 @@ export default function Register() {
       
       // 检查密码是否为空
       if (!password) {
-        Toast.show({
+        window.showToast({
           content: t('register.password_empty', '请输入密码'),
           position: "bottom",
         });
@@ -51,7 +51,7 @@ export default function Register() {
       
       // 检查确认密码是否输入
       if (!confirmPassword) {
-        Toast.show({
+        window.showToast({
           content: t('register.confirm_password_empty', '请确认您的密码'),
           position: "bottom",
         });
@@ -60,7 +60,7 @@ export default function Register() {
       
       // 确认两次输入的密码是否匹配
       if (password !== confirmPassword) {
-        Toast.show({
+        window.showToast({
           content: t('register.passwords_not_match', '两次输入的密码不一致'),
           position: "bottom",
         });
@@ -70,7 +70,7 @@ export default function Register() {
       
       // 继续现有的账户创建逻辑
       if(!globalThis.dc || !globalThis.dc.auth) {
-        Toast.show({
+        window.showToast({
           content: t('register.failed', '注册失败'),
           position: "bottom",
         });
@@ -79,7 +79,7 @@ export default function Register() {
       
       const res = await createAccountWithRegister(account, password, "000000");
       if(res && res.success) {
-        Toast.show({
+        window.showToast({
           content: t('register.success', '注册成功'),
           position: "bottom",
         });
@@ -87,13 +87,13 @@ export default function Register() {
         return;
       }
       
-      Toast.show({
+      window.showToast({
         content: t('register.failed', '注册失败'),
         position: "bottom",
       });
     } catch (error) {
       console.log("Register error", error);
-      Toast.show({
+      window.showToast({
         content: t('register.failed', '注册失败'),
         position: "bottom",
       });

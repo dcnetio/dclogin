@@ -1,4 +1,4 @@
-import { List, Popup, Toast } from "antd-mobile";
+import { List, Popup } from "antd-mobile";
 import styles from "./index.module.css";
 import { useEffect, useState } from "react";
 import DBHelper, { getAllData, store_account } from "@/helpers/DBHelper";
@@ -26,7 +26,7 @@ export default function Account(props: AccountProps) {
       onSuccess?.(info);
       return;
     }
-    Toast.show({
+    window.showToast({
       content: t("account.switch_failed"),
       position: "bottom",
     });

@@ -1,6 +1,6 @@
 "use client";
 import styles from "./index.module.css";
-import { Button, Input, Toast } from "antd-mobile";
+import { Button, Input } from "antd-mobile";
 import { useTranslation} from 'react-i18next';
 import { useState } from "react";
 import { EncodePasswordType } from "@/config/constant";
@@ -15,7 +15,7 @@ export default function EncodePassword(props: EncodePasswordProps) {
   const [password, setPassword] = useState("");
   const gotoConfirm = () => {
     if (!password) {
-      Toast.show({
+      window.showToast({
         content: t('encode.password_empty'),
         position: "bottom",
       });

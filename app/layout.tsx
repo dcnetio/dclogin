@@ -4,6 +4,8 @@ import localFont from "next/font/local";
 import "./globals.css";
 import styles from "./layout.module.css";
 import StoreProvider from "@/context/storeProvider";
+import { ToastProvider } from "@/context/ToastProvider";
+
 import VConsole from "@/components/vConsole";
 import Login from "@/components/auth/login";
 import { baseUrl } from "@/config/define";
@@ -42,8 +44,10 @@ export default function RootLayout({
           <StoreProvider>
             <Locales>
               <VConsole>
-                <Login />
-                {children}
+                <ToastProvider>
+                  <Login />
+                  {children}
+                  </ToastProvider>
               </VConsole>
             </Locales>
           </StoreProvider>

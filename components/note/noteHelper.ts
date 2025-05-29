@@ -10,7 +10,6 @@ import { createRoot } from "react-dom/client";
 import { APPInfo } from "@/types/pageType";
 import EncodePassword from "./encodePassword";
 import utilHelper from "@/helpers/utilHelper";
-import { Toast } from "antd-mobile";
 import i18n from "@/locales/i18n";
 import { EncodePasswordType } from "@/config/constant";
 export const showAddDAPPNote = (
@@ -74,7 +73,7 @@ export const showEncodePassword = (
         const userHandleHash = await crypto.subtle.digest("SHA-256", userHandle);
         const mnemonic = await utilHelper.decryptMnemonic(info.iv, info.encodeMnimonic, userHandleHash);
         if(!mnemonic){
-          Toast.show({
+          window.showToast({
             content: i18n.t("account.unlock_wallet_failed"),
             position: "bottom",
           });

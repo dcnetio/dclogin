@@ -33,12 +33,7 @@ import i18n from "@/locales/i18n";
 import { ChooseAccount } from "@/components/common/accountHelper";
 import { Ed25519PrivKey, KeyManager, NFTBindStatus, User} from "web-dc-api";
 import { APPInfo } from "@/types/pageType";
-import NavigationService from "@/lib/navigation";
 import { applyFreeSpace } from "./tools/subSpace";
-import { Toast } from "antd-mobile";
-import { baseUrl } from "@/config/define";
-console.log("==================================================================");
-console.log("Toast", Toast);
 
 
 // 获取查询字符串
@@ -404,7 +399,7 @@ async function _createAccountWithRegister (
   const nftBinded = await globalThis.dc.auth.isNftAccountBinded(account);
   if(nftBinded) {
     //todo 跳出提示框,提示用户该账号已经绑定了NFT
-    Toast.show({
+    window.showToast({
       content: i18n.t("account.nft_account_binded"),
       position: "bottom",
     });
@@ -444,7 +439,7 @@ async function _createAccountWithRegister (
   const giveFlag = await applyFreeSpace(privKey.publicKey);
   if(giveFlag[1] && giveFlag[1].message && giveFlag[1].message.indexOf('User already has space') === -1) {
     //待测试 跳出提示框,提示用户赠送套餐失败
-    Toast.show({
+    window.showToast({
       content: i18n.t("account.give_space_failed"), // todo
       position: "bottom",
     });
@@ -460,7 +455,7 @@ async function _createAccountWithRegister (
   );
   if(bindRes[0] !== true) {
     //待测试 跳出提示框,提示用户赠送套餐失败
-    Toast.show({
+    window.showToast({
       content: i18n.t("account.bind_nft_account_failed"), // todo
       position: "bottom",
     });
@@ -469,7 +464,7 @@ async function _createAccountWithRegister (
     }
     return;
   }
-  Toast.show({
+  window.showToast({
     content: i18n.t("register.success"), // todo
     position: "bottom",
   });
@@ -490,6 +485,7 @@ async function _createAccountWithLogin (
       return;
     }
     // 登录成功，得到私钥
+    const privKey = res.privKey;
     const mnemonic = res.mnemonic;
     // 助记词信息， 私钥转助记词
     const wallet = await ethersHelper.createWalletAccountWithMnemonic(mnemonic);
@@ -523,32 +519,32 @@ async function createAccount (
   let accounts = [];
   try {
       //待测试 跳出状态等待框,提示用户账号创建中，需要手动关闭
-      // Toast.show({
-      //   content: i18n.t("account.creating"),
-      //   position: "bottom",
-      //   duration: 0,
-      // });
+      window.showToast({
+        content: i18n.t("account.creating"),
+        position: "bottom",
+        duration: 0,
+      });
       // 保存用户信息
       const account = await createWalletAccount(mnemonic, nftAccount, address);
       console.log("11111111111111111111account 创建", account);
       //待测试 关闭状态等待框
-      // Toast.clear();
+      window.clearToast();
       if (!account) {
         return;
       }
       //待测试 跳出账号创建成功提示框
-      // Toast.show({
-      //   content: i18n.t("account.create_success"),
-      //   position: "bottom",
-      // });
+      window.showToast({
+        content: i18n.t("account.create_success"),
+        position: "bottom",
+      });
       accounts.push(account);
   } catch (e) {
     console.error("获取账号信息失败:", e);
     //待测试 跳出提示框,提示用户创建账号失败
-    // Toast.show({
-    //   content: i18n.t("account.create_failed"),
-    //   position: "bottom",
-    // });
+    window.showToast({
+      content: i18n.t("account.create_failed"),
+      position: "bottom",
+    });
     return;
   }
   //todo 跳出选择账号框,让用户选择账号
@@ -590,6 +586,7 @@ async function _connectCmdHandler (
     store.dispatch(updateAuthStep({
       type: MsgStatus.failed,
       content: i18n.t("network.get_failed"),
+      needLogin: false,
     }));
     return;
   }
@@ -901,36 +898,36 @@ async function generateWalletAccount (seedAccount: string) {
     account = await DBHelper.getData(DBHelper.store_account, seedAccount);
     if (account == null) {
       //待测试 跳出提示框,提示钱包里的用户账号不存在
-      // Toast.show({
-      //   content: i18n.t("account.wallet_no_account"),
-      //   position: "bottom",
-      // });
+      window.showToast({
+        content: i18n.t("account.wallet_no_account"),
+        position: "bottom",
+      });
       return null;
     }
   } catch (e) {
     console.error("获取账号信息失败:", e);
     //待测试 跳出提示框,提示用户获取账号信息失败
-    // Toast.show({
-    //   content: i18n.t("account.get_info_failed"),
-    //   position: "bottom",
-    // });
+    window.showToast({
+      content: i18n.t("account.get_info_failed"),
+      position: "bottom",
+    });
     return null;
   }
 
   let userHandleHash: ArrayBuffer | null = null;
   if(account.credentialId && typeof window.PublicKeyCredential !== "undefined") {
-    // Toast.show({
-    //   content: i18n.t("account.auth_doing"),
-    //   position: "bottom",
-    //   duration: 0,
-    // });
+    window.showToast({
+      content: i18n.t("account.auth_doing"),
+      position: "bottom",
+      duration: 0,
+    });
     //用户确认后,调出webauthn进行校验,并提取出userHandleHash
     userHandleHash = await authenticateWithPasskey(
       account.credentialId
     );
     console.log("userHandleHash success", userHandleHash);
     //待测试 关闭状态等待框
-    Toast.clear();
+    window.clearToast();
   }
   if (!userHandleHash) {
     //todo 跳出密码设置框,提示用户输入密码加密
@@ -941,20 +938,20 @@ async function generateWalletAccount (seedAccount: string) {
   }
   if(!userHandleHash) {
     //待测试 跳出提示框,提示用户解锁钱包失败
-    // Toast.show({
-    //   content: i18n.t("account.unlock_wallet_failed"),
-    //   position: "bottom",
-    // });
+    window.showToast({
+      content: i18n.t("account.unlock_wallet_failed"),
+      position: "bottom",
+    });
     return;
   }
   //解密出助记词
   const mnemonic = await utilHelper.decryptMnemonic (account.iv, account.mnemonic, userHandleHash);
   if (!mnemonic) {
     //待测试 跳出提示框,提示用户导入钱包失败
-    // Toast.show({
-    //   content: i18n.t("account.unlock_wallet_failed"),
-    //   position: "bottom",
-    // });
+    window.showToast({
+      content: i18n.t("account.unlock_wallet_failed"),
+      position: "bottom",
+    });
   }
   if(globalThis.dc){
     const connectingApp = globalThis.dc.appInfo;
@@ -966,10 +963,10 @@ async function generateWalletAccount (seedAccount: string) {
   const wallet = await ethersHelper.createWalletAccountWithMnemonic(mnemonic);
   if (!wallet) {
     //待测试 跳出提示框,提示用户导入钱包失败
-    // Toast.show({
-    //   content: i18n.t("account.unlock_wallet_failed"),
-    //   position: "bottom",
-    // });
+    window.showToast({
+      content: i18n.t("account.unlock_wallet_failed"),
+      position: "bottom",
+    });
   }
   return wallet;
 }
@@ -1009,10 +1006,10 @@ async function signMessageHandler (
     signature = await ethersHelper.signMessage(wallet, waitSignMessage);
     if (!signature) {
       //待测试 跳出提示框,提示用户签名失败
-      // Toast.show({
-      //   content: i18n.t("account.auth_failed"),
-      //   position: "bottom",
-      // });
+      window.showToast({
+        content: i18n.t("account.auth_failed"),
+        position: "bottom",
+      });
       return;
     }
   } else {
@@ -1020,10 +1017,10 @@ async function signMessageHandler (
     signature = await ethersHelper.signMessage(wallet, data.message);
     if (!signature) {
       //待测试 跳出提示框,提示用户签名失败
-      // Toast.show({
-      //   content: i18n.t("sign.sign_failed"),
-      //   position: "bottom",
-      // });
+      window.showToast({
+        content: i18n.t("sign.sign_failed"),
+        position: "bottom",
+      });
       return;
     }
   }
@@ -1119,10 +1116,10 @@ async function signEIP712MessageHandler (
   );
   if (!signature) {
     //待测试 跳出提示框,提示用户签名失败
-    // Toast.show({
-    //   content: i18n.t("sign.sign_failed"),
-    //   position: "bottom",
-    // });
+    window.showToast({
+      content: i18n.t("sign.sign_failed"),
+      position: "bottom",
+    });
     return;
   }
   //签名成功后,发送签名成功消息给APP,并返回签名结果
@@ -1221,18 +1218,18 @@ async function _transfer (
 ) {
   if (currentChain == null || networkStatus != NetworkStauts.connected) {
     //待测试 跳出提示框,提示用户未连接钱包
-    // Toast.show({
-    //   content: i18n.t("account.wallet_not_connect"),
-    //   position: "bottom",
-    // });
+    window.showToast({
+      content: i18n.t("account.wallet_not_connect"),
+      position: "bottom",
+    });
     return;
   }
   if (currentAccount == null) {
     //待测试 跳出提示框,提示用户没有可用账号
-    // Toast.show({
-    //   content: i18n.t("account.no_account"),
-    //   position: "bottom",
-    // });
+    window.showToast({
+      content: i18n.t("account.no_account"),
+      position: "bottom",
+    });
     return;
   }
   const wallet = await generateWalletAccount(currentAccount.account);
@@ -1250,10 +1247,10 @@ async function _transfer (
     );
     if (!txResponse || !txResponse.hash || !txResponse.provider) {
       //待测试 跳出提示框,提示用户转账失败
-      // Toast.show({
-      //   content: i18n.t("transfer.transfer_failed"),
-      //   position: "bottom",
-      // });
+      window.showToast({
+        content: i18n.t("transfer.transfer_failed"),
+        position: "bottom",
+      });
       return;
     }
     const record = {
@@ -1283,10 +1280,10 @@ async function _transfer (
     );
     if (!receipt) {
       //待测试 界面提示用户转账待确认
-      // Toast.show({
-      //   content: i18n.t("transfer.transfer_pending"),
-      //   position: "bottom",
-      // });
+      window.showToast({
+        content: i18n.t("transfer.transfer_pending"),
+        position: "bottom",
+      });
       return;
     }
     record.blockNumber = receipt.blockNumber;
@@ -1298,10 +1295,10 @@ async function _transfer (
     record.timestamp = new Date().getTime();
     DBHelper.updateData(DBHelper.store_record, record);
     //待测试 界面提示转账成功
-    // Toast.show({
-    //   content: i18n.t("transfer.transfer_success"),
-    //   position: "bottom",
-    // });
+    window.showToast({
+      content: i18n.t("transfer.transfer_success"),
+      position: "bottom",
+    });
     return true;
   } catch (error) {
     console.log("transfer error", error);
@@ -1315,10 +1312,10 @@ async function _refreshRecordStatus (hash: string) {
   const record = await DBHelper.getData(DBHelper.store_record, hash);
   if (!record) {
     //待测试 跳出提示框,提示用户获取交易记录失败
-    // Toast.show({
-    //   content: i18n.t("transfer.get_transferlist_failed"),
-    //   position: "bottom",
-    // });
+    window.showToast({
+      content: i18n.t("transfer.get_transferlist_failed"),
+      position: "bottom",
+    });
     return;
   }
   if (currentChain == null || currentChain.chainId != record.chainId) {
@@ -1331,10 +1328,10 @@ async function _refreshRecordStatus (hash: string) {
     const flag = _switchChain(chainInfo);
     if (!flag) {
       //待测试 跳出提示框,提示用户切换网络失败
-      // Toast.show({
-      //   content: i18n.t("network.switch_failed"),
-      //   position: "bottom",
-      // });
+      window.showToast({
+        content: i18n.t("network.switch_failed"),
+        position: "bottom",
+      });
       return;
     }
   }

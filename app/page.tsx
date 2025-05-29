@@ -8,6 +8,11 @@ import {
   AddOutline,
   UnorderedListOutline,
   PayCircleOutline,
+  LockOutline,
+  AppstoreOutline,
+  UserOutline,
+  LeftOutline,
+  RightOutline,
 } from "antd-mobile-icons";
 
 import { useRouter } from "next/navigation";
@@ -28,7 +33,19 @@ export default function Index() {
   const [accountName, setAccountName] = useState("");
   const [accountAddress, setAccountAddress] = useState("");
   const [storageSpace, setStorageSpace] = useState("0 GB");
+  const [usedStorageSpace, setUsedStorageSpace] = useState("0 GB");
+  const [storagePercentage, setStoragePercentage] = useState(0);
+  const [tokenAmount, setTokenAmount] = useState("0");
   const [isMobile, setIsMobile] = useState(true);
+  const [activeView, setActiveView] = useState("account"); // "account" or "wallet"
+  const [appAccounts, setAppAccounts] = useState([]);
+
+  // Mock app accounts data
+  const mockAppAccounts = [
+    { appName: "DeCert", appId: "decert-123", appAccount: "0x8721...3d91", appDomain: "decert.network" },
+    { appName: "DataVault", appId: "datavault-456", appAccount: "0x6532...7e22", appDomain: "datavault.io" },
+    { appName: "FileShare", appId: "fileshare-789", appAccount: "0x3251...9f43", appDomain: "fileshare.app" },
+  ];
 
   useEffect(() => {
     const checkMobile = () => {
@@ -39,6 +56,15 @@ export default function Index() {
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
+
+  // Navigation functions
+  const goToWallet = () => {
+    setActiveView("wallet");
+  };
+
+  const goToAccount = () => {
+    setActiveView("account");
+  };
 
   const sendBalance = () => {
     router.push(baseUrl + "/transfer");
@@ -84,12 +110,26 @@ export default function Index() {
             "0x" + accountInfo.account
           );
           if (userInfo && userInfo.space) {
-            const spaceGB = (userInfo.space / (1024 * 1024 * 1024)).toFixed(2);
-            setStorageSpace(`${spaceGB} GB`);
+            const totalSpaceGB = (userInfo.space / (1024 * 1024 * 1024)).toFixed(2);
+            setStorageSpace(`${totalSpaceGB} GB`);
+            
+            // Mock used storage (30% of total for demo)
+            const usedSpace = userInfo.space * 0.3;
+            const usedSpaceGB = (usedSpace / (1024 * 1024 * 1024)).toFixed(2);
+            setUsedStorageSpace(`${usedSpaceGB} GB`);
+            setStoragePercentage(30);
+            
+            // Mock token amount
+            setTokenAmount("150");
+            
+            // Set app accounts (mock data for now)
+            setAppAccounts(mockAppAccounts);
           }
         } catch (error) {
           console.error("Failed to get user storage info", error);
           setStorageSpace("0 GB");
+          setUsedStorageSpace("0 GB");
+          setStoragePercentage(0);
         }
       }
     }
@@ -101,6 +141,185 @@ export default function Index() {
       getUserInfo();
     }
   }, [initState]);
+
+  // Account Info View Component
+  const AccountInfoView = () => (
+    <div className={styles.accountInfoView}>
+      {/* Account Card */}
+      <div className={styles.sectionCard}>
+        <div className={styles.sectionHeader}>
+          <h2>{t("account.details", "账户详情")}</h2>
+        </div>
+        <div className={styles.accountDetails}>
+          <div className={styles.accountAvatar}>
+            {accountName.charAt(0).toUpperCase()}
+          </div>
+          <div className={styles.accountInfo}>
+            <div className={styles.accountName}>{accountName}</div>
+            <div className={styles.accountAddress}>{accountAddress}</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Storage Space Card */}
+      <div className={styles.sectionCard}>
+        <div className={styles.sectionHeader}>
+          <h2>{t("storage.title", "云存储空间")}</h2>
+          <button className={styles.actionButton} onClick={upgradeStorage}>
+            {t("storage.upgrade", "升级")}
+          </button>
+        </div>
+        <div className={styles.storageDetails}>
+          <div className={styles.storageInfo}>
+            <div className={styles.storageValue}>
+              <span className={styles.usedStorage}>{usedStorageSpace}</span>
+              <span className={styles.totalStorage}>/ {storageSpace}</span>
+            </div>
+            <div className={styles.storageLabel}>
+              {t("storage.used", "已使用")}
+            </div>
+          </div>
+          <div className={styles.storageProgress}>
+            <div
+              className={styles.storageProgressBar}
+              style={{ width: `${storagePercentage}%` }}
+            ></div>
+          </div>
+        </div>
+      </div>
+
+      {/* Token Card */}
+      <div className={styles.sectionCard}>
+        <div className={styles.sectionHeader}>
+          <h2>{t("tokens.title", "云服务代币")}</h2>
+          <button className={styles.actionButton} onClick={buyTokens}>
+            {t("tokens.buy", "购买")}
+          </button>
+        </div>
+        <div className={styles.tokenDetails}>
+          <div className={styles.tokenAmount}>{tokenAmount}</div>
+          <div className={styles.tokenLabel}>
+            {t("tokens.available", "可用代币")}
+          </div>
+          <div className={styles.tokenDescription}>
+            {t("tokens.description", "代币可用于升级存储空间和购买高级服务")}
+          </div>
+        </div>
+      </div>
+
+      {/* App Accounts Card */}
+      <div className={styles.sectionCard}>
+        <div className={styles.sectionHeader}>
+          <h2>{t("appAccounts.title", "应用账号")}</h2>
+        </div>
+        <div className={styles.appAccountsList}>
+          {appAccounts.length > 0 ? (
+            appAccounts.map((app, index) => (
+              <div key={index} className={styles.appAccountItem}>
+                <div className={styles.appIcon}>
+                  <AppstoreOutline />
+                </div>
+                <div className={styles.appDetails}>
+                  <div className={styles.appName}>{app.appName}</div>
+                  <div className={styles.appAccount}>{app.appAccount}</div>
+                  <div className={styles.appMeta}>
+                    <span className={styles.appId}>{app.appId}</span>
+                    <span className={styles.appDomain}>{app.appDomain}</span>
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className={styles.emptyState}>
+              {t("appAccounts.empty", "暂无应用账号")}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Wallet Entry Button */}
+      <button className={styles.walletEntryButton} onClick={goToWallet}>
+        <LockOutline className={styles.walletEntryIcon} />
+        <span>{t("wallet.enter", "进入加密钱包")}</span>
+        <RightOutline />
+      </button>
+    </div>
+  );
+
+  // Wallet View Component
+  const WalletView = () => (
+    <div className={styles.walletView}>
+      {/* Back button to return to account view */}
+      <button className={styles.backButton} onClick={goToAccount}>
+        <LeftOutline />
+        <span>{t("wallet.back_to_account", "返回账户")}</span>
+      </button>
+
+      {/* Wallet Balance Card */}
+      <div className={styles.sectionCard}>
+        <div className={styles.sectionHeader}>
+          <h2>{t("wallet.balance", "钱包余额")}</h2>
+        </div>
+        <div className={styles.balanceDetails}>
+          <div className={styles.balanceLabel}>
+            {t("wallet.current_balance", "当前余额")}
+          </div>
+          <div className={styles.balance}>
+            <span className={styles.balanceAmount}>0.0</span>
+            <span className={styles.currencySymbol}>{currencySymbol}</span>
+          </div>
+          <div className={styles.walletActions}>
+            <button className={styles.primaryButton} onClick={sendBalance}>
+              <SendOutline />
+              {t("transfer.transfer", "转账")}
+            </button>
+            <button className={styles.secondaryButton} onClick={buyTokens}>
+              <AddOutline />
+              {t("wallet.buy", "购买")}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Transaction History Card */}
+      <div className={styles.sectionCard}>
+        <div className={styles.sectionHeader}>
+          <h2>{t("wallet.transactions", "交易记录")}</h2>
+          <button className={styles.actionButton} onClick={gotoActivity}>
+            {t("wallet.view_all", "查看全部")}
+          </button>
+        </div>
+        <div className={styles.transactionsList}>
+          <div className={styles.emptyState}>
+            {t("wallet.no_transactions", "暂无交易记录")}
+          </div>
+        </div>
+      </div>
+
+      {/* Wallet Accounts Card */}
+      <div className={styles.sectionCard}>
+        <div className={styles.sectionHeader}>
+          <h2>{t("wallet.accounts", "钱包账户")}</h2>
+        </div>
+        <div className={styles.walletAccountsList}>
+          <div className={styles.walletAccountItem}>
+            <div className={styles.accountAvatar}>
+              {accountName.charAt(0).toUpperCase()}
+            </div>
+            <div className={styles.accountInfo}>
+              <div className={styles.accountName}>{accountName}</div>
+              <div className={styles.accountAddress}>{accountAddress}</div>
+            </div>
+            <div className={styles.accountIndicator}>
+              <span className={styles.currentIndicator}>
+                {t("wallet.current", "当前")}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <div>
@@ -116,171 +335,7 @@ export default function Index() {
           />
 
           <div className={styles.contentPage}>
-            {isMobile ? (
-              // Mobile Layout
-              <>
-                {/* 账户信息卡片 */}
-                <div className={styles.accountInfoCard}>
-                  <div className={styles.accountAvatar}>
-                    {accountName.charAt(0).toUpperCase()}
-                  </div>
-                  <div className={styles.accountInfo}>
-                    <div className={styles.accountName}>{accountName}</div>
-                    <div className={styles.accountAddress}>
-                      {accountAddress}
-                    </div>
-                  </div>
-                </div>
-
-                {/* 操作按钮 */}
-                <div className={styles.btns}>
-                  <div className={styles.btnD}>
-                    <div className={styles.btn} onClick={sendBalance}>
-                      <SendOutline fontSize={24} />
-                    </div>
-                    <span className={styles.txt}>
-                      {t("transfer.transfer", "转账")}
-                    </span>
-                  </div>
-                  <div className={styles.btnD}>
-                    <div className={styles.btn} onClick={gotoActivity}>
-                      <FileOutline fontSize={24} />
-                    </div>
-                    <span className={styles.txt}>
-                      {t("transfer.activity", "活动")}
-                    </span>
-                  </div>
-                  <div className={styles.btnD}>
-                    <div className={styles.btn} onClick={buyTokens}>
-                      <PayCircleOutline fontSize={24} />
-                    </div>
-                    <span className={styles.txt}>
-                      {t("wallet.buy_tokens", "购买代币")}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Storage Section */}
-                <div className={styles.storageSection}>
-                  <div className={styles.storageHeader}>
-                    <div className={styles.storageTitle}>
-                      {t("wallet.storage_space", "存储空间")}
-                    </div>
-                    <div className={styles.upgradeBtn} onClick={upgradeStorage}>
-                      {t("wallet.upgrade", "升级")}
-                    </div>
-                  </div>
-                  <div className={styles.storageDetails}>
-                    <div className={styles.storageAmount}>{storageSpace}</div>
-                    <div className={styles.storageProgress}>
-                      <div
-                        className={styles.storageProgressBar}
-                        style={{ width: "35%" }}
-                      ></div>
-                    </div>
-                  </div>
-                </div>
-              </>
-            ) : (
-              // Desktop Layout (Full Screen)
-              <div className={styles.desktopLayout}>
-                <div className={styles.desktopSidebar}>
-                  <div className={styles.sidebarSection}>
-                    <h2 className={styles.sidebarTitle}>
-                      {t("wallet.account", "账户")}
-                    </h2>
-                    <div className={styles.accountCard}>
-                      <div className={styles.accountAvatar}>
-                        {accountName.charAt(0).toUpperCase()}
-                      </div>
-                      <div className={styles.accountDetails}>
-                        <div className={styles.accountName}>{accountName}</div>
-                        <div className={styles.accountAddress}>
-                          {accountAddress}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className={styles.sidebarSection}>
-                    <h2 className={styles.sidebarTitle}>
-                      {t("wallet.storage", "存储")}
-                    </h2>
-                    <div className={styles.storageCard}>
-                      <div className={styles.storageInfo}>
-                        <div className={styles.storageAmount}>
-                          {storageSpace}
-                        </div>
-                        <div className={styles.storageLabel}>
-                          {t("wallet.available", "可用")}
-                        </div>
-                      </div>
-                      <div className={styles.storageProgress}>
-                        <div
-                          className={styles.storageProgressBar}
-                          style={{ width: "35%" }}
-                        ></div>
-                      </div>
-                      <button
-                        className={styles.upgradeButton}
-                        onClick={upgradeStorage}
-                      >
-                        {t("wallet.upgrade_storage", "升级存储")}
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className={styles.sidebarSection}>
-                    <h2 className={styles.sidebarTitle}>
-                      {t("wallet.quick_actions", "快速操作")}
-                    </h2>
-                    <div className={styles.actionsList}>
-                      <div className={styles.actionItem} onClick={sendBalance}>
-                        <SendOutline className={styles.actionIcon} />
-                        <span>{t("transfer.transfer", "转账")}</span>
-                      </div>
-                      <div className={styles.actionItem} onClick={gotoActivity}>
-                        <UnorderedListOutline className={styles.actionIcon} />
-                        <span>{t("transfer.activity", "活动")}</span>
-                      </div>
-                      <div className={styles.actionItem} onClick={buyTokens}>
-                        <PayCircleOutline className={styles.actionIcon} />
-                        <span>{t("wallet.buy_tokens", "购买代币")}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className={styles.desktopMain}>
-                  {/* 不再显示总余额和最近交易，而是显示欢迎消息和应用介绍 */}
-                  <div className={styles.welcomeSection}>
-                    <div className={styles.welcomeTitle}>
-                      {t("wallet.welcome", `欢迎使用 DCWallet, ${accountName}`)}
-                    </div>
-                    <div className={styles.welcomeDescription}>
-                      {t(
-                        "wallet.welcome_description",
-                        "您的去中心化数据钱包，安全管理您的数字资产和存储空间"
-                      )}
-                    </div>
-                    
-                    <div className={styles.mainActionButtons}>
-                      <button
-                        className={styles.primaryButton}
-                        onClick={sendBalance}
-                      >
-                        <SendOutline fontSize={18} />
-                        {t("transfer.transfer", "转账")}
-                      </button>
-                      <button className={styles.secondaryButton} onClick={buyTokens}>
-                        <AddOutline fontSize={18} />
-                        {t("wallet.buy", "购买")}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
+            {activeView === "account" ? <AccountInfoView /> : <WalletView />}
           </div>
         </>
       )}

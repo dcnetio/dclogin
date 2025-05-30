@@ -12,11 +12,19 @@ import EncodePassword from "./encodePassword";
 import utilHelper from "@/helpers/utilHelper";
 import i18n from "@/locales/i18n";
 import { EncodePasswordType } from "@/config/constant";
+import NavigationService from "@/lib/navigation";
 export const showAddDAPPNote = (
   info: APPInfo,
   confirmCallback: () => void
 ) => {
+  const containerId = "add-dapp-note-container";
+  // 先检查是否已存在，如果存在则移除
+  const existingContainer = document.getElementById(containerId);
+  if (existingContainer) {
+    document.body.removeChild(existingContainer);
+  }
   const container = document.createElement("div");
+  container.id = containerId;
   document.body.appendChild(container);
   const root = createRoot(container);
   root.render(
@@ -37,7 +45,14 @@ export const showSignatureDAPPNote = (
   msg: string | object,
   confirmCallback: () => void
 ) => {
+  const containerId = "signature-dapp-note-container";
+  // 先检查是否已存在，如果存在则移除
+  const existingContainer = document.getElementById(containerId);
+  if (existingContainer) {
+    document.body.removeChild(existingContainer);
+  }
   const container = document.createElement("div");
+  container.id = containerId;
   document.body.appendChild(container);
   const root = createRoot(container);
   root.render(
@@ -57,9 +72,16 @@ export const showSignatureDAPPNote = (
 
 export const showEncodePassword = (
   info: {iv: Uint8Array, encodeMnimonic: ArrayBuffer},
-  confirmCallback: (userHandleHash: ArrayBuffer) => void
+  confirmCallback: (userHandleHash: ArrayBuffer | null) => void
 ) => {
+  const containerId = "encode-password-container";
+  // 先检查是否已存在，如果存在则移除
+  const existingContainer = document.getElementById(containerId);
+  if (existingContainer) {
+    document.body.removeChild(existingContainer);
+  }
   const container = document.createElement("div");
+  container.id = containerId;
   document.body.appendChild(container);
   const root = createRoot(container);
   root.render(
@@ -82,14 +104,26 @@ export const showEncodePassword = (
         confirmCallback(userHandleHash);
         document.body.removeChild(container);
       },
+      onForgotPassword: () => {
+        NavigationService.replace("/login");
+        confirmCallback(null);
+        document.body.removeChild(container);
+      },
     })
   );
 };
 
 export const showSetEncodePassword = (
-  confirmCallback: (userHandle: Uint8Array) => void
+  confirmCallback: (userHandle: Uint8Array | null) => void
 ) => {
+  const containerId = "set-encode-password-container";
+  // 先检查是否已存在，如果存在则移除
+  const existingContainer = document.getElementById(containerId);
+  if (existingContainer) {
+    document.body.removeChild(existingContainer);
+  }
   const container = document.createElement("div");
+  container.id = containerId;
   document.body.appendChild(container);
   const root = createRoot(container);
   root.render(
@@ -101,6 +135,10 @@ export const showSetEncodePassword = (
         // 解密
         const userHandle = Buffer.from(password);
         confirmCallback(userHandle);
+        document.body.removeChild(container);
+      },
+      onForgotPassword: () => {
+        confirmCallback(null);
         document.body.removeChild(container);
       },
     })

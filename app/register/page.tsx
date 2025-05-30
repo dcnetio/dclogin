@@ -9,7 +9,6 @@ import { baseUrl } from "@/config/define";
 
 export default function Register() {
   const searchParams = useSearchParams();
-  const origin = searchParams?.get('origin') || '';
   const router = useRouter();
   const {t} = useTranslation();
   const [account, setAccount] = useState("");
@@ -83,7 +82,7 @@ export default function Register() {
           content: t('register.success', '注册成功'),
           position: "bottom",
         });
-        router.push(baseUrl + "/login?origin=" + origin);
+        router.push(baseUrl + "/login" + window.location.search);
         return;
       }
       
@@ -101,7 +100,7 @@ export default function Register() {
   };
   
   const gotoLogin = () => {
-    router.push(baseUrl + "/login?origin=" + origin);
+    router.push(`${baseUrl}/login${window.location.search}`);
   };
 
   

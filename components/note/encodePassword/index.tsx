@@ -5,6 +5,7 @@ import { useTranslation} from 'react-i18next';
 import { useState } from "react";
 import { EncodePasswordType } from "@/config/constant";
 import { LockOutlined, CheckShieldOutline, LinkOutline, ExclamationCircleOutline } from 'antd-mobile-icons';
+import { useRouter } from "next/navigation";
 
 interface EncodePasswordProps {
   type: number; // 类型，1设置，2验证

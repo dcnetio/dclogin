@@ -616,9 +616,6 @@ async function _connectCmdHandler (
       content: i18n.t("auth.no_account"),
       needLogin: true,
     }));
-    // NavigationService.navigate(baseUrl + "login", {
-    //   origin: message.origin,
-    // });
     return;
   }
   const mnemonic = await unlockWallet (chooseAccount);
@@ -870,21 +867,21 @@ async function resPonseWallet(
 }
 
 // 获取用户加密密码
-async function getEncodePwd(info: {iv: Uint8Array, encodeMnimonic: ArrayBuffer}): Promise<ArrayBuffer> { 
+async function getEncodePwd(info: {iv: Uint8Array, encodeMnimonic: ArrayBuffer}): Promise<ArrayBuffer | null> { 
   return new Promise((resolve, reject) => {
     // todo 显示用户加密密码页面
-    showEncodePassword(info, (password) => {
+    showEncodePassword(info, (userHandleHash: ArrayBuffer | null) => {
       // 处理结果
-      resolve(password);
+      resolve(userHandleHash);
     });
   })
 }
 
 // 设置用户加密密码
-async function setEncodePwd(): Promise<Uint8Array> { 
+async function setEncodePwd(): Promise<Uint8Array | null> { 
   return new Promise((resolve, reject) => {
     // todo 显示用户加密密码页面
-    showSetEncodePassword((userHandle: Uint8Array) => {
+    showSetEncodePassword((userHandle: Uint8Array | null) => {
       // 处理结果
       resolve(userHandle);
     });

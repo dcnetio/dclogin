@@ -6,7 +6,8 @@
     "edit": "编辑",
     "from": "自",
     "to": "至",
-    "set": "设置"
+    "set": "设置",
+    "security_protected": "安全守护中"
   },
   "transfer": {
     "transfer": "转账",
@@ -73,9 +74,6 @@
     "data_security": "数据安全",
     "data_seamless": "无缝体验",
     "description": "去中心钱包"
-
-
-
   },
   "sign": {
     "sign_title": "是否允许传入的信息进行签名?",
@@ -130,8 +128,8 @@
     "password_empty": "请输入加密密码",
     "set_success": "加密密码设置成功",
     "set_failed": "加密密码设置失败",
-    "set_tip": "请输入快捷密码完成授权",
-    "verify_tip": "请输入正确的密码，解锁钱包"
+    "set_tip": "设置快捷访问密码",
+    "verify_tip": "请输入快捷密码完成授权"
   },
   "bind": {
     "success": "绑定成功",

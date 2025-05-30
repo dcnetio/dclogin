@@ -128,8 +128,8 @@
     "password_empty": "请输入加密密码",
     "set_success": "加密密码设置成功",
     "set_failed": "加密密码设置失败",
-    "set_tip": "请输入快捷密码完成授权",
-    "verify_tip": "请输入正确的密码，解锁钱包"
+    "set_tip": "设置快捷访问密码",
+    "verify_tip": "请输入快捷密码完成授权"
   },
   "bind": {
     "success": "绑定成功",

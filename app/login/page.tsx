@@ -78,7 +78,7 @@ export default function Login() {
   };
 
   const gotoRegister = () => {
-    router.push(baseUrl + `/register?origin=${origin}`);
+    router.push(`${baseUrl}/register${window.location.search}`);
   };
 
   const toggleSafecode = () => {

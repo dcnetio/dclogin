@@ -7,18 +7,16 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { User, Shield, ExternalLink } from "lucide-react";
 
 export default function Auth() {
-  const searchParams = useSearchParams();
-  const origin = searchParams?.get("origin") || "";
   const router = useRouter();
   const { t } = useTranslation();
   const authInfo = useAppSelector((state) => state.auth.authInfo);
   const appInfo = useAppSelector((state) => state.auth.appInfo);
   console.log("authInfo=========", authInfo);
   const handleLogin = () => {
-    router.push("/login?origin=" + origin);
+    router.push("/login" + window.location.search);
   };
   const handleRegister = () => {
-    router.push("/register?origin=" + origin);
+    router.push("/register" + window.location.search);
   };
   return (
     <div className={styles["min-h-screen"]}>

@@ -17,6 +17,7 @@ import { useRouter } from 'next/navigation'
 import NavigationService from "@/lib/navigation";
 import { updateAppInfo, updateAuthStep } from "@/lib/slices/authSlice";
 import { useTranslation } from "next-i18next";
+import { basePath } from "@/config/define";
 
 // 获取查询字符串
 let queryString = '';
@@ -96,6 +97,7 @@ export default function Login() {
     const dc = new DC({
       wssUrl: 'wss://dcchain.baybird.cn',
       backWssUrl: 'wss://dcchain.baybird.cn',
+      swUrl: basePath + '/sw.js',
     })
     dc.init()
     window.dc = dc

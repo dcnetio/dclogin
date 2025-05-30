@@ -71,7 +71,7 @@ export default function Login() {
           content: t("login.success"),
           position: "bottom",
         });
-        router.push("/");
+        router.push("/home");
         return;
       }
       

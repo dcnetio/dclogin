@@ -9,6 +9,8 @@ import { ToastProvider } from "@/context/ToastProvider";
 import VConsole from "@/components/vConsole";
 import Login from "@/components/auth/login";
 import Locales from "./locales";
+import { basePath } from '@/config/define';
+
 const geistSans = localFont({
   src: "../fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -24,7 +26,7 @@ export const metadata: Metadata = {
   title: "DC Wallet",
   description: "DC Wallet",
   icons: [
-    { url: "/favicon.ico", type: "image/x-icon", sizes: "256x256" },
+    { url: basePath + "/favicon.ico", type: "image/x-icon", sizes: "256x256" },
   ],
 };
 

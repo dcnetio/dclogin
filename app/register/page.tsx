@@ -14,7 +14,8 @@ export default function Register() {
   const [isMobile, setIsMobile] = useState(true);
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordsMatch, setPasswordsMatch] = useState(true);
-  
+   const [isLoading, setIsLoading] = useState(false);
+
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth <= 768);
@@ -25,77 +26,90 @@ export default function Register() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
   
-  // 修复 gotoConfirm 函数，确保正确处理异步操作
-  const gotoConfirm = async () => {
-    try {
-      // 检查账号是否为空
-      if (!account) {
-        window.showToast({
-          content: t('register.account_empty', '请输入账号'),
-          position: "bottom",
-        });
-        return;
-      }
-      
-      // 检查密码是否为空
-      if (!password) {
-        window.showToast({
-          content: t('register.password_empty', '请输入密码'),
-          position: "bottom",
-        });
-        return;
-      }
-      
-      // 检查确认密码是否输入
-      if (!confirmPassword) {
-        window.showToast({
-          content: t('register.confirm_password_empty', '请确认您的密码'),
-          position: "bottom",
-        });
-        return;
-      }
-      
-      // 确认两次输入的密码是否匹配
-      if (password !== confirmPassword) {
-        window.showToast({
-          content: t('register.passwords_not_match', '两次输入的密码不一致'),
-          position: "bottom",
-        });
-        setPasswordsMatch(false);
-        return;
-      }
-      
-      // 继续现有的账户创建逻辑
-      if(!window.dc || !window.dc.auth) {
-        window.showToast({
-          content: t('register.failed', '注册失败'),
-          position: "bottom",
-        });
-        return;
-      }
-      
-      const res = await createAccountWithRegister(account, password, "000000");
-      if(res && res.success) {
-        window.showToast({
-          content: t('register.success', '注册成功'),
-          position: "bottom",
-        });
-        router.push(`/login${window.location.search}`);
-        return;
-      }
-      
+ const gotoConfirm = async () => {
+  // Set loading state to true when registration starts
+  setIsLoading(true);
+  
+  try {
+    // 检查账号是否为空
+    if (!account) {
       window.showToast({
-        content: t('register.failed', '注册失败'),
+        content: t('register.account_empty', '请输入账号'),
         position: "bottom",
       });
-    } catch (error) {
-      console.log("Register error", error);
-      window.showToast({
-        content: t('register.failed', '注册失败'),
-        position: "bottom",
-      });
+      setIsLoading(false); // Reset loading state
+      return;
     }
-  };
+    
+    // 检查密码是否为空
+    if (!password) {
+      window.showToast({
+        content: t('register.password_empty', '请输入密码'),
+        position: "bottom",
+      });
+      setIsLoading(false); // Reset loading state
+      return;
+    }
+    
+    // 检查确认密码是否输入
+    if (!confirmPassword) {
+      window.showToast({
+        content: t('register.confirm_password_empty', '请确认您的密码'),
+        position: "bottom",
+      });
+      setIsLoading(false); // Reset loading state
+      return;
+    }
+    
+    // 确认两次输入的密码是否匹配
+    if (password !== confirmPassword) {
+      window.showToast({
+        content: t('register.passwords_not_match', '两次输入的密码不一致'),
+        position: "bottom",
+      });
+      setPasswordsMatch(false);
+      setIsLoading(false); // Reset loading state
+      return;
+    }
+    
+    // 继续现有的账户创建逻辑
+    if(!window.dc || !window.dc.auth) {
+      window.showToast({
+        content: t('register.failed', '注册失败'),
+        position: "bottom",
+      });
+      setIsLoading(false); // Reset loading state
+      return;
+    }
+    
+    const res = await createAccountWithRegister(account, password, "000000");
+    // Reset loading state after registration completes
+    setIsLoading(false);
+    
+    if(res && res.success) {
+      window.showToast({
+        content: t('register.success', '注册成功'),
+        position: "bottom",
+      });
+      router.push(`/login${window.location.search}`);
+      return;
+    }
+    
+    window.showToast({
+      content: t('register.failed', '注册失败'),
+      position: "bottom",
+    });
+  } catch (error) {
+    // Reset loading state if there's an error
+    setIsLoading(false);
+    
+    console.log("Register error", error);
+    window.showToast({
+      content: t('register.failed', '注册失败'),
+      position: "bottom",
+    });
+  }
+};
   
   const gotoLogin = () => {
     router.push(`/login${window.location.search}`);
@@ -266,15 +280,17 @@ export default function Register() {
         
         {/* 按钮组 */}
        <div className={styles.buttonGroup}>
-        <Button 
-          color="primary" 
-          fill="solid" 
-          onClick={() => gotoConfirm()} 
-          block
-        >
-          {t('register.register', '注册')}
-        </Button>
-      </div>
+  <Button 
+    color="primary" 
+    fill="solid" 
+    onClick={() => gotoConfirm()} 
+    block
+    loading={isLoading}
+    loadingText={t("register.registering", "注册中...")}
+  >
+    {t('register.register', '注册')}
+  </Button>
+</div>
         
         {/* 登录链接 */}
         <div className={styles.loginPrompt} onClick={gotoLogin}>

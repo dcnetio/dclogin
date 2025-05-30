@@ -11,7 +11,6 @@ import { Button, Dialog } from "antd-mobile";
 import { appState } from "@/config/constant";
 import { useAppSelector } from "@/lib/hooks";
 import { useTranslation } from "react-i18next";
-import { baseUrl } from "@/config/define";
 export default function TransferConfirm() {
   const router = useRouter();
   const { t } = useTranslation();
@@ -60,7 +59,7 @@ export default function TransferConfirm() {
             content: t('transfer.transfer_success'),
             position: "bottom",
           });
-          router.replace(baseUrl + '/activity');
+          router.replace('/activity');
         } else {
           window.showToast({
             content: t('transfer.transfer_failed'),

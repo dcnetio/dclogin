@@ -479,15 +479,19 @@ async function _createAccountWithLogin (
 ) {
   try {
     const res = await window.dc.auth.accountLogin(account, password, safecode);
+    console.log("=================window.dc.auth.accountLogin res");
     if(!res || !res.mnemonic) {
+      console.log("=================window.dc.auth.accountLogin error");
       return;
     }
     // 登录成功，得到私钥
     const mnemonic = res.mnemonic;
     // 助记词信息， 私钥转助记词
     const wallet = await ethersHelper.createWalletAccountWithMnemonic(mnemonic);
+    console.log("=================createWalletAccountWithMnemonic success");
     const address = wallet.address;
     const accountInfo = await createAccount(mnemonic, account, address);
+    console.log("=================createAccount success");
     if(!accountInfo){
       return;
     }

@@ -18,7 +18,6 @@ import { appState } from "@/config/constant";
 import { getCurrentAccount, getCurrentNetwork } from "@/app/index";
 import { ChainInfo, User } from "@/types/walletTypes";
 import { useTranslation } from "react-i18next";
-import { baseUrl } from "@/config/define";
 // Mock app accounts data
 const mockAppAccounts = [
   { appName: "DeCert", appId: "decert-123", appAccount: "0x8721...3d91", appDomain: "decert.network" },
@@ -63,11 +62,11 @@ export default function Index() {
   };
 
   const sendBalance = () => {
-    router.push(baseUrl + "/transfer");
+    router.push("/transfer");
   };
 
   const gotoActivity = () => {
-    router.push(baseUrl + "/activity");
+    router.push("/activity");
   };
 
   const buyTokens = () => {

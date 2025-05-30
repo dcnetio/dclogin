@@ -105,7 +105,7 @@ export const showEncodePassword = (
         document.body.removeChild(container);
       },
       onForgotPassword: () => {
-        NavigationService.replace("/login");
+        NavigationService.replace("/login" + window.location.search);
         confirmCallback(null);
         document.body.removeChild(container);
       },

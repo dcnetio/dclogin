@@ -606,11 +606,11 @@ async function _connectCmdHandler (
     return;
   }
 
+  messageData = message;
+  portData = port;
   let chooseAccount = await chooseStoredAccount();
   if (!chooseAccount) {
     // 没有用户的时候，需要跳转到登录页面
-    messageData = message;
-    portData = port;
     store.dispatch(updateAuthStep({
       type: MsgStatus.failed,
       content: i18n.t("auth.no_account"),
@@ -785,7 +785,7 @@ async function resPonseWallet(
   } catch (error) {
   }
   // 执行签名
-  const signature = await ethersHelper.signMessage(wallet, message.origin);
+  const signature = await ethersHelper.signMessage(wallet, message.origin || '');
   if (!signature) {
     //待测试 跳出提示框,提示用户签名失败
     store.dispatch(updateAuthStep({

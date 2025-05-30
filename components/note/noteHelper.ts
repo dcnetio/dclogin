@@ -118,7 +118,7 @@ export const showEncodePassword = (
 export const showSetEncodePassword = (
   confirmCallback: (userHandle: Uint8Array | null) => void
 ) => {
-  const containerId = "set-encode-password-container";
+  const containerId = "encode-password-container";
   // 先检查是否已存在，如果存在则移除
   const existingContainer = document.getElementById(containerId);
   if (existingContainer) {

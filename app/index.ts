@@ -495,11 +495,11 @@ async function _createAccountWithLogin (
     if(!accountInfo){
       return;
     }
-    if(origin || messageData.origin) {
+    if(origin) {
       const message: ConnectReqMessage = {
         origin: origin || '',
       };
-      const res = await resPonseWallet(mnemonic, messageData.origin ? messageData :message, true, portData);
+      const res = await resPonseWallet(mnemonic, origin ? messageData :message, true, portData);
       return res;
     }else {
       return await resPonseWallet(mnemonic);

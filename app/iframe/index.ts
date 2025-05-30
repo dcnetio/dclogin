@@ -309,7 +309,6 @@ async function decrypt(message: any)  {
 //发送解密结果消息给父窗口
 function decryptResponse(successFlag: boolean, message: any) {
   const sendMessage = {
-    version: version,
     type: "decryptResponse",
     data: {
       success: successFlag,

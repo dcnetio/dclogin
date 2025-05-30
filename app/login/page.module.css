@@ -861,3 +861,21 @@
 .inputGroup :global(.adm-input) {
   padding-left: 46px;
 }
+
+/* 加载按钮样式 */
+.buttonGroup :global(.adm-button-loading) {
+  opacity: 0.9;
+}
+
+.buttonGroup :global(.adm-button-loading-wrapper) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* 增强加载动画 */
+.buttonGroup :global(.adm-dot-loading) {
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.9);
+}

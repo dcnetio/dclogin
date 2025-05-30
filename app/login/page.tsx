@@ -19,6 +19,7 @@ export default function Login() {
   const [safecode, setSafecode] = useState("000000");
   const [isMobile, setIsMobile] = useState(true);
   const [showSafecode, setShowSafecode] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -31,51 +32,68 @@ export default function Login() {
   }, []);
 
   const gotoConfirm = async () => {
-    // 登录逻辑保持不变
-    if (!account) {
+  // Set loading state to true when login starts
+  setIsLoading(true);
+  
+  // Validate input
+  if (!account) {
+    window.showToast({
+      content: t("login.account_empty"),
+      position: "bottom",
+    });
+    setIsLoading(false); // Reset loading state
+    return;
+  }
+  
+  if (window.dc) {
+    if (!window.dc.auth) {
       window.showToast({
-        content: t("login.account_empty"),
+        content: t("login.failed"),
         position: "bottom",
       });
+      setIsLoading(false); // Reset loading state
       return;
     }
-    if (window.dc) {
-      if (!window.dc.auth) {
+    
+    try {
+      const res = await createAccountWithLogin(
+        account,
+        password,
+        safecode,
+        origin
+      );
+      console.log("accountLogin res", res);
+      
+      // Reset loading state after login completes
+      setIsLoading(false);
+      
+      if (res && res.success) {
         window.showToast({
-          content: t("login.failed"),
+          content: t("login.success"),
           position: "bottom",
         });
+        router.push("/");
         return;
       }
-      try {
-        const res = await createAccountWithLogin(
-          account,
-          password,
-          safecode,
-          origin
-        );
-        console.log("accountLogin res", res);
-        if (res && res.success) {
-          window.showToast({
-            content: t("login.success"),
-            position: "bottom",
-          });
-          router.push("/");
-          return;
-        }
-        window.showToast({
-          content: t("login.failed"),
-          position: "bottom",
-        });
-      } catch (error) {
-        console.log("accountLogin error", error);
-        window.showToast({
-          content: t("login.failed"),
-          position: "bottom",
-        });
-      }
+      
+      window.showToast({
+        content: t("login.failed"),
+        position: "bottom",
+      });
+    } catch (error) {
+      // Reset loading state if there's an error
+      setIsLoading(false);
+      
+      console.log("accountLogin error", error);
+      window.showToast({
+        content: t("login.failed"),
+        position: "bottom",
+      });
     }
-  };
+  } else {
+    setIsLoading(false); // Reset loading if window.dc is not available
+  }
+};
 
   const gotoRegister = () => {
     router.push(`${baseUrl}/register${window.location.search}`);
@@ -279,7 +297,9 @@ return (
     fill="solid" 
     onClick={gotoConfirm} 
     block
-    className={styles.loginButton}  // 添加自定义类名
+    className={styles.loginButton}
+    loading={isLoading}
+    loadingText={t("login.logging_in", "登录中...")}
   >
     {t("login.login", "登录")}
   </Button>

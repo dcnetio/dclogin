@@ -10,8 +10,8 @@ const nextConfig = {
   trailingSlash: true, // URL 尾部斜杠
   
   // === 环境相关配置 ===
-  assetPrefix: process.env.NODE_ENV === "production" ? "/v0_0_1" : "",
-  basePath: process.env.NODE_ENV === "production" ? "/v0_0_1" : "",
+  assetPrefix: process.env.NODE_ENV === "production" ? "/v0_0_2" : "",
+  basePath: process.env.NODE_ENV === "production" ? "/v0_0_2" : "",
   
   // === 图片优化配置 ===
   images: {
@@ -24,9 +24,9 @@ const nextConfig = {
   // === 编译器配置 ===
   compiler: {
     // 生产环境移除 console
-    removeConsole: process.env.NODE_ENV === "production" ? {
-      exclude: ["error"]
-    } : false,
+    // removeConsole: process.env.NODE_ENV === "production" ? {
+    //   exclude: ["error"]
+    // } : false,
     
     // 移除 React 属性（生产环境）
     reactRemoveProperties: process.env.NODE_ENV === "production",
@@ -36,13 +36,13 @@ const nextConfig = {
   },
   
   // === 性能优化 ===
-  compress: true, // 启用 gzip 压缩
+  compress: false, // 启用 gzip 压缩
   
   // === 构建配置 ===
-  generateBuildId: async () => {
-    // 使用时间戳或版本号作为构建ID
-    return `v0.0.1-${Date.now()}`;
-  },
+  // generateBuildId: async () => {
+  //   // 使用时间戳或版本号作为构建ID
+  //   return `v0.0.1-${Date.now()}`;
+  // },
   
   // === TypeScript 配置 ===
   typescript: {
@@ -91,6 +91,7 @@ const nextConfig = {
           },
         },
       };
+      config.devtool = 'hidden-source-map'; // 确保生产环境启用 Source Maps
     }
     
     // 处理 SVG
@@ -165,6 +166,7 @@ const nextConfig = {
     
     // 压缩配置
     compress: true,
+    productionBrowserSourceMaps: true,
   }),
 };
 

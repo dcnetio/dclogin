@@ -10,7 +10,6 @@ import TransAccount from "@/components/transfer/transAccount";
 import { appState } from "@/config/constant";
 import { useAppSelector } from "@/lib/hooks";
 import { useTranslation} from 'react-i18next';
-import { baseUrl } from "@/config/define";
 export default function Transfer() {
   const router = useRouter();
   const {t} = useTranslation();
@@ -29,7 +28,7 @@ export default function Transfer() {
       });
       return;
     }
-    router.replace(`${baseUrl}/transferConfirm?to=${address}&amount=${amount}&currencySymbol=${currencySymbol}`);
+    router.replace(`/transferConfirm?to=${address}&amount=${amount}&currencySymbol=${currencySymbol}`);
   };
   const getUserBalance = async () => {
     const info = getCurrentAccount();

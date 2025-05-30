@@ -13,7 +13,6 @@ import utilHelper from "@/helpers/utilHelper";
 import i18n from "@/locales/i18n";
 import { EncodePasswordType } from "@/config/constant";
 import NavigationService from "@/lib/navigation";
-import { baseUrl } from "@/config/define";
 export const showAddDAPPNote = (
   info: APPInfo,
   confirmCallback: () => void
@@ -108,7 +107,7 @@ export const showEncodePassword = (
         document.body.removeChild(container);
       },
       onForgotPassword: () => {
-        NavigationService.replace(`${baseUrl}/login${window.location.search}`);
+        NavigationService.replace(`/login${window.location.search}`);
         confirmCallback(null);
         document.body.removeChild(container);
       },

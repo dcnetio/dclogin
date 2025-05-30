@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useTranslation} from 'react-i18next';
 import { Button, Input } from "antd-mobile";
 import { createAccountWithRegister } from "@/app/index";
-import { baseUrl } from "@/config/define";
 
 export default function Register() {
   const router = useRouter();
@@ -81,7 +80,7 @@ export default function Register() {
           content: t('register.success', '注册成功'),
           position: "bottom",
         });
-        router.push(`${baseUrl}/login${window.location.search}`);
+        router.push(`/login${window.location.search}`);
         return;
       }
       
@@ -99,7 +98,7 @@ export default function Register() {
   };
   
   const gotoLogin = () => {
-    router.push(`${baseUrl}/login${window.location.search}`);
+    router.push(`/login${window.location.search}`);
   };
 
   

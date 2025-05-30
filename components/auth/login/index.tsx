@@ -17,7 +17,6 @@ import { useRouter } from 'next/navigation'
 import NavigationService from "@/lib/navigation";
 import { updateAppInfo, updateAuthStep } from "@/lib/slices/authSlice";
 import { useTranslation } from "next-i18next";
-import { baseUrl } from "@/config/define";
 
 // 获取查询字符串
 let queryString = '';
@@ -82,7 +81,7 @@ export default function Login() {
         }));
         // 初始化成功，
         store.dispatch(saveInitState(appState.init_success));
-        router.push(`${baseUrl}/home${window.location.search}`);
+        router.push(`/home${window.location.search}`);
       } else {
         initCommChannel();
       }

@@ -5,7 +5,6 @@ import { useAppSelector } from "@/lib/hooks";
 import { useTranslation } from "next-i18next";
 import { useRouter } from "next/navigation";
 import { User, Shield, ExternalLink } from "lucide-react";
-import { baseUrl } from "@/config/define";
 import Image from 'next/image';
 
 
@@ -16,10 +15,10 @@ export default function Auth() {
   const appInfo = useAppSelector((state) => state.auth.appInfo);
   console.log("authInfo=========", authInfo);
   const handleLogin = () => {
-    router.push(`${baseUrl}/login${window.location.search}`);
+    router.push(`/login${window.location.search}`);
   };
   const handleRegister = () => {
-    router.push(`${baseUrl}/register${window.location.search}`);
+    router.push(`/register${window.location.search}`);
   };
   return (
     <div className={styles["min-h-screen"]}>

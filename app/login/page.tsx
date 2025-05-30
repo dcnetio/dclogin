@@ -6,7 +6,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { Button, Input } from "antd-mobile";
 import { createAccountWithLogin } from "@/app/index";
-import { baseUrl } from "@/config/define";
 
 export default function Login() {
   // 保持现有的 state 和 hooks
@@ -78,7 +77,7 @@ export default function Login() {
   };
 
   const gotoRegister = () => {
-    router.push(`${baseUrl}/register${window.location.search}`);
+    router.push(`/register${window.location.search}`);
   };
 
   const toggleSafecode = () => {

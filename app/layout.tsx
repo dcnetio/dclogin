@@ -8,7 +8,6 @@ import { ToastProvider } from "@/context/ToastProvider";
 
 import VConsole from "@/components/vConsole";
 import Login from "@/components/auth/login";
-import { baseUrl } from "@/config/define";
 import Locales from "./locales";
 const geistSans = localFont({
   src: "../fonts/GeistVF.woff",
@@ -25,10 +24,9 @@ export const metadata: Metadata = {
   title: "DC Wallet",
   description: "DC Wallet",
   icons: [
-    { url: baseUrl + "/favicon.ico", type: "image/x-icon", sizes: "256x256" },
+    { url: "/favicon.ico", type: "image/x-icon", sizes: "256x256" },
   ],
 };
-console.log("baseUrl", baseUrl);
 
 export default function RootLayout({
   children,

@@ -1,14 +1,13 @@
 "use client";
 import styles from "./page.module.css";
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useTranslation} from 'react-i18next';
 import { Button, Input } from "antd-mobile";
 import { createAccountWithRegister } from "@/app/index";
 import { baseUrl } from "@/config/define";
 
 export default function Register() {
-  const searchParams = useSearchParams();
   const router = useRouter();
   const {t} = useTranslation();
   const [account, setAccount] = useState("");
@@ -68,7 +67,7 @@ export default function Register() {
       }
       
       // 继续现有的账户创建逻辑
-      if(!globalThis.dc || !globalThis.dc.auth) {
+      if(!window.dc || !window.dc.auth) {
         window.showToast({
           content: t('register.failed', '注册失败'),
           position: "bottom",
@@ -82,7 +81,7 @@ export default function Register() {
           content: t('register.success', '注册成功'),
           position: "bottom",
         });
-        router.push(baseUrl + "/login" + window.location.search);
+        router.push(`${baseUrl}/login${window.location.search}`);
         return;
       }
       

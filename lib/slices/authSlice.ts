@@ -1,6 +1,5 @@
 import { MsgStatus } from "@/config/constant";
 import { createSlice } from "@reduxjs/toolkit";
-import next from "next";
 
 
 const initialState = {

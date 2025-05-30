@@ -3,8 +3,11 @@ import React from "react";
 import styles from "./page.module.css";
 import { useAppSelector } from "@/lib/hooks";
 import { useTranslation } from "next-i18next";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { User, Shield, ExternalLink } from "lucide-react";
+import { baseUrl } from "@/config/define";
+import Image from 'next/image';
+
 
 export default function Auth() {
   const router = useRouter();
@@ -13,10 +16,10 @@ export default function Auth() {
   const appInfo = useAppSelector((state) => state.auth.appInfo);
   console.log("authInfo=========", authInfo);
   const handleLogin = () => {
-    router.push("/login" + window.location.search);
+    router.push(`${baseUrl}/login${window.location.search}`);
   };
   const handleRegister = () => {
-    router.push("/register" + window.location.search);
+    router.push(`${baseUrl}/register${window.location.search}`);
   };
   return (
     <div className={styles["min-h-screen"]}>
@@ -84,10 +87,13 @@ export default function Auth() {
                                 {appInfo.appName} ({appInfo.appId})
                               </span>
                               {appInfo.appIcon && (
-                                <img
+                                <Image 
                                   src={appInfo.appIcon}
                                   alt="App Icon"
                                   className="w-5 h-5 ml-2 rounded"
+                                  width={40}  // 必需
+                                  height={40} // 必需
+                                  priority={true} // 如果是 LCP 图像
                                 />
                               )}
                             </div>

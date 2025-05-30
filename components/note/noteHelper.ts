@@ -13,6 +13,7 @@ import utilHelper from "@/helpers/utilHelper";
 import i18n from "@/locales/i18n";
 import { EncodePasswordType } from "@/config/constant";
 import NavigationService from "@/lib/navigation";
+import { baseUrl } from "@/config/define";
 export const showAddDAPPNote = (
   info: APPInfo,
   confirmCallback: () => void
@@ -72,6 +73,7 @@ export const showSignatureDAPPNote = (
 
 export const showEncodePassword = (
   info: {iv: Uint8Array, encodeMnimonic: ArrayBuffer},
+  appInfo: APPInfo,
   confirmCallback: (userHandleHash: ArrayBuffer | null) => void
 ) => {
   const containerId = "encode-password-container";
@@ -87,6 +89,7 @@ export const showEncodePassword = (
   root.render(
     React.createElement(EncodePassword, {
       type: EncodePasswordType.VERIFY,
+      appInfo,
       confirmFun: async (password: string) => {
         // 确认结束
         console.log("确认EncodePassword=====");
@@ -105,7 +108,7 @@ export const showEncodePassword = (
         document.body.removeChild(container);
       },
       onForgotPassword: () => {
-        NavigationService.replace("/login" + window.location.search);
+        NavigationService.replace(`${baseUrl}/login${window.location.search}`);
         confirmCallback(null);
         document.body.removeChild(container);
       },
@@ -129,6 +132,13 @@ export const showSetEncodePassword = (
   root.render(
     React.createElement(EncodePassword, {
       type: EncodePasswordType.SET,
+      appInfo: {
+        appId: '',
+        appName: '',
+        appIcon: '',
+        appUrl: '',
+        appVersion: '',
+      },
       confirmFun: async (password: string) => {
         // 确认结束
         console.log("确认EncodePassword=====");

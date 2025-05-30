@@ -1,5 +1,5 @@
 "use client";
-import { Dialog, DotLoading } from "antd-mobile";
+import { DotLoading } from "antd-mobile";
 import { useEffect, useState } from "react";
 import { initializeDatabase } from "@/helpers/DBHelper";
 import {
@@ -17,6 +17,7 @@ import { useRouter } from 'next/navigation'
 import NavigationService from "@/lib/navigation";
 import { updateAppInfo, updateAuthStep } from "@/lib/slices/authSlice";
 import { useTranslation } from "next-i18next";
+import { baseUrl } from "@/config/define";
 
 // 获取查询字符串
 let queryString = '';
@@ -81,7 +82,7 @@ export default function Login() {
         }));
         // 初始化成功，
         store.dispatch(saveInitState(appState.init_success));
-        router.push('/home');
+        router.push(`${baseUrl}/home${window.location.search}`);
       } else {
         initCommChannel();
       }
@@ -94,11 +95,11 @@ export default function Login() {
   const initDC = async () => {
     const { DC } = await import('web-dc-api');
     const dc = new DC({
-      wssUrl: 'ws://192.168.31.31:9944',
-      backWssUrl: 'ws://192.168.31.31:9944',
+      wssUrl: 'wss://dcchain.baybird.cn',
+      backWssUrl: 'wss://dcchain.baybird.cn',
     })
     dc.init()
-    globalThis.dc = dc
+    window.dc = dc
   }
 
   useEffect(() => {
@@ -110,10 +111,13 @@ export default function Login() {
         initDC();
         init();
       }
-      NavigationService.init(router)
     }
   }, []);
 
+  useEffect(() => {
+    console.log("===============login", window.location.href);
+    NavigationService.init(router)
+  }, [router]);
   return (
     <>
       {loading && (

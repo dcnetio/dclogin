@@ -11,7 +11,7 @@ import { Ed25519PubKey} from "web-dc-api";
  * @returns Promise resolving to [success, error]
  */
 export async function applyFreeSpace(pubKey: Ed25519PubKey): Promise<[boolean, Error | null]> {
-  if(!globalThis.dc) {
+  if(!window.dc) {
     return [false, new Error("Wallet not connected")]
   }
   // Get public key for request
@@ -21,7 +21,7 @@ export async function applyFreeSpace(pubKey: Ed25519PubKey): Promise<[boolean, E
   try {
     // Check if this is a new account without space
     try {
-      const userInfo = await globalThis.dc.auth.getUserInfoWithAccount('0x' + pubKey.toString());
+      const userInfo = await window.dc.auth.getUserInfoWithAccount('0x' + pubKey.toString());
       if (userInfo && userInfo.subscribeSpace > 0) {
         return [false, new Error("User already has space")];
       }
@@ -102,7 +102,7 @@ export async function applyFreeSpace(pubKey: Ed25519PubKey): Promise<[boolean, E
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     try {
       // Get updated user info
-      const userInfo = await globalThis.dc.dcChain?.getUserInfoWithAccount(
+      const userInfo = await window.dc.dcChain?.getUserInfoWithAccount(
        "0x" + publicKey.toString()
       );
       

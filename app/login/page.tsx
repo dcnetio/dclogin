@@ -39,8 +39,8 @@ export default function Login() {
       });
       return;
     }
-    if (globalThis.dc) {
-      if (!globalThis.dc.auth) {
+    if (window.dc) {
+      if (!window.dc.auth) {
         window.showToast({
           content: t("login.failed"),
           position: "bottom",

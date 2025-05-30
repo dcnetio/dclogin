@@ -1,16 +1,11 @@
 "use client";
-import ethers from "@/helpers/ethersHelper";
 import styles from "./page.module.css";
 import "antd-mobile/es/global";
 import {
   SendOutline,
-  FileOutline,
   AddOutline,
-  UnorderedListOutline,
-  PayCircleOutline,
   LockOutline,
   AppstoreOutline,
-  UserOutline,
   LeftOutline,
   RightOutline,
 } from "antd-mobile-icons";
@@ -21,36 +16,36 @@ import Header from "@/components/common/header";
 import { useAppSelector } from "@/lib/hooks";
 import { appState } from "@/config/constant";
 import { getCurrentAccount, getCurrentNetwork } from "@/app/index";
-import { ChainInfo } from "@/types/walletTypes";
+import { ChainInfo, User } from "@/types/walletTypes";
 import { useTranslation } from "react-i18next";
 import { baseUrl } from "@/config/define";
+// Mock app accounts data
+const mockAppAccounts = [
+  { appName: "DeCert", appId: "decert-123", appAccount: "0x8721...3d91", appDomain: "decert.network" },
+  { appName: "DataVault", appId: "datavault-456", appAccount: "0x6532...7e22", appDomain: "datavault.io" },
+  { appName: "FileShare", appId: "fileshare-789", appAccount: "0x3251...9f43", appDomain: "fileshare.app" },
+];
 
 export default function Index() {
   const router = useRouter();
   const { t } = useTranslation();
   const initState = useAppSelector((state) => state.app.initState);
   const [currencySymbol, setCurrencySymbol] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
+  // const [isLoading, setIsLoading] = useState(true);
   const [accountName, setAccountName] = useState("");
   const [accountAddress, setAccountAddress] = useState("");
   const [storageSpace, setStorageSpace] = useState("0 GB");
   const [usedStorageSpace, setUsedStorageSpace] = useState("0 GB");
   const [storagePercentage, setStoragePercentage] = useState(0);
   const [tokenAmount, setTokenAmount] = useState("0");
-  const [isMobile, setIsMobile] = useState(true);
+  // const [isMobile, setIsMobile] = useState(true);
   const [activeView, setActiveView] = useState("account"); // "account" or "wallet"
-  const [appAccounts, setAppAccounts] = useState([]);
+  const [appAccounts, setAppAccounts] = useState(mockAppAccounts);
 
-  // Mock app accounts data
-  const mockAppAccounts = [
-    { appName: "DeCert", appId: "decert-123", appAccount: "0x8721...3d91", appDomain: "decert.network" },
-    { appName: "DataVault", appId: "datavault-456", appAccount: "0x6532...7e22", appDomain: "datavault.io" },
-    { appName: "FileShare", appId: "fileshare-789", appAccount: "0x3251...9f43", appDomain: "fileshare.app" },
-  ];
 
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
+      // setIsMobile(window.innerWidth <= 768);
     };
 
     checkMobile();
@@ -89,9 +84,9 @@ export default function Index() {
     // 切换成功后，获取账户信息
     getUserInfo();
   };
-
+    // 获取用户信息的逻辑
   const getUserInfo = async () => {
-    setIsLoading(true);
+    // setIsLoading(true);
     const accountInfo = getCurrentAccount();
     if (accountInfo && accountInfo.account) {
       setAccountAddress(accountInfo.account);
@@ -99,23 +94,23 @@ export default function Index() {
 
       const network: ChainInfo | null = getCurrentNetwork();
       if (!network) {
-        setIsLoading(false);
+        // setIsLoading(false);
         return;
       }
       setCurrencySymbol(network.currencySymbol);
 
       // Simulate getting storage info from the DC API
-      if (globalThis.dc && globalThis.dc.auth) {
+      if (window.dc && window.dc.auth) {
         try {
-          const userInfo = await globalThis.dc.auth.getUserInfoWithAccount(
+          const userInfo = await window.dc.auth.getUserInfoWithAccount(
             "0x" + accountInfo.account
-          );
-          if (userInfo && userInfo.space) {
-            const totalSpaceGB = (userInfo.space / (1024 * 1024 * 1024)).toFixed(2);
+          ) as User;
+          if (userInfo && userInfo.subscribeSpace) {
+            const totalSpaceGB = (userInfo.subscribeSpace / (1024 * 1024 * 1024)).toFixed(2);
             setStorageSpace(`${totalSpaceGB} GB`);
             
             // Mock used storage (30% of total for demo)
-            const usedSpace = userInfo.space * 0.3;
+            const usedSpace = userInfo.subscribeSpace * 0.3;
             const usedSpaceGB = (usedSpace / (1024 * 1024 * 1024)).toFixed(2);
             setUsedStorageSpace(`${usedSpaceGB} GB`);
             setStoragePercentage(30);
@@ -134,14 +129,14 @@ export default function Index() {
         }
       }
     }
-    setIsLoading(false);
+    // setIsLoading(false);
   };
 
   useEffect(() => {
     if (initState == appState.init_success) {
       getUserInfo();
     }
-  }, [initState]);
+  }, []);
 
   // Account Info View Component
   const AccountInfoView = () => (

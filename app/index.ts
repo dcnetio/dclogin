@@ -14,8 +14,6 @@ import {
   isEIP712SignReqMessage,
   AccountInfo,
 } from "../types/walletTypes";
-import * as buffer from "buffer/";
-const { Buffer } = buffer;
 
 // 定义一个变量，用于存储BroadcastChannel对象
 let currentChain: ChainInfo | null = null; //当前网络
@@ -31,7 +29,7 @@ import {
 } from "@/components/note/noteHelper";
 import i18n from "@/locales/i18n";
 import { ChooseAccount } from "@/components/common/accountHelper";
-import { Ed25519PrivKey, KeyManager, NFTBindStatus, User} from "web-dc-api";
+import { Ed25519PrivKey, KeyManager, NFTBindStatus} from "web-dc-api";
 import { APPInfo } from "@/types/pageType";
 import { applyFreeSpace } from "./tools/subSpace";
 
@@ -248,15 +246,15 @@ function onDAPPMessage (event: MessageEvent) {
         const connectingApp = message.data;
         if (openerOrigin && connectingApp) {
           // 保存dappinfo
-          if(globalThis.dc ){
+          if(window.dc ){
             const dappInfo = {
-              appId: connectingApp?.appId,
-              appName: connectingApp?.appName,
-              appIcon: connectingApp?.appIcon,
-              appUrl: connectingApp?.appUrl,
-              appVersion: connectingApp?.appVersion,
+              appId: connectingApp?.appId || '',
+              appName: connectingApp?.appName || '',
+              appIcon: connectingApp?.appIcon || '',
+              appUrl: connectingApp?.appUrl || '',
+              appVersion: connectingApp?.appVersion || '',
             };
-            globalThis.dc.setAppInfo(dappInfo);
+            window.dc.setAppInfo(dappInfo);
           }
           //显示提示页面
           store.dispatch(updateAppInfo({
@@ -343,9 +341,9 @@ const bindNFTAccount = async (
   mnemonic: string = '',
   pubKeyStr: string = '',
 ): Promise<[boolean, Error | null]> => {
-  const bindRes = await globalThis.dc.auth.bindNFTAccount(account, password, safecode, mnemonic);
+  const bindRes = await window.dc.auth.bindNFTAccount(account, password, safecode, mnemonic);
   if(bindRes[0] !== NFTBindStatus.Success) {
-    return bindRes;
+    return [false, bindRes[1]];
   }
   // 循环checkNFT绑定状态
   const checkFlag = await _checkBind(account, pubKeyStr);
@@ -361,12 +359,14 @@ const _checkBind = (account: string, pubKeyStr: string) => {
     intervalNum = 0; // 定时判断是否绑定成功
   return new Promise(resolve => {
     // 初始化定时器
-    interval ? clearInterval(interval) : '';
+    if(interval){
+      clearInterval(interval);
+    }
     intervalNum = 0;
     interval = setInterval(async () => {
       intervalNum++;
       // 判断是否绑定成功
-      let bindFlag = await globalThis.dc.auth.isNftAccountBindSuccess(
+      const bindFlag = await window.dc.auth.isNftAccountBindSuccess(
         account,
         pubKeyStr,
       );
@@ -396,7 +396,7 @@ async function _createAccountWithRegister (
   safecode : string,
 ) {
   // 判断account是否已经存在
-  const nftBinded = await globalThis.dc.auth.isNftAccountBinded(account);
+  const nftBinded = await window.dc.auth.isNftAccountBinded(account);
   if(nftBinded) {
     //todo 跳出提示框,提示用户该账号已经绑定了NFT
     window.showToast({
@@ -405,13 +405,12 @@ async function _createAccountWithRegister (
     });
     return;
   }
-  let res = await ethersHelper.createWalletAccount();
+  const res = await ethersHelper.createWalletAccount();
   if(!res || !res.mnemonic) {
     return;
   }
-  let mnemonicObj =  res.mnemonic; // 对象
+  const mnemonicObj =  res.mnemonic; // 对象
   let mnemonic = mnemonicObj.phrase ; // 助记词
-  let address =  res.address;
   const pubKey  = localStorage.getItem("publicKey");
   if(pubKey) {
     // 读取webauthhash
@@ -420,7 +419,6 @@ async function _createAccountWithRegister (
       const resMnemonic = await unlockWallet (chooseAccount);
       if (resMnemonic) {
         mnemonic = resMnemonic;
-        address = chooseAccount.account;
       }
     }
     localStorage.removeItem("publicKey");
@@ -480,12 +478,11 @@ async function _createAccountWithLogin (
   origin?: string,
 ) {
   try {
-    const res = await globalThis.dc.auth.accountLogin(account, password, safecode);
+    const res = await window.dc.auth.accountLogin(account, password, safecode);
     if(!res || !res.mnemonic) {
       return;
     }
     // 登录成功，得到私钥
-    const privKey = res.privKey;
     const mnemonic = res.mnemonic;
     // 助记词信息， 私钥转助记词
     const wallet = await ethersHelper.createWalletAccountWithMnemonic(mnemonic);
@@ -504,6 +501,7 @@ async function _createAccountWithLogin (
       return await resPonseWallet(mnemonic);
     }
   } catch (error) {
+    console.log('createAccountWithLogin error', error);
     return;
   }
 }
@@ -516,7 +514,7 @@ async function createAccount (
     | APPInfo
     | null = null
 ) {
-  let accounts = [];
+  let accounts: AccountInfo[] = [];
   try {
       //待测试 跳出状态等待框,提示用户账号创建中，需要手动关闭
       window.showToast({
@@ -608,7 +606,7 @@ async function _connectCmdHandler (
 
   messageData = message;
   portData = port;
-  let chooseAccount = await chooseStoredAccount();
+  const chooseAccount = await chooseStoredAccount();
   if (!chooseAccount) {
     // 没有用户的时候，需要跳转到登录页面
     store.dispatch(updateAuthStep({
@@ -622,9 +620,9 @@ async function _connectCmdHandler (
   if(!mnemonic) {
     return;
   }
-  if(globalThis.dc){
+  if(window.dc){
     if(connectingApp && connectingApp.appId){
-      await globalThis.dc.auth.generateAppAccount(connectingApp.appId, mnemonic);
+      await window.dc.auth.generateAppAccount(connectingApp.appId, mnemonic);
     }
   }
   return await resPonseWallet(mnemonic, message, bool, port);
@@ -675,7 +673,7 @@ const getCurrentChain = async () => {
       }
     }
   } catch (error) {
-    
+    console.log("无法连接到网络:", error);
   }
   return currentChain;
 }
@@ -748,7 +746,7 @@ async function resPonseWallet(
   }
   let connectingApp = message.data;
   if(!connectingApp) {
-    connectingApp = globalThis.dc.appInfo;
+    connectingApp = window.dc.appInfo;
   }
   // 通过助记词导入钱包,生成带私钥钱包账号
   const wallet = await ethersHelper.createWalletAccountWithMnemonic(mnemonic);
@@ -760,7 +758,7 @@ async function resPonseWallet(
     }));
     return;
   }
-  if(!globalThis.dc) {
+  if(!window.dc) {
     //待测试 跳出提示框,提示用户签名失败
     store.dispatch(updateAuthStep({
       type: MsgStatus.failed,
@@ -769,7 +767,7 @@ async function resPonseWallet(
     return;
   }
   // 获取用户信息，判断是否有空间
-  let publicKey = globalThis.dc.publicKey;
+  let publicKey = window.dc.publicKey;
   if(publicKey == null) {
     // DCAPP进入
     const keymanager = new KeyManager();
@@ -778,11 +776,6 @@ async function resPonseWallet(
       connectingApp?.appId || ''
     );
     publicKey = privKey.publicKey;
-  }
-  let userInfo: User | null = null;
-  try {
-    userInfo = await globalThis.dc.auth.getUserInfoWithAccount("0x" + publicKey.toString());
-  } catch (error) {
   }
   // 执行签名
   const signature = await ethersHelper.signMessage(wallet, message.origin || '');
@@ -867,10 +860,20 @@ async function resPonseWallet(
 }
 
 // 获取用户加密密码
-async function getEncodePwd(info: {iv: Uint8Array, encodeMnimonic: ArrayBuffer}): Promise<ArrayBuffer | null> { 
-  return new Promise((resolve, reject) => {
+async function getEncodePwd(
+  info: {iv: Uint8Array, encodeMnimonic: ArrayBuffer}
+): Promise<ArrayBuffer | null> { 
+  return new Promise((resolve) => {
     // todo 显示用户加密密码页面
-    showEncodePassword(info, (userHandleHash: ArrayBuffer | null) => {
+    const connectingApp = window.dc?.appInfo || '';
+    const appInfo = {
+      appId: connectingApp.appId || '',
+      appName: connectingApp.appName || '',
+      appIcon: connectingApp.appIcon || '',
+      appUrl: connectingApp.appUrl || '',
+      appVersion: connectingApp.appVersion || ''
+    }
+    showEncodePassword(info, appInfo, (userHandleHash: ArrayBuffer | null) => {
       // 处理结果
       resolve(userHandleHash);
     });
@@ -879,7 +882,7 @@ async function getEncodePwd(info: {iv: Uint8Array, encodeMnimonic: ArrayBuffer})
 
 // 设置用户加密密码
 async function setEncodePwd(): Promise<Uint8Array | null> { 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     // todo 显示用户加密密码页面
     showSetEncodePassword((userHandle: Uint8Array | null) => {
       // 处理结果
@@ -950,10 +953,10 @@ async function generateWalletAccount (seedAccount: string) {
       position: "bottom",
     });
   }
-  if(globalThis.dc){
-    const connectingApp = globalThis.dc.appInfo;
+  if(window.dc){
+    const connectingApp = window.dc.appInfo;
     if(connectingApp && connectingApp.appId){
-      await globalThis.dc.auth.generateAppAccount(connectingApp.appId, mnemonic);
+      await window.dc.auth.generateAppAccount(connectingApp.appId, mnemonic);
     }
   }
   // 通过助记词导入钱包,生成带私钥钱包账号
@@ -1341,8 +1344,8 @@ async function _refreshRecordStatus (hash: string) {
 }
 
 // 创建钱包账号
-async function createWalletAccount (mnemonic: string | null = null, nftAccount: string, address: string = '') {
-  let resAccount = {};
+async function createWalletAccount (mnemonic: string | null = null, nftAccount: string, address: string = ''): Promise<AccountInfo | null> {
+  let resAccount: AccountInfo | null = null;
   if (mnemonic) {
     try {
       let userHandle: Uint8Array | null = null;
@@ -1360,7 +1363,7 @@ async function createWalletAccount (mnemonic: string | null = null, nftAccount: 
         //todo 跳出密码设置框,提示用户输入密码加密
         userHandle = await setEncodePwd();
         if(!userHandle) {
-          return ;
+          return null;
         }
       }
       // 提取 userHandle 并进行 hash
@@ -1379,16 +1382,16 @@ async function createWalletAccount (mnemonic: string | null = null, nftAccount: 
         name: address.substring(0, 6),
         timeStamp: new Date().getTime(),
       };
-      resAccount = account;
+      resAccount = account as AccountInfo;
       const res = await DBHelper.updateData(DBHelper.store_account, account);
       console.log("账号信息存储成功", res);
       return resAccount;
     } catch (e) {
       console.error("账号信息加密失败:", e);
-      return ;
+      return null;
     }
   } else {
-    return ;
+    return null;
   }
 }
 
@@ -1440,7 +1443,7 @@ async function registerPasskey () {
   } catch (error) {
     console.error("Passkey registration failed", error);
     // throw error;
-    return { id: '', userHandle: '' };
+    return { id: '', userHandle: null };
   }
 }
 

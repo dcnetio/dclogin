@@ -17,10 +17,12 @@ export default function ActivityInfo(props: ActivityProps) {
 
   const copy = () => {
     navigator.clipboard.writeText(info?.hash || "");
-    window.showToast({
-      content: t('activity.copy_success'),
-      position: 'bottom'
-    });
+    if(typeof window !== 'undefined'){
+      window.showToast({
+        content: t('activity.copy_success'),
+        position: 'bottom'
+      });
+    }
   };
   return (
     <div>

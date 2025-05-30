@@ -124,7 +124,7 @@
     "go_login": "前往登录"
   },
   "encode": {
-    "password": "加密密码",
+    "password": "快捷访问密码",
     "password_empty": "请输入加密密码",
     "set_success": "加密密码设置成功",
     "set_failed": "加密密码设置失败",

@@ -69,9 +69,7 @@ const nextConfig = {
     // 添加别名
     config.resolve.alias = {
       ...config.resolve.alias,
-      '@': './src',
-      '@/components': './src/components',
-      '@/utils': './src/utils',
+      // '@/*': './*',
     };
     
     // 优化包大小

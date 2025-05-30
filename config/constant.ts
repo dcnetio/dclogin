@@ -7,15 +7,15 @@ const _I18N_LANGUAGES = {
 const _defaultNetworks = {
   networks: [
     {
-      name: "DCCHAIN31",
-      rpcUrl: "http://192.168.31.31:9944",
+      name: "DCCHAIN",
+      rpcUrl: "https://dcchain.baybird.cn",
       chainId: 176,
       currencySymbol: "DCT",
       blockExplorerUrl: "https://dcnetio.baybird.cn",
     },
     {
-      name: "DCCHAIN31",
-      rpcUrl: "http://192.168.31.31:9944",
+      name: "DCCHAIN",
+      rpcUrl: "https://dcchain.baybird.cn",
       chainId: 176,
       currencySymbol: "DCT",
       blockExplorerUrl: "https://dcnetio.baybird.cn",
@@ -40,13 +40,6 @@ const _defaultNetworks = {
       chainId: 137,
       currencySymbol: "MATIC",
       blockExplorerUrl: "https://polygonscan.com",
-    },
-    {
-      name: "DCCHAIN",
-      rpcUrl: "https://dcchain.baybird.cn",
-      chainId: 176,
-      currencySymbol: "DCT",
-      blockExplorerUrl: "https://dcnetio.baybird.cn",
     },
     {
       name: "Fantom Opera",

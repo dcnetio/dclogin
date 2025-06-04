@@ -6,7 +6,9 @@ let dcWalletChannel: MessagePort | null = null;
 let DAPPChannel: MessagePort | null = null;
 let walletLoadedFlag = false; //钱包已加载标志
 import {Ed25519PrivKey} from './ed25519';
-import { APPInfo } from "@/types/pageType";
+import type { APPInfo, EIP712SignReqMessage, SignReqMessage, SignReqMessageData, SignResponseMessage } from "web-dc-api";
+import type { ResponseMessage } from "web-dc-api";
+import { AccountInfo, Ed25519PubKey } from "web-dc-api";
 // Dapp信息
 const appInfo: APPInfo = {
   appId: "",
@@ -79,13 +81,13 @@ if (typeof window !== "undefined") {
         connect();
         break;
       case 'sign': //签名
-        sign(message);
+        sign(message.data);
         break;
       case "signMessage": //签名消息
-        signMessage(message);
+        signMessage(message.data);
         break;
       case "signEIP712Message": //签名EIP712消息
-        signEIP712Message(message);
+        signEIP712Message(message.data);
         break;
       case "decrypt": //用私钥解密
         decrypt(message);
@@ -97,8 +99,16 @@ if (typeof window !== "undefined") {
 }
 
 // Dapp初始化配置
-function initConfig(config: any) {
+function initConfig(config: APPInfo | null) {
   // 初始化配置
+  if(!config) {
+    initConfigResponse(false, 'The appInfo is null');
+    return
+  }
+  if(!parentOrigin) {
+    initConfigResponse(false, 'The parentOrigin is null');
+    return
+  }
   if (config.appUrl.indexOf(parentOrigin) ===  -1) {
     initConfigResponse(false, "The appUrl is not equal to the parentOrigin");
     return;
@@ -112,18 +122,37 @@ function initConfig(config: any) {
 }
 
 // 发送初始化结果消息给父窗口
-function initConfigResponse(flag: boolean, message: any) {
-
-  // 创建私钥
+function initConfigResponse(flag: boolean, message: string) {
+  if(!flag) {
+    const sendMessage: ResponseMessage<{
+      success: boolean,
+      message: string,
+    }> = {
+      type: "initConfigResponse",
+      data: {
+        success: flag,
+        message: message,
+      },
+    };
+    responseToDAPP(sendMessage);
+    return;
+  }
+  // 创建临时私钥公钥
   const seed = crypto.getRandomValues(new Uint8Array(32))  
   privateKey = Ed25519PrivKey.fromSeed(seed)
-  const publicKey = privateKey.publicKey;
-  const sendMessage = {
+  const publicKey = privateKey.publicKey?.raw;
+  const sendMessage: ResponseMessage<{
+    success: boolean,
+    message: {
+      publicKey: Uint8Array
+    }
+  }> = {
     type: "initConfigResponse",
     data: {
       success: flag,
-      message: message,
-      publicKey,
+      message: {
+        publicKey
+      },
     },
   };
   responseToDAPP(sendMessage);
@@ -143,7 +172,7 @@ function connect() {
     .catch((e) => {
       //超时不处理
       console.log(e);
-      walletConnected(false, "", "", e);
+      walletConnected(false, e.message || 'connect error');
       return e;
     });
 }
@@ -151,26 +180,24 @@ function connect() {
 //发送钱包连接成功消息给父窗口
 function walletConnected(
   successFlag: boolean,
-  account: string,
-  chainId: string,
-  responseData: any
+  responseData: AccountInfo | string
 ) {
-  const sendMessage = {
+  const sendMessage: ResponseMessage<{
+    success: boolean,
+    message: AccountInfo | string,
+  }> = {
     type: "walletConnected",
     data: {
       success: successFlag,
-      account: account,
-      chainId: chainId,
-      responseData: responseData,
+      message: responseData,
     },
   };
   responseToDAPP(sendMessage);
 }
 
 // 父窗口发送的签名处理,打开钱包页面前调用
-function sign(message: any) {
-  const data = message.data;
-  if (data.message == null) {
+function sign(data: { message: Uint8Array } | null) {
+  if (!data || data.message == null) {
     signResponse(false, "The message is null");
     return;
   }
@@ -184,8 +211,11 @@ function sign(message: any) {
 }
 
 //发送签名结果消息给父窗口
-function signResponse(successFlag: boolean, message: any) {
-  const sendMessage = {
+function signResponse(successFlag: boolean, message: Uint8Array | string) {
+  const sendMessage: ResponseMessage<{
+    success: boolean,
+    message: Uint8Array | string,
+  }> = {
     type: "signResponse",
     data: {
       success: successFlag,
@@ -196,13 +226,11 @@ function signResponse(successFlag: boolean, message: any) {
 }
 
 // 父窗口发送的签名消息处理,打开钱包页面前调用
-/** message格式为
-{
-    type: 'string',//string,hex,base64,eip712
-    message: 'test message',
-}
-**/
-function signMessage(message: any) {
+function signMessage(message: SignReqMessage | null) {
+  if(message == null) {
+    signMessageResponse(false, "The message is null");
+    return
+  }
   const data = message.data;
   if (data.message == null) {
     signMessageResponse(false, "The message is null");
@@ -218,14 +246,14 @@ function signMessage(message: any) {
         requsetForSignMessage(message);
       }
     })
-    .catch((e) => {
+    .catch((e: any) => {
       //超时不处理
-      signMessageResponse(false, e);
+      signMessageResponse(false, e.message || 'signMessage error');
     });
 }
 
 //发送签名成功消息给父窗口
-function signMessageResponse(successFlag: boolean, message: any) {
+function signMessageResponse(successFlag: boolean, message: SignResponseMessage | string) {
   const sendMessage = {
     type: "signMessageResponse",
     data: {
@@ -243,7 +271,11 @@ function signMessageResponse(successFlag: boolean, message: any) {
     message: 'test message',
 }
 **/
-function signEIP712Message(message: any) {
+function signEIP712Message(message: EIP712SignReqMessage | null) {
+  if(message == null) {
+    signEIP712MessageResponse(false, "The message is null");
+    return;
+  }
   const data = message.data;
   //校验数据
   if (data.message == null) {
@@ -269,14 +301,14 @@ function signEIP712Message(message: any) {
         requestSignEIP712Message(message);
       }
     })
-    .catch((e) => {
+    .catch((e: any) => {
       //超时不处理
-      signEIP712MessageResponse(false, e);
+      signEIP712MessageResponse(false, e.message || 'signEIP712Message error');
     });
 }
 
 //发送签名EIP712成功消息给父窗口
-function signEIP712MessageResponse(successFlag: boolean, message: any) {
+function signEIP712MessageResponse(successFlag: boolean, message: SignResponseMessage | string) {
   const sendMessage = {
     type: "signEIP712MessageResponse",
     data: {
@@ -321,7 +353,7 @@ function decryptResponse(successFlag: boolean, message: any) {
 
 
 // 发送反馈结果消息给父窗口的DAPP
-function responseToDAPP(message: any) {
+function responseToDAPP(message: ResponseMessage<any>) {
   if (DAPPChannel != null) {
     const needCloseChannel = DAPPChannel;
     DAPPChannel = null;
@@ -383,87 +415,84 @@ function connectWallet() {
     .then((event: any) => {
       const message = event.data;
       console.log("connectWallet response:", message);
+      if(!message.data || !message.data.privateKey){
+        walletConnected(false, "privateKey is empty");
+        return;
+      }
       // 保存私钥
       const priKey = message.data.privateKey;
-      privateKey =new Ed25519PrivKey(priKey.raw) 
-      delete message.data.privateKey;
-      connectResponse({
-        ...message.data,
-        privateKey: null,
-        publicKey: privateKey?.publicKey,
+      privateKey = new Ed25519PrivKey(priKey) 
+      const data = message.data;
+      connectResponse(data.signature, {
+        nftAccount: data.nftAccount,
+        ethAccount: data.ethAccount,
+        appAccount: privateKey.publicKey?.raw,
+        chainId: data.chainId,
+        chainName: data.chainName,
       });
     })
     .catch((e) => {
       console.log("connectWallet error:", e);
-      walletConnected(false, "", "", e);
+      walletConnected(false,  e.message || 'connectWallet error');
     });
   // dcWalletChannel.postMessage(message);
 }
 
 // 钱包页面响应连接消息处理,data格式为 {success: true, account: '', chainId: '', signature: ''}
-async function connectResponse(message: any) {
+async function connectResponse(signature: string, message: AccountInfo) {
   try {
     if (parentOrigin == null || parentOrigin == "") {
-      walletConnected(false, "", "", message);
+      walletConnected(false,  "The parentOrigin is null");
       return;
     }
     //签名校验,如果校验失败,则不处理
     const flag = ethersHelper.verifySignature(
       parentOrigin,
-      message.signature,
-      message.account
+      signature,
+      message.ethAccount
     );
     if (!flag) {
       console.log("verifySignature failed");
       return;
     }
-    walletConnected(message.success, message.account, message.chainId, message);
-  } catch (e) {
+    walletConnected(true, message);
+  } catch (e: any) {
     console.log("connectResponse error:", e);
-    walletConnected(false, "", "", message);
+    walletConnected(false, e.message || 'connectResponse error');
     return;
   }
 }
 
 // 发送签名消息给钱包页面,并等待返回
-function requsetForSignMessage(orignMessage: any) {
+function requsetForSignMessage(orignMessage: SignReqMessage) {
   const data = orignMessage.data;
   // 向钱包网页发送签名消息
   const message = {
     type: "signMessage",
     origin: parentOrigin,
-    data: {
-      appName: appInfo.appName,
-      appIcon: appInfo.appIcon,
-      appUrl: parentOrigin,
-      appVersion: appInfo.appVersion,
-      account: data.account,
-      messagetype: data.type,
-      message: data.message,
-    },
+    data: data,
   };
   //创建新的messageChannel
   sendMessageToWallet(message, 60000)
     .then((event: any) => {
       const message = event.data;
-      responseForsignMessage(orignMessage, message.data);
+      responseForsignMessage(data, message.data);
     })
     .catch((e) => {
-      signMessageResponse(false, e);
+      signMessageResponse(false, e.message || 'requsetForSignMessage error');
     });
 }
 
 // 钱包页面响应签名消息处理
-async function responseForsignMessage(orignMessage: any, message: any) {
+async function responseForsignMessage(waitData: SignReqMessageData, message: SignResponseMessage) {
   try {
     if (message.success) {
-      const waitData = orignMessage.data;
-      if (orignMessage.type == "hex") {
-        orignMessage = utilHelper.hexToUint8Array(waitData.message);
+      if (waitData.messageType == "hex") {
+        const data = utilHelper.hexToUint8Array(waitData.message);
         const flag = ethersHelper.verifySignature(
-          waitData,
+          data,
           message.signature,
-          waitData.account
+          waitData.ethAccount
         );
         if (!flag) {
           console.log("verifySignature failed");
@@ -473,7 +502,7 @@ async function responseForsignMessage(orignMessage: any, message: any) {
         const flag = ethersHelper.verifySignature(
           waitData.message,
           message.signature,
-          waitData.account
+          waitData.ethAccount
         );
         if (!flag) {
           console.log("verifySignature failed");
@@ -483,31 +512,20 @@ async function responseForsignMessage(orignMessage: any, message: any) {
     }
     //发送签名成功消息给父窗口
     signMessageResponse(message.success, message);
-  } catch (e) {
+  } catch (e: any) {
     //发送签名失败消息给父窗口
-    signMessageResponse(false, e);
+    signMessageResponse(false, e.message || 'responseForsignMessage error');
   }
 }
 
 // 发送签名EIP712消息给钱包页面
-function requestSignEIP712Message(orignMessage: any) {
+function requestSignEIP712Message(orignMessage: EIP712SignReqMessage) {
   const data = orignMessage.data;
   // 向钱包网页发送签名消息
   const message = {
     type: "signEIP712Message",
     origin: parentOrigin,
-    data: {
-      appName: appInfo.appName,
-      appIcon: appInfo.appIcon,
-      appUrl: parentOrigin,
-      appVersion: appInfo.appVersion,
-      account: data.account,
-      messagetype: data.type,
-      domain: data.domain,
-      primaryType: data.primaryType,
-      types: data.types,
-      message: data.message,
-    },
+    data: orignMessage.data,
   };
   //创建新的messageChannel
   sendMessageToWallet(message, 60000)
@@ -515,13 +533,13 @@ function requestSignEIP712Message(orignMessage: any) {
       const message = event.data;
       responseForSignEIP712Message(orignMessage, message.data);
     })
-    .catch((e) => {
-      responseForSignEIP712Message(false, e);
+    .catch((e: any) => {
+      signEIP712MessageResponse(false, e.message || 'requestSignEIP712Message error');
     });
 }
 
 // 钱包页面响应签名EIP712消息处理
-async function responseForSignEIP712Message(orignMessage: any, message: any) {
+async function responseForSignEIP712Message(orignMessage: EIP712SignReqMessage, message: SignResponseMessage) {
   try {
     const waitData = orignMessage.data;
     if (message.success) {
@@ -531,7 +549,7 @@ async function responseForSignEIP712Message(orignMessage: any, message: any) {
         waitData.types,
         waitData.message,
         message.signature,
-        waitData.account
+        waitData.ethAccount,
       );
       if (!flag) {
         console.log("verifyEIP712Signature failed");
@@ -540,9 +558,9 @@ async function responseForSignEIP712Message(orignMessage: any, message: any) {
     }
     //发送签名成功消息给父窗口
     signEIP712MessageResponse(message.success, message);
-  } catch (e) {
+  } catch (e: any) {
     //发送签名失败消息给父窗口
-    signEIP712MessageResponse(false, e);
+    signEIP712MessageResponse(false, e.message || 'responseForSignEIP712Message error');
   }
 }
 

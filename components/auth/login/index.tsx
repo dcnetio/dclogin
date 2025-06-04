@@ -95,8 +95,10 @@ export default function Login() {
   const initDC = async () => {
     const { DC } = await import('web-dc-api');
     const dc = new DC({
-      wssUrl: 'wss://dcchain.baybird.cn',
-      backWssUrl: 'wss://dcchain.baybird.cn',
+      // wssUrl: 'wss://dcchain.baybird.cn',
+      // backWssUrl: 'wss://dcchain.baybird.cn',
+      wssUrl: 'ws://192.168.31.31:9944',
+      backWssUrl: 'ws://192.168.31.31:9944',
       swUrl: basePath + '/sw.js',
     })
     dc.init()

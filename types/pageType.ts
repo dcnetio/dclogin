@@ -9,13 +9,6 @@ export interface ActivityItem {
   from: string;
 }
 
-export interface APPInfo {
-  appId: string;
-  appName?: string;
-  appIcon?: string;
-  appUrl?: string;
-  appVersion?: string;
-}
 
 export declare const LocalesInfo: {
   transfer: {

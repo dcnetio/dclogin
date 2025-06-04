@@ -2,7 +2,7 @@
  * 工具
  */
 "use client";
-function _hexToUint8Array(hex:string) {  
+function _hexToUint8Array(hex:string): Uint8Array {
   // 如果十六进制字符串以 "0x" 开头，则去掉这个前缀  
   if (hex.startsWith("0x")) {  
       hex = hex.slice(2);  

@@ -99,7 +99,7 @@ export default function Login() {
       // backWssUrl: 'wss://dcchain.baybird.cn',
       wssUrl: 'ws://192.168.31.31:9944',
       backWssUrl: 'ws://192.168.31.31:9944',
-      swUrl: basePath + '/sw.js',
+       swUrl: basePath + '/sw.js',
     })
     dc.init()
     window.dc = dc

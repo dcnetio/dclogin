@@ -122,6 +122,16 @@ const _deleteData = async (storeName: string, key: string) => {
   }
 };
 
+const _clearData = async (storeName: string) => {
+  if (!dbInstance) {
+    return null;
+  } else {
+    const data = await dbInstance.clearData(storeName)
+    return data;
+  }
+};
+
+
 export const store_account = _store_account;
 export const store_chain = _store_chain;
 export const store_record = _store_record;
@@ -135,6 +145,7 @@ export const queryData = _queryData;
 export const addData = _addData;
 export const updateData = _updateData;
 export const deleteData = _deleteData;
+export const clearData = _clearData;
 const databaseHelper = {
   store_account,
   store_chain,
@@ -147,6 +158,7 @@ const databaseHelper = {
   queryData,
   addData,
   updateData,
-  deleteData
+  deleteData,
+  clearData,
 };
 export default databaseHelper;

@@ -140,20 +140,6 @@ async function _initBaseinfo() {
         }
       }
     }
-    // if (currentAccount == null) {
-    //   //从数据库中获取上次打开的账号信息
-    //   const accountinfo = await DBHelper.getData(
-    //     DBHelper.store_keyinfo,
-    //     "choosedAccount"
-    //   );
-    //   if (accountinfo && accountinfo.value) {
-    //     currentAccount = accountinfo.value;
-    //     console.log(
-    //       "111111111111111 _initBaseinfo currentAccount",
-    //       currentAccount
-    //     );
-    //   }
-    // }
   } catch (e) {
     console.error("获取网络信息失败:", e);
   }
@@ -905,11 +891,14 @@ async function resPonseWallet(
   } else {
     // 钱包本身访问
     return {
-      nftAccount: currentAccount?.nftAccount,
-      ethAccount: wallet.address,
-      chainId: currentChain.chainId,
-      chainName: currentChain.name,
-      signature: signature,
+      success: true,
+      data: {
+        nftAccount: currentAccount?.nftAccount,
+        ethAccount: wallet.address,
+        chainId: currentChain.chainId,
+        chainName: currentChain.name,
+        signature: signature,
+      },
     };
   }
 }
@@ -1436,6 +1425,8 @@ async function createWalletAccount(
         timeStamp: new Date().getTime(),
       };
       resAccount = account as AccountInfo;
+      // 清空其他账号信息
+      await DBHelper.clearData(DBHelper.store_account);
       const res = await DBHelper.updateData(DBHelper.store_account, account);
       console.log("账号信息存储成功", res);
       return resAccount;

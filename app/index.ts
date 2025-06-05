@@ -328,6 +328,7 @@ async function chooseStoredAccount(): Promise<AccountInfo | null> {
   }
   //判断用户是否已经创建过钱包账号,如果没有,则跳出状态等待框,提示用户账号创建中
   const accounts = await DBHelper.getAllData(DBHelper.store_account);
+  console.log("accounts", accounts);
   if (!accounts || accounts.length == 0) {
     return null;
   }
@@ -335,17 +336,21 @@ async function chooseStoredAccount(): Promise<AccountInfo | null> {
     DBHelper.store_keyinfo,
     "choosedAccount"
   );
+  debugger;
   if (accountinfo && accountinfo.value) {
-    currentAccount = accountinfo.value;
-    return currentAccount;
+    // 更新当前账号
+    await DBHelper.updateData(DBHelper.store_keyinfo, {
+      key: "choosedAccount",
+      value: accounts[accounts.length - 1],
+    });
   } else {
     await DBHelper.addData(DBHelper.store_keyinfo, {
       key: "choosedAccount",
-      value: accounts[0],
+      value: accounts[accounts.length - 1],
     });
-    currentAccount = accounts[0]; // 赋值
-    return currentAccount;
   }
+  currentAccount = accounts[accounts.length - 1];
+  return currentAccount;
 }
 
 const bindNFTAccount = async (
@@ -576,27 +581,24 @@ async function createAccount(
     });
     return;
   }
-  //todo 跳出选择账号框,让用户选择账号
-  if (connectingApp) {
-    // DAPP打开，需要选择账号
-    const accountinfo = (await ChooseAccount()) as AccountInfo;
-    currentAccount = accountinfo; // 赋值
+  const accountinfo = await DBHelper.getData(
+    DBHelper.store_keyinfo,
+    "choosedAccount"
+  );
+  debugger;
+  if (accountinfo && accountinfo.value) {
+    // 更新当前账号
+    await DBHelper.updateData(DBHelper.store_keyinfo, {
+      key: "choosedAccount",
+      value: accounts[accounts.length - 1],
+    });
   } else {
-    // 钱包页面自己打开
-    const accountinfo = await DBHelper.getData(
-      DBHelper.store_keyinfo,
-      "choosedAccount"
-    );
-    if (accountinfo && accountinfo.value) {
-      currentAccount = accountinfo.value;
-    } else {
-      await DBHelper.addData(DBHelper.store_keyinfo, {
-        key: "choosedAccount",
-        value: accounts[0],
-      });
-      currentAccount = accounts[0]; // 赋值
-    }
+    await DBHelper.addData(DBHelper.store_keyinfo, {
+      key: "choosedAccount",
+      value: accounts[accounts.length - 1],
+    });
   }
+  currentAccount = accounts[accounts.length - 1];
   return currentAccount;
 }
 
@@ -656,6 +658,7 @@ async function _connectCmdHandler(
   if (!mnemonic) {
     return;
   }
+  debugger;
   if (window.dc) {
     if (connectingApp && connectingApp.appId) {
       await window.dc.auth.generateAppAccount(connectingApp.appId, mnemonic);
@@ -1019,6 +1022,7 @@ async function generateWalletAccount(seedAccount: string) {
       position: "bottom",
     });
   }
+  debugger;
   if (window.dc) {
     const connectingApp = window.dc.appInfo;
     if (connectingApp && connectingApp.appId) {

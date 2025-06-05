@@ -6,9 +6,8 @@ let dcWalletChannel: MessagePort | null = null;
 let DAPPChannel: MessagePort | null = null;
 let walletLoadedFlag = false; //钱包已加载标志
 import {Ed25519PrivKey} from './ed25519';
-import type { APPInfo, EIP712SignReqMessage, SignReqMessage, SignReqMessageData, SignResponseMessage } from "web-dc-api";
-import type { ResponseMessage } from "web-dc-api";
-import { AccountInfo, Ed25519PubKey } from "web-dc-api";
+import type { APPInfo, EIP712SignReqMessage, SignReqMessage, SignReqMessageData, SignResponseMessage, ResponseMessage } from "web-dc-api";
+import { AccountInfo } from "web-dc-api";
 // Dapp信息
 const appInfo: APPInfo = {
   appId: "",

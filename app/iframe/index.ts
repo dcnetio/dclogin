@@ -6,8 +6,7 @@ let dcWalletChannel: MessagePort | null = null;
 let DAPPChannel: MessagePort | null = null;
 let walletLoadedFlag = false; //钱包已加载标志
 import {Ed25519PrivKey} from './ed25519';
-import type { APPInfo, EIP712SignReqMessage, SignReqMessage, SignReqMessageData, SignResponseMessage, ResponseMessage } from "web-dc-api";
-import { AccountInfo } from "web-dc-api";
+import type { Account,APPInfo, EIP712SignReqMessage, SignReqMessage, SignReqMessageData, SignResponseMessage, ResponseMessage } from "web-dc-api";
 // Dapp信息
 const appInfo: APPInfo = {
   appId: "",
@@ -179,11 +178,11 @@ function connect() {
 //发送钱包连接成功消息给父窗口
 function walletConnected(
   successFlag: boolean,
-  responseData: AccountInfo | string
+  responseData: Account | string
 ) {
   const sendMessage: ResponseMessage<{
     success: boolean,
-    message: AccountInfo | string,
+    message: Account | string,
   }> = {
     type: "walletConnected",
     data: {
@@ -438,7 +437,7 @@ function connectWallet() {
 }
 
 // 钱包页面响应连接消息处理,data格式为 {success: true, account: '', chainId: '', signature: ''}
-async function connectResponse(signature: string, message: AccountInfo) {
+async function connectResponse(signature: string, message: Account) {
   try {
     if (parentOrigin == null || parentOrigin == "") {
       walletConnected(false,  "The parentOrigin is null");

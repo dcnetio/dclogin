@@ -16,7 +16,8 @@ import Header from "@/components/common/header";
 import { useAppSelector } from "@/lib/hooks";
 import { appState } from "@/config/constant";
 import { getCurrentAccount, getCurrentNetwork } from "@/app/index";
-import { ChainInfo, User } from "@/types/walletTypes";
+import type { ChainInfo } from "@/types/walletTypes";
+import type { User } from "web-dc-api";
 import { useTranslation } from "react-i18next";
 // Mock app accounts data
 const mockAppAccounts = [
@@ -87,9 +88,9 @@ export default function Index() {
   const getUserInfo = async () => {
     // setIsLoading(true);
     const accountInfo = getCurrentAccount();
-    if (accountInfo && accountInfo.account) {
+    if (accountInfo && accountInfo.nftAccount) {
       setAccountAddress(accountInfo.account);
-      setAccountName(accountInfo.name || accountInfo.account.substring(0, 6));
+      setAccountName(accountInfo.nftAccount || accountInfo.account.substring(0, 6));
 
       const network: ChainInfo | null = getCurrentNetwork();
       if (!network) {

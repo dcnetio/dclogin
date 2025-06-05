@@ -118,14 +118,6 @@ async function _initNetworks() {
       }
     }
   }
-  // if (currentAccount == null) {
-  //   //从数据库中获取第一个账号信息
-  //   const accounts = await DBHelper.getAllData(DBHelper.store_account);
-  //   if (accounts.length > 0) {
-  //     currentAccount = accounts[0];
-  //     console.log("111111111111111 _initNetworks currentAccount", currentAccount);
-  //   }
-  // }
 }
 
 // 初始化基本信息(初始化网络为最近切换的网络,账号为最近切换的账号)
@@ -913,10 +905,10 @@ async function resPonseWallet(
   } else {
     // 钱包本身访问
     return {
-      success: true,
-      account: wallet.address,
+      nftAccount: currentAccount?.nftAccount,
+      ethAccount: wallet.address,
       chainId: currentChain.chainId,
-      name: currentChain.name,
+      chainName: currentChain.name,
       signature: signature,
     };
   }
@@ -1588,7 +1580,7 @@ const _getCurrentNetwork = () => {
   return currentChain;
 };
 
-const _getCurrentAccount = () => {
+const _getCurrentAccount = (): AccountInfo | null => {
   return currentAccount;
 };
 

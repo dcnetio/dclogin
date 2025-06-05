@@ -38,7 +38,7 @@ export default function Header(props: HeaderProps) {
     setNetworkName(name);
     setNetworkVisible(false);
     changeNetworkSuccess?.();
-    if(!accountInfo || !accountInfo.account){
+    if(!accountInfo || !accountInfo.nftAccount){
       getNowAccount();
     }
   };
@@ -82,8 +82,7 @@ export default function Header(props: HeaderProps) {
       
       <div className={styles.accountD}>
         <div className={styles.account} onClick={showChangeAccount}>
-          {accountInfo?.account && accountInfo?.account.length > 8 ? 
-            `${accountInfo?.account.slice(0, 6)}...${accountInfo?.account.slice(-4)}` : 
+          {accountInfo?.nftAccount  ?  accountInfo?.nftAccount :
             t('account.select_account', '选择账户')}
           <DownFill fontSize={12} className={styles.arrow} />
         </div>

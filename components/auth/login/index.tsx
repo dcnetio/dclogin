@@ -11,7 +11,7 @@ import {
 import { store } from "@/lib/store";
 import { saveInitState } from "@/lib/slices/appSlice";
 import { appState, MsgStatus } from "@/config/constant";
-import { ConnectReqMessage } from "@/types/walletTypes";
+import type { ConnectReqMessage } from "web-dc-api";
 // import {DC} from 'web-dc-api';
 import { useRouter } from 'next/navigation'
 import NavigationService from "@/lib/navigation";

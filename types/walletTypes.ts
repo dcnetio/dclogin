@@ -1,5 +1,3 @@
-import { Ed25519PubKey } from "web-dc-api";
-
 
 
 export type ChainInfo = {

@@ -17,7 +17,7 @@ export default function TransAccount(props: TransAccountProps) {
       <div className={styles.title}>{accountInfo?.name}</div>
       <Ellipsis
         direction="middle"
-        content={accountInfo?.account || ""}
+        content={accountInfo?.nftAccount || ""}
         className={styles.txt}
       />
       <div className={styles.balance}>{t('transfer.current_amount')}：{balance} {currencySymbol}</div>

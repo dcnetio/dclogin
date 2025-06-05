@@ -90,7 +90,7 @@ export default function Index() {
     const accountInfo = getCurrentAccount();
     if (accountInfo && accountInfo.nftAccount) {
       setAccountAddress(accountInfo.account);
-      setAccountName(accountInfo.nftAccount || accountInfo.account.substring(0, 6));
+      setAccountName(accountInfo.nftAccount);
 
       const network: ChainInfo | null = getCurrentNetwork();
       if (!network) {

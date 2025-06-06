@@ -2,7 +2,7 @@
  * 链节点交互
  */
 // Import everything
-import { defaultNetworks } from "@/config/constant";
+import { DEFAULT_NETWORKS } from "@/config/constant";
 import { ethers, Wallet, JsonRpcProvider } from "ethers";
 
 let jsonRpcProvider: ethers.JsonRpcProvider | null;
@@ -16,7 +16,7 @@ const connectWithHttps = async (url: string) => {
     jsonRpcProvider = new JsonRpcProvider(
       url,
       // 强制指定已知网络参数（示例为以DC）
-      defaultNetworks.networks[0],
+      DEFAULT_NETWORKS[0],
       {
         staticNetwork: true, // 禁用自动网络检测
       }

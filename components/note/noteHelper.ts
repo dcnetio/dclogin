@@ -7,7 +7,7 @@ import SignatureDAPP from "./signatureDAPP";
 import React from "react";
 import { createRoot } from "react-dom/client";
 
-import { APPInfo } from "@/types/pageType";
+import type { APPInfo } from "web-dc-api";
 import EncodePassword from "./encodePassword";
 import utilHelper from "@/helpers/utilHelper";
 import i18n from "@/locales/i18n";

@@ -50,6 +50,15 @@ export default function Register() {
       setIsLoading(false); // Reset loading state
       return;
     }
+    // 检查密码长度
+    if (password.length < 2) {
+      window.showToast({
+        content: t('register.password_length', '密码长度至少2位'),
+        position: "bottom",
+      });
+      setIsLoading(false); // Reset loading state
+      return;
+    }
     
     // 检查确认密码是否输入
     if (!confirmPassword) {

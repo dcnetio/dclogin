@@ -140,9 +140,12 @@ function initConfigResponse(channelId: string, flag: boolean, message: string) {
     responseToDAPP(channelId, sendMessage);
     return;
   }
+  // todo临时测试，指定私钥 -- start
+  privateKey = Ed25519PrivKey.fromString('a572e69c99603ab728494f23363dff78d775214d84a6881b633767e7be1d0228de683b70333f1ddded37a80ffd10dbb7ae20e08e14dd201cc48a6da36567a9a1') 
   // 创建临时私钥公钥
-  const seed = crypto.getRandomValues(new Uint8Array(32))  
-  privateKey = Ed25519PrivKey.fromSeed(seed)
+  // const seed = crypto.getRandomValues(new Uint8Array(32))  
+  // privateKey = Ed25519PrivKey.fromSeed(seed)
+  // todo临时测试，指定私钥 -- end
   const publicKey = privateKey.publicKey?.raw;
   const sendMessage: ResponseMessage<{
     success: boolean,

@@ -81,7 +81,6 @@ async function checkNetworkStatus() {
       return false;
     }
     const blockNumber = await jsonRpcProvider.getBlockNumber();
-    console.log("当前区块号:", blockNumber);
     return true;
   } catch (error) {
     console.log("无法连接到网络:", error);

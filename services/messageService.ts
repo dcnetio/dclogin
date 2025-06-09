@@ -28,11 +28,9 @@ import { authenticateWithPasskey, bindNFTAccount, chooseStoredAccount, createAcc
 
 // 获取查询字符串
 let queryString = "";
-console.log("window1111");
 if (typeof window !== "undefined") {
   queryString = window.location.search;
 }
-console.log("window2222");
 const urlParams = new URLSearchParams(queryString);
 const location = urlParams.get("origin");
 const openerOrigin = location;
@@ -57,7 +55,6 @@ if (typeof window !== "undefined") {
 
     window.addEventListener("message", function (event) {
       //判断消息来源
-      console.log("===============监听DAPP窗口发送的消息 event", event);
       if (
         !(
           event.origin === openerOrigin ||

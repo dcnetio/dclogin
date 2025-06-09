@@ -106,11 +106,9 @@ export default function Login() {
   }
 
   useEffect(() => {
-    console.log("===============login", window.location.href);
     if(typeof window !== "undefined") {
       if(window.location.href.indexOf('/test') == -1 && 
       window.location.href.indexOf('/iframe') == -1) {
-        console.log("===============login1111", window.location.href);
         initDC();
         init();
       }
@@ -118,7 +116,6 @@ export default function Login() {
   }, []);
 
   useEffect(() => {
-    console.log("===============login", window.location.href);
     NavigationService.init(router)
   }, [router]);
   return (

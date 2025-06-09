@@ -40,7 +40,6 @@ function generateUniqueId() {
 // 监听父窗口发送的消息
 if (typeof window !== "undefined") {
   window.addEventListener("message", function (event) {
-    console.log("========onParentMessage event", event);
     //判断消息来源
     if (
       !(

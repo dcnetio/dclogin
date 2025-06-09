@@ -8,11 +8,11 @@ import { AccountInfo } from "../types/walletTypes";
 import type {
   ConnectReqMessage,
   APPInfo,
-  Ed25519PrivKey,
 } from "web-dc-api";
 import {
   KeyManager,
   NFTBindStatus,
+  Ed25519PrivKey,
 } from "web-dc-api";
 // 数据库
 import DBHelper from "@/helpers/DBHelper";
@@ -44,7 +44,6 @@ async function chooseStoredAccount(): Promise<AccountInfo | null> {
     DBHelper.store_keyinfo,
     "choosedAccount"
   );
-  debugger;
   if (accountinfo && accountinfo.value) {
     // 更新当前账号
     await DBHelper.updateData(DBHelper.store_keyinfo, {
@@ -163,7 +162,6 @@ async function createAccount(
     DBHelper.store_keyinfo,
     "choosedAccount"
   );
-  debugger;
   if (accountinfo && accountinfo.value) {
     // 更新当前账号
     await DBHelper.updateData(DBHelper.store_keyinfo, {
@@ -280,7 +278,6 @@ async function generateWalletAccount(seedAccount: string) {
       position: "bottom",
     });
   }
-  debugger;
   if (window.dc) {
     const connectingApp = window.dc.appInfo;
     if (connectingApp && connectingApp.appId) {

@@ -245,7 +245,6 @@ async function connectCmdHandler(
   if (!mnemonic) {
     return;
   }
-  debugger;
   if (window.dc) {
     if (connectingApp && connectingApp.appId) {
       await window.dc.auth.generateAppAccount(connectingApp.appId, mnemonic);

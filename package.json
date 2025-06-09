@@ -14,7 +14,7 @@
     "@stablelib/random": "^2.0.1",
     "antd-mobile": "^5.37.1",
     "ethers": "^6.13.2",
-    "grpc-libp2p-client": "^0.0.7",
+    "grpc-libp2p-client": "^0.0.8",
     "i18next": "^23.16.4",
     "i18next-browser-languagedetector": "^8.0.0",
     "i18next-http-backend": "^2.6.2",

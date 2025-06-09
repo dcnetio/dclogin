@@ -119,6 +119,7 @@
     "password": "密码",
     "account_empty": "请输入账号",
     "password_empty": "请输入密码",
+    "password_length": "密码长度至少2位",
     "success": "注册成功",
     "failed": "注册失败",
     "go_login": "前往登录"

@@ -87,6 +87,22 @@ class IndexedDBHelper {
         });  
     }  
 
+    // 删除所有数据  
+    clearData(storeName) {  
+        return new Promise((resolve, reject) => {  
+            const transaction = this.db.transaction(storeName, 'readwrite');  
+            const store = transaction.objectStore(storeName);  
+            const request = store.clear();
+
+            request.onsuccess = () => {  
+                resolve('数据表数据全部删除成功');  
+            };  
+
+            request.onerror = (err) => {  
+                reject('数据表数据全部删除失败', err);  
+            };  
+        });  
+    }  
     // 查询数据  
     getData(storeName, key) {  
         return new Promise((resolve, reject) => {  

@@ -22,3 +22,16 @@ export type AccountInfo = {
   type: string,
 };
 
+export interface TransactionRecord {
+  chainId: number;
+  hash: string;
+  from: string;
+  to: string;
+  value: string;
+  status: number;
+  timestamp: number;
+}
+export enum NetworkStatus {
+  Disconnected = 0,
+  Connected = 1
+}

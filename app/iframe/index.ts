@@ -3,7 +3,8 @@
 import utilHelper from "@/helpers/utilHelper";
 import ethersHelper from "@/helpers/ethersHelper";
 let dcWalletChannel: MessagePort | null = null;
-let DAPPChannel: MessagePort | null = null;
+// 定义一个对象，用于存储DAPP的消息通道
+const DAPPChannels = new Map<string, MessagePort>(); // 使用Map以便存储多个通道
 let walletLoadedFlag = false; //钱包已加载标志
 import {Ed25519PrivKey} from './ed25519';
 import type { Account,APPInfo, EIP712SignReqMessage, SignReqMessage, SignReqMessageData, SignResponseMessage, ResponseMessage } from "web-dc-api";
@@ -30,7 +31,10 @@ const parentOrigin = location;
 
 // 私钥
 let privateKey: Ed25519PrivKey | null = null;
-
+// 在某种情况下使用UUID生成自定义ID
+function generateUniqueId() {
+  return 'id_' + Math.random().toString(36).substring(2, 9); // 生成简单的随机ID
+}
 /*******************************接收父窗口指令消息***********************************/
 
 // 监听父窗口发送的消息
@@ -70,25 +74,27 @@ if (typeof window !== "undefined") {
       dcWalletChannel.postMessage({ type: "loaded" });
       return;
     }
-    DAPPChannel = event.ports[0];
+    const channelId = `channel_${generateUniqueId()}`; // 使用自定义ID
+    const channelPort = event.ports[0];
+    DAPPChannels.set(channelId, channelPort); // 保存通道
     switch (message.type) {
       case "init": //初始化配置
-        initConfig(message.data);
+        initConfig(channelId,message.data);
         break;
       case "connect": //连接钱包命令
-        connect();
+        connect(channelId);
         break;
       case 'sign': //签名
-        sign(message.data);
+        sign(channelId, message.data);
         break;
       case "signMessage": //签名消息
-        signMessage(message.data);
+        signMessage(channelId, message.data);
         break;
       case "signEIP712Message": //签名EIP712消息
-        signEIP712Message(message.data);
+        signEIP712Message(channelId, message.data);
         break;
       case "decrypt": //用私钥解密
-        decrypt(message);
+        decrypt(channelId, message);
         break;
       default:
         break;
@@ -97,18 +103,18 @@ if (typeof window !== "undefined") {
 }
 
 // Dapp初始化配置
-function initConfig(config: APPInfo | null) {
+function initConfig(channelId: string, config: APPInfo | null) {
   // 初始化配置
   if(!config) {
-    initConfigResponse(false, 'The appInfo is null');
+    initConfigResponse(channelId, false, 'The appInfo is null');
     return
   }
   if(!parentOrigin) {
-    initConfigResponse(false, 'The parentOrigin is null');
+    initConfigResponse(channelId, false, 'The parentOrigin is null');
     return
   }
   if (config.appUrl.indexOf(parentOrigin) ===  -1) {
-    initConfigResponse(false, "The appUrl is not equal to the parentOrigin");
+    initConfigResponse(channelId, false, "The appUrl is not equal to the parentOrigin");
     return;
   }
   appInfo.appUrl = config.appUrl;
@@ -116,11 +122,11 @@ function initConfig(config: APPInfo | null) {
   appInfo.appName = config.appName;
   appInfo.appIcon = config.appIcon;
   appInfo.appVersion = config.appVersion;
-  initConfigResponse(true, "success");
+  initConfigResponse(channelId, true, "success");
 }
 
 // 发送初始化结果消息给父窗口
-function initConfigResponse(flag: boolean, message: string) {
+function initConfigResponse(channelId: string, flag: boolean, message: string) {
   if(!flag) {
     const sendMessage: ResponseMessage<{
       success: boolean,
@@ -132,7 +138,7 @@ function initConfigResponse(flag: boolean, message: string) {
         message: message,
       },
     };
-    responseToDAPP(sendMessage);
+    responseToDAPP(channelId, sendMessage);
     return;
   }
   // 创建临时私钥公钥
@@ -153,30 +159,31 @@ function initConfigResponse(flag: boolean, message: string) {
       },
     },
   };
-  responseToDAPP(sendMessage);
+  responseToDAPP(channelId, sendMessage);
 }
 
 // 父窗口发送的连接命令处理,打开钱包页面前调用
-function connect() {
+function connect(channelId: string) {
   // 等待钱包加载完成
   walletLoadedFlag = false;
   waitForFlagToTrue(() => walletLoadedFlag)
     .then((flag) => {
       //钱包已经加载完成
       if (flag) {
-        connectWallet();
+        connectWallet(channelId);
       }
     })
     .catch((e) => {
       //超时不处理
       console.log(e);
-      walletConnected(false, e.message || 'connect error');
+      walletConnected(channelId, false, e.message || 'connect error');
       return e;
     });
 }
 
 //发送钱包连接成功消息给父窗口
 function walletConnected(
+  channelId: string,
   successFlag: boolean,
   responseData: Account | string
 ) {
@@ -190,26 +197,26 @@ function walletConnected(
       message: responseData,
     },
   };
-  responseToDAPP(sendMessage);
+  responseToDAPP(channelId, sendMessage);
 }
 
 // 父窗口发送的签名处理,打开钱包页面前调用
-function sign(data: { message: Uint8Array } | null) {
+function sign(channelId: string, data: { message: Uint8Array } | null) {
   if (!data || data.message == null) {
-    signResponse(false, "The message is null");
+    signResponse(channelId, false, "The message is null");
     return;
   }
   //签名
   if(privateKey == null){
-    signResponse(false, "The privateKey is null");
+    signResponse(channelId, false, "The privateKey is null");
     return;
   }
   const signature = privateKey.sign(data.message)
-  signResponse(true, signature);
+  signResponse(channelId, true, signature);
 }
 
 //发送签名结果消息给父窗口
-function signResponse(successFlag: boolean, message: Uint8Array | string) {
+function signResponse(channelId: string, successFlag: boolean, message: Uint8Array | string) {
   const sendMessage: ResponseMessage<{
     success: boolean,
     message: Uint8Array | string,
@@ -220,18 +227,18 @@ function signResponse(successFlag: boolean, message: Uint8Array | string) {
       message: message,
     },
   };
-  responseToDAPP(sendMessage);
+  responseToDAPP(channelId, sendMessage);
 }
 
 // 父窗口发送的签名消息处理,打开钱包页面前调用
-function signMessage(message: SignReqMessage | null) {
+function signMessage(channelId: string, message: SignReqMessage | null) {
   if(message == null) {
-    signMessageResponse(false, "The message is null");
+    signMessageResponse(channelId, false, "The message is null");
     return
   }
   const data = message.data;
   if (data.message == null) {
-    signMessageResponse(false, "The message is null");
+    signMessageResponse(channelId, false, "The message is null");
     return;
   }
   // 等待钱包加载完成
@@ -241,17 +248,17 @@ function signMessage(message: SignReqMessage | null) {
       //钱包已经加载完成
       if (flag) {
         //发送签名请求消息
-        requsetForSignMessage(message);
+        requsetForSignMessage(channelId, message);
       }
     })
     .catch((e: any) => {
       //超时不处理
-      signMessageResponse(false, e.message || 'signMessage error');
+      signMessageResponse(channelId, false, e.message || 'signMessage error');
     });
 }
 
 //发送签名成功消息给父窗口
-function signMessageResponse(successFlag: boolean, message: SignResponseMessage | string) {
+function signMessageResponse(channelId: string, successFlag: boolean, message: SignResponseMessage | string) {
   const sendMessage = {
     type: "signMessageResponse",
     data: {
@@ -259,7 +266,7 @@ function signMessageResponse(successFlag: boolean, message: SignResponseMessage 
       message: message,
     },
   };
-  responseToDAPP(sendMessage);
+  responseToDAPP(channelId, sendMessage);
 }
 
 // 父窗口发送的签名EIP712消息处理,打开钱包页面前调用
@@ -269,23 +276,23 @@ function signMessageResponse(successFlag: boolean, message: SignResponseMessage 
     message: 'test message',
 }
 **/
-function signEIP712Message(message: EIP712SignReqMessage | null) {
+function signEIP712Message(channelId: string, message: EIP712SignReqMessage | null) {
   if(message == null) {
-    signEIP712MessageResponse(false, "The message is null");
+    signEIP712MessageResponse(channelId, false, "The message is null");
     return;
   }
   const data = message.data;
   //校验数据
   if (data.message == null) {
-    signEIP712MessageResponse(false, "The  message is null");
+    signEIP712MessageResponse(channelId, false, "The  message is null");
     return;
   }
   if (data.domain == null) {
-    signEIP712MessageResponse(false, "The domain is null");
+    signEIP712MessageResponse(channelId, false, "The domain is null");
     return;
   }
   if (data.primaryType == null) {
-    signEIP712MessageResponse(false, "The primaryType is null");
+    signEIP712MessageResponse(channelId, false, "The primaryType is null");
     return;
   }
 
@@ -296,17 +303,17 @@ function signEIP712Message(message: EIP712SignReqMessage | null) {
       //钱包已经加载完成
       if (flag) {
         //发送签名请求消息
-        requestSignEIP712Message(message);
+        requestSignEIP712Message(channelId, message);
       }
     })
     .catch((e: any) => {
       //超时不处理
-      signEIP712MessageResponse(false, e.message || 'signEIP712Message error');
+      signEIP712MessageResponse(channelId, false, e.message || 'signEIP712Message error');
     });
 }
 
 //发送签名EIP712成功消息给父窗口
-function signEIP712MessageResponse(successFlag: boolean, message: SignResponseMessage | string) {
+function signEIP712MessageResponse(channelId: string, successFlag: boolean, message: SignResponseMessage | string) {
   const sendMessage = {
     type: "signEIP712MessageResponse",
     data: {
@@ -314,30 +321,30 @@ function signEIP712MessageResponse(successFlag: boolean, message: SignResponseMe
       message: message,
     },
   };
-  responseToDAPP(sendMessage);
+  responseToDAPP(channelId, sendMessage);
 }
 
 
 
 
-async function decrypt(message: any)  {
+async function decrypt(channelId: string, message: any)  {
   const data = message.data;
   if (data.message == null) {
-    decryptResponse(false, "The message is null");
+    decryptResponse(channelId, false, "The message is null");
     return;
   }
   //签名
   if(privateKey == null){
-    decryptResponse(false, "The privateKey is null");
+    decryptResponse(channelId, false, "The privateKey is null");
     return;
   }
   const signature = await privateKey.decrypt(data.message)
-  decryptResponse(true, signature);
+  decryptResponse(channelId, true, signature);
   
 }
 
 //发送解密结果消息给父窗口
-function decryptResponse(successFlag: boolean, message: any) {
+function decryptResponse(channelId: string, successFlag: boolean, message: any) {
   const sendMessage = {
     type: "decryptResponse",
     data: {
@@ -345,17 +352,18 @@ function decryptResponse(successFlag: boolean, message: any) {
       message: message,
     },
   };
-  responseToDAPP(sendMessage);
+  responseToDAPP(channelId, sendMessage);
 }
 
 
 
 // 发送反馈结果消息给父窗口的DAPP
-function responseToDAPP(message: ResponseMessage<any>) {
+function responseToDAPP(channelId:string, message: ResponseMessage<any>) {
+  const DAPPChannel = DAPPChannels.get(channelId);
   if (DAPPChannel != null) {
     const needCloseChannel = DAPPChannel;
-    DAPPChannel = null;
     needCloseChannel.postMessage(message);
+    DAPPChannels.delete(channelId); // 发送后删除通道
     // 1秒后关闭通道
     setTimeout(() => {
       needCloseChannel.close();
@@ -395,7 +403,7 @@ const sendMessageToWallet = async (message: any, timeout: number) => {
 };
 
 // 发送连接命令给钱包页面,并等待返回
-function connectWallet() {
+function connectWallet(channelId: string) {
   // 像钱包网页发送连接命令
   const message = {
     type: "connect",
@@ -414,33 +422,36 @@ function connectWallet() {
       const message = event.data;
       console.log("connectWallet response:", message);
       if(!message.data || !message.data.privateKey){
-        walletConnected(false, "privateKey is empty");
+        walletConnected(channelId, false, "privateKey is empty");
         return;
       }
       // 保存私钥
       const priKey = message.data.privateKey;
       privateKey = new Ed25519PrivKey(priKey) 
       const data = message.data;
-      connectResponse(data.signature, {
-        nftAccount: data.nftAccount,
-        ethAccount: data.ethAccount,
-        appAccount: privateKey.publicKey?.raw,
-        chainId: data.chainId,
-        chainName: data.chainName,
-      });
+      connectResponse(
+        channelId,
+        data.signature, 
+        {
+          nftAccount: data.nftAccount,
+          ethAccount: data.ethAccount,
+          appAccount: privateKey.publicKey?.raw,
+          chainId: data.chainId,
+          chainName: data.chainName,
+        });
     })
     .catch((e) => {
       console.log("connectWallet error:", e);
-      walletConnected(false,  e.message || 'connectWallet error');
+      walletConnected(channelId, false,  e.message || 'connectWallet error');
     });
   // dcWalletChannel.postMessage(message);
 }
 
 // 钱包页面响应连接消息处理,data格式为 {success: true, account: '', chainId: '', signature: ''}
-async function connectResponse(signature: string, message: Account) {
+async function connectResponse(channelId: string, signature: string, message: Account) {
   try {
     if (parentOrigin == null || parentOrigin == "") {
-      walletConnected(false,  "The parentOrigin is null");
+      walletConnected(channelId, false,  "The parentOrigin is null");
       return;
     }
     //签名校验,如果校验失败,则不处理
@@ -453,16 +464,16 @@ async function connectResponse(signature: string, message: Account) {
       console.log("verifySignature failed");
       return;
     }
-    walletConnected(true, message);
+    walletConnected(channelId, true, message);
   } catch (e: any) {
     console.log("connectResponse error:", e);
-    walletConnected(false, e.message || 'connectResponse error');
+    walletConnected(channelId, false, e.message || 'connectResponse error');
     return;
   }
 }
 
 // 发送签名消息给钱包页面,并等待返回
-function requsetForSignMessage(orignMessage: SignReqMessage) {
+function requsetForSignMessage(channelId: string, orignMessage: SignReqMessage) {
   const data = orignMessage.data;
   // 向钱包网页发送签名消息
   const message = {
@@ -474,15 +485,15 @@ function requsetForSignMessage(orignMessage: SignReqMessage) {
   sendMessageToWallet(message, 60000)
     .then((event: any) => {
       const message = event.data;
-      responseForsignMessage(data, message.data);
+      responseForsignMessage(channelId, data, message.data);
     })
     .catch((e) => {
-      signMessageResponse(false, e.message || 'requsetForSignMessage error');
+      signMessageResponse(channelId, false, e.message || 'requsetForSignMessage error');
     });
 }
 
 // 钱包页面响应签名消息处理
-async function responseForsignMessage(waitData: SignReqMessageData, message: SignResponseMessage) {
+async function responseForsignMessage(channelId: string, waitData: SignReqMessageData, message: SignResponseMessage) {
   try {
     if (message.success) {
       if (waitData.messageType == "hex") {
@@ -509,15 +520,15 @@ async function responseForsignMessage(waitData: SignReqMessageData, message: Sig
       }
     }
     //发送签名成功消息给父窗口
-    signMessageResponse(message.success, message);
+    signMessageResponse(channelId, message.success, message);
   } catch (e: any) {
     //发送签名失败消息给父窗口
-    signMessageResponse(false, e.message || 'responseForsignMessage error');
+    signMessageResponse(channelId, false, e.message || 'responseForsignMessage error');
   }
 }
 
 // 发送签名EIP712消息给钱包页面
-function requestSignEIP712Message(orignMessage: EIP712SignReqMessage) {
+function requestSignEIP712Message(channelId: string, orignMessage: EIP712SignReqMessage) {
   const data = orignMessage.data;
   // 向钱包网页发送签名消息
   const message = {
@@ -529,15 +540,15 @@ function requestSignEIP712Message(orignMessage: EIP712SignReqMessage) {
   sendMessageToWallet(message, 60000)
     .then((event: any) => {
       const message = event.data;
-      responseForSignEIP712Message(orignMessage, message.data);
+      responseForSignEIP712Message(channelId, orignMessage, message.data);
     })
     .catch((e: any) => {
-      signEIP712MessageResponse(false, e.message || 'requestSignEIP712Message error');
+      signEIP712MessageResponse(channelId, false, e.message || 'requestSignEIP712Message error');
     });
 }
 
 // 钱包页面响应签名EIP712消息处理
-async function responseForSignEIP712Message(orignMessage: EIP712SignReqMessage, message: SignResponseMessage) {
+async function responseForSignEIP712Message(channelId: string, orignMessage: EIP712SignReqMessage, message: SignResponseMessage) {
   try {
     const waitData = orignMessage.data;
     if (message.success) {
@@ -555,10 +566,10 @@ async function responseForSignEIP712Message(orignMessage: EIP712SignReqMessage, 
       }
     }
     //发送签名成功消息给父窗口
-    signEIP712MessageResponse(message.success, message);
+    signEIP712MessageResponse(channelId, message.success, message);
   } catch (e: any) {
     //发送签名失败消息给父窗口
-    signEIP712MessageResponse(false, e.message || 'responseForSignEIP712Message error');
+    signEIP712MessageResponse(channelId, false, e.message || 'responseForSignEIP712Message error');
   }
 }
 

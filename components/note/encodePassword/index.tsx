@@ -9,7 +9,7 @@ import {
   LinkOutline,
   ExclamationCircleOutline,
 } from "antd-mobile-icons";
-import { APPInfo } from "@/types/pageType";
+import { APPInfo } from "web-dc-api";
 
 interface EncodePasswordProps {
   type: number; // 类型，1设置，2验证

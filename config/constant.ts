@@ -4,8 +4,7 @@ const _I18N_LANGUAGES = {
   EN: 'en', 
 }
 
-const _defaultNetworks = {
-  networks: [
+const _DEFAULT_NETWORKS = [
     {
       name: "DCCHAIN",
       rpcUrl: "https://dcchain.baybird.cn",
@@ -76,8 +75,7 @@ const _defaultNetworks = {
       currencySymbol: "ONE",
       blockExplorerUrl: "https://explorer.harmony.one",
     },
-  ],
-};
+  ];
 
 const _appState = {
   not_init: 0,
@@ -93,10 +91,13 @@ const _activeStatus = {
 };
 
 
-export const defaultNetworks = _defaultNetworks;
+export const DEFAULT_NETWORKS = _DEFAULT_NETWORKS;
 export const appState = _appState;
 export const activeStatus = _activeStatus;
 export const I18N_LANGUAGES = _I18N_LANGUAGES;
+export const NETWORK_CONFIRMS = 6;
+export const TRANSACTION_TIMEOUT = 60000;
+export const ENCRYPTION_ALGORITHM = 'SHA-256';
 
 export enum EncodePasswordType {
   SET = 1,

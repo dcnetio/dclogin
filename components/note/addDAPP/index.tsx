@@ -1,5 +1,5 @@
 "use client";
-import { APPInfo } from "@/types/pageType";
+import { APPInfo } from "web-dc-api";
 import styles from "./index.module.css";
 import { Button } from "antd-mobile";
 import {CheckShieldFill} from "antd-mobile-icons";

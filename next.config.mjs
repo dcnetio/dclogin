@@ -1,6 +1,8 @@
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+
+  swcMinify: true, // 使用SWC而非Terser进行最小化
   // === 基础配置 ===
   reactStrictMode: false, // 根据需要开启，建议开发时开启
   poweredByHeader: false, // 隐藏 X-Powered-By 头
@@ -10,8 +12,8 @@ const nextConfig = {
   trailingSlash: true, // URL 尾部斜杠
   
   // === 环境相关配置 ===
-  assetPrefix: process.env.NODE_ENV === "production" ? "/v0_0_2" : "",
-  basePath: process.env.NODE_ENV === "production" ? "/v0_0_2" : "",
+  assetPrefix: process.env.NODE_ENV === "production" ? "/v0_0_3" : "",
+  basePath: process.env.NODE_ENV === "production" ? "/v0_0_3" : "",
   
   // === 图片优化配置 ===
   images: {
@@ -24,9 +26,9 @@ const nextConfig = {
   // === 编译器配置 ===
   compiler: {
     // 生产环境移除 console
-    // removeConsole: process.env.NODE_ENV === "production" ? {
-    //   exclude: ["error"]
-    // } : false,
+    removeConsole: process.env.NODE_ENV === "production" ? {
+      exclude: ["error"]
+    } : false,
     
     // 移除 React 属性（生产环境）
     reactRemoveProperties: process.env.NODE_ENV === "production",

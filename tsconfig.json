@@ -31,9 +31,9 @@
       // "grpc-libp2p-client/*": [
       //   "../grpc-libp2p-client/src/*"
       // ],
-      "web-dc-api": [
-        "../dcapi/lib/index"
-      ]
+      // "web-dc-api": [
+      //   "../dcapi/lib/index"
+      // ]
     },
     "target": "ES2017"
   },

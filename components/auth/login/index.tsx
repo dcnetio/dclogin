@@ -121,9 +121,9 @@ export default function Login() {
   }, [router]);
   return (
     <>
-      {loading && (
+      {/* {loading && (
         <DotLoading color="currentColor" />
-      )}
+      )} */}
     </>
   );
 }

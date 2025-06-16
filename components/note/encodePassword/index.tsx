@@ -16,10 +16,11 @@ interface EncodePasswordProps {
   appInfo: APPInfo;
   confirmFun: (password: string) => void;
   onForgotPassword?: () => void;
+  gotoWebAuth?: () => void; // 可选的WebAuth跳转函数
 }
 
 export default function EncodePassword(props: EncodePasswordProps) {
-  const { type, appInfo, confirmFun, onForgotPassword } = props;
+  const { type, appInfo, confirmFun, onForgotPassword, gotoWebAuth } = props;
   const { t } = useTranslation();
   const [password, setPassword] = useState("");
 
@@ -39,6 +40,15 @@ export default function EncodePassword(props: EncodePasswordProps) {
       onForgotPassword();
     }
   };
+
+  const hanldeWebAuth = () => {
+    if(gotoWebAuth){
+      gotoWebAuth();
+    }
+  };
+  
+
+  const canWebAuth = typeof window !== "undefined" && typeof window.PublicKeyCredential !== "undefined";
 
   return (
     <div className={styles.simplePage}>
@@ -110,6 +120,10 @@ export default function EncodePassword(props: EncodePasswordProps) {
               : t("encode.verify_tip")}
           </div>
         </div>
+        {/* 忘记密码链接 */}
+        {canWebAuth && <div className={styles.webauthLink} onClick={hanldeWebAuth}>
+          <span className={styles.linkText}>使用WebAuth认证</span>
+        </div>}
 
         {/* 按钮区域 */}
         <div className={styles.btnD}>

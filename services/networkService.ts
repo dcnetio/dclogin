@@ -79,7 +79,7 @@ if (typeof window !== "undefined") {
     window.location.href.indexOf("/test") == -1 &&
     window.location.href.indexOf("/iframe") == -1
   ) {
-    console.log("===============启动定时器 11111", window.location.href);
+    // console.log("===============启动定时器 11111", window.location.href);
 
     setInterval(async () => {
       if (networkStatus != NetworkStauts.connected) {

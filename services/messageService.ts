@@ -24,15 +24,14 @@ import {
   showSignatureDAPPNote,
 } from "@/components/note/noteHelper";
 import i18n from "@/locales/i18n";
-import { authenticateWithPasskey, bindNFTAccount, chooseStoredAccount, createAccount, generateWalletAccount, getEncodePwd, resPonseWallet, unlockWallet } from "./accountService";
+import { authenticateWithPasskey, bindNFTAccount, chooseStoredAccount, createAccount, generateWalletAccount, resPonseWallet, unlockWallet } from "./accountService";
+import { HDNodeWallet } from "ethers/wallet";
 
 // 获取查询字符串
 let queryString = "";
-console.log("window1111");
 if (typeof window !== "undefined") {
   queryString = window.location.search;
 }
-console.log("window2222");
 const urlParams = new URLSearchParams(queryString);
 const location = urlParams.get("origin");
 const openerOrigin = location;
@@ -57,7 +56,6 @@ if (typeof window !== "undefined") {
 
     window.addEventListener("message", function (event) {
       //判断消息来源
-      console.log("===============监听DAPP窗口发送的消息 event", event);
       if (
         !(
           event.origin === openerOrigin ||
@@ -248,7 +246,6 @@ async function connectCmdHandler(
   if (!mnemonic) {
     return;
   }
-  debugger;
   if (window.dc) {
     if (connectingApp && connectingApp.appId) {
       await window.dc.auth.generateAppAccount(connectingApp.appId, mnemonic);
@@ -421,6 +418,8 @@ async function signEIP712MessageHandler(
   window.close();
 }
 
+
+let walletAccount: HDNodeWallet | null = null;
 // 创建账号(注册)
 async function createAccountWithRegister(
   account: string,
@@ -437,31 +436,19 @@ async function createAccountWithRegister(
     });
     return;
   }
-  const res = await ethersHelper.createWalletAccount();
-  if (!res || !res.mnemonic) {
-    return;
-  }
-  const mnemonicObj = res.mnemonic; // 对象
-  let mnemonic = mnemonicObj.phrase; // 助记词
-  const pubKey = localStorage.getItem("publicKey");
-  if (pubKey) {
-    // 读取webauthhash
-    const chooseAccount = await chooseStoredAccount();
-    if (chooseAccount) {
-      const resMnemonic = await unlockWallet(chooseAccount);
-      if (resMnemonic) {
-        mnemonic = resMnemonic;
-      }
+  if(!walletAccount || !walletAccount.mnemonic) {
+    walletAccount = await ethersHelper.createWalletAccount();
+    if (!walletAccount || !walletAccount.mnemonic) {
+      return;
     }
-    localStorage.removeItem("publicKey");
   }
+  const mnemonicObj = walletAccount.mnemonic; // 对象
+  let mnemonic = mnemonicObj.phrase; // 助记词
   const keymanager = new KeyManager();
   const privKey: Ed25519PrivKey = await keymanager.getEd25519KeyFromMnemonic(
     mnemonic,
     ""
   );
-  // 保存公钥
-  localStorage.setItem("publicKey", privKey.publicKey.toString());
   // 赠送套餐
   const giveFlag = await applyFreeSpace(privKey.publicKey);
   if (
@@ -495,10 +482,11 @@ async function createAccountWithRegister(
       bindRes[1].message &&
       bindRes[1].message.indexOf("user has binded an account") !== -1
     ) {
-      localStorage.removeItem("publicKey");
+      walletAccount = null; // 清除钱包账号
     }
     return;
   }
+  walletAccount = null; // 清除钱包账号
   window.showToast({
     content: i18n.t("register.success"), // todo
     position: "bottom",

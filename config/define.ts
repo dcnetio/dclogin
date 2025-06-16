@@ -1,4 +1,4 @@
-let _basePath = '/v0_0_2';
+let _basePath = '/v0_0_4';
 let _apiUrl = 'https://wallet.dcnetio.com/api';
 if(process.env.NODE_ENV === 'development') {
     _basePath = '';

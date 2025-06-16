@@ -1,6 +1,5 @@
 "use client";
-import { DotLoading } from "antd-mobile";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { initializeDatabase } from "@/helpers/DBHelper";
 import {
   connectCmdHandler,
@@ -12,12 +11,10 @@ import { store } from "@/lib/store";
 import { saveInitState } from "@/lib/slices/appSlice";
 import { appState, MsgStatus } from "@/config/constant";
 import type { ConnectReqMessage } from "web-dc-api";
-// import {DC} from 'web-dc-api';
 import { useRouter } from 'next/navigation'
 import NavigationService from "@/lib/navigation";
 import { updateAppInfo, updateAuthStep } from "@/lib/slices/authSlice";
 import { useTranslation } from "next-i18next";
-import { basePath } from "@/config/define";
 
 // 获取查询字符串
 let queryString = '';
@@ -31,11 +28,9 @@ const openerOrigin = location;
 export default function Login() {
   const router = useRouter()
   const { t } = useTranslation();
-  const [loading, setLoading] = useState(false);
   const init = async () => {
     try {
-      
-      setLoading(true);
+
       store.dispatch(saveInitState(appState.initing));
       // 授权开始
       store.dispatch(updateAuthStep({
@@ -89,28 +84,26 @@ export default function Login() {
     } catch (error) {
       console.error("login error", error);
     } finally {
-      setLoading(false);
     }
   };
   const initDC = async () => {
     const { DC } = await import('web-dc-api');
     const dc = new DC({
-      // wssUrl: 'wss://dcchain.baybird.cn',
-      // backWssUrl: 'wss://dcchain.baybird.cn',
-      wssUrl: 'ws://192.168.31.31:9944',
-      backWssUrl: 'ws://192.168.31.31:9944',
-       swUrl: basePath + '/sw.js',
+      // todo 发布需要调整
+      wssUrl: 'wss://dcchain.baybird.cn',
+      backWssUrl: 'wss://dcchain.baybird.cn',
+      // wssUrl: 'ws://192.168.31.31:9944',
+      // backWssUrl: 'ws://192.168.31.31:9944',
+      // swUrl: basePath + '/sw.js',
     })
     dc.init()
     window.dc = dc
   }
 
   useEffect(() => {
-    console.log("===============login", window.location.href);
     if(typeof window !== "undefined") {
       if(window.location.href.indexOf('/test') == -1 && 
       window.location.href.indexOf('/iframe') == -1) {
-        console.log("===============login1111", window.location.href);
         initDC();
         init();
       }
@@ -118,14 +111,10 @@ export default function Login() {
   }, []);
 
   useEffect(() => {
-    console.log("===============login", window.location.href);
     NavigationService.init(router)
   }, [router]);
   return (
     <>
-      {loading && (
-        <DotLoading color="currentColor" />
-      )}
     </>
   );
 }

@@ -13,7 +13,6 @@ export default function Auth() {
   const { t } = useTranslation();
   const authInfo = useAppSelector((state) => state.auth.authInfo);
   const appInfo = useAppSelector((state) => state.auth.appInfo);
-  console.log("authInfo=========", authInfo);
   const handleLogin = () => {
     router.push(`/login${window.location.search}`);
   };

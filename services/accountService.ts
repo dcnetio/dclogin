@@ -234,39 +234,12 @@ async function generateWalletAccount(seedAccount: string) {
     return null;
   }
 
-  // todo 改成默认密码 -- start 
-  // let userHandleHash: ArrayBuffer | null = null;
-  // if (
-  //   account.credentialId &&
-  //   typeof window.PublicKeyCredential !== "undefined"
-  // ) {
-  //   window.showToast({
-  //     content: i18n.t("account.auth_doing"),
-  //     position: "bottom",
-  //     duration: 0,
-  //   });
-  //   //用户确认后,调出webauthn进行校验,并提取出userHandleHash
-  //   userHandleHash = await authenticateWithPasskey(account.credentialId);
-  //   console.log("userHandleHash success", userHandleHash);
-  //   //待测试 关闭状态等待框
-  //   window.clearToast();
-  // }
-  // if (!userHandleHash) {
-  //   //todo 跳出密码设置框,提示用户输入密码加密
-  //   userHandleHash = await getEncodePwd({
-  //     iv: account.iv,
-  //     encodeMnimonic: account.mnemonic,
-  //   });
-  // }
-  // todo 改成默认密码 -- end 
-  // todo 改成默认密码 -- start 
   //跳出密码设置框,提示用户输入密码加密
   const userHandleHash = await getEncodePwd({
       iv: account.iv,
       encodeMnimonic: account.mnemonic,
       credentialId: account.credentialId || "",
   });
-  // todo 改成默认密码 -- end 
   if (!userHandleHash) {
     //待测试 跳出提示框,提示用户解锁钱包失败
     window.showToast({
@@ -453,38 +426,12 @@ async function unlockWallet(chooseAccount: AccountInfo) {
     );
     return;
   }
-  // todo 改成默认密码 -- start 
-  // let userHandleHash: ArrayBuffer | null = null;
-  // if (
-  //   chooseAccount.credentialId &&
-  //   typeof window.PublicKeyCredential !== "undefined"
-  // ) {
-  //   store.dispatch(
-  //     updateAuthStep({
-  //       type: MsgStatus.failed,
-  //       content: i18n.t("account.auth_doing"),
-  //     })
-  //   );
-  //   //用户确认后,调出webauthn进行校验,并提取出userHandleHash
-  //   userHandleHash = await authenticateWithPasskey(chooseAccount.credentialId);
-  //   console.log("userHandleHash success", userHandleHash);
-  // }
-  // if (!userHandleHash) {
-  //   //跳出密码设置框,提示用户输入密码加密
-  //   userHandleHash = await getEncodePwd({
-  //     iv: chooseAccount.iv,
-  //     encodeMnimonic: chooseAccount.mnemonic,
-  //   });
-  // }
-  // todo 改成默认密码 -- end 
-  // todo 改成默认密码 -- start 
   //跳出密码设置框,提示用户输入密码加密
   const userHandleHash = await getEncodePwd({
     iv: chooseAccount.iv,
     encodeMnimonic: chooseAccount.mnemonic,
     credentialId: chooseAccount.credentialId || "",
   });
-  // todo 改成默认密码 -- end 
   if (!userHandleHash) {
     //跳出提示框,提示用户解锁钱包失败
     store.dispatch(

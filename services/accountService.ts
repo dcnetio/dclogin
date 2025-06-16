@@ -182,6 +182,7 @@ async function createAccount(
 async function getEncodePwd(info: {
   iv: Uint8Array;
   encodeMnimonic: ArrayBuffer;
+  credentialId?: string;
 }): Promise<ArrayBuffer | null> {
   return new Promise((resolve) => {
     // todo 显示用户加密密码页面
@@ -201,12 +202,11 @@ async function getEncodePwd(info: {
 }
 
 // 设置用户加密密码
-async function setEncodePwd(): Promise<Uint8Array | null> {
+async function setEncodePwd(): Promise<[Uint8Array | null, string | null]> {
   return new Promise((resolve) => {
-    // todo 显示用户加密密码页面
-    showSetEncodePassword((userHandle: Uint8Array | null) => {
+    showSetEncodePassword((userHandle: Uint8Array | null, credentialId: string | null) => {
       // 处理结果
-      resolve(userHandle);
+      resolve([userHandle, credentialId]);
     });
   });
 }
@@ -234,29 +234,39 @@ async function generateWalletAccount(seedAccount: string) {
     return null;
   }
 
-  let userHandleHash: ArrayBuffer | null = null;
-  if (
-    account.credentialId &&
-    typeof window.PublicKeyCredential !== "undefined"
-  ) {
-    window.showToast({
-      content: i18n.t("account.auth_doing"),
-      position: "bottom",
-      duration: 0,
-    });
-    //用户确认后,调出webauthn进行校验,并提取出userHandleHash
-    userHandleHash = await authenticateWithPasskey(account.credentialId);
-    console.log("userHandleHash success", userHandleHash);
-    //待测试 关闭状态等待框
-    window.clearToast();
-  }
-  if (!userHandleHash) {
-    //todo 跳出密码设置框,提示用户输入密码加密
-    userHandleHash = await getEncodePwd({
+  // todo 改成默认密码 -- start 
+  // let userHandleHash: ArrayBuffer | null = null;
+  // if (
+  //   account.credentialId &&
+  //   typeof window.PublicKeyCredential !== "undefined"
+  // ) {
+  //   window.showToast({
+  //     content: i18n.t("account.auth_doing"),
+  //     position: "bottom",
+  //     duration: 0,
+  //   });
+  //   //用户确认后,调出webauthn进行校验,并提取出userHandleHash
+  //   userHandleHash = await authenticateWithPasskey(account.credentialId);
+  //   console.log("userHandleHash success", userHandleHash);
+  //   //待测试 关闭状态等待框
+  //   window.clearToast();
+  // }
+  // if (!userHandleHash) {
+  //   //todo 跳出密码设置框,提示用户输入密码加密
+  //   userHandleHash = await getEncodePwd({
+  //     iv: account.iv,
+  //     encodeMnimonic: account.mnemonic,
+  //   });
+  // }
+  // todo 改成默认密码 -- end 
+  // todo 改成默认密码 -- start 
+  //跳出密码设置框,提示用户输入密码加密
+  const userHandleHash = await getEncodePwd({
       iv: account.iv,
       encodeMnimonic: account.mnemonic,
-    });
-  }
+      credentialId: account.credentialId || "",
+  });
+  // todo 改成默认密码 -- end 
   if (!userHandleHash) {
     //待测试 跳出提示框,提示用户解锁钱包失败
     window.showToast({
@@ -306,23 +316,9 @@ async function createWalletAccount(
   let resAccount: AccountInfo | null = null;
   if (mnemonic) {
     try {
-      let userHandle: Uint8Array | null = null;
-      let credentialId = "";
-
-      if (typeof window.PublicKeyCredential !== "undefined") {
-        //调用webauthn进行账号信息加密,并存储到数据库
-        const credential = await registerPasskey();
-        // 提取 response 对象
-        userHandle = credential.userHandle;
-        credentialId = credential.id;
-      }
-      // todo 判断userHandle是否存在
+      const [userHandle, credentialId] = await setEncodePwd();
       if (!userHandle) {
-        //todo 跳出密码设置框,提示用户输入密码加密
-        userHandle = await setEncodePwd();
-        if (!userHandle) {
-          return null;
-        }
+        return null;
       }
       // 提取 userHandle 并进行 hash
       const userHandleHash = await crypto.subtle.digest("SHA-256", userHandle);
@@ -338,7 +334,7 @@ async function createWalletAccount(
         nftAccount,
         account: address,
         type: "eth", // todo 账号类型
-        credentialId: credentialId,
+        credentialId: credentialId || "",
         mnemonic: encryptedMnemonic,
         iv: iv,
         name: address.substring(0, 6),
@@ -359,57 +355,6 @@ async function createWalletAccount(
   }
 }
 
-// 注册新的 Passkey
-async function registerPasskey() {
-  const challenge = window.crypto.getRandomValues(new Uint8Array(32));
-  //生成可识别的时间戳:格式为2021-01-01 12:00:00
-  const timestamp = new Date().toLocaleString("en-GB", { timeZone: "UTC" });
-  const userHandle = crypto.getRandomValues(new Uint8Array(32));
-  const publickeyrType: PublicKeyCredentialType = "public-key";
-  const required: UserVerificationRequirement = "required";
-  const asstention: AttestationConveyancePreference = "direct";
-  const platformAttachment: AuthenticatorAttachment = "platform";
-  const createCredentialOptions = {
-    challenge: challenge,
-    rp: {
-      name: "DCWallet",
-      id: window.location.hostname,
-    },
-    user: {
-      id: userHandle,
-      name: timestamp,
-      displayName: timestamp,
-    },
-    pubKeyCredParams: [{ alg: -7, type: publickeyrType }],
-    authenticatorSelection: {
-      authenticatorAttachment: platformAttachment,
-      userVerification: required,
-    },
-    timeout: 60000,
-    attestation: asstention,
-    extensions: {
-      hmacCreateSecret: true,
-    },
-  };
-
-  try {
-    const credential = await navigator.credentials.create({
-      publicKey: createCredentialOptions,
-    });
-    if (!credential) {
-      throw new Error("Passkey registration failed");
-    }
-    const extensionResults = (
-      credential as PublicKeyCredential
-    ).getClientExtensionResults();
-    console.log("HMAC Secret Used:", extensionResults.hmacCreateSecret);
-    return { id: credential?.id, userHandle: userHandle };
-  } catch (error) {
-    console.error("Passkey registration failed", error);
-    // throw error;
-    return { id: "", userHandle: null };
-  }
-}
 
 // 使用 Passkey 进行身份验证,并提取出userHandleHash
 async function authenticateWithPasskey(credentialId: string) {
@@ -508,28 +453,38 @@ async function unlockWallet(chooseAccount: AccountInfo) {
     );
     return;
   }
-  let userHandleHash: ArrayBuffer | null = null;
-  if (
-    chooseAccount.credentialId &&
-    typeof window.PublicKeyCredential !== "undefined"
-  ) {
-    store.dispatch(
-      updateAuthStep({
-        type: MsgStatus.failed,
-        content: i18n.t("account.auth_doing"),
-      })
-    );
-    //用户确认后,调出webauthn进行校验,并提取出userHandleHash
-    userHandleHash = await authenticateWithPasskey(chooseAccount.credentialId);
-    console.log("userHandleHash success", userHandleHash);
-  }
-  if (!userHandleHash) {
-    //跳出密码设置框,提示用户输入密码加密
-    userHandleHash = await getEncodePwd({
-      iv: chooseAccount.iv,
-      encodeMnimonic: chooseAccount.mnemonic,
-    });
-  }
+  // todo 改成默认密码 -- start 
+  // let userHandleHash: ArrayBuffer | null = null;
+  // if (
+  //   chooseAccount.credentialId &&
+  //   typeof window.PublicKeyCredential !== "undefined"
+  // ) {
+  //   store.dispatch(
+  //     updateAuthStep({
+  //       type: MsgStatus.failed,
+  //       content: i18n.t("account.auth_doing"),
+  //     })
+  //   );
+  //   //用户确认后,调出webauthn进行校验,并提取出userHandleHash
+  //   userHandleHash = await authenticateWithPasskey(chooseAccount.credentialId);
+  //   console.log("userHandleHash success", userHandleHash);
+  // }
+  // if (!userHandleHash) {
+  //   //跳出密码设置框,提示用户输入密码加密
+  //   userHandleHash = await getEncodePwd({
+  //     iv: chooseAccount.iv,
+  //     encodeMnimonic: chooseAccount.mnemonic,
+  //   });
+  // }
+  // todo 改成默认密码 -- end 
+  // todo 改成默认密码 -- start 
+  //跳出密码设置框,提示用户输入密码加密
+  const userHandleHash = await getEncodePwd({
+    iv: chooseAccount.iv,
+    encodeMnimonic: chooseAccount.mnemonic,
+    credentialId: chooseAccount.credentialId || "",
+  });
+  // todo 改成默认密码 -- end 
   if (!userHandleHash) {
     //跳出提示框,提示用户解锁钱包失败
     store.dispatch(

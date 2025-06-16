@@ -104,10 +104,6 @@ export default function Register() {
       return;
     }
     
-    window.showToast({
-      content: t('register.failed', '注册失败'),
-      position: "bottom",
-    });
   } catch (error) {
     // Reset loading state if there's an error
     setIsLoading(false);

@@ -11,8 +11,11 @@ import type { APPInfo } from "web-dc-api";
 import EncodePassword from "./encodePassword";
 import utilHelper from "@/helpers/utilHelper";
 import i18n from "@/locales/i18n";
-import { EncodePasswordType } from "@/config/constant";
+import { EncodePasswordType, MsgStatus } from "@/config/constant";
 import NavigationService from "@/lib/navigation";
+import { store } from "@/lib/store";
+import { updateAuthStep } from "@/lib/slices/authSlice";
+import { authenticateWithPasskey } from "@/services/accountService";
 export const showAddDAPPNote = (
   info: APPInfo,
   confirmCallback: () => void
@@ -71,7 +74,7 @@ export const showSignatureDAPPNote = (
 
 
 export const showEncodePassword = (
-  info: {iv: Uint8Array, encodeMnimonic: ArrayBuffer},
+  info: {iv: Uint8Array, encodeMnimonic: ArrayBuffer, credentialId?: string},
   appInfo: APPInfo,
   confirmCallback: (userHandleHash: ArrayBuffer | null) => void
 ) => {
@@ -111,12 +114,31 @@ export const showEncodePassword = (
         confirmCallback(null);
         document.body.removeChild(container);
       },
+      gotoWebAuth: async () => {
+        let userHandleHash: ArrayBuffer | null = null;
+        if (
+          info.credentialId &&
+          typeof window.PublicKeyCredential !== "undefined"
+        ) {
+          store.dispatch(
+            updateAuthStep({
+              type: MsgStatus.failed,
+              content: i18n.t("account.auth_doing"),
+            })
+          );
+          //用户确认后,调出webauthn进行校验,并提取出userHandleHash
+          userHandleHash = await authenticateWithPasskey(info.credentialId);
+          console.log("userHandleHash success", userHandleHash);
+        }
+        confirmCallback(userHandleHash);
+        document.body.removeChild(container);
+      },
     })
   );
 };
 
 export const showSetEncodePassword = (
-  confirmCallback: (userHandle: Uint8Array | null) => void
+  confirmCallback: (userHandle: Uint8Array | null, credentialId: string | null) => void
 ) => {
   const containerId = "encode-password-container";
   // 先检查是否已存在，如果存在则移除
@@ -143,13 +165,78 @@ export const showSetEncodePassword = (
         console.log("确认EncodePassword=====");
         // 解密
         const userHandle = Buffer.from(password);
-        confirmCallback(userHandle);
+        confirmCallback(userHandle, null);
         document.body.removeChild(container);
       },
       onForgotPassword: () => {
-        confirmCallback(null);
+        confirmCallback(null, null);
+        document.body.removeChild(container);
+      },
+      gotoWebAuth: async () => {
+        let credentialId = "";
+        let userHandle: Uint8Array | null = null;
+        if (typeof window.PublicKeyCredential !== "undefined") {
+          //调用webauthn进行账号信息加密,并存储到数据库
+          const credential = await registerPasskey();
+          // 提取 response 对象
+          userHandle = credential.userHandle;
+          credentialId = credential.id;
+        }
+        confirmCallback(userHandle, credentialId);
         document.body.removeChild(container);
       },
     })
   );
 };
+
+// 注册新的 Passkey
+async function registerPasskey() {
+  const challenge = window.crypto.getRandomValues(new Uint8Array(32));
+  //生成可识别的时间戳:格式为2021-01-01 12:00:00
+  const timestamp = new Date().toLocaleString("en-GB", { timeZone: "UTC" });
+  const userHandle = crypto.getRandomValues(new Uint8Array(32));
+  const publickeyrType: PublicKeyCredentialType = "public-key";
+  const required: UserVerificationRequirement = "required";
+  const asstention: AttestationConveyancePreference = "direct";
+  const platformAttachment: AuthenticatorAttachment = "platform";
+  const createCredentialOptions = {
+    challenge: challenge,
+    rp: {
+      name: "DCWallet",
+      id: window.location.hostname,
+    },
+    user: {
+      id: userHandle,
+      name: timestamp,
+      displayName: timestamp,
+    },
+    pubKeyCredParams: [{ alg: -7, type: publickeyrType }],
+    authenticatorSelection: {
+      authenticatorAttachment: platformAttachment,
+      userVerification: required,
+    },
+    timeout: 60000,
+    attestation: asstention,
+    extensions: {
+      hmacCreateSecret: true,
+    },
+  };
+
+  try {
+    const credential = await navigator.credentials.create({
+      publicKey: createCredentialOptions,
+    });
+    if (!credential) {
+      throw new Error("Passkey registration failed");
+    }
+    const extensionResults = (
+      credential as PublicKeyCredential
+    ).getClientExtensionResults();
+    console.log("HMAC Secret Used:", extensionResults.hmacCreateSecret);
+    return { id: credential?.id, userHandle: userHandle };
+  } catch (error) {
+    console.error("Passkey registration failed", error);
+    // throw error;
+    return { id: "", userHandle: null };
+  }
+}

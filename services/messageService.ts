@@ -24,7 +24,7 @@ import {
   showSignatureDAPPNote,
 } from "@/components/note/noteHelper";
 import i18n from "@/locales/i18n";
-import { authenticateWithPasskey, bindNFTAccount, chooseStoredAccount, createAccount, generateWalletAccount, getEncodePwd, resPonseWallet, unlockWallet } from "./accountService";
+import { authenticateWithPasskey, bindNFTAccount, chooseStoredAccount, createAccount, generateWalletAccount, resPonseWallet, unlockWallet } from "./accountService";
 
 // 获取查询字符串
 let queryString = "";

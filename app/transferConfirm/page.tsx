@@ -22,7 +22,6 @@ export default function TransferConfirm() {
   const [accountInfo, setAccountInfo] = useState<AccountInfo>();
   const getUserBalance = async () => {
     const info = getCurrentAccount();
-    console.log("getCurrentAccount info", info);
     if (info) {
       setAccountInfo(info);
     }

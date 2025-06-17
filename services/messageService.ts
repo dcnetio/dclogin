@@ -503,14 +503,13 @@ async function createAccountWithLogin(
   origin?: string
 ) {
   try {
-    const res = await window.dc.auth.accountLogin(account, password, safecode);
+    const [mnemonic, err] = await window.dc.auth.accountLogin(account, password, safecode);
     console.log("=================window.dc.auth.accountLogin res");
-    if (!res || !res.mnemonic) {
+    if (err || !mnemonic) {
       console.log("=================window.dc.auth.accountLogin error");
       return;
     }
     // 登录成功，得到私钥
-    const mnemonic = res.mnemonic;
     // 助记词信息， 私钥转助记词
     const wallet = await ethersHelper.createWalletAccountWithMnemonic(mnemonic);
     console.log("=================createWalletAccountWithMnemonic success");

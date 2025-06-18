@@ -21,11 +21,7 @@ export async function applyFreeSpace(pubKey: Ed25519PubKey): Promise<[boolean, E
   try {
     // Check if this is a new account without space
     const [userInfo, err] = await window.dc.auth.getUserInfoWithAccount('0x' + pubKey.toString());
-    if (err || !userInfo) {
-      console.warn("Error getUserInfoWithAccount :", err);
-      return [false, new Error("Failed to get user info")];
-    }
-    if (userInfo.subscribeSpace > 0) {
+    if (userInfo && userInfo.subscribeSpace > 0) {
       return [false, new Error("User already has space")];
     }
     
@@ -62,8 +58,8 @@ export async function applyFreeSpace(pubKey: Ed25519PubKey): Promise<[boolean, E
         return [false, new Error("Invalid response format: " + jsonError.message)];
       }
       
-      if (!result || result.error) {
-        return [false, new Error("Storage giving error: " + (result?.error || "Unknown error"))];
+      if (!result || (result.msg && result.msg !== "已经获取")) {
+        return [false, new Error("Storage giving error: " + (result?.msg || "Unknown error"))];
       }
       
       // Check if storage was actually allocated

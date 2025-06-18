@@ -427,8 +427,8 @@ async function createAccountWithRegister(
   safecode: string
 ) {
   // 判断account是否已经存在
-  const nftBinded = await window.dc.auth.isNftAccountBinded(account);
-  if (nftBinded) {
+  const [nftBinded, error] = await window.dc.auth.isNftAccountBinded(account);
+  if (error || nftBinded) {
     //todo 跳出提示框,提示用户该账号已经绑定了NFT
     window.showToast({
       content: i18n.t("account.nft_account_binded"),

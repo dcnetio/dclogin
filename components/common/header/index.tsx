@@ -59,7 +59,6 @@ export default function Header(props: HeaderProps) {
   
   const getNowAccount = async () => {
     const info = getCurrentAccount();
-    console.log("getCurrentAccount info", info);
     if (info) {
       setAccountInfo(info);
     }

@@ -34,20 +34,12 @@ const connectWithHttps = async (url: string) => {
 const createWalletAccount = async () => {
   // wallet 创建包，助记词，私钥，地址
   const wallet = Wallet.createRandom();
-  console.log("===============wallet", wallet);
-  console.log("===============wallet.mnemonic", wallet.mnemonic);
-  console.log("===============wallet.privateKey", wallet.privateKey);
-  console.log("===============wallet.address", wallet.address);
   return wallet;
 };
 
 // 根据助记词生成钱包账号
 const createWalletAccountWithMnemonic = async (mnemonic: string) => {
   const wallet = Wallet.fromPhrase(mnemonic);
-  console.log("===============wallet", wallet);
-  console.log("===============wallet.mnemonic", wallet.mnemonic);
-  console.log("===============wallet.privateKey", wallet.privateKey);
-  console.log("===============wallet.address", wallet.address);
   return wallet;
 };
 
@@ -131,7 +123,6 @@ const signMessage = async (
 ) => {
   // Sign the message
   const signature = await wallet.signMessage(message);
-  console.log("Signature: ", signature);
   return signature;
 };
 
@@ -165,7 +156,6 @@ const signEIP712Message = async (
 
     // 从签名中恢复地址
     const signature = await wallet.signMessage(digest);
-    console.log("Signature: ", signature);
     const flag = await verifyEIP712Signature(
       primaryType,
       domain,

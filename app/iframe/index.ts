@@ -8,6 +8,7 @@ const DAPPChannels = new Map<string, MessagePort>(); // 使用Map以便存储多
 let walletLoadedFlag = false; //钱包已加载标志
 import {Ed25519PrivKey} from './ed25519';
 import type { Account,APPInfo, EIP712SignReqMessage, SignReqMessage, SignReqMessageData, SignResponseMessage, ResponseMessage } from "web-dc-api";
+import { exit } from "process";
 // Dapp信息
 const appInfo: APPInfo = {
   appId: "",
@@ -83,6 +84,10 @@ if (typeof window !== "undefined") {
       case "connect": //连接钱包命令
         connect(channelId);
         break;
+      case "exit": //退出钱包
+        // 退出钱包,清除私钥
+        exitLogin(channelId);
+        break;
       case 'sign': //签名
         sign(channelId, message.data);
         break;
@@ -99,6 +104,23 @@ if (typeof window !== "undefined") {
         break;
     }
   });
+}
+
+const exitLogin = (channelId: string) => {
+  // 清除私钥
+  privateKey = null;
+  // 发送退出消息给父窗口
+  const sendMessage: ResponseMessage<{
+    success: boolean,
+    message: string,
+  }> = {
+    type: "exitResponse",
+    data: {
+      success: true,
+      message: "success",
+    },
+  };
+  responseToDAPP(channelId, sendMessage);
 }
 
 // Dapp初始化配置

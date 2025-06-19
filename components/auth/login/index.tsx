@@ -90,10 +90,10 @@ export default function Login() {
     const { DC } = await import('web-dc-api');
     const dc = new DC({
       // todo 发布需要调整
-      wssUrl: 'wss://dcchain.baybird.cn',
-      backWssUrl: 'wss://dcchain.baybird.cn',
-      // wssUrl: 'ws://192.168.31.31:9944',
-      // backWssUrl: 'ws://192.168.31.31:9944',
+      // wssUrl: 'wss://dcchain.baybird.cn',
+      // backWssUrl: 'wss://dcchain.baybird.cn',
+      wssUrl: 'ws://192.168.31.31:9944',
+      backWssUrl: 'ws://192.168.31.31:9944',
       // swUrl: basePath + '/sw.js',
     })
     dc.init()

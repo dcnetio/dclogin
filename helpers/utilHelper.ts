@@ -86,7 +86,6 @@ async function _decryptMnemonic (iv: Uint8Array, encryptedMnemonic: ArrayBuffer,
   //解密出助记词
   try {
     const cryptoKey = await importAesKeyFromHash(userHandleHash);
-    console.log("cryptoKey success", cryptoKey);
     const encodedMnemonic = await crypto.subtle.decrypt(
       {
         name: "AES-GCM",

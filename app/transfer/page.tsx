@@ -32,7 +32,6 @@ export default function Transfer() {
   };
   const getUserBalance = async () => {
     const info = getCurrentAccount();
-    console.log("getCurrentAccount info", info);
     if (info) {
       setAccountInfo(info);
       const network: ChainInfo | null = getCurrentNetwork();

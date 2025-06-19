@@ -36,7 +36,6 @@ async function chooseStoredAccount(): Promise<AccountInfo | null> {
   }
   //判断用户是否已经创建过钱包账号,如果没有,则跳出状态等待框,提示用户账号创建中
   const accounts = await DBHelper.getAllData(DBHelper.store_account);
-  console.log("accounts", accounts);
   if (!accounts || accounts.length == 0) {
     return null;
   }
@@ -67,14 +66,14 @@ const bindNFTAccount = async (
   mnemonic: string = "",
   pubKeyStr: string = ""
 ): Promise<[boolean, Error | null]> => {
-  const bindRes = await window.dc.auth.bindNFTAccount(
+  const [bindStatus, err] = await window.dc.auth.bindNFTAccount(
     account,
     password,
     safecode,
     mnemonic
   );
-  if (bindRes[0] !== NFTBindStatus.Success) {
-    return [false, bindRes[1]];
+  if (err || bindStatus !== NFTBindStatus.Success) {
+    return [false, err || new Error(i18n.t("account.bind_nft_account_fail"))];
   }
   // 循环checkNFT绑定状态
   const checkFlag = await _checkBind(account, pubKeyStr);
@@ -97,15 +96,11 @@ const _checkBind = (account: string, pubKeyStr: string) => {
     interval = setInterval(async () => {
       intervalNum++;
       // 判断是否绑定成功
-      const bindFlag = await window.dc.auth.isNftAccountBindSuccess(
+      const [bindFlag, err] = await window.dc.auth.isNftAccountBindSuccess(
         account,
         pubKeyStr
       );
-      // console.log(
-      //   '---------ifNftAccountBindSuccessData',
-      //   ifNftAccountBindSuccessData,
-      // );
-      if (bindFlag) {
+      if (!err && bindFlag) {
         // 绑定成功停止定时任务
         clearInterval(interval);
         intervalNum = 0;

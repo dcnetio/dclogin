@@ -100,34 +100,35 @@ export default function Index() {
       setCurrencySymbol(network.currencySymbol);
 
       // Simulate getting storage info from the DC API
-      if (window.dc && window.dc.auth) {
-        try {
-          const userInfo = await window.dc.auth.getUserInfoWithAccount(
-            "0x" + accountInfo.account
-          ) as User;
-          if (userInfo && userInfo.subscribeSpace) {
-            const totalSpaceGB = (userInfo.subscribeSpace / (1024 * 1024 * 1024)).toFixed(2);
-            setStorageSpace(`${totalSpaceGB} GB`);
+      // if (window.dc && window.dc.auth) {
+      //     const [userInfo, err] = await window.dc.auth.getUserInfoWithAccount(
+      //       "0x" + accountInfo.account
+      //     );
+      //     if(err || !userInfo) {
+      //       console.error("Failed to get user storage info", err);
+      //       setStorageSpace("0 GB");
+      //       setUsedStorageSpace("0 GB");
+      //       setStoragePercentage(0);
+      //       return;
+      //     }
+      //     console.log("User Info:", userInfo);
+      //     if (userInfo && userInfo.subscribeSpace) {
+      //       const totalSpaceGB = (userInfo.subscribeSpace / (1024 * 1024 * 1024)).toFixed(2);
+      //       setStorageSpace(`${totalSpaceGB} GB`);
             
-            // Mock used storage (30% of total for demo)
-            const usedSpace = userInfo.subscribeSpace * 0.3;
-            const usedSpaceGB = (usedSpace / (1024 * 1024 * 1024)).toFixed(2);
-            setUsedStorageSpace(`${usedSpaceGB} GB`);
-            setStoragePercentage(30);
+      //       // Mock used storage (30% of total for demo)
+      //       const usedSpace = userInfo.subscribeSpace * 0.3;
+      //       const usedSpaceGB = (usedSpace / (1024 * 1024 * 1024)).toFixed(2);
+      //       setUsedStorageSpace(`${usedSpaceGB} GB`);
+      //       setStoragePercentage(30);
             
-            // Mock token amount
-            setTokenAmount("150");
+      //       // Mock token amount
+      //       setTokenAmount("150");
             
-            // Set app accounts (mock data for now)
-            setAppAccounts(mockAppAccounts);
-          }
-        } catch (error) {
-          console.error("Failed to get user storage info", error);
-          setStorageSpace("0 GB");
-          setUsedStorageSpace("0 GB");
-          setStoragePercentage(0);
-        }
-      }
+      //       // Set app accounts (mock data for now)
+      //       setAppAccounts(mockAppAccounts);
+      //     }
+      // }
     }
     // setIsLoading(false);
   };

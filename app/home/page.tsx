@@ -5,7 +5,7 @@ import {
   SendOutline,
   AddOutline,
   LockOutline,
-  AppstoreOutline,
+  // AppstoreOutline,
   LeftOutline,
   RightOutline,
 } from "antd-mobile-icons";
@@ -17,14 +17,14 @@ import { useAppSelector } from "@/lib/hooks";
 import { appState } from "@/config/constant";
 import { getCurrentAccount, getCurrentNetwork } from "@/app/index";
 import type { ChainInfo } from "@/types/walletTypes";
-import type { User } from "web-dc-api";
+// import type { User } from "web-dc-api";
 import { useTranslation } from "react-i18next";
 // Mock app accounts data
-const mockAppAccounts = [
-  { appName: "DeCert", appId: "decert-123", appAccount: "0x8721...3d91", appDomain: "decert.network" },
-  { appName: "DataVault", appId: "datavault-456", appAccount: "0x6532...7e22", appDomain: "datavault.io" },
-  { appName: "FileShare", appId: "fileshare-789", appAccount: "0x3251...9f43", appDomain: "fileshare.app" },
-];
+// const mockAppAccounts = [
+//   { appName: "DeCert", appId: "decert-123", appAccount: "0x8721...3d91", appDomain: "decert.network" },
+//   { appName: "DataVault", appId: "datavault-456", appAccount: "0x6532...7e22", appDomain: "datavault.io" },
+//   { appName: "FileShare", appId: "fileshare-789", appAccount: "0x3251...9f43", appDomain: "fileshare.app" },
+// ];
 
 export default function Index() {
   const router = useRouter();
@@ -34,13 +34,13 @@ export default function Index() {
   // const [isLoading, setIsLoading] = useState(true);
   const [accountName, setAccountName] = useState("");
   const [accountAddress, setAccountAddress] = useState("");
-  const [storageSpace, setStorageSpace] = useState("0 GB");
-  const [usedStorageSpace, setUsedStorageSpace] = useState("0 GB");
-  const [storagePercentage, setStoragePercentage] = useState(0);
-  const [tokenAmount, setTokenAmount] = useState("0");
+  // const [storageSpace, setStorageSpace] = useState("0 GB");
+  // const [usedStorageSpace, setUsedStorageSpace] = useState("0 GB");
+  // const [storagePercentage, setStoragePercentage] = useState(0);
+  // const [tokenAmount, setTokenAmount] = useState("0");
   // const [isMobile, setIsMobile] = useState(true);
   const [activeView, setActiveView] = useState("account"); // "account" or "wallet"
-  const [appAccounts, setAppAccounts] = useState(mockAppAccounts);
+  // const [appAccounts, setAppAccounts] = useState(mockAppAccounts);
 
 
   useEffect(() => {
@@ -168,19 +168,19 @@ export default function Index() {
         </div>
         <div className={styles.storageDetails}>
           <div className={styles.storageInfo}>
-            <div className={styles.storageValue}>
+            {/* <div className={styles.storageValue}>
               <span className={styles.usedStorage}>{usedStorageSpace}</span>
               <span className={styles.totalStorage}>/ {storageSpace}</span>
-            </div>
+            </div> */}
             <div className={styles.storageLabel}>
               {t("storage.used", "已使用")}
             </div>
           </div>
           <div className={styles.storageProgress}>
-            <div
+            {/* <div
               className={styles.storageProgressBar}
               style={{ width: `${storagePercentage}%` }}
-            ></div>
+            ></div> */}
           </div>
         </div>
       </div>
@@ -194,7 +194,7 @@ export default function Index() {
           </button>
         </div>
         <div className={styles.tokenDetails}>
-          <div className={styles.tokenAmount}>{tokenAmount}</div>
+          {/* <div className={styles.tokenAmount}>{tokenAmount}</div> */}
           <div className={styles.tokenLabel}>
             {t("tokens.available", "可用代币")}
           </div>
@@ -209,7 +209,7 @@ export default function Index() {
         <div className={styles.sectionHeader}>
           <h2>{t("appAccounts.title", "应用账号")}</h2>
         </div>
-        <div className={styles.appAccountsList}>
+        {/* <div className={styles.appAccountsList}>
           {appAccounts.length > 0 ? (
             appAccounts.map((app, index) => (
               <div key={index} className={styles.appAccountItem}>
@@ -231,7 +231,7 @@ export default function Index() {
               {t("appAccounts.empty", "暂无应用账号")}
             </div>
           )}
-        </div>
+        </div> */}
       </div>
 
       {/* Wallet Entry Button */}

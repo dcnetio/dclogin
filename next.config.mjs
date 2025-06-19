@@ -93,7 +93,8 @@ const nextConfig = {
           },
         },
       };
-      config.devtool = 'hidden-source-map'; // 确保生产环境启用 Source Maps
+      // config.devtool = 'hidden-source-map'; // 确保生产环境启用 Source Maps
+      config.devtool = 'source-map';
     }
     
     // 处理 SVG
@@ -167,7 +168,7 @@ const nextConfig = {
     generateEtags: false, // 禁用 ETags
     
     // 压缩配置
-    compress: true,
+    // compress: true,
     productionBrowserSourceMaps: true,
   }),
 };

@@ -181,7 +181,7 @@ async function getEncodePwd(info: {
 }): Promise<ArrayBuffer | null> {
   return new Promise((resolve) => {
     // todo 显示用户加密密码页面
-    const connectingApp = window.dc?.appInfo || "";
+    const connectingApp: APPInfo | null = window.dc?.appInfo || null;
     const appInfo = {
       appId: connectingApp.appId || "",
       appName: connectingApp.appName || "",

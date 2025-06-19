@@ -8,7 +8,6 @@ const DAPPChannels = new Map<string, MessagePort>(); // 使用Map以便存储多
 let walletLoadedFlag = false; //钱包已加载标志
 import {Ed25519PrivKey} from './ed25519';
 import type { Account,APPInfo, EIP712SignReqMessage, SignReqMessage, SignReqMessageData, SignResponseMessage, ResponseMessage } from "web-dc-api";
-import { exit } from "process";
 // Dapp信息
 const appInfo: APPInfo = {
   appId: "",
@@ -553,7 +552,7 @@ async function responseForsignMessage(channelId: string, waitData: SignReqMessag
 
 // 发送签名EIP712消息给钱包页面
 function requestSignEIP712Message(channelId: string, orignMessage: EIP712SignReqMessage) {
-  const data = orignMessage.data;
+  // const data = orignMessage.data;
   // 向钱包网页发送签名消息
   const message = {
     type: "signEIP712Message",

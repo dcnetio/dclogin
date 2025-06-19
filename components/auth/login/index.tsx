@@ -15,6 +15,7 @@ import { useRouter } from 'next/navigation'
 import NavigationService from "@/lib/navigation";
 import { updateAppInfo, updateAuthStep } from "@/lib/slices/authSlice";
 import { useTranslation } from "next-i18next";
+import { dcConfig } from "@/config/define";
 
 // 获取查询字符串
 let queryString = '';
@@ -88,14 +89,7 @@ export default function Login() {
   };
   const initDC = async () => {
     const { DC } = await import('web-dc-api');
-    const dc = new DC({
-      // todo 发布需要调整
-      wssUrl: 'wss://dcchain.baybird.cn',
-      backWssUrl: 'wss://dcchain.baybird.cn',
-      // wssUrl: 'ws://192.168.31.31:9944',
-      // backWssUrl: 'ws://192.168.31.31:9944',
-      // swUrl: basePath + '/sw.js',
-    })
+    const dc = new DC(dcConfig)
     dc.init()
     window.dc = dc
   }

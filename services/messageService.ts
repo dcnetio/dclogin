@@ -427,8 +427,8 @@ async function createAccountWithRegister(
   safecode: string
 ) {
   // 判断account是否已经存在
-  const nftBinded = await window.dc.auth.isNftAccountBinded(account);
-  if (nftBinded) {
+  const [nftBinded, error] = await window.dc.auth.isNftAccountBinded(account);
+  if (error || nftBinded) {
     //todo 跳出提示框,提示用户该账号已经绑定了NFT
     window.showToast({
       content: i18n.t("account.nft_account_binded"),
@@ -503,14 +503,13 @@ async function createAccountWithLogin(
   origin?: string
 ) {
   try {
-    const res = await window.dc.auth.accountLogin(account, password, safecode);
+    const [mnemonic, err] = await window.dc.auth.accountLogin(account, password, safecode);
     console.log("=================window.dc.auth.accountLogin res");
-    if (!res || !res.mnemonic) {
+    if (err || !mnemonic) {
       console.log("=================window.dc.auth.accountLogin error");
       return;
     }
     // 登录成功，得到私钥
-    const mnemonic = res.mnemonic;
     // 助记词信息， 私钥转助记词
     const wallet = await ethersHelper.createWalletAccountWithMnemonic(mnemonic);
     console.log("=================createWalletAccountWithMnemonic success");

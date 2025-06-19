@@ -20,13 +20,9 @@ export async function applyFreeSpace(pubKey: Ed25519PubKey): Promise<[boolean, E
   }
   try {
     // Check if this is a new account without space
-    try {
-      const userInfo = await window.dc.auth.getUserInfoWithAccount('0x' + pubKey.toString());
-      if (userInfo && userInfo.subscribeSpace > 0) {
-        return [false, new Error("User already has space")];
-      }
-    } catch (error) {
-      console.warn("Error getUserInfoWithAccount :", error);
+    const [userInfo, err] = await window.dc.auth.getUserInfoWithAccount('0x' + pubKey.toString());
+    if (userInfo && userInfo.subscribeSpace > 0) {
+      return [false, new Error("User already has space")];
     }
     
     
@@ -62,8 +58,8 @@ export async function applyFreeSpace(pubKey: Ed25519PubKey): Promise<[boolean, E
         return [false, new Error("Invalid response format: " + jsonError.message)];
       }
       
-      if (!result || result.error) {
-        return [false, new Error("Storage giving error: " + (result?.error || "Unknown error"))];
+      if (!result || (result.msg && result.msg !== "已经获取")) {
+        return [false, new Error("Storage giving error: " + (result?.msg || "Unknown error"))];
       }
       
       // Check if storage was actually allocated
@@ -102,11 +98,11 @@ export async function applyFreeSpace(pubKey: Ed25519PubKey): Promise<[boolean, E
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     try {
       // Get updated user info
-      const userInfo = await window.dc.dcChain?.getUserInfoWithAccount(
+      const [userInfo, err] = await window.dc.auth?.getUserInfoWithAccount(
        "0x" + publicKey.toString()
       );
       
-      if (!userInfo) continue;
+      if (err || !userInfo) continue;
       
       // Check if either expiration time or space has increased
       if (

@@ -196,7 +196,6 @@
 }
 
 .passwordInput {
-  display: block !important;
   width: 100% !important;
   margin-bottom: 12px !important;
   visibility: visible !important;

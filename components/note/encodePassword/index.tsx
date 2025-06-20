@@ -103,7 +103,7 @@ export default function EncodePassword(props: EncodePasswordProps) {
               clearable
               type="password"
               className={styles.passwordInput}
-              autoFocus={true}
+              // autoFocus={true}
               style={{
                 border: "1px solid #ddd",
                 borderRadius: "8px",

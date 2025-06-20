@@ -93,7 +93,7 @@ const nextConfig = {
           },
         },
       };
-      config.devtool = 'hidden-source-map'; // 确保生产环境启用 Source Maps
+      // config.devtool = 'hidden-source-map'; // 确保生产环境启用 Source Maps
       // config.devtool = 'source-map';
     }
     
@@ -169,7 +169,7 @@ const nextConfig = {
     
     // 压缩配置
     compress: true,
-    productionBrowserSourceMaps: true,
+    productionBrowserSourceMaps: false, // 禁用生产环境的浏览器源映射
   }),
 };
 

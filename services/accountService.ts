@@ -125,11 +125,6 @@ async function createAccount(
   let accounts: AccountInfo[] = [];
   try {
     //待测试 跳出状态等待框,提示用户账号创建中，需要手动关闭
-    window.showToast({
-      content: i18n.t("account.creating"),
-      position: "bottom",
-      duration: 0,
-    });
     // 保存用户信息
     const account = await createWalletAccount(mnemonic, nftAccount, address);
     console.log("11111111111111111111account 创建", account);

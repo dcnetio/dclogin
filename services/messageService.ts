@@ -85,6 +85,12 @@ function initCommChannel() {
       origin = "*";
     }
     window.opener.postMessage(message, origin);
+  }else if(window.parent){
+    let origin = openerOrigin || '';
+    if (openerOrigin?.indexOf("file://") !== -1) {
+      origin = "*";
+    }
+    window.parent.postMessage(message, origin);
   }
 }
 

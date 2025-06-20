@@ -1,4 +1,4 @@
-let _basePath = '/v0_0_6';
+let _basePath = '/v0_0_7';
 let _apiUrl = 'https://wallet.dcnetio.com/api';
 let _dcConfig = {
     wssUrl: 'wss://dcchain.baybird.cn',

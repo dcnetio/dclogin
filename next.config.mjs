@@ -12,8 +12,8 @@ const nextConfig = {
   trailingSlash: true, // URL 尾部斜杠
   
   // === 环境相关配置 ===
-  assetPrefix: process.env.NODE_ENV === "production" ? "/v0_0_6" : "",
-  basePath: process.env.NODE_ENV === "production" ? "/v0_0_6" : "",
+  assetPrefix: process.env.NODE_ENV === "production" ? "/v0_0_7" : "",
+  basePath: process.env.NODE_ENV === "production" ? "/v0_0_7" : "",
   
   // === 图片优化配置 ===
   images: {
@@ -38,7 +38,7 @@ const nextConfig = {
   },
   
   // === 性能优化 ===
-  compress: false, // 启用 gzip 压缩
+  compress: true, // 启用 gzip 压缩
   
   // === 构建配置 ===
   // generateBuildId: async () => {
@@ -93,8 +93,8 @@ const nextConfig = {
           },
         },
       };
-      // config.devtool = 'hidden-source-map'; // 确保生产环境启用 Source Maps
-      config.devtool = 'source-map';
+      config.devtool = 'hidden-source-map'; // 确保生产环境启用 Source Maps
+      // config.devtool = 'source-map';
     }
     
     // 处理 SVG
@@ -168,7 +168,7 @@ const nextConfig = {
     generateEtags: false, // 禁用 ETags
     
     // 压缩配置
-    // compress: true,
+    compress: true,
     productionBrowserSourceMaps: true,
   }),
 };

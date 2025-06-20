@@ -31,7 +31,7 @@
     "redux-persist": "^6.0.0",
     "tweetnacl": "^1.0.3",
     "vconsole": "^3.15.1",
-    "web-dc-api": "^0.0.33"
+    "web-dc-api": "^0.0.34"
   },
   "devDependencies": {
     "@types/jsbn": "^1.2.33",

@@ -102,14 +102,14 @@ export async function applyFreeSpace(pubKey: Ed25519PubKey): Promise<[boolean, E
        "0x" + publicKey.toString()
       );
       
-      if (err || !userInfo) continue;
-      
-      // Check if either expiration time or space has increased
-      if (
-        Math.abs(Number(userInfo.expireNumber) - lastExpire) > 2 * 60 * 60 * 24 || // ~2 days difference
-        Math.abs(Number(userInfo.subscribeSpace) - lastSubscribeSize) > 10000 // ~10MB difference
-      ) {
-        return true;
+      if (!err && userInfo) {
+          // Check if either expiration time or space has increased
+          if (
+            Math.abs(Number(userInfo.expireNumber) - lastExpire) > 2 * 60 * 60 * 24 || // ~2 days difference
+            Math.abs(Number(userInfo.subscribeSpace) - lastSubscribeSize) > 10000 // ~10MB difference
+          ) {
+            return true;
+          }
       }
     } catch (err) {
       console.warn("Error checking subscription:", err);

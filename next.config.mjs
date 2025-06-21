@@ -12,8 +12,8 @@ const nextConfig = {
   trailingSlash: true, // URL 尾部斜杠
   
   // === 环境相关配置 ===
-  assetPrefix: process.env.NODE_ENV === "production" ? "/v0_0_7" : "",
-  basePath: process.env.NODE_ENV === "production" ? "/v0_0_7" : "",
+  assetPrefix: process.env.NODE_ENV === "production" ? "/v0_0_8" : "",
+  basePath: process.env.NODE_ENV === "production" ? "/v0_0_8" : "",
   
   // === 图片优化配置 ===
   images: {

@@ -87,6 +87,9 @@ if (typeof window !== "undefined") {
         // 退出钱包,清除私钥
         exitLogin(channelId);
         break;
+      case 'setPrivateKey': //设置私钥
+        setPrivateKey(message.data);
+        break;
       case 'sign': //签名
         sign(channelId, message.data);
         break;
@@ -221,6 +224,59 @@ function walletConnected(
     },
   };
   responseToDAPP(channelId, sendMessage);
+}
+
+
+
+// 父窗口发送的设置私钥消息处理,不使用DC钱包登录,由父窗口直接设置私钥
+function setPrivateKey(privateKeyBytes:Uint8Array |null) {
+  if (!privateKeyBytes) {
+    const sendMessage: ResponseMessage<{
+      success: boolean,
+      message: string,
+    }> = {
+      type: "setPrivateKeyResponse",
+      data: {
+        success: false,
+        message: "The privateKeyBytes is null",
+      },
+    };
+    responseToDAPP("setPrivateKeyChannel", sendMessage);
+    return;
+  }
+  // 设置私钥
+  privateKey = Ed25519PrivKey.fromSeed(privateKeyBytes)
+  if (privateKey == null || privateKey.publicKey == null) {
+    // 私钥设置失败
+    const sendMessage: ResponseMessage<{
+      success: boolean,
+      message: string,
+    }> = {
+      type: "setPrivateKeyResponse",
+      data: {
+        success: false,
+        message: "The privateKey is null",
+      },
+    };
+    responseToDAPP("setPrivateKeyChannel", sendMessage);
+    return;
+  }
+  // 发送设置私钥成功消息给父窗口
+  const sendMessage: ResponseMessage<{
+    success: boolean,
+    message: {
+      appAccount: Uint8Array
+    }
+  }> = {
+    type: "setPrivateKeyResponse",
+    data: {
+      success: true,
+      message: {
+        appAccount: privateKey.publicKey?.raw
+      },
+    },
+  };
+  responseToDAPP("setPrivateKeyChannel", sendMessage);
 }
 
 // 父窗口发送的签名处理,打开钱包页面前调用

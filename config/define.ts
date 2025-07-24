@@ -1,4 +1,5 @@
-let _basePath = '/v0_0_8';
+import { versionName } from "../version.json";
+let _basePath = '/' + versionName;
 let _apiUrl = '/api';
 let _dcConfig = {
     wssUrl: 'wss://dcchain.baybird.cn',

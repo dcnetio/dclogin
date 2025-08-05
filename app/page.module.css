@@ -8,14 +8,14 @@
 
 @media (min-width: 768px) {
   .mobile-stack {
-    margin-top: 4rem; /* 中等屏幕增加上边距 */
+    margin-top: 2rem; /* 中等屏幕增加上边距 */
   }
 }
 
 
 @media (min-width: 1024px) {
   .mobile-stack {
-    margin-top: 6rem; /* 大屏幕增加更大的上边距 */
+    margin-top: 4rem; /* 大屏幕增加更大的上边距 */
   }
 }
 

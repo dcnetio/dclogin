@@ -1,5 +1,7 @@
 
 /** @type {import('next').NextConfig} */
+import versionJson from './version.json' assert { type: 'json' };
+const versionPath = process.env.NODE_ENV === "production" ? '/' + versionJson.versionName : "";
 const nextConfig = {
 
   swcMinify: true, // 使用SWC而非Terser进行最小化
@@ -12,8 +14,8 @@ const nextConfig = {
   trailingSlash: true, // URL 尾部斜杠
   
   // === 环境相关配置 ===
-  assetPrefix: process.env.NODE_ENV === "production" ? "/v0_0_8" : "",
-  basePath: process.env.NODE_ENV === "production" ? "/v0_0_8" : "",
+  assetPrefix: versionPath,
+  basePath: versionPath,
   
   // === 图片优化配置 ===
   images: {

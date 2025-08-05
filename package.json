@@ -2,6 +2,7 @@
   "name": "wallet",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "NODE_ENV=development && next dev ",
     "build": "next build",

@@ -1,5 +1,6 @@
-let _basePath = '/v0_0_8';
-let _apiUrl = 'https://wallet.dcnetio.com/api';
+import { versionName } from "../version.json";
+let _basePath = '/' + versionName;
+let _apiUrl = '/api';
 let _dcConfig = {
     wssUrl: 'wss://dcchain.baybird.cn',
     backWssUrl: 'wss://dcchain.baybird.cn',

@@ -22,7 +22,7 @@ async function initNetworks() {
       }
     }
   } catch (e) {
-    console.error("初始化网络列表失败:", e);
+    console.log("初始化网络列表失败:", e);
   }
   if (currentChain == null) {
     //从数据库中获取第一个网络信息

@@ -25,7 +25,7 @@ i18n
   .use(languageDetector)
   .use(initReactI18next) // passes i18n down to react-i18next
   .init({
-    debug: true,
+    debug: false,
     supportedLngs: Object.values(I18N_LANGUAGES),
     fallbackLng: I18N_LANGUAGES.ZH,
     interpolation: { escapeValue: false },

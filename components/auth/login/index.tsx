@@ -10,12 +10,12 @@ import {
 import { store } from "@/lib/store";
 import { saveInitState } from "@/lib/slices/appSlice";
 import { appState, MsgStatus } from "@/config/constant";
-import type { ConnectReqMessage } from "web-dc-api";
 import { useRouter } from 'next/navigation'
 import NavigationService from "@/lib/navigation";
 import { updateAppInfo, updateAuthStep } from "@/lib/slices/authSlice";
 import { useTranslation } from "next-i18next";
 import { dcConfig } from "@/config/define";
+import { ConnectReqMessage } from "@/types/walletTypes";
 
 // 获取查询字符串
 let queryString = '';
@@ -90,7 +90,7 @@ export default function Login() {
   const initDC = async () => {
     const { DC } = await import('web-dc-api');
     const dc = new DC(dcConfig)
-    dc.init()
+    await dc.init()
     window.dc = dc
   }
 

@@ -8,16 +8,10 @@ import { getCurrentChain } from "@/services/networkService";
 import { applyFreeSpace } from "@/app/tools/subSpace";
 
 import type {
-  ConnectReqMessage,
-  SignReqMessage,
-  EIP712SignReqMessage,
   Ed25519PrivKey,
 } from "web-dc-api";
 import {
   KeyManager,
-  isConnectReqMessage,
-  isSignReqMessage,
-  isEIP712SignReqMessage,
 } from "web-dc-api";
 
 import {
@@ -26,6 +20,8 @@ import {
 import i18n from "@/locales/i18n";
 import { authenticateWithPasskey, bindNFTAccount, chooseStoredAccount, createAccount, generateWalletAccount, resPonseWallet, unlockWallet } from "./accountService";
 import { HDNodeWallet } from "ethers/wallet";
+import { AccountInfo, SignReqMessage, ConnectReqMessage, isConnectReqMessage, 
+  isSignReqMessage, EIP712SignReqMessage, isEIP712SignReqMessage } from "@/types/walletTypes";
 
 // 获取查询字符串
 let queryString = "";
@@ -236,17 +232,22 @@ async function connectCmdHandler(
 
   messageData = message;
   portData = port;
-  const chooseAccount = await chooseStoredAccount();
-  if (!chooseAccount) {
-    // 没有用户的时候，需要跳转到登录页面
-    store.dispatch(
-      updateAuthStep({
-        type: MsgStatus.failed,
-        content: i18n.t("auth.no_account"),
-        needLogin: true,
-      })
-    );
-    return;
+  let chooseAccount = await chooseStoredAccount();
+  if (!chooseAccount) { // 如果用户没有登录账号，判断是否有账号信息传过来，有的话直接用
+    if(messageData.data && messageData.data.accountInfo && messageData.data.accountInfo.nftAccount) {
+      chooseAccount = messageData.data.accountInfo;
+    }
+    if (!chooseAccount) {
+      // 没有用户的时候，需要跳转到登录页面
+      store.dispatch(
+        updateAuthStep({
+          type: MsgStatus.failed,
+          content: i18n.t("auth.no_account"),
+          needLogin: true,
+        })
+      );
+      return;
+    }
   }
   const mnemonic = await unlockWallet(chooseAccount);
   if (!mnemonic) {

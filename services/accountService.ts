@@ -4,9 +4,8 @@ import ethersHelper from "@/helpers/ethersHelper";
 import { MsgStatus } from "@/config/constant";
 import { store } from "@/lib/store";
 import { updateAuthStep } from "@/lib/slices/authSlice";
-import { AccountInfo } from "../types/walletTypes";
+import { AccountInfo, ConnectReqMessage } from "../types/walletTypes";
 import type {
-  ConnectReqMessage,
   APPInfo,
 } from "web-dc-api";
 import {
@@ -24,9 +23,6 @@ import i18n from "@/locales/i18n";
 import { getCurrentChain, getCurrentNetwork } from "./networkService";
 // 定义一个变量，用于存储BroadcastChannel对象
 let currentAccount: AccountInfo | null = null; //当前账号
-
-let messageData: ConnectReqMessage = { origin: "" };
-let portData: MessagePort | null = null;
 
 // 获取已有的账号
 async function chooseStoredAccount(): Promise<AccountInfo | null> {

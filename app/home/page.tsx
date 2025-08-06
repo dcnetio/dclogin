@@ -100,8 +100,8 @@ export default function Index() {
       setCurrencySymbol(network.currencySymbol);
 
       // Simulate getting storage info from the DC API
-      // if (window.dc && window.dc.auth) {
-      //     const [userInfo, err] = await window.dc.auth.getUserInfoWithAccount(
+      // if (dc && dc.auth) {
+      //     const [userInfo, err] = await dc.auth.getUserInfoWithAccount(
       //       "0x" + accountInfo.account
       //     );
       //     if(err || !userInfo) {

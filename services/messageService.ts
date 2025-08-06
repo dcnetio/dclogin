@@ -18,10 +18,11 @@ import {
   showSignatureDAPPNote,
 } from "@/components/note/noteHelper";
 import i18n from "@/locales/i18n";
-import { authenticateWithPasskey, bindNFTAccount, chooseStoredAccount, createAccount, generateWalletAccount, resPonseWallet, unlockWallet } from "./accountService";
+import { authenticateWithPasskey, bindNFTAccount, chooseStoredAccount, createAccount, generateWalletAccount, resPonseWallet, setCurrentAccount, unlockWallet } from "./accountService";
 import { HDNodeWallet } from "ethers/wallet";
 import { AccountInfo, SignReqMessage, ConnectReqMessage, isConnectReqMessage, 
   isSignReqMessage, EIP712SignReqMessage, isEIP712SignReqMessage } from "@/types/walletTypes";
+import { checkDCInitialized, getDC } from "@/components/auth/login/dc";
 
 // 获取查询字符串
 let queryString = "";
@@ -91,7 +92,7 @@ function initCommChannel() {
 }
 
 // 来自DAPP的消息处理
-function onDAPPMessage(event: MessageEvent) {
+async function onDAPPMessage(event: MessageEvent) {
   let message = null;
   // 对消息进行json解析
   message = event.data;
@@ -119,6 +120,8 @@ function onDAPPMessage(event: MessageEvent) {
     case "channelPort2":
       iframeChannel = event.ports[0];
       iframeChannel.onmessage = onDAPPMessage;
+      // 循环判断dc是否存在，并设置超时，超过3s则直接返回
+      const dc = await checkDCInitialized();
       const loadedMessage = {
         type: "loaded",
         origin: openerOrigin,
@@ -131,7 +134,8 @@ function onDAPPMessage(event: MessageEvent) {
       if (isConnectReqMessage(message)) {
         const connectingApp = message.data;
         if (openerOrigin && connectingApp) {
-          if (window.dc) {
+          const dc = getDC();
+          if (dc) {
             // 保存dappinfo
             const dappInfo = {
               appId: connectingApp?.appId || "",
@@ -140,9 +144,9 @@ function onDAPPMessage(event: MessageEvent) {
               appUrl: connectingApp?.appUrl || "",
               appVersion: connectingApp?.appVersion || "",
             };
-            window.dc.setAppInfo(dappInfo);
+            dc.setAppInfo(dappInfo);
             // 保存shouldReturnUserInfo
-            window.dc.setShouldReturnUserInfo(connectingApp?.shouldReturnUserInfo);
+            dc.setShouldReturnUserInfo(connectingApp?.shouldReturnUserInfo);
           }
 
           //显示提示页面
@@ -239,6 +243,7 @@ async function connectCmdHandler(
   if (!chooseAccount) { // 如果用户没有登录账号，判断是否有账号信息传过来，有的话直接用
     if(messageData.data && messageData.data.accountInfo && messageData.data.accountInfo.nftAccount) {
       chooseAccount = messageData.data.accountInfo;
+      setCurrentAccount(chooseAccount);
     }
     if (!chooseAccount) {
       // 没有用户的时候，需要跳转到登录页面
@@ -256,9 +261,10 @@ async function connectCmdHandler(
   if (!mnemonic) {
     return;
   }
-  if (window.dc) {
+  const dc = getDC();
+  if (dc) {
     if (connectingApp && connectingApp.appId) {
-      await window.dc.auth.generateAppAccount(connectingApp.appId, mnemonic);
+      await dc.auth.generateAppAccount(connectingApp.appId, mnemonic);
     }
   }
   return await resPonseWallet(mnemonic, message, bool, port);
@@ -436,8 +442,12 @@ async function createAccountWithRegister(
   password: string,
   safecode: string
 ) {
+  const dc = getDC();
+  if (!dc) {
+    return;
+  }
   // 判断account是否已经存在
-  const [nftBinded, error] = await window.dc.auth.isNftAccountBinded(account);
+  const [nftBinded, error] = await dc.auth.isNftAccountBinded(account);
   if (error || nftBinded) {
     //todo 跳出提示框,提示用户该账号已经绑定了NFT
     window.showToast({
@@ -513,10 +523,14 @@ async function createAccountWithLogin(
   origin?: string
 ) {
   try {
-    const [mnemonic, err] = await window.dc.auth.accountLogin(account, password, safecode);
-    console.log("=================window.dc.auth.accountLogin res");
+    const dc = getDC();
+    if (!dc) {
+      return;
+    }
+    const [mnemonic, err] = await dc.auth.accountLogin(account, password, safecode);
+    console.log("=================dc.auth.accountLogin res");
     if (err || !mnemonic) {
-      console.log("=================window.dc.auth.accountLogin error");
+      console.log("=================dc.auth.accountLogin error");
       return;
     }
     // 登录成功，得到私钥

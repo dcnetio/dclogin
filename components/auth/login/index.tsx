@@ -16,6 +16,7 @@ import { updateAppInfo, updateAuthStep } from "@/lib/slices/authSlice";
 import { useTranslation } from "next-i18next";
 import { dcConfig } from "@/config/define";
 import { ConnectReqMessage } from "@/types/walletTypes";
+import { initDC } from "./dc";
 
 // 获取查询字符串
 let queryString = '';
@@ -87,18 +88,12 @@ export default function Login() {
     } finally {
     }
   };
-  const initDC = async () => {
-    const { DC } = await import('web-dc-api');
-    const dc = new DC(dcConfig)
-    await dc.init()
-    window.dc = dc
-  }
 
   useEffect(() => {
     if(typeof window !== "undefined") {
       if(window.location.href.indexOf('/test') == -1 && 
       window.location.href.indexOf('/iframe') == -1) {
-        initDC();
+        initDC(dcConfig);
         init();
       }
     }

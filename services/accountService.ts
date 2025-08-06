@@ -21,6 +21,7 @@ import {
 } from "@/components/note/noteHelper";
 import i18n from "@/locales/i18n";
 import { getCurrentChain, getCurrentNetwork } from "./networkService";
+import { getDC } from "@/components/auth/login/dc";
 // 定义一个变量，用于存储BroadcastChannel对象
 let currentAccount: AccountInfo | null = null; //当前账号
 
@@ -62,7 +63,11 @@ const bindNFTAccount = async (
   mnemonic: string = "",
   pubKeyStr: string = ""
 ): Promise<[boolean, Error | null]> => {
-  const [bindStatus, err] = await window.dc.auth.bindNFTAccount(
+  const dc = getDC();
+  if (!dc) {
+    return [false, new Error(i18n.t("account.bind_nft_account_fail"))];
+  }
+  const [bindStatus, err] = await dc.auth.bindNFTAccount(
     account,
     password,
     safecode,
@@ -84,6 +89,11 @@ const _checkBind = (account: string, pubKeyStr: string) => {
   let interval: any = null, // 定时器
     intervalNum = 0; // 定时判断是否绑定成功
   return new Promise((resolve) => {
+    const dc = getDC();
+    if (!dc) {
+      resolve(false);
+      return;
+    }
     // 初始化定时器
     if (interval) {
       clearInterval(interval);
@@ -92,7 +102,7 @@ const _checkBind = (account: string, pubKeyStr: string) => {
     interval = setInterval(async () => {
       intervalNum++;
       // 判断是否绑定成功
-      const [bindFlag, err] = await window.dc.auth.isNftAccountBindSuccess(
+      const [bindFlag, err] = await dc.auth.isNftAccountBindSuccess(
         account,
         pubKeyStr
       );
@@ -171,8 +181,12 @@ async function getEncodePwd(info: {
   credentialId?: string;
 }): Promise<ArrayBuffer | null> {
   return new Promise((resolve) => {
+    const dc = getDC();
+    if (!dc) {
+      resolve(null);
+    }
     // todo 显示用户加密密码页面
-    const connectingApp: APPInfo | null = window.dc?.appInfo || null;
+    const connectingApp: APPInfo | null = dc?.appInfo || null;
     const appInfo = {
       appId: connectingApp.appId || "",
       appName: connectingApp.appName || "",
@@ -247,10 +261,11 @@ async function generateWalletAccount(seedAccount: string) {
       position: "bottom",
     });
   }
-  if (window.dc) {
-    const connectingApp = window.dc.appInfo;
+  const dc = getDC();
+  if (dc) {
+    const connectingApp = dc.appInfo;
     if (connectingApp && connectingApp.appId) {
-      await window.dc.auth.generateAppAccount(connectingApp.appId, mnemonic);
+      await dc.auth.generateAppAccount(connectingApp.appId, mnemonic);
     }
   }
   // 通过助记词导入钱包,生成带私钥钱包账号
@@ -304,9 +319,10 @@ async function createWalletAccount(
       await DBHelper.clearData(DBHelper.store_account);
       const res = await DBHelper.updateData(DBHelper.store_account, account);
       console.log("账号信息存储成功", res);
-      if(window.dc.shouldReturnUserInfo) {
-        // 存储到window.dc
-        window.dc.setAccountInfo(resAccount);
+      const dc = getDC();
+      if (dc && dc.shouldReturnUserInfo) {
+        // 存储到dc
+        dc.setAccountInfo(resAccount);
       }
       return resAccount;
     } catch (e) {
@@ -400,6 +416,10 @@ const getCurrentAccount = (): AccountInfo | null => {
   return currentAccount;
 };
 
+const setCurrentAccount = (account: AccountInfo) => {
+  currentAccount = account;
+};
+
 
 // 解锁钱包并返回数据信息
 async function unlockWallet(chooseAccount: AccountInfo) {
@@ -469,7 +489,10 @@ async function resPonseWallet(
   }
   let connectingApp = message.data;
   if (!connectingApp) {
-    connectingApp = window.dc.appInfo;
+    const dc = getDC();
+    if(dc && dc.appInfo){
+      connectingApp = dc.appInfo;
+    }
   }
   // 通过助记词导入钱包,生成带私钥钱包账号
   const wallet = await ethersHelper.createWalletAccountWithMnemonic(mnemonic);
@@ -483,7 +506,8 @@ async function resPonseWallet(
     );
     return;
   }
-  if (!window.dc) {
+  const dc = getDC();
+  if (!dc) {
     //待测试 跳出提示框,提示用户签名失败
     store.dispatch(
       updateAuthStep({
@@ -494,7 +518,7 @@ async function resPonseWallet(
     return;
   }
   // 获取用户信息，判断是否有空间
-  let publicKey = window.dc.publicKey;
+  let publicKey = dc.publicKey;
   if (publicKey == null) {
     // DCAPP进入
     const keymanager = new KeyManager();
@@ -504,7 +528,7 @@ async function resPonseWallet(
     );
     publicKey = privKey.publicKey;
     // todo保存公钥到上下文中
-    window.dc.setPublicKey(publicKey);
+    dc.setPublicKey(publicKey);
   }
   // 执行签名
   const signature = await ethersHelper.signMessage(
@@ -539,7 +563,7 @@ async function resPonseWallet(
         chainName: currentChain.name,
         signature: signature,
         privateKey: privKey.raw,
-        accountInfo: window.dc.accountInfo || {},
+        accountInfo: dc.accountInfo || {},
       },
     };
     if (!port) {
@@ -604,6 +628,7 @@ export {
   unlockWallet,
   resPonseWallet,
   getCurrentAccount,
+  setCurrentAccount,
   createAccount,
   bindNFTAccount,
 };

@@ -48,7 +48,9 @@ export type ConnectReqMessage = {
         appVersion: string,
         // account?: string,
         // chainId?: string,
-        accountInfo?: AccountInfo
+        accountInfo?: AccountInfo,
+        shouldReturnUserInfo?: boolean,
+        attach?: string
     }
 }
 

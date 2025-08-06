@@ -532,6 +532,7 @@ function connectWallet(channelId: string, data: {
           appAccount: privateKey.publicKey?.raw,
           chainId: data.chainId,
           chainName: data.chainName,
+          accountInfo: data.accountInfo
         });
     })
     .catch((e) => {

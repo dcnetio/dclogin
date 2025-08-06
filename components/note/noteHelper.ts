@@ -176,7 +176,7 @@ export const showSetEncodePassword = (
         let credentialId = "";
         let userHandle: Uint8Array | null = null;
         if (typeof window.PublicKeyCredential !== "undefined") {
-          //调用webauthn进行账号信息加密,并存储到数据库
+          //调用webauthn进行账号信息加密
           const credential = await registerPasskey();
           // 提取 response 对象
           userHandle = credential.userHandle;

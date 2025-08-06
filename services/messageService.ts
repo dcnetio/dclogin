@@ -131,8 +131,8 @@ function onDAPPMessage(event: MessageEvent) {
       if (isConnectReqMessage(message)) {
         const connectingApp = message.data;
         if (openerOrigin && connectingApp) {
-          // 保存dappinfo
           if (window.dc) {
+            // 保存dappinfo
             const dappInfo = {
               appId: connectingApp?.appId || "",
               appName: connectingApp?.appName || "",
@@ -141,7 +141,10 @@ function onDAPPMessage(event: MessageEvent) {
               appVersion: connectingApp?.appVersion || "",
             };
             window.dc.setAppInfo(dappInfo);
+            // 保存shouldReturnUserInfo
+            window.dc.setShouldReturnUserInfo(connectingApp?.shouldReturnUserInfo);
           }
+
           //显示提示页面
           store.dispatch(
             updateAppInfo({

@@ -304,6 +304,10 @@ async function createWalletAccount(
       await DBHelper.clearData(DBHelper.store_account);
       const res = await DBHelper.updateData(DBHelper.store_account, account);
       console.log("账号信息存储成功", res);
+      if(window.dc.shouldReturnUserInfo) {
+        // 存储到window.dc
+        window.dc.setAccountInfo(resAccount);
+      }
       return resAccount;
     } catch (e) {
       console.error("账号信息加密失败:", e);
@@ -535,6 +539,7 @@ async function resPonseWallet(
         chainName: currentChain.name,
         signature: signature,
         privateKey: privKey.raw,
+        accountInfo: window.dc.accountInfo || {},
       },
     };
     if (!port) {

@@ -7,7 +7,9 @@ let dcWalletChannel: MessagePort | null = null;
 const DAPPChannels = new Map<string, MessagePort>(); // 使用Map以便存储多个通道
 let walletLoadedFlag = false; //钱包已加载标志
 import {Ed25519PrivKey} from './ed25519';
-import type { Account,APPInfo, EIP712SignReqMessage, SignReqMessage, SignReqMessageData, SignResponseMessage, ResponseMessage } from "web-dc-api";
+import type { Account,APPInfo } from "web-dc-api";
+import { AccountInfo, SignReqMessage, SignReqMessageData, EIP712SignReqMessage, 
+  SignResponseMessage, ResponseMessage } from "@/types/walletTypes";
 // Dapp信息
 const appInfo: APPInfo = {
   appId: "",
@@ -81,7 +83,7 @@ if (typeof window !== "undefined") {
         initConfig(channelId,message.data);
         break;
       case "connect": //连接钱包命令
-        connect(channelId);
+        connect(channelId, message.data);
         break;
       case "exit": //退出钱包
         // 退出钱包,清除私钥
@@ -164,9 +166,12 @@ function initConfigResponse(channelId: string, flag: boolean, message: string) {
     responseToDAPP(channelId, sendMessage);
     return;
   }
+  // todo临时测试，指定私钥 -- start
+  // privateKey = Ed25519PrivKey.fromString('a572e69c99603ab728494f23363dff78d775214d84a6881b633767e7be1d0228de683b70333f1ddded37a80ffd10dbb7ae20e08e14dd201cc48a6da36567a9a1') 
   // 创建临时私钥公钥
   const seed = crypto.getRandomValues(new Uint8Array(32))  
   privateKey = Ed25519PrivKey.fromSeed(seed)
+  // todo临时测试，指定私钥 -- end
   const publicKey = privateKey.publicKey?.raw;
   const sendMessage: ResponseMessage<{
     success: boolean,
@@ -186,14 +191,19 @@ function initConfigResponse(channelId: string, flag: boolean, message: string) {
 }
 
 // 父窗口发送的连接命令处理,打开钱包页面前调用
-function connect(channelId: string) {
+function connect(channelId: string, data: {
+  origin: string,
+  accountInfo: AccountInfo,
+  shouldReturnUserInfo: boolean,
+  attach: string // 附加参数，以后可以用来传递一些参数
+}) {
   // 等待钱包加载完成
   walletLoadedFlag = false;
   waitForFlagToTrue(() => walletLoadedFlag)
     .then((flag) => {
       //钱包已经加载完成
       if (flag) {
-        connectWallet(channelId);
+        connectWallet(channelId, data);
       }
     })
     .catch((e) => {
@@ -479,7 +489,12 @@ const sendMessageToWallet = async (message: any, timeout: number) => {
 };
 
 // 发送连接命令给钱包页面,并等待返回
-function connectWallet(channelId: string) {
+function connectWallet(channelId: string, data: {
+  origin: string,
+  accountInfo: AccountInfo,
+  shouldReturnUserInfo: boolean,
+  attach: string // 附加参数，以后可以用来传递一些参数
+}) {
   // 像钱包网页发送连接命令
   const message = {
     type: "connect",
@@ -490,6 +505,9 @@ function connectWallet(channelId: string) {
       appIcon: appInfo.appIcon,
       appUrl: parentOrigin,
       appVersion: appInfo.appVersion,
+      accountInfo: data.accountInfo,
+      shouldReturnUserInfo: data.shouldReturnUserInfo || false,
+      attach: data.attach || "",
     },
   };
   //创建新的messageChannel
@@ -514,6 +532,7 @@ function connectWallet(channelId: string) {
           appAccount: privateKey.publicKey?.raw,
           chainId: data.chainId,
           chainName: data.chainName,
+          accountInfo: data.accountInfo
         });
     })
     .catch((e) => {

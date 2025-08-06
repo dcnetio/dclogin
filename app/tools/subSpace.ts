@@ -2,6 +2,7 @@
  * 空间订阅相关
  * 
  */
+import { getDC } from '@/components/auth/login/dc';
 import { apiUrl } from '@/config/define';
 import i18n from '@/locales/i18n';
 
@@ -11,7 +12,8 @@ import { Ed25519PubKey} from "web-dc-api";
  * @returns Promise resolving to [success, error]
  */
 export async function applyFreeSpace(pubKey: Ed25519PubKey): Promise<[boolean, Error | null]> {
-  if(!window.dc) {
+  const dc = getDC();
+  if(!dc) {
     return [false, new Error("Wallet not connected")]
   }
   // Get public key for request
@@ -20,7 +22,7 @@ export async function applyFreeSpace(pubKey: Ed25519PubKey): Promise<[boolean, E
   }
   try {
     // Check if this is a new account without space
-    const [userInfo] = await window.dc.auth.getUserInfoWithAccount('0x' + pubKey.toString());
+    const [userInfo] = await dc.auth.getUserInfoWithAccount('0x' + pubKey.toString());
     if (userInfo && userInfo.subscribeSpace > 0) {
       return [false, new Error("User already has space")];
     }
@@ -94,11 +96,14 @@ export async function applyFreeSpace(pubKey: Ed25519PubKey): Promise<[boolean, E
   lastSubscribeSize: number
 ): Promise<boolean> {
   const maxAttempts = 30; // Try for ~30 seconds
-  
+  const dc = getDC();
+  if(!dc) {
+    return false;
+  }
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     try {
       // Get updated user info
-      const [userInfo, err] = await window.dc.auth?.getUserInfoWithAccount(
+      const [userInfo, err] = await dc.auth?.getUserInfoWithAccount(
        "0x" + publicKey.toString()
       );
       

@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { Button, Input } from "antd-mobile";
 import { createAccountWithLogin } from "@/app/index";
+import { getDC } from "@/components/auth/login/dc";
 
 export default function Login() {
   // 保持现有的 state 和 hooks
@@ -43,9 +44,9 @@ export default function Login() {
     setIsLoading(false); // Reset loading state
     return;
   }
-  
-  if (window.dc) {
-    if (!window.dc.auth) {
+  const dc = getDC();
+  if (dc) {
+    if (!dc.auth) {
       window.showToast({
         content: t("login.failed"),
         position: "bottom",
@@ -90,7 +91,7 @@ export default function Login() {
       });
     }
   } else {
-    setIsLoading(false); // Reset loading if window.dc is not available
+    setIsLoading(false); // Reset loading if dc is not available
   }
 };
 

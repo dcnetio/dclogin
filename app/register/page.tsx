@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useTranslation} from 'react-i18next';
 import { Button, Input } from "antd-mobile";
 import { createAccountWithRegister } from "@/app/index";
+import { getDC } from "@/components/auth/login/dc";
 
 export default function Register() {
   const router = useRouter();
@@ -82,7 +83,8 @@ export default function Register() {
     }
     
     // 继续现有的账户创建逻辑
-    if(!window.dc || !window.dc.auth) {
+    const dc = getDC();
+    if(!dc || !dc.auth) {
       window.showToast({
         content: t('register.failed', '注册失败'),
         position: "bottom",

@@ -21,7 +21,7 @@ export const getDC = () => {
   return dcInstance;
 };
 export const checkDCInitialized = async () => {
-  const MAX_WAIT_TIME = 3000; // 3秒超时
+  const MAX_WAIT_TIME = 10000; // 10秒超时
   const CHECK_INTERVAL = 500; // 500ms检查一次
 
   return new Promise<any>((resolve) => {

@@ -1,6 +1,11 @@
 
 /** @type {import('next').NextConfig} */
-import versionJson from './version.json' assert { type: 'json' };
+import { readFile } from 'fs/promises';
+
+const versionJson = JSON.parse(
+  await readFile(new URL('./version.json', import.meta.url), 'utf8')
+);
+
 const versionPath = process.env.NODE_ENV === "production" ? '/' + versionJson.versionName : "";
 const nextConfig = {
 

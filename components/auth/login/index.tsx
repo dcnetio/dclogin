@@ -16,7 +16,7 @@ import { updateAppInfo, updateAuthStep } from "@/lib/slices/authSlice";
 import { useTranslation } from "next-i18next";
 import { dcConfig } from "@/config/define";
 import { ConnectReqMessage } from "@/types/walletTypes";
-import { initDC } from "./dc";
+import { checkDCInitialized, initDC } from "./dc";
 
 // 获取查询字符串
 let queryString = '';
@@ -66,6 +66,8 @@ export default function Login() {
         origin: window.location.origin,
       };
       if (!openerOrigin) {
+        // 循环判断dc是否存在，并设置超时，超过3s则直接返回
+        const dc = await checkDCInitialized();
         //改为判断是否有origin参数,如果有则表示是从DAPP打开的
         const accountInfo = await connectCmdHandler(message, false);
         console.log("accountInfo====", accountInfo);

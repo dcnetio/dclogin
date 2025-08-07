@@ -99,6 +99,7 @@ const nextConfig = {
             reuseExistingChunk: true,
           },
         },
+        maxSize: 500000, // 最大chunk大小（字节），超过会继续拆分
       };
       // config.devtool = 'hidden-source-map'; // 确保生产环境启用 Source Maps
       // config.devtool = 'source-map';

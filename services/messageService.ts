@@ -234,7 +234,7 @@ async function connectCmdHandler(
         content: i18n.t("network.disconnect"),
       })
     );
-    return;
+    //return;
   }
 
   messageData = message;

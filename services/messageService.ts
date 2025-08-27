@@ -470,6 +470,11 @@ async function createAccountWithRegister(
     ""
   );
   // 赠送套餐
+  window.showToast({
+    content: i18n.t("account.give_space_ing"),// 赠送中
+    position: "bottom",
+    duration: 0
+  });
   const giveFlag = await applyFreeSpace(privKey.publicKey);
   if (
     giveFlag[1] &&
@@ -483,6 +488,11 @@ async function createAccountWithRegister(
     });
     return;
   }
+  window.showToast({
+    content: i18n.t("account.bind_nft_account_ing"),// 绑定中
+    position: "bottom",
+    duration: 0
+  });
   // bind nft
   const bindRes = await bindNFTAccount(
     account,

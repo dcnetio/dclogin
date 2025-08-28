@@ -58,8 +58,10 @@
     "get_info_failed": "用户获取账号信息失败",
     "wallet_not_connect": "用户未连接钱包",
     "no_account": "用户没有可用账号",
+    "give_space_ing": "赠送空间中...",
     "give_space_failed": "赠送空间失败",
     "bind_nft_account": "绑定账号",
+    "bind_nft_account_ing": "绑定账号中...",
     "bind_nft_account_failed": "绑定账号失败",
     "nft_account_binded": "当前账号已被绑定",
     "bind_nft_account_timeout": "绑定账号超时"

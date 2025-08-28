@@ -444,12 +444,12 @@ async function unlockWallet(chooseAccount: AccountInfo) {
   });
   if (!userHandleHash) {
     //跳出提示框,提示用户解锁钱包失败
-    store.dispatch(
-      updateAuthStep({
-        type: MsgStatus.failed,
-        content: i18n.t("account.unlock_wallet_failed"),
-      })
-    );
+    // store.dispatch(
+    //   updateAuthStep({
+    //     type: MsgStatus.failed,
+    //     content: i18n.t("account.unlock_wallet_failed"),
+    //   })
+    // );
     return;
   }
   //解密出助记词

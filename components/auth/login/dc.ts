@@ -7,8 +7,13 @@ export const initDC = async (dcConfig) => {
   const { DC } = await import("web-dc-api");
   const dc = new DC(dcConfig);
   const startTime = Date.now();
-  await dc.init();
+  const res = await dc.init();
   console.log(`DC init time: ${Date.now() - startTime}ms`);
+  if (!res) {
+    console.error("DC init failed");
+    return null;
+  }
+  console.log(`DC init success`);
 
   dcInstance = dc;
   return dc;

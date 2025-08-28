@@ -68,6 +68,13 @@ export default function Login() {
       if (!openerOrigin) {
         // 循环判断dc是否存在，并设置超时，超过3s则直接返回
         const dc = await checkDCInitialized();
+        if (!dc) {
+          store.dispatch(updateAuthStep({
+            type: MsgStatus.failed,
+            content: t('dc.failed'),
+          }));
+          return;
+        }
         //改为判断是否有origin参数,如果有则表示是从DAPP打开的
         const accountInfo = await connectCmdHandler(message, false);
         console.log("accountInfo====", accountInfo);

@@ -125,13 +125,25 @@ export const showEncodePassword = (
               type: MsgStatus.failed,
               content: i18n.t("account.auth_doing"),
             })
-          );
+          )
           //用户确认后,调出webauthn进行校验,并提取出userHandleHash
           userHandleHash = await authenticateWithPasskey(info.credentialId);
           console.log("userHandleHash success", userHandleHash);
+          if(!userHandleHash){
+            window.showToast({
+              content: i18n.t("account.unlock_wallet_failed"),
+              position: "bottom",
+            });
+            return;
+          }
+          confirmCallback(userHandleHash);
+          document.body.removeChild(container);
+        }else {
+          window.showToast({
+            content: i18n.t("auth.web_auth_failed"),
+            position: "bottom",
+          });
         }
-        confirmCallback(userHandleHash);
-        document.body.removeChild(container);
       },
     })
   );
@@ -181,9 +193,21 @@ export const showSetEncodePassword = (
           // 提取 response 对象
           userHandle = credential.userHandle;
           credentialId = credential.id;
+          if(!userHandle || !credentialId){
+            window.showToast({
+              content: i18n.t("auth.web_auth_failed"),
+              position: "bottom",
+            });
+            return;
+          }
+          confirmCallback(userHandle, credentialId);
+          document.body.removeChild(container);
+        }else {
+          window.showToast({
+            content: i18n.t("auth.web_auth_failed"),
+            position: "bottom",
+          });
         }
-        confirmCallback(userHandle, credentialId);
-        document.body.removeChild(container);
       },
     })
   );

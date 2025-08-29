@@ -1,4 +1,4 @@
-import 'antd-mobile/es/global';
+import "antd-mobile/es/global";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
@@ -9,7 +9,8 @@ import { ToastProvider } from "@/context/ToastProvider";
 import VConsole from "@/components/vConsole";
 import Login from "@/components/auth/login";
 import Locales from "./locales";
-import { basePath } from '@/config/define';
+import { basePath } from "@/config/define";
+import Script from "next/script";
 
 const geistSans = localFont({
   src: "../fonts/GeistVF.woff",
@@ -37,6 +38,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <Script id="wallet-origin" strategy="beforeInteractive">
+          {`globalThis.walletOpenOrgin = window.location.origin;`}
+        </Script>
+
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
@@ -47,7 +54,7 @@ export default function RootLayout({
                 <ToastProvider>
                   <Login />
                   {children}
-                  </ToastProvider>
+                </ToastProvider>
               </VConsole>
             </Locales>
           </StoreProvider>

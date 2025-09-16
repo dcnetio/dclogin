@@ -19,12 +19,15 @@
  * - 自动处理跨线程通信和响应构建
  */
 let id = 0;
-self.addEventListener('fetch', event => {
+self.addEventListener('fetch', async event => {
   const url = new URL(event.request.url);
   if (url.pathname.startsWith('/dc/ipfs/')) {
-    event.respondWith( ipfsProxy(event));
+    await event.respondWith( ipfsProxy(event));
   }
 });
+
+self.addEventListener('install', () => self.skipWaiting());
+self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
 
 async function ipfsProxy(fetchEvent) {
   const msgId = ++id;
@@ -34,54 +37,194 @@ async function ipfsProxy(fetchEvent) {
   console.log('***********IPFS Proxy:', msgId, request.url, range);
   const pathname = new URL(request.url).pathname;
 
-  // 信道通信
-  const channel = new MessageChannel();
-  const promise = new Promise((resolve, reject) => {
-    channel.port1.onmessage = msgEvent => {
-      const {success, data, error, status, headers = {}} = msgEvent.data;
-      if(success) {
-        // 根据请求的后缀名设置响应头
-        const ext = pathname.split('.').pop();
-        const mimeType = MimeTypes['.' + ext] || MimeTypes[ext] || 'application/octet-stream';
-        headers['Content-Type'] = mimeType;
-        headers['Access-Control-Allow-Origin']= "*"
-        headers['Content-Disposition'] = `inline; filename="${pathname.split('/').pop()}"`;
-        headers['Accept-Ranges'] = 'bytes';
-
-        // 处理 Range 请求
-        let responseStatus = status || 200;
-        if (range) {
-          responseStatus = 206; // Partial Content
+  // ========== 1) 命中本地缓存：无 Range 直接返回 ==========
+  if (!range) {
+    try {
+      const cached = await idbGet(pathname);
+      if (cached && cached.blob) {
+        const hdrs = new Headers(cached.headers || {});
+        if (!hdrs.has('Content-Type')) {
+          // 回退 MIME
+          const ext = pathname.split('.').pop();
+          const mimeType = MimeTypes['.' + ext] || MimeTypes[ext] || 'application/octet-stream';
+          hdrs.set('Content-Type', mimeType);
         }
-
-
-        resolve(new Response(data ? new Uint8Array(data) : null, {
-          status: responseStatus,
-          headers: new Headers(headers)
-        }));
-      } else reject(error || 'IPFS fetch failed');
-    };
-  });
-
-  // 获取客户端列表
-  const clients = await self.clients.matchAll();
-  console.log('***********IPFS Proxy: clients', msgId, clients);
-  // 尝试找到发起请求的客户端
-  const client = clients.find(c => c.id === fetchEvent.clientId) || clients[0];
-  if (!client) {
-    return new Response('No active client', { status: 404 });
+        hdrs.set('Access-Control-Allow-Origin', '*');
+        hdrs.set('Accept-Ranges', 'bytes');
+        hdrs.set('X-Cache', 'IPFS-IndexedDB');
+        return new Response(cached.blob, { status: 200, headers: hdrs });
+      }
+    } catch (e) {
+      console.error('IndexedDB cache read failed:', e);
+    }
   }
 
-  // 发送消息给正确的客户端
-  client.postMessage(
-    {type: 'ipfs-fetch', id: msgId, pathname, range},
-    [channel.port2]);
-  return promise;
+  // 状态控制
+  let responseFlag = false;   // 任意反馈即置为 true
+  let settled = false;        // Response 是否已返回
+  let resendTimer = null;     // 重发计时器
+
+  // 先获取客户端
+  let client = null;
+  if (fetchEvent.clientId) {
+    try { client = await self.clients.get(fetchEvent.clientId); } catch (e) {
+      console.error('Failed to get client:', e);
+    }
+  }
+  if (!client) {
+    const windows = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+    client = windows.find(c => c.visibilityState === 'visible') || windows[0];
+  }
+  if (!client) {
+    return new Response('No active client to handle ipfs-fetch', { status: 404 });
+  }
+  console.log('Found client for IPFS fetch:', client.id);
+
+  // 建立一个可解析的 Promise
+  let resolveResp, rejectResp;
+  const responsePromise = new Promise((resolve, reject) => {
+    resolveResp = resolve;
+    rejectResp = reject;
+  });
+
+  // 发送一次请求：每次都新建 MessageChannel 并携带 port2，避免首次丢失
+  const sendOnce = () => {
+    try {
+      const channel = new MessageChannel();
+      channel.port1.onmessage = (msgEvent) => {
+        if (settled) return;
+        const { type, success, data, error, status, headers = {} } = msgEvent.data || {};
+
+        // 页面已反馈（ack 或数据），停止重发
+        responseFlag = true;
+        if (resendTimer) {
+          clearInterval(resendTimer);
+          resendTimer = null;
+        }
+
+        // ack / 中间态：继续等待最终数据
+        if (type === 'ipfs-ack' || status === 999) {
+          return;
+        }
+
+        if (success) {
+          // 构建响应头
+          const ext = pathname.split('.').pop();
+          const mimeType = MimeTypes['.' + ext] || MimeTypes[ext] || 'application/octet-stream';
+          headers['Content-Type'] = headers['Content-Type'] || mimeType;
+          headers['Access-Control-Allow-Origin'] = '*';
+          headers['Content-Disposition'] = `inline; filename="${pathname.split('/').pop()}"`;
+          headers['Accept-Ranges'] = 'bytes';
+
+          let responseStatus = status || 200;
+          if (range) responseStatus = 206;
+
+          // 仅在完整响应（无 Range 且 200）时缓存
+          if (!range && responseStatus === 200 && data && data.byteLength <= 5 << 20) { //缓存小于 5MB的数据
+            const blob = new Blob([new Uint8Array(data)], { type: headers['Content-Type'] });
+            // 异步写缓存，不阻塞返回
+            idbPut(pathname, blob, headers).catch(e => console.error('IndexedDB cache write failed:', e));
+          }
+
+          settled = true;
+          resolveResp(new Response(data ? new Uint8Array(data) : null, {
+            status: responseStatus,
+            headers: new Headers(headers)
+          }));
+        } else {
+          settled = true;
+          rejectResp(error || 'IPFS fetch failed');
+        }
+      };
+
+      // 携带新的 port2 发送
+      client.postMessage(
+        { type: 'ipfs-fetch', id: msgId, pathname, range },
+        [channel.port2]
+      );
+    } catch (e) {
+      console.error('postMessage failed:', e);
+    }
+  };
+
+  // 首次发送
+  sendOnce();
+
+  // 每秒检查一次，如无反馈则重新创建新通道并重发，直到页面反馈
+  resendTimer = setInterval(() => {
+    if (responseFlag || settled) {
+      clearInterval(resendTimer);
+      resendTimer = null;
+      return;
+    }
+    sendOnce();
+  }, 1000);
+
+  return responsePromise;
 }
 
+const IDB_DB_NAME = 'dc-ipfs-cache';
+const IDB_STORE = 'files';
+const IDB_VERSION = 1;
+
+let idbDbPromise = null;
+
+function idbOpen() {
+  if (idbDbPromise) return idbDbPromise;
+  idbDbPromise = new Promise((resolve, reject) => {
+    try {
+      const req = indexedDB.open(IDB_DB_NAME, IDB_VERSION);
+      req.onupgradeneeded = () => {
+        const db = req.result;
+        if (!db.objectStoreNames.contains(IDB_STORE)) {
+          const store = db.createObjectStore(IDB_STORE, { keyPath: 'key' });
+          store.createIndex('ts', 'ts', { unique: false });
+        }
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error || new Error('IndexedDB open failed'));
+    } catch (e) {
+      reject(e);
+    }
+  });
+  return idbDbPromise;
+}
+
+async function idbGet(key) {
+  try {
+    const db = await idbOpen();
+    return await new Promise((resolve, reject) => {
+      const tx = db.transaction(IDB_STORE, 'readonly');
+      const store = tx.objectStore(IDB_STORE);
+      const req = store.get(key);
+      req.onsuccess = () => resolve(req.result || null);
+      req.onerror = () => reject(req.error);
+    });
+  } catch (e) {
+    console.error('idbGet error:', e);
+    return null;
+  }
+}
+
+async function idbPut(key, blob, headers) {
+  try {
+    const db = await idbOpen();
+    const record = { key, blob, headers, ts: Date.now(), size: blob.size || 0 };
+    return await new Promise((resolve, reject) => {
+      const tx = db.transaction(IDB_STORE, 'readwrite');
+      const store = tx.objectStore(IDB_STORE);
+      const req = store.put(record);
+      req.onsuccess = () => resolve(true);
+      req.onerror = () => reject(req.error);
+    });
+  } catch (e) {
+    console.error('idbPut error:', e);
+    return false;
+  }
+}
 
 const MimeTypes = {
-    "hixpm": "image/x-xpixmap",
+    ".xpm": "image/x-xpixmap",
     ".7z": "application/x-7z-compressed",
     ".zip": "application/zip",
     ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",

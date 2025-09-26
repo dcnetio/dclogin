@@ -32,7 +32,7 @@ export const checkDCInitialized = async () => {
   return new Promise<any>((resolve) => {
     let elapsedTime = 0;
 
-    const checkDCInitialized = () => {
+    const checkInitialized = () => {
       // 检查是否超时
       if (elapsedTime >= MAX_WAIT_TIME) {
         console.warn("DC初始化超时");
@@ -48,10 +48,10 @@ export const checkDCInitialized = async () => {
 
       // 继续轮询
       elapsedTime += CHECK_INTERVAL;
-      setTimeout(checkDCInitialized, CHECK_INTERVAL);
+      setTimeout(checkInitialized, CHECK_INTERVAL);
     };
 
     // 立即开始第一次检查
-    checkDCInitialized();
+    checkInitialized();
   });
 };

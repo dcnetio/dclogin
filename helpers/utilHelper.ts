@@ -69,7 +69,7 @@ async function _encryptMnemonic (iv: Uint8Array, mnemonic: string, userHandleHas
     const encryptedMnemonic = await crypto.subtle.encrypt(
       {
         name: "AES-GCM",
-        iv: iv,
+        iv: iv as any,
       },
       cryptoKey,
       new TextEncoder().encode(mnemonic)
@@ -77,6 +77,7 @@ async function _encryptMnemonic (iv: Uint8Array, mnemonic: string, userHandleHas
     
     return encryptedMnemonic;
   } catch (error) {
+    console.error('Failed to encrypt mnemonic:', error);
     return null;
   }
 }
@@ -89,7 +90,7 @@ async function _decryptMnemonic (iv: Uint8Array, encryptedMnemonic: ArrayBuffer,
     const encodedMnemonic = await crypto.subtle.decrypt(
       {
         name: "AES-GCM",
-        iv: iv,
+        iv: iv as any,
       },
       cryptoKey,
       encryptedMnemonic
@@ -98,6 +99,7 @@ async function _decryptMnemonic (iv: Uint8Array, encryptedMnemonic: ArrayBuffer,
     const mnemonic = decoder.decode(encodedMnemonic);
     return mnemonic;
   } catch (error) {
+    console.error('Failed to decrypt mnemonic:', error);
     return '';
   }
 }

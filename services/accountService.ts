@@ -295,7 +295,7 @@ async function createWalletAccount(
         return null;
       }
       // 提取 userHandle 并进行 hash
-      const userHandleHash = await crypto.subtle.digest("SHA-256", userHandle);
+      const userHandleHash = await crypto.subtle.digest("SHA-256", userHandle as any);
       const iv = window.crypto.getRandomValues(new Uint8Array(12));
       //用userHandleHash 生成aes256的密钥,来加密accountInfo.mnemonic
       const encryptedMnemonic = await utilHelper.encryptMnemonic(

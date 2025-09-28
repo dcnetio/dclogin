@@ -9,7 +9,7 @@ const versionJson = JSON.parse(
 const versionPath = process.env.NODE_ENV === "production" ? '/' + versionJson.versionName : "";
 const nextConfig = {
 
-  swcMinify: true, // 使用SWC而非Terser进行最小化
+  //swcMinify: true, // 使用SWC而非Terser进行最小化
   // === 基础配置 ===
   reactStrictMode: false, // 根据需要开启，建议开发时开启
   poweredByHeader: false, // 隐藏 X-Powered-By 头
@@ -148,7 +148,7 @@ const nextConfig = {
     optimizePackageImports: ['lucide-react', 'lodash'],
     
     // 启用增量缓存
-    incrementalCacheHandlerPath: false,
+   // incrementalCacheHandlerPath: false,
     
     // Turbo 模式（如果稳定）
     // turbo: {

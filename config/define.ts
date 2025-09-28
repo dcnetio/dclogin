@@ -5,7 +5,7 @@ let _dcConfig = {
     wssUrl: 'wss://dcchain.baybird.cn',
     backWssUrl: 'wss://dcchain.baybird.cn',
 }
-if (typeof process !== 'undefined' && process.env && process.env['NODE_ENV'] === 'development') {
+if (typeof process !== 'undefined' && process.env && process.env['NODE_ENV'].trim() === 'development') {
     _basePath = '';
     _apiUrl = 'http://192.168.31.31:9001/api';
     _dcConfig = {

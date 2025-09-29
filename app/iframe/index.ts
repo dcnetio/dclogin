@@ -92,6 +92,9 @@ if (typeof window !== "undefined") {
       case 'setPrivateKey': //设置私钥
         setPrivateKey(message.data);
         break;
+      // case 'getLoginedInfo': //获取已经登录的用户信息
+      //   getLoginedInfo();
+      //   break;
       case 'sign': //签名
         sign(channelId, message.data);
         break;
@@ -113,6 +116,8 @@ if (typeof window !== "undefined") {
 const exitLogin = (channelId: string) => {
   // 清除私钥
   privateKey = null;
+  //清除sessionStorage
+  sessionStorage.clear();
   // 发送退出消息给父窗口
   const sendMessage: ResponseMessage<{
     success: boolean,
@@ -285,6 +290,63 @@ function setPrivateKey(privateKeyBytes:Uint8Array |null) {
   };
   responseToDAPP("setPrivateKeyChannel", sendMessage);
 }
+
+
+
+// // 接收到父窗口发送的获取已经登录的用户信息消息,主要用在页面刷新后
+// function getLoginedInfo() {
+//   // 获取 sessionStorage 中的数据
+//   const stored = sessionStorage.getItem("dcwallet_login_response");
+//   if (!stored) {
+//     const sendMessage: ResponseMessage<{
+//       success: boolean,
+//       message: string,
+//     }> = {
+//       type: "getLoginedInfoResponse",
+//       data: {
+//         success: false,
+//         message: "not logined",
+//       }
+//     };
+//     responseToDAPP("getLoginedInfoChannel", sendMessage);
+//     return;
+//   }
+
+//   // 解析 JSON
+//   const data = JSON.parse(stored);
+
+//   // 还原私钥
+//   const privateKeyBytes = base32.decode(data.privateKey);
+//   privateKey = new Ed25519PrivKey(privateKeyBytes);
+
+//   // 发送公钥和其它信息
+//   const sendMessage: ResponseMessage<{
+//     success: boolean,
+//     message: {
+//       appAccount: Uint8Array,
+//       // 你可以根据需要返回其它字段
+//       nftAccount?: string,
+//       ethAccount?: string,
+//       chainId?: string,
+//       chainName?: string,
+//       accountInfo?: any
+//     }
+//   }> = {
+//     type: "getLoginedInfoResponse",
+//     data: {
+//       success: true,
+//       message: {
+//         appAccount: privateKey.publicKey?.raw,
+//         nftAccount: data.nftAccount,
+//         ethAccount: data.ethAccount,
+//         chainId: data.chainId,
+//         chainName: data.chainName,
+//         accountInfo: data.accountInfo
+//       },
+//     },
+//   };
+//   responseToDAPP("getLoginedInfoChannel", sendMessage);
+// }
 
 // 父窗口发送的签名处理,打开钱包页面前调用
 function sign(channelId: string, data: { message: Uint8Array } | null) {
@@ -522,6 +584,15 @@ function connectWallet(channelId: string, data: {
       // 保存私钥
       const priKey = message.data.privateKey;
       privateKey = new Ed25519PrivKey(priKey) 
+
+      // // 保存消息的data到sessionStorage,用于页面刷新后恢复登录状态
+      // // 只编码 privateKey，其他字段保持原样
+      // const dataToStore = {
+      //   ...message.data,
+      //   privateKey: base32.encode(message.data.privateKey)
+      // };
+      // sessionStorage.setItem('dcwallet_login_response', JSON.stringify(dataToStore));
+
       const data = message.data;
       connectResponse(
         channelId,

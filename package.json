@@ -33,7 +33,7 @@
     "tweetnacl": "^1.0.3",
     "vconsole": "^3.15.1",
     "void-elements": "^3.1.0",
-    "web-dc-api": "^0.0.86"
+    "web-dc-api": "^0.0.87"
   },
   "devDependencies": {
     "@types/jsbn": "^1.2.33",

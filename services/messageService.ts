@@ -7,21 +7,31 @@ import { updateAppInfo, updateAuthStep } from "@/lib/slices/authSlice";
 import { getCurrentChain } from "@/services/networkService";
 import { applyFreeSpace } from "@/app/tools/subSpace";
 
-import type {
-  Ed25519PrivKey,
-} from "web-dc-api";
-import {
-  KeyManager,
-} from "web-dc-api";
+import type { Ed25519PrivKey } from "web-dc-api";
+import { KeyManager } from "web-dc-api";
 
-import {
-  showSignatureDAPPNote,
-} from "@/components/note/noteHelper";
+import { showSignatureDAPPNote } from "@/components/note/noteHelper";
 import i18n from "@/locales/i18n";
-import { authenticateWithPasskey, bindNFTAccount, chooseStoredAccount, createAccount, generateWalletAccount, resPonseWallet, setCurrentAccount, unlockWallet } from "./accountService";
+import {
+  authenticateWithPasskey,
+  bindNFTAccount,
+  chooseStoredAccount,
+  createAccount,
+  generateWalletAccount,
+  resPonseWallet,
+  setCurrentAccount,
+  unlockWallet,
+} from "./accountService";
 import { HDNodeWallet } from "ethers/wallet";
-import { AccountInfo, SignReqMessage, ConnectReqMessage, isConnectReqMessage, 
-  isSignReqMessage, EIP712SignReqMessage, isEIP712SignReqMessage } from "@/types/walletTypes";
+import {
+  AccountInfo,
+  SignReqMessage,
+  ConnectReqMessage,
+  isConnectReqMessage,
+  isSignReqMessage,
+  EIP712SignReqMessage,
+  isEIP712SignReqMessage,
+} from "@/types/walletTypes";
 import { checkDCInitialized, getDC } from "@/components/auth/login/dc";
 
 // 获取查询字符串
@@ -37,8 +47,6 @@ let iframeChannel = null;
 let networkStatus: number = NetworkStauts.disconnect; //网络状态
 let messageData: ConnectReqMessage = { origin: "" };
 let portData: MessagePort | null = null;
-
-
 
 // 监听DAPP窗口发送的消息;
 if (typeof window !== "undefined") {
@@ -82,8 +90,8 @@ function initCommChannel() {
       origin = "*";
     }
     window.opener.postMessage(message, origin);
-  }else if(window.parent){
-    let origin = openerOrigin || '';
+  } else if (window.parent) {
+    let origin = openerOrigin || "";
     if (openerOrigin?.indexOf("file://") !== -1) {
       origin = "*";
     }
@@ -226,22 +234,17 @@ async function connectCmdHandler(
   } else {
     networkStatus = NetworkStauts.disconnect;
   }
-  if (networkStatus == NetworkStauts.disconnect) {
-    // 网络问题，则提示不继续
-    store.dispatch(
-      updateAuthStep({
-        type: MsgStatus.failed,
-        content: i18n.t("network.disconnect"),
-      })
-    );
-    //return;
-  }
 
   messageData = message;
   portData = port;
   let chooseAccount = await chooseStoredAccount();
-  if (!chooseAccount) { // 如果用户没有登录账号，判断是否有账号信息传过来，有的话直接用
-    if(messageData.data && messageData.data.accountInfo && messageData.data.accountInfo.nftAccount) {
+  if (!chooseAccount) {
+    // 如果用户没有登录账号，判断是否有账号信息传过来，有的话直接用
+    if (
+      messageData.data &&
+      messageData.data.accountInfo &&
+      messageData.data.accountInfo.nftAccount
+    ) {
       chooseAccount = messageData.data.accountInfo;
       setCurrentAccount(chooseAccount);
     }
@@ -269,8 +272,6 @@ async function connectCmdHandler(
   }
   return await resPonseWallet(mnemonic, message, bool, port);
 }
-
-
 
 /** 收到签名请求处理,message格式为
 {
@@ -434,7 +435,6 @@ async function signEIP712MessageHandler(
   window.close();
 }
 
-
 let walletAccount: HDNodeWallet | null = null;
 // 创建账号(注册)
 async function createAccountWithRegister(
@@ -456,7 +456,7 @@ async function createAccountWithRegister(
     });
     return;
   }
-  if(!walletAccount || !walletAccount.mnemonic) {
+  if (!walletAccount || !walletAccount.mnemonic) {
     walletAccount = await ethersHelper.createWalletAccount();
     if (!walletAccount || !walletAccount.mnemonic) {
       return;
@@ -471,9 +471,9 @@ async function createAccountWithRegister(
   );
   // 赠送套餐
   window.showToast({
-    content: i18n.t("account.give_space_ing"),// 赠送中
+    content: i18n.t("account.give_space_ing"), // 赠送中
     position: "bottom",
-    duration: 0
+    duration: 0,
   });
   const giveFlag = await applyFreeSpace(privKey.publicKey);
   if (
@@ -489,9 +489,9 @@ async function createAccountWithRegister(
     return;
   }
   window.showToast({
-    content: i18n.t("account.bind_nft_account_ing"),// 绑定中
+    content: i18n.t("account.bind_nft_account_ing"), // 绑定中
     position: "bottom",
-    duration: 0
+    duration: 0,
   });
   // bind nft
   const bindRes = await bindNFTAccount(
@@ -537,7 +537,11 @@ async function createAccountWithLogin(
     if (!dc) {
       return;
     }
-    const [mnemonic, err] = await dc.auth.accountLogin(account, password, safecode);
+    const [mnemonic, err] = await dc.auth.accountLogin(
+      account,
+      password,
+      safecode
+    );
     console.log("=================dc.auth.accountLogin res");
     if (err || !mnemonic) {
       console.log("=================dc.auth.accountLogin error");
@@ -578,4 +582,4 @@ export {
   connectCmdHandler,
   createAccountWithLogin,
   createAccountWithRegister,
-}
+};

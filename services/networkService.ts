@@ -15,10 +15,7 @@ async function initNetworks() {
     const chains = await DBHelper.getAllData(DBHelper.store_chain);
     if (chains.length == 0) {
       for (let i = 0; i < DEFAULT_NETWORKS.length; i++) {
-        await DBHelper.addData(
-          DBHelper.store_chain,
-          DEFAULT_NETWORKS[i]
-        );
+        await DBHelper.addData(DBHelper.store_chain, DEFAULT_NETWORKS[i]);
       }
     }
   } catch (e) {
@@ -102,10 +99,9 @@ if (typeof window !== "undefined") {
           checkCount = 0;
         }
       }
-    }, 1000);
+    }, 2000);
   }
 }
-
 
 const getCurrentChain = async () => {
   // 取出网络列表
@@ -217,9 +213,9 @@ async function switchChain(chainInfo: ChainInfo) {
 const getCurrentNetwork = () => {
   return currentChain;
 };
-const getNetworkStatus = () => networkStatus
+const getNetworkStatus = () => networkStatus;
 
-export  {
+export {
   getCurrentChain,
   initNetworks,
   initBaseinfo,

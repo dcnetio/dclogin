@@ -4,6 +4,7 @@
 // Import everything
 import { DEFAULT_NETWORKS } from "@/config/constant";
 import { ethers, Wallet, JsonRpcProvider } from "ethers";
+import utilHelper from "./utilHelper";
 
 let jsonRpcProvider: ethers.JsonRpcProvider | null;
 
@@ -72,10 +73,19 @@ async function checkNetworkStatus() {
       console.log("请先连接到网络");
       return false;
     }
-    const blockNumber = await jsonRpcProvider.getBlockNumber();
+    const blockNumber = await utilHelper.withTimeout(
+      jsonRpcProvider.getBlockNumber(),
+      800,
+      "getBlockNumber 调用超时"
+    );
+    console.log("区块号:", blockNumber);
     return true;
   } catch (error) {
-    console.log("无法连接到网络:", error);
+    if (error.message.includes("Timeout")) {
+      // console.error("调用超时，请检查网络连接或节点状态");
+    } else {
+      console.error("其他错误:", error.message);
+    }
     return false;
   }
 }

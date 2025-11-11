@@ -17,6 +17,7 @@ export const StrictRefreshBlocker = () => {
       // 阻止通过浏览器前进后退按钮离开页面
       window.history.pushState(null, document.title, window.location.href);
       console.warn("页面导航已被阻止，请关闭页面重新从来源页面打开");
+      event.preventDefault();
     };
 
     // 拦截所有链接点击，防止导航离开

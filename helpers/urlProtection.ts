@@ -22,17 +22,3 @@ export const createProtectedUrl = (
   fullUrl.searchParams.set(paramName, paramValue);
   return fullUrl.toString();
 };
-
-/**
- * 移除保护参数（用于清理URL）
- */
-export const removeProtectionParam = (paramName: string = "open"): string => {
-  if (typeof window === "undefined") return window.location.href;
-
-  const url = new URL(window.location.href);
-  url.searchParams.delete(paramName);
-
-  // 更新URL但不刷新页面
-  window.history.replaceState({}, "", url.toString());
-  return url.toString();
-};

@@ -3,14 +3,17 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import styles from "./layout.module.css";
-import StoreProvider from "@/context/storeProvider";
-import { ToastProvider } from "@/context/ToastProvider";
+import StoreProvider from "@/contexts/storeProvider";
+import { ToastProvider } from "@/contexts/ToastProvider";
 
 import VConsole from "@/components/vConsole";
 import Login from "@/components/auth/login";
 import Locales from "./locales";
 import { basePath } from "@/config/define";
 import Script from "next/script";
+import { RefreshProtectionProvider } from "@/contexts/RefreshProtectionContext";
+import { ProtectionStatus } from "@/components/ProtectionStatus";
+import { StrictRefreshBlocker } from "@/components/RefreshBlocker";
 
 const geistSans = localFont({
   src: "../fonts/GeistVF.woff",
@@ -42,7 +45,6 @@ export default function RootLayout({
         <Script id="wallet-origin" strategy="beforeInteractive">
           {`globalThis.walletOpenOrgin = window.location.origin;`}
         </Script>
-
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
@@ -51,10 +53,14 @@ export default function RootLayout({
           <StoreProvider>
             <Locales>
               <VConsole>
-                <ToastProvider>
-                  <Login />
-                  {children}
-                </ToastProvider>
+                <RefreshProtectionProvider>
+                  <ToastProvider>
+                    <Login />
+                    {children}
+                  </ToastProvider>
+                  <ProtectionStatus />
+                  <StrictRefreshBlocker />
+                </RefreshProtectionProvider>
               </VConsole>
             </Locales>
           </StoreProvider>

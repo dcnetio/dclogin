@@ -28,7 +28,7 @@ export const ProtectionStatus = () => {
       <div className="ml-3">
         <p className="text-sm font-medium">⚠️ 页面刷新提醒</p>
         <p className="text-sm mt-1">
-          刷新会影响授权，请关闭该网页，重新打开授权。
+          刷新会影响授权，请勿刷新，如遇问题请重新打开授权。
         </p>
       </div>
     </div>

@@ -1,7 +1,7 @@
 /**
  * 检查当前URL是否包含保护参数
  */
-export const hasProtectionParam = (paramName: string = "open"): boolean => {
+export const hasProtectionParam = (paramName: string = "origin"): boolean => {
   if (typeof window === "undefined") return false;
 
   const urlParams = new URLSearchParams(window.location.search);
@@ -13,7 +13,7 @@ export const hasProtectionParam = (paramName: string = "open"): boolean => {
  */
 export const createProtectedUrl = (
   url: string,
-  paramName: string = "open",
+  paramName: string = "origin",
   paramValue: string = "true"
 ): string => {
   if (typeof window === "undefined") return url;

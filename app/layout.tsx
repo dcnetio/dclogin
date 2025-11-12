@@ -53,7 +53,7 @@ export default function RootLayout({
           <StoreProvider>
             <Locales>
               <VConsole>
-                <RefreshProtectionProvider>
+                <RefreshProtectionProvider paramName="origin">
                   <ToastProvider>
                     <Login />
                     {children}

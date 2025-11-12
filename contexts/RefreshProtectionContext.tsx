@@ -36,7 +36,7 @@ interface RefreshProtectionProviderProps {
 
 export const RefreshProtectionProvider: React.FC<
   RefreshProtectionProviderProps
-> = ({ children, paramName = "open" }) => {
+> = ({ children, paramName = "origin" }) => {
   const [enabled, setEnabled] = useState(false);
 
   // 立即检查URL参数

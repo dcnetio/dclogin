@@ -77,6 +77,8 @@ export const RefreshProtectionProvider: React.FC<
     // 检查内联脚本是否已启用保护
     const hasInlineProtection = window.__refreshProtectionEnabled === true;
     const hasOpenParam = checkUrlParamImmediately();
+    const isIframe = window.self !== window.top;
+    if (isIframe) return;
 
     if (hasInlineProtection || hasOpenParam) {
       setEnabled(true);

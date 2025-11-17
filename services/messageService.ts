@@ -479,11 +479,11 @@ async function createAccountWithRegister(
   if (
     giveFlag[1] &&
     giveFlag[1].message &&
-    giveFlag[1].message.indexOf("User already has space") === -1
+    giveFlag[1].message.indexOf(i18n.t("storage.has_space")) === -1
   ) {
     //待测试 跳出提示框,提示用户赠送套餐失败
     window.showToast({
-      content: i18n.t("account.give_space_failed"), // todo
+      content: giveFlag[1].message || i18n.t("account.give_space_failed"),
       position: "bottom",
     });
     return;
@@ -503,8 +503,10 @@ async function createAccountWithRegister(
   );
   if (bindRes[0] !== true) {
     //待测试 跳出提示框,提示用户赠送套餐失败
+    const errInfo = bindRes[1];
+    const errMsg = errInfo && errInfo.message;
     window.showToast({
-      content: i18n.t("account.bind_nft_account_failed"), // todo
+      content: i18n.t(errMsg || "account.bind_nft_account_failed"),
       position: "bottom",
     });
     if (

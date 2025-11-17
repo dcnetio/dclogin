@@ -5,14 +5,8 @@ import { MsgStatus } from "@/config/constant";
 import { store } from "@/lib/store";
 import { updateAuthStep } from "@/lib/slices/authSlice";
 import { AccountInfo, ConnectReqMessage } from "../types/walletTypes";
-import type {
-  APPInfo,
-} from "web-dc-api";
-import {
-  KeyManager,
-  NFTBindStatus,
-  Ed25519PrivKey,
-} from "web-dc-api";
+import type { APPInfo } from "web-dc-api";
+import { KeyManager, NFTBindStatus, Ed25519PrivKey } from "web-dc-api";
 // 数据库
 import DBHelper from "@/helpers/DBHelper";
 import {
@@ -65,7 +59,7 @@ const bindNFTAccount = async (
 ): Promise<[boolean, Error | null]> => {
   const dc = getDC();
   if (!dc) {
-    return [false, new Error(i18n.t("account.bind_nft_account_fail"))];
+    return [false, new Error(i18n.t("account.auth_no_module"))];
   }
   const [bindStatus, err] = await dc.auth.bindNFTAccount(
     account,
@@ -74,7 +68,7 @@ const bindNFTAccount = async (
     mnemonic
   );
   if (err || bindStatus !== NFTBindStatus.Success) {
-    return [false, err || new Error(i18n.t("account.bind_nft_account_fail"))];
+    return [false, err || new Error(i18n.t("account.bind_nft_account_failed"))];
   }
   // 循环checkNFT绑定状态
   const checkFlag = await _checkBind(account, pubKeyStr);
@@ -204,10 +198,12 @@ async function getEncodePwd(info: {
 // 设置用户加密密码
 async function setEncodePwd(): Promise<[Uint8Array | null, string | null]> {
   return new Promise((resolve) => {
-    showSetEncodePassword((userHandle: Uint8Array | null, credentialId: string | null) => {
-      // 处理结果
-      resolve([userHandle, credentialId]);
-    });
+    showSetEncodePassword(
+      (userHandle: Uint8Array | null, credentialId: string | null) => {
+        // 处理结果
+        resolve([userHandle, credentialId]);
+      }
+    );
   });
 }
 // 根据账号,生成签名的钱包账号对象
@@ -236,9 +232,9 @@ async function generateWalletAccount(seedAccount: string) {
 
   //跳出密码设置框,提示用户输入密码加密
   const userHandleHash = await getEncodePwd({
-      iv: account.iv,
-      encodeMnimonic: account.mnemonic,
-      credentialId: account.credentialId || "",
+    iv: account.iv,
+    encodeMnimonic: account.mnemonic,
+    credentialId: account.credentialId || "",
   });
   if (!userHandleHash) {
     //待测试 跳出提示框,提示用户解锁钱包失败
@@ -280,7 +276,6 @@ async function generateWalletAccount(seedAccount: string) {
   return wallet;
 }
 
-
 // 创建钱包账号
 async function createWalletAccount(
   mnemonic: string | null = null,
@@ -295,7 +290,10 @@ async function createWalletAccount(
         return null;
       }
       // 提取 userHandle 并进行 hash
-      const userHandleHash = await crypto.subtle.digest("SHA-256", userHandle as any);
+      const userHandleHash = await crypto.subtle.digest(
+        "SHA-256",
+        userHandle as any
+      );
       const iv = window.crypto.getRandomValues(new Uint8Array(12));
       //用userHandleHash 生成aes256的密钥,来加密accountInfo.mnemonic
       const encryptedMnemonic = await utilHelper.encryptMnemonic(
@@ -333,7 +331,6 @@ async function createWalletAccount(
     return null;
   }
 }
-
 
 // 使用 Passkey 进行身份验证,并提取出userHandleHash
 async function authenticateWithPasskey(credentialId: string) {
@@ -411,7 +408,6 @@ async function authenticateWithPasskey(credentialId: string) {
   }
 }
 
-
 const getCurrentAccount = (): AccountInfo | null => {
   return currentAccount;
 };
@@ -419,7 +415,6 @@ const getCurrentAccount = (): AccountInfo | null => {
 const setCurrentAccount = (account: AccountInfo) => {
   currentAccount = account;
 };
-
 
 // 解锁钱包并返回数据信息
 async function unlockWallet(chooseAccount: AccountInfo) {
@@ -490,7 +485,7 @@ async function resPonseWallet(
   let connectingApp = message.data;
   if (!connectingApp) {
     const dc = getDC();
-    if(dc && dc.appInfo){
+    if (dc && dc.appInfo) {
       connectingApp = dc.appInfo;
     }
   }

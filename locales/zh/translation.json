@@ -51,6 +51,7 @@
     "creating": "账号正在创建中，请稍后",
     "create_success": "创建账号成功",
     "create_failed": "创建账号失败",
+    "auth_no_module": "用户模块未找到",
     "auth_doing": "用户授权中，请稍后",
     "auth_failed": "用户授权失败",
     "unlock_wallet_failed": "解锁钱包失败",
@@ -150,5 +151,13 @@
   },
   "dc": {
     "failed": "获取Dc信息失败"
+  },
+  "storage": {
+    "receive_doing": "赠送存储获取等待中，请稍等",
+    "has_received": "已获取存储",
+    "give_out_limit": "今日赠送存储已用完",
+    "failed": "赠送存储失败",
+    "time_out": "赠送存储超时",
+    "has_space": "用户已有存储"
   }
 }

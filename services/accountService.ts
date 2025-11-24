@@ -419,18 +419,18 @@ const setCurrentAccount = (account: AccountInfo) => {
 // 解锁钱包并返回数据信息
 async function unlockWallet(chooseAccount: AccountInfo) {
   // 获取当前网络
-  const chain = await getCurrentChain();
-  const currentChain = getCurrentNetwork();
-  if (!chain || !currentChain) {
-    //待测试 跳出提示框,提示用户获取网络信息失败
-    store.dispatch(
-      updateAuthStep({
-        type: MsgStatus.failed,
-        content: i18n.t("network.get_failed"),
-      })
-    );
-    return;
-  }
+  // const chain = await getCurrentChain();
+  // const currentChain = getCurrentNetwork();
+  // if (!chain || !currentChain) {
+  //   //待测试 跳出提示框,提示用户获取网络信息失败
+  //   store.dispatch(
+  //     updateAuthStep({
+  //       type: MsgStatus.failed,
+  //       content: i18n.t("network.get_failed"),
+  //     })
+  //   );
+  //   return;
+  // }
   //跳出密码设置框,提示用户输入密码加密
   const userHandleHash = await getEncodePwd({
     iv: chooseAccount.iv,

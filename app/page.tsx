@@ -22,7 +22,7 @@ export default function Auth() {
     router.push(`/register${window.location.search}`);
   };
   useEffect(() => {
-    console.log("refresh protection enabled:", enabled);
+    console.log("debug========refresh protection enabled:", enabled, new Date());
   }, [enabled]);
   return (
     <div className={styles["min-h-screen"]}>

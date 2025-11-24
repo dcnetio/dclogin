@@ -57,10 +57,13 @@ export default function Login() {
         appUrl: '',
         appVersion: '',
       }));
+      console.log("debug===========initBaseinfo start", new Date());
       // 调用初始化函数(默认信息)
       await initBaseinfo(); //初始化网络和账号信息
+      console.log("debug===========initNetworks start", new Date());
       // 初始化网络数据
       await initNetworks();
+      console.log("debug===========initNetworks end", new Date());
       //连接网络，并把用户信息保存下来
       const message: ConnectReqMessage = {
         origin: window.location.origin,
@@ -109,6 +112,7 @@ export default function Login() {
   }, []);
 
   useEffect(() => {
+    console.log("debug ===============NavigationService.init", router, new Date());
     NavigationService.init(router)
   }, [router]);
   return (

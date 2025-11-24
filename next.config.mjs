@@ -47,7 +47,7 @@ const nextConfig = {
     // 移除 React 属性（生产环境）
     reactRemoveProperties: process.env.NODE_ENV === "production",
     // 添加情感化CSS优化（如果使用styled-components或emotion）
-    emotion: process.env.NODE_ENV === "production",
+    // emotion: process.env.NODE_ENV === "production",
 
     // styled-components 支持（如果使用）
     // styledComponents: true,

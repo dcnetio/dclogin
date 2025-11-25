@@ -1,5 +1,5 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { initializeDatabase } from "@/helpers/DBHelper";
 import {
   connectCmdHandler,
@@ -32,6 +32,10 @@ export default function Login() {
   const { t } = useTranslation();
   const init = async () => {
     try {
+      if (openerOrigin) {
+        // dapp打开钱包，立刻回复钱包已经加载
+        initCommChannel();
+      }
 
       store.dispatch(saveInitState(appState.initing));
       // 授权开始
@@ -92,8 +96,6 @@ export default function Login() {
         // 初始化成功，
         store.dispatch(saveInitState(appState.init_success));
         router.push(`/home${window.location.search}`);
-      } else {
-        initCommChannel();
       }
     } catch (error) {
       console.error("login error", error);
@@ -112,7 +114,6 @@ export default function Login() {
   }, []);
 
   useEffect(() => {
-    console.log("debug ===============NavigationService.init", router, new Date());
     NavigationService.init(router)
   }, [router]);
   return (

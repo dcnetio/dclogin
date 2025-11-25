@@ -10,8 +10,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@libp2p/interface": "^2.9.0",
-    "@multiformats/multiaddr": "^12.4.0",
     "@reduxjs/toolkit": "^2.2.7",
     "@stablelib/random": "^2.0.1",
     "antd-mobile": "^5.37.1",
@@ -47,5 +45,9 @@
     "react-i18next": "^15.6.1",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
+  },
+  "overrides": {
+    "@libp2p/interface": "^2.9.0",
+    "@multiformats/multiaddr": "^12.4.0"
   }
 }

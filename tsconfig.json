@@ -33,7 +33,7 @@
         "../grpc-libp2p-client/src/*"
       ],
       "web-dc-api": [
-        "../dcapi/dist/esm/index"
+        "../dcapi/lib/index"
       ]
     },
     "target": "es2021"

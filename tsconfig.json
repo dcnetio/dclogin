@@ -25,15 +25,15 @@
       "@/*": [
         "./*"
       ],
-      "grpc-libp2p-client": [
-        "../grpc-libp2p-client/src/index"
-      ],
-      "grpc-libp2p-client/*": [
-        "../grpc-libp2p-client/src/*"
-      ],
-      "web-dc-api": [
-        "../dcapi/lib/index"
-      ]
+      // "grpc-libp2p-client": [
+      //   "../grpc-libp2p-client/src/index"
+      // ],
+      // "grpc-libp2p-client/*": [
+      //   "../grpc-libp2p-client/src/*"
+      // ],
+      // "web-dc-api": [
+      //   "../dcapi/lib/index"
+      // ]
     },
     "target": "es2021",
     "strict": false

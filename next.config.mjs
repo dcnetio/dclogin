@@ -142,16 +142,6 @@ const nextConfig = {
           },
         ],
       },
-      // HTML 文件短期缓存
-      {
-        source: "/((?!_next).*)",
-        headers: [
-          {
-            key: "Cache-Control",
-            value: "public, max-age=300, s-maxage=300",
-          },
-        ],
-      },
     ];
   },
 

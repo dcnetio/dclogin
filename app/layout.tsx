@@ -6,7 +6,7 @@ import styles from "./layout.module.css";
 import StoreProvider from "@/contexts/storeProvider";
 import { ToastProvider } from "@/contexts/ToastProvider";
 
-import VConsole from "@/components/vConsole";
+// import VConsole from "@/components/vConsole";
 import Login from "@/components/auth/login";
 import Locales from "./locales";
 import { basePath } from "@/config/define";
@@ -52,7 +52,7 @@ export default function RootLayout({
         <div className={styles.container}>
           <StoreProvider>
             <Locales>
-              <VConsole>
+              {/* <VConsole> */}
                 <RefreshProtectionProvider paramName="origin">
                   <ToastProvider>
                     <Login />
@@ -61,7 +61,7 @@ export default function RootLayout({
                   <ProtectionStatus />
                   <StrictRefreshBlocker />
                 </RefreshProtectionProvider>
-              </VConsole>
+              {/* </VConsole> */}
             </Locales>
           </StoreProvider>
         </div>

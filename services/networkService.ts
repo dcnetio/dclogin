@@ -99,7 +99,7 @@ if (typeof window !== "undefined") {
           checkCount = 0;
         }
       }
-    }, 2000);
+    }, 6000);
   }
 }
 

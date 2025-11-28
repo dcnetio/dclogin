@@ -32,12 +32,13 @@ const nextConfig = {
   // === 编译器配置 ===
   compiler: {
     // 生产环境移除 console
-    removeConsole:
-      process.env.NODE_ENV === "production"
-        ? {
-            exclude: ["error"],
-          }
-        : false,
+    removeConsole:  false,
+    // removeConsole:
+    //   process.env.NODE_ENV === "production"
+    //     ? {
+    //         exclude: ["error"],
+    //       }
+    //     : false,
 
     // 移除 React 属性（生产环境）
     reactRemoveProperties: process.env.NODE_ENV === "production",

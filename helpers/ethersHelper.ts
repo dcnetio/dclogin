@@ -75,7 +75,7 @@ async function checkNetworkStatus() {
     }
     const blockNumber = await utilHelper.withTimeout(
       jsonRpcProvider.getBlockNumber(),
-      800,
+      3000,
       "getBlockNumber 调用超时"
     );
     console.log("区块号:", blockNumber);

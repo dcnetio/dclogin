@@ -150,7 +150,8 @@
     "wallet": "钱包"
   },
   "dc": {
-    "failed": "获取Dc信息失败"
+    "failed": "获取Dc信息失败",
+    "init_failed": "初始化Dc信息失败，请刷新页面"
   },
   "storage": {
     "receive_doing": "赠送存储获取等待中，请稍等",

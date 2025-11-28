@@ -1,5 +1,7 @@
 // lib/dc-init.js
 let dcInstance = null;
+import { Dialog} from "antd-mobile";
+import i18n from "@/locales/i18n";
 
 export const initDC = async (dcConfig) => {
   if (dcInstance) return dcInstance;
@@ -11,6 +13,12 @@ export const initDC = async (dcConfig) => {
   console.log(`DC init time: ${Date.now() - startTime}ms`);
   if (!res) {
     console.error("DC init failed");
+
+    // 确认框
+    window.showToast({
+      content: i18n.t("dc.init_failed"),
+      position: "bottom",
+    });
     return null;
   }
   console.log(`DC init success`);

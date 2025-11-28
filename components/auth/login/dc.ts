@@ -1,6 +1,5 @@
 // lib/dc-init.js
 let dcInstance = null;
-import { Dialog} from "antd-mobile";
 import i18n from "@/locales/i18n";
 
 export const initDC = async (dcConfig) => {

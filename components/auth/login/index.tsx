@@ -114,6 +114,7 @@ export default function Login() {
   }, []);
 
   useEffect(() => {
+    console.log("debug===========NavigationService init", new Date());
     NavigationService.init(router)
   }, [router]);
   return (

@@ -10,7 +10,6 @@ const versionPath =
 const nextConfig = {
   // === 基础配置 ===
 
-  swcMinify: true, // 使用SWC而非Terser进行最小化  
   reactStrictMode: false, // 根据需要开启，建议开发时开启
   poweredByHeader: false, // 隐藏 X-Powered-By 头
 

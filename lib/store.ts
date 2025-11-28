@@ -11,6 +11,7 @@ import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, 
 const persistConfig = {
     key: 'root',
     storage,
+    whitelist: [], // 只持久化关键数据
   };
   // 2.创建持久化的reducer
 const rootReducer = combineReducers({
@@ -32,7 +33,9 @@ export const store = configureStore({
             // 忽略序列化检查
             serializableCheck: {
                 ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER]
-            }
+            },
+            whitelist: ['auth'], // 🔥 只持久化auth状态
+            timeout: 50,         // 🔥 50ms超时
         }).concat(logger)
 });
 // 4.创建 persistor

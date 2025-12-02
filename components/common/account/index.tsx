@@ -38,8 +38,11 @@ export default function Account(props: AccountProps) {
   };
 
   useEffect(() => {
-    getAccounts();
-  }, []);
+    setAccountVisible(visible);
+    if (visible) {
+      getAccounts();
+    }
+  }, [visible]);
   return (
     <Popup
       visible={accountVisible}

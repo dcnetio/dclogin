@@ -1,5 +1,5 @@
 "use client";
-import styles from "./page.module.css";
+import styles from "./page.module.css"; // 确保引入了样式文件
 import "antd-mobile/es/global";
 import {
   SendOutline,
@@ -19,12 +19,7 @@ import { getCurrentAccount, getCurrentNetwork } from "@/app/index";
 import type { ChainInfo } from "@/types/walletTypes";
 // import type { User } from "web-dc-api";
 import { useTranslation } from "react-i18next";
-// Mock app accounts data
-// const mockAppAccounts = [
-//   { appName: "DeCert", appId: "decert-123", appAccount: "0x8721...3d91", appDomain: "decert.network" },
-//   { appName: "DataVault", appId: "datavault-456", appAccount: "0x6532...7e22", appDomain: "datavault.io" },
-//   { appName: "FileShare", appId: "fileshare-789", appAccount: "0x3251...9f43", appDomain: "fileshare.app" },
-// ];
+import { Copy } from "lucide-react";
 
 export default function Index() {
   const router = useRouter();
@@ -40,8 +35,8 @@ export default function Index() {
   // const [tokenAmount, setTokenAmount] = useState("0");
   // const [isMobile, setIsMobile] = useState(true);
   const [activeView, setActiveView] = useState("account"); // "account" or "wallet"
-  // const [appAccounts, setAppAccounts] = useState(mockAppAccounts);
-
+  const [isConnecting, setIsConnecting] = useState(true); // 新增连接状态变量
+  const [activeTab, setActiveTab] = useState("tokens"); // 添加 activeTab 状态变量并初始化
 
   useEffect(() => {
     const checkMobile = () => {
@@ -84,7 +79,7 @@ export default function Index() {
     // 切换成功后，获取账户信息
     getUserInfo();
   };
-    // 获取用户信息的逻辑
+  // 获取用户信息的逻辑
   const getUserInfo = async () => {
     // setIsLoading(true);
     const accountInfo = getCurrentAccount();
@@ -115,16 +110,16 @@ export default function Index() {
       //     if (userInfo && userInfo.subscribeSpace) {
       //       const totalSpaceGB = (userInfo.subscribeSpace / (1024 * 1024 * 1024)).toFixed(2);
       //       setStorageSpace(`${totalSpaceGB} GB`);
-            
+
       //       // Mock used storage (30% of total for demo)
       //       const usedSpace = userInfo.subscribeSpace * 0.3;
       //       const usedSpaceGB = (usedSpace / (1024 * 1024 * 1024)).toFixed(2);
       //       setUsedStorageSpace(`${usedSpaceGB} GB`);
       //       setStoragePercentage(30);
-            
+
       //       // Mock token amount
       //       setTokenAmount("150");
-            
+
       //       // Set app accounts (mock data for now)
       //       setAppAccounts(mockAppAccounts);
       //     }
@@ -134,15 +129,21 @@ export default function Index() {
   };
 
   useEffect(() => {
+    // 模拟连接过程
+    setTimeout(() => {
+      setIsConnecting(false);
+    }, 2000);
+  }, []);
+
+  useEffect(() => {
     if (initState == appState.init_success) {
       getUserInfo();
     }
-  }, []);
+  }, [initState]);
 
-  // Account Info View Component
   const AccountInfoView = () => (
     <div className={styles.accountInfoView}>
-      {/* Account Card */}
+      {/* 账户卡 */}
       <div className={styles.sectionCard}>
         <div className={styles.sectionHeader}>
           <h2>{t("account.details", "账户详情")}</h2>
@@ -151,169 +152,138 @@ export default function Index() {
           <div className={styles.accountAvatar}>
             {accountName.charAt(0).toUpperCase()}
           </div>
-          <div className={styles.accountInfo}>
-            <div className={styles.accountName}>{accountName}</div>
-            <div className={styles.accountAddress}>{accountAddress}</div>
-          </div>
-        </div>
-      </div>
-
-      {/* Storage Space Card */}
-      <div className={styles.sectionCard}>
-        <div className={styles.sectionHeader}>
-          <h2>{t("storage.title", "云存储空间")}</h2>
-          <button className={styles.actionButton} onClick={upgradeStorage}>
-            {t("storage.upgrade", "升级")}
-          </button>
-        </div>
-        <div className={styles.storageDetails}>
-          <div className={styles.storageInfo}>
-            {/* <div className={styles.storageValue}>
-              <span className={styles.usedStorage}>{usedStorageSpace}</span>
-              <span className={styles.totalStorage}>/ {storageSpace}</span>
-            </div> */}
-            <div className={styles.storageLabel}>
-              {t("storage.used", "已使用")}
+          <div>
+            <div className="mr-5 text-lg font-medium">{accountName}</div>
+            <div className=" text-sm font-medium">
+              {accountAddress && accountAddress.length > 16
+                ? `${accountAddress.substring(
+                    0,
+                    8
+                  )}...${accountAddress.substring(accountAddress.length - 8)}`
+                : accountAddress}
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(accountAddress || "");
+                  window.showToast({
+                    content: t("common.copied", "已复制"),
+                    position: "bottom",
+                  });
+                }}
+              >
+                <Copy className="w-4 h-4 ml-2 text-blue-600" />
+              </button>
             </div>
           </div>
-          <div className={styles.storageProgress}>
-            {/* <div
-              className={styles.storageProgressBar}
-              style={{ width: `${storagePercentage}%` }}
-            ></div> */}
-          </div>
         </div>
       </div>
 
-      {/* Token Card */}
-      <div className={styles.sectionCard}>
-        <div className={styles.sectionHeader}>
-          <h2>{t("tokens.title", "云服务代币")}</h2>
-          <button className={styles.actionButton} onClick={buyTokens}>
-            {t("tokens.buy", "购买")}
+      {/* 余额展示 */}
+      <div className={styles.balanceCard}>
+        <div className={styles.balanceLabel}>US$</div>
+        <div className={styles.balance}>
+          <span className={styles.balanceAmount}>0.00</span>
+          <span className={styles.currencySymbol}>USD</span>
+        </div>
+        <div className={styles.balanceChange}>+US$0.00 (+0.00%)</div>
+      </div>
+
+      {/* 功能按钮区域 */}
+      <div className={styles.btns}>
+        <div className={styles.btnD}>
+          <div className={styles.btn}>
+            <SendOutline />
+          </div>
+          <div className={styles.txt}>买入</div>
+        </div>
+        <div className={styles.btnD}>
+          <div className={styles.btn}>
+            <AddOutline />
+          </div>
+          <div className={styles.txt}>兑换</div>
+        </div>
+        <div className={styles.btnD}>
+          <div className={styles.btn}>
+            <LockOutline />
+          </div>
+          <div className={styles.txt}>发送</div>
+        </div>
+        <div className={styles.btnD}>
+          <div className={styles.btn}>
+            <LeftOutline />
+          </div>
+          <div className={styles.txt}>收款</div>
+        </div>
+      </div>
+
+      {/* 代币和收藏品标签页 */}
+      <div className={styles.tabSection}>
+        <div className={styles.tabs}>
+          <button
+            className={`${styles.tabItem} ${
+              activeTab === "tokens" ? styles.active : ""
+            }`}
+            onClick={() => {
+              console.log("点击代币标签");
+              setActiveTab("tokens");
+            }}
+          >
+            代币
+          </button>
+          <button
+            className={`${styles.tabItem} ${
+              activeTab === "collections" ? styles.active : ""
+            }`}
+            onClick={() => {
+              console.log("点击收藏标签");
+              setActiveTab("collections");
+            }}
+          >
+            收藏品
+          </button>
+          <button
+            className={`${styles.tabItem} ${
+              activeTab === "activities" ? styles.active : ""
+            }`}
+            onClick={() => {
+              console.log("点击活动标签");
+              setActiveTab("activities");
+            }}
+          >
+            活动
           </button>
         </div>
-        <div className={styles.tokenDetails}>
-          {/* <div className={styles.tokenAmount}>{tokenAmount}</div> */}
-          <div className={styles.tokenLabel}>
-            {t("tokens.available", "可用代币")}
-          </div>
-          <div className={styles.tokenDescription}>
-            {t("tokens.description", "代币可用于升级存储空间和购买高级服务")}
-          </div>
-        </div>
-      </div>
-
-      {/* App Accounts Card */}
-      <div className={styles.sectionCard}>
-        <div className={styles.sectionHeader}>
-          <h2>{t("appAccounts.title", "应用账号")}</h2>
-        </div>
-        {/* <div className={styles.appAccountsList}>
-          {appAccounts.length > 0 ? (
-            appAccounts.map((app, index) => (
-              <div key={index} className={styles.appAccountItem}>
-                <div className={styles.appIcon}>
-                  <AppstoreOutline />
-                </div>
-                <div className={styles.appDetails}>
-                  <div className={styles.appName}>{app.appName}</div>
-                  <div className={styles.appAccount}>{app.appAccount}</div>
-                  <div className={styles.appMeta}>
-                    <span className={styles.appId}>{app.appId}</span>
-                    <span className={styles.appDomain}>{app.appDomain}</span>
-                  </div>
-                </div>
+        {activeTab === "tokens" && (
+          <div className={styles.tokensList}>
+            {/* 代币列表 */}
+            <div className={styles.tokenItem}>
+              <div className={styles.tokenIcon}></div>
+              <div className={styles.tokenInfo}>
+                <div className={styles.tokenName}>Ethereum · 赚取</div>
+                <div className={styles.tokenChange}>-1.61%</div>
               </div>
-            ))
-          ) : (
-            <div className={styles.emptyState}>
-              {t("appAccounts.empty", "暂无应用账号")}
+              <div className={styles.tokenValue}>US$0.00</div>
             </div>
-          )}
-        </div> */}
-      </div>
-
-      {/* Wallet Entry Button */}
-      <button className={styles.walletEntryButton} onClick={goToWallet}>
-        <LockOutline className={styles.walletEntryIcon} />
-        <span>{t("wallet.enter", "进入加密钱包")}</span>
-        <RightOutline />
-      </button>
-    </div>
-  );
-
-  // Wallet View Component
-  const WalletView = () => (
-    <div className={styles.walletView}>
-      {/* Back button to return to account view */}
-      <button className={styles.backButton} onClick={goToAccount}>
-        <LeftOutline />
-        <span>{t("wallet.back_to_account", "返回账户")}</span>
-      </button>
-
-      {/* Wallet Balance Card */}
-      <div className={styles.sectionCard}>
-        <div className={styles.sectionHeader}>
-          <h2>{t("wallet.balance", "钱包余额")}</h2>
-        </div>
-        <div className={styles.balanceDetails}>
-          <div className={styles.balanceLabel}>
-            {t("wallet.current_balance", "当前余额")}
+            {/* 更多代币项... */}
           </div>
-          <div className={styles.balance}>
-            <span className={styles.balanceAmount}>0.0</span>
-            <span className={styles.currencySymbol}>{currencySymbol}</span>
-          </div>
-          <div className={styles.walletActions}>
-            <button className={styles.primaryButton} onClick={sendBalance}>
-              <SendOutline />
-              {t("transfer.transfer", "转账")}
-            </button>
-            <button className={styles.secondaryButton} onClick={buyTokens}>
-              <AddOutline />
-              {t("wallet.buy", "购买")}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Transaction History Card */}
-      <div className={styles.sectionCard}>
-        <div className={styles.sectionHeader}>
-          <h2>{t("wallet.transactions", "交易记录")}</h2>
-          <button className={styles.actionButton} onClick={gotoActivity}>
-            {t("wallet.view_all", "查看全部")}
-          </button>
-        </div>
-        <div className={styles.transactionsList}>
-          <div className={styles.emptyState}>
-            {t("wallet.no_transactions", "暂无交易记录")}
-          </div>
-        </div>
-      </div>
-
-      {/* Wallet Accounts Card */}
-      <div className={styles.sectionCard}>
-        <div className={styles.sectionHeader}>
-          <h2>{t("wallet.accounts", "钱包账户")}</h2>
-        </div>
-        <div className={styles.walletAccountsList}>
-          <div className={styles.walletAccountItem}>
-            <div className={styles.accountAvatar}>
-              {accountName.charAt(0).toUpperCase()}
-            </div>
-            <div className={styles.accountInfo}>
-              <div className={styles.accountName}>{accountName}</div>
-              <div className={styles.accountAddress}>{accountAddress}</div>
-            </div>
-            <div className={styles.accountIndicator}>
-              <span className={styles.currentIndicator}>
-                {t("wallet.current", "当前")}
-              </span>
+        )}
+        {activeTab === "collections" && (
+          <div className={styles.collectionsList}>
+            {/* 收藏品列表 */}
+            {/* 如果没有收藏品，显示空状态提示 */}
+            <div className={styles.emptyActivity}>
+              Nothing to see yet. Swap your first token today.
             </div>
           </div>
-        </div>
+        )}
+        {activeTab === "activities" && (
+          <div className={styles.activityList}>
+            {/* 活动列表 */}
+            {/* 如果没有活动记录，显示空状态提示 */}
+            <div className={styles.emptyActivity}>
+              Nothing to see yet. Swap your first token today.
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -326,13 +296,22 @@ export default function Index() {
         </div>
       ) : (
         <>
+          {/* 使用组件中的 Header */}
           <Header
             changeNetworkSuccess={changeSuccess}
             changeAccountSuccess={changeSuccess}
           />
 
-          <div className={styles.contentPage}>
-            {activeView === "account" ? <AccountInfoView /> : <WalletView />}
+          <div className={styles.contentPage} style={{ width: "100%" }}>
+            {isConnecting ? (
+              <div className={styles.loadingContainer}>
+                <div className={styles.loadingText}>
+                  {t("wallet.connecting", "正在连接...")}
+                </div>
+              </div>
+            ) : (
+              <AccountInfoView />
+            )}
           </div>
         </>
       )}

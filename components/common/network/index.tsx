@@ -1,18 +1,20 @@
-import { Button, List } from "antd-mobile";
+import { Button, List, Popup } from "antd-mobile";
 import styles from "./index.module.css";
 import { useEffect, useState } from "react";
 import { getAllData, store_chain } from "@/helpers/DBHelper";
 import { getCurrentNetwork, switchChain } from "@/app/index";
-import { ChainInfo} from '@/types/walletTypes';   
-import { useTranslation} from 'react-i18next';   
+import { ChainInfo } from "@/types/walletTypes";
+import { useTranslation } from "react-i18next";
 interface NetworkProps {
+  visible: boolean;
   onSuccess: (name: string) => void; // 定义onSuccess为一个无参数无返回值的函数
 }
 export default function Network(props: NetworkProps) {
-  const { onSuccess } = props;
+  const { visible, onSuccess } = props;
   const { t } = useTranslation();
   const [list, setList] = useState([]);
   const [chainId, setChainId] = useState(0);
+  const [networkVisible, setNetworkVisible] = useState(visible);
   const getNetworks = async () => {
     const data = (await getAllData(store_chain)) || [];
     setList(data);
@@ -26,9 +28,12 @@ export default function Network(props: NetworkProps) {
   };
 
   useEffect(() => {
-    getNetworks();
-    getNowNetwork();
-  }, []);
+    setNetworkVisible(visible);
+    if (visible) {
+      getNetworks();
+      getNowNetwork();
+    }
+  }, [visible]);
   const connect = async (info: ChainInfo) => {
     const bool = await switchChain(info);
     if (bool) {
@@ -42,7 +47,15 @@ export default function Network(props: NetworkProps) {
     });
   };
   return (
-    <div>
+    <Popup
+      visible={networkVisible}
+      onMaskClick={() => {
+        setNetworkVisible(false);
+      }}
+      onClose={() => {
+        setNetworkVisible(false);
+      }}
+    >
       <List header={t("network.choose")}>
         {list.map((item: ChainInfo, index) => (
           <List.Item
@@ -59,9 +72,9 @@ export default function Network(props: NetworkProps) {
       </List>
       <div className={styles.btn}>
         <Button color="primary" size="large" block>
-          {t("network.add" )}
+          {t("network.add")}
         </Button>
       </div>
-    </div>
+    </Popup>
   );
 }

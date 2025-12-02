@@ -20,7 +20,7 @@ export const initDC = async (dcConfig) => {
     });
     return null;
   }
-  console.log(`DC init success`);
+  console.log(`DC init success`, new Date());
 
   dcInstance = dc;
   return dc;
@@ -33,7 +33,8 @@ export const getDC = () => {
   return dcInstance;
 };
 export const checkDCInitialized = async () => {
-  const MAX_WAIT_TIME = 10000; // 10秒超时
+  console.log("checkDCInitialized ", new Date());
+  const MAX_WAIT_TIME = 30000; // 30秒超时
   const CHECK_INTERVAL = 500; // 500ms检查一次
 
   return new Promise<any>((resolve) => {

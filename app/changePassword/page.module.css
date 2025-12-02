@@ -1,0 +1,835 @@
+/* 复用登录和注册页面的样式 */
+
+/* 基础样式 */
+.content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 0;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  position: relative;
+  overflow-y: auto;
+}
+
+.backgroundPattern {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle at 20% 80%, rgba(149, 128, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(106, 130, 251, 0.1) 0%, transparent 50%);
+  background-size: 800px 800px, 600px 600px;
+  background-position: 0 0, 100% 100%;
+}
+
+/* 修改密码容器美化 */
+.changePasswordContainer, .registerContainer {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 450px;
+  background: rgba(255, 255, 255, 0.98);
+  border-radius: 24px;
+  padding: 40px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12), 
+              0 5px 10px rgba(102, 126, 234, 0.1);
+  transition: all 0.3s ease;
+}
+
+.logoSection {
+  text-align: center;
+  margin-bottom: 36px;
+}
+
+.logo {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+  transition: all 0.4s ease;
+}
+
+.logoIcon {
+  width: 70px;
+  height: 70px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 18px;
+  position: relative;
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.logo:hover .logoIcon {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 12px 25px rgba(102, 126, 234, 0.5);
+}
+
+.logoIcon::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 28px;
+  height: 28px;
+  background: white;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #2a2a2a;
+  margin-bottom: 10px;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+}
+
+.subtitle {
+  color: #666;
+  font-size: 18px;
+  font-weight: 400;
+  margin: 0;
+  opacity: 0.85;
+}
+
+/* 表单和输入框基础样式 */
+.formSection {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* 输入框基础样式 */
+.inputGroup {
+  margin-bottom: 16px;
+  position: relative;
+  width: 100%;
+}
+
+.inputGroup :global(.adm-input) {
+  border: 1px solid #ddd;
+  background-color: #f8f8f8;
+  font-size: 16px;
+  color: #333;
+  transition: all 0.3s ease;
+  border-radius: 14px;
+  padding: 16px 20px;
+}
+
+.inputGroup :global(.adm-input-element) {
+  color: #333;
+}
+
+.inputGroup :global(.adm-input:focus) {
+  border-color: #667eea;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+  transform: translateY(-2px);
+}
+
+.inputGroup :global(.adm-input):focus-within {
+  border-color: #667eea;
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+}
+
+.inputGroup :global(.adm-input::placeholder) {
+  color: #aab2c0;
+  font-weight: 300;
+}
+
+.inputGroup :global(.adm-input-clear) {
+  color: #aab2c0;
+}
+
+/* 按钮基础样式 */
+.buttonGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.buttonGroup :global(.adm-button) {
+  margin-top: 10px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  height: 54px;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+}
+
+.buttonGroup :global(.adm-button[data-color="primary"]) {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  box-shadow: 0 6px 15px rgba(102, 126, 234, 0.25);
+  border: none;
+}
+
+.buttonGroup :global(.adm-button[data-color="primary"]:active) {
+  transform: translateY(2px);
+  box-shadow: 0 3px 8px rgba(102, 126, 234, 0.2);
+  background: linear-gradient(135deg, #5e73d8, #6d44a0);
+}
+
+.buttonGroup :global(.adm-button[data-color="default"]) {
+  background: #ffffff;
+  color: #667eea;
+  border: 1px solid #e0e6f7;
+  box-shadow: 0 3px 10px rgba(106, 130, 251, 0.08);
+}
+
+.buttonGroup :global(.adm-button[data-color="default"]:active) {
+  background: rgba(102, 126, 234, 0.07);
+  border-color: #667eea;
+}
+
+/* 移动端描述区域样式 */
+.mobileDescription {
+  margin: 16px 0 24px;
+  border-radius: 16px;
+  background: linear-gradient(145deg, rgba(250, 251, 255, 0.9), rgba(245, 247, 255, 0.9));
+  border: 1px solid rgba(106, 130, 251, 0.15);
+  box-shadow: 0 4px 15px rgba(106, 130, 251, 0.08);
+  padding: 2px;
+  position: relative;
+  overflow: hidden;
+}
+
+.mobileDescription::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+.mobileIntro {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #444;
+  margin: 0;
+  padding: 14px 16px 14px 18px;
+  font-weight: 500;
+}
+
+.mobileFeatures {
+  display: flex;
+  justify-content: space-around;
+  margin: 5px 0 10px;
+  padding: 0 12px;
+}
+
+.mobileFeatureItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mobileFeatureIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  font-size: 14px;
+  box-shadow: 0 2px 6px rgba(106, 130, 251, 0.3);
+}
+
+/* 返回提示样式 */
+.backPrompt {
+  text-align: center;
+  padding: 8px;
+  color: #666;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.backPrompt:hover {
+  opacity: 0.8;
+}
+
+.backLink {
+  color: #667eea;
+  font-weight: 600;
+  margin-left: 6px;
+  position: relative;
+}
+
+.backLink::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: #667eea;
+  opacity: 0.6;
+}
+
+/* 品牌说明样式 */
+.brandDescription {
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  margin: 20px 0;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.descriptionIntro {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.sectionTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin: 16px 0 10px 0;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(106, 130, 251, 0.2);
+}
+
+.serviceList,
+.limitationList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px 0;
+}
+
+.serviceList li,
+.limitationList li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.checkIcon,
+.xIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  margin-right: 10px;
+  flex-shrink: 0;
+  font-size: 12px;
+}
+
+.checkIcon {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+}
+
+.xIcon {
+  background: #ff7875;
+  color: white;
+}
+
+.openSourceSection {
+  margin-top: 16px;
+  text-align: center;
+}
+
+.githubLink {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 16px;
+  background: #f6f8fa;
+  border: 1px solid #e1e4e8;
+  border-radius: 6px;
+  color: #24292e;
+  font-size: 14px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.githubLink:hover {
+  background: #ebedf0;
+  text-decoration: none;
+}
+
+.githubIcon {
+  margin-right: 8px;
+}
+
+/* 容器类样式 */
+.pcContainer {
+  width: 100%;
+  height: 100vh;
+  overflow-x: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.mobileContainer {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* PC端样式 */
+@media (min-width: 769px) {
+  .content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%; 
+    height: 100vh;
+    padding: 0;
+    margin: 0;
+    gap: 0;
+    align-items: stretch;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+  
+  .backgroundPattern {
+    grid-column: 1;
+    position: relative;
+    background: 
+      radial-gradient(circle at 30% 60%, rgba(106, 130, 251, 0.15) 0%, transparent 60%),
+      radial-gradient(circle at 70% 30%, rgba(118, 75, 162, 0.15) 0%, transparent 60%),
+      linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  
+  /* 几何装饰元素 */
+  .geoDecor1, .geoDecor2, .geoDecor3 {
+    position: absolute;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    opacity: 0.1;
+  }
+  
+  .geoDecor1 {
+    width: 300px;
+    height: 300px;
+    top: -150px;
+    left: -150px;
+  }
+  
+  .geoDecor2 {
+    width: 200px;
+    height: 200px;
+    bottom: -100px;
+    right: 10%;
+  }
+  
+  .geoDecor3 {
+    width: 150px;
+    height: 150px;
+    top: 40%;
+    left: 10%;
+  }
+  
+  /* 圆环装饰 */
+  .circleDecor {
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    border-radius: 50%;
+    border: 1px solid rgba(106, 130, 251, 0.1);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  
+  /* 品牌信息块 */
+  .brandInfo {
+    position: relative;
+    text-align: center;
+    z-index: 5;
+    width: 80%;
+    max-width: 500px;
+  }
+  
+  .brandLogo {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 30px;
+  }
+  
+  .brandTitle {
+    font-size: 42px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 16px;
+    letter-spacing: -0.5px;
+  }
+  
+  .brandTagline {
+    font-size: 18px;
+    color: #666;
+    margin-bottom: 30px;
+    line-height: 1.6;
+  }
+  
+  .brandFeatures {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 30px;
+  }
+  
+  .featureItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #555;
+    font-size: 16px;
+  }
+  
+  .featureIcon {
+    width: 20px;
+    height: 20px;
+    background: rgba(106, 130, 251, 0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #667eea;
+  }
+  
+  /* 修改密码容器 */
+  .changePasswordContainer {
+    grid-column: 2;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0 60px;
+    border-radius: 0;
+    background: #ffffff;
+    border: none;
+    box-shadow: -5px 0 20px rgba(0, 0, 0, 0.05);
+    position: relative;
+    overflow-y: auto;
+    max-width: none;
+  }
+  
+  .logoSection {
+    margin-bottom: 40px;
+  }
+  
+  .logoIcon {
+    width: 80px;
+    height: 80px;
+    border-radius: 20px;
+  }
+  
+  .logoIcon::before {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+  }
+  
+  .title {
+    font-size: 32px;
+    color: #333;
+    margin-bottom: 12px;
+  }
+  
+  .subtitle {
+    font-size: 18px;
+    color: #666;
+  }
+  
+  /* PC 端表单样式增强 */
+  .formWrapper {
+    width: 100%;
+    max-width: 380px;
+    margin: 0 auto;
+  }
+
+  .formSection {
+    width: 100%;
+    max-width: 380px;
+    gap: 24px;
+    margin-bottom: 30px;
+  }
+
+  .inputGroup {
+    position: relative;
+    width: 100%;
+  }
+
+  /* 增强输入框可见性 */
+  .inputGroup :global(.adm-input) {
+    --font-size: 16px;
+    --placeholder-color: #666;
+    border-radius: 14px;
+    border: 1px solid #c0c0c0;
+    padding: 16px 20px;
+    background: #ffffff;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    height: 52px;
+  }
+
+  /* 悬停状态增强 */
+  .inputGroup :global(.adm-input:hover) {
+    border-color: #9aa9e2;
+    box-shadow: 0 2px 10px rgba(106, 130, 251, 0.1);
+  }
+
+  /* 焦点状态更明显 */
+  .inputGroup :global(.adm-input:focus-within) {
+    border-color: #667eea;
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+  }
+  
+  /* 按钮样式增强 */
+  .buttonGroup {
+    margin-top: 30px;
+    width: 100%;
+    max-width: 380px;
+    gap: 16px;
+  }
+  
+  .buttonGroup :global(.adm-button) {
+    --border-radius: 14px;
+    --height: 52px;
+    --text-font-size: 16px;
+    --background-color: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(106, 130, 251, 0.3);
+  }
+  
+  .buttonGroup :global(.adm-button:hover) {
+    box-shadow: 0 6px 16px rgba(106, 130, 251, 0.4);
+    filter: brightness(1.05);
+  }
+  
+  /* 返回提示链接 */
+  .backPrompt {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 15px;
+    color: #555;
+  }
+  
+  .backLink {
+    color: #667eea;
+    font-weight: 600;
+    margin-left: 6px;
+    position: relative;
+    cursor: pointer;
+  }
+  
+  .backLink::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 1px;
+    background: #667eea;
+    opacity: 0.6;
+  }
+  
+  .backLink:hover::after {
+    opacity: 1;
+  }
+}
+
+/* 平板端适配 */
+@media (min-width: 481px) and (max-width: 768px) {
+  .content {
+    padding: 40px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  }
+  
+  .changePasswordContainer {
+    max-width: 420px;
+    padding: 40px;
+  }
+}
+
+/* 移动端适配优化 */
+@media (max-width: 480px) {
+  /* 移动容器设置 */
+  .mobileContainer {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background: #ffffff;
+    width: 100%;
+    overflow-x: hidden;
+  }
+  
+  /* 内容区域 */
+  .content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 0;
+    background: #ffffff;
+    overflow-y: auto;
+    min-height: 0; /* 修复Flex布局问题 */
+    position: relative;
+  }
+  
+  /* 修改密码容器 */
+  .changePasswordContainer {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background: transparent;
+    padding: 0 20px 10px;
+    box-shadow: none;
+    margin: 0;
+    border-radius: 0;
+    height: auto;
+    min-height: 0;
+    box-sizing: border-box;
+    justify-content: flex-start;
+  }
+  
+  /* Logo区域 */
+  .logoSection {
+    margin-bottom: 16px;
+    padding-top: 10px;
+    text-align: center;
+  }
+  
+  .logo {
+    margin-bottom: 16px;
+  }
+  
+  .logoIcon {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto;
+  }
+  
+  /* 移动描述区域 */
+  .mobileDescription {
+    margin: 10px 0;
+    max-height: 120px;
+  }
+  
+  /* 表单区域 */
+  .formWrapper {
+    flex-grow: 0;
+    margin-top: 0;
+    width: 100%;
+  }
+  
+  .formSection {
+    gap: 12px;
+  }
+  
+  .inputGroup {
+    margin-bottom: 8px;
+  }
+  
+  /* 按钮和返回区域 */
+  .buttonGroup {
+    margin-top: 16px;
+    gap: 8px;
+  }
+  
+  .buttonGroup :global(.adm-button) {
+    height: 44px;
+  }
+  
+  /* 使返回提示始终可见 */
+  .backPrompt {
+    position: relative;
+    margin: 12px 0;
+    padding: 8px;
+    width: 100%;
+    display: block;
+    text-align: center;
+    font-size: 14px;
+    color: #666;
+  }
+  
+  /* 底部区域 */
+  .bottomSection {
+    height: 20px;
+    margin-top: auto;
+  }
+}
+
+/* 添加输入框图标 - PC端和移动端通用 */
+.inputGroup::before {
+  content: '';
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  z-index: 2;
+}
+
+.inputGroup.passwordInput::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23667eea' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='11' width='18' height='11' rx='2' ry='2'%3E%3C/rect%3E%3Cpath d='M7 11V7a5 5 0 0 1 10 0v4'%3E%3C/path%3E%3C/svg%3E");
+}
+
+/* 调整输入框左内边距，为图标腾出空间 */
+.inputGroup :global(.adm-input) {
+  padding-left: 46px;
+}
+
+/* 加载按钮样式 */
+.buttonGroup :global(.adm-button-loading) {
+  opacity: 0.9;
+}
+
+.buttonGroup :global(.adm-button-loading-wrapper) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* 增强加载动画 */
+.buttonGroup :global(.adm-dot-loading) {
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* 密码错误提示 */
+.passwordError {
+  color: #ff4d4f;
+  font-size: 14px;
+  margin-top: 5px;
+  text-align: left;
+}

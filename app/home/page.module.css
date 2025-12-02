@@ -354,20 +354,15 @@
   align-items: center;
 }
 
-
-/* 添加缺失的 sectionCard 样式 */
 .sectionCard {
   position: relative;
   z-index: 1;
   width: 100%;
-  max-width: 100%;
   background: rgba(255, 255, 255, 0.98);
   border-radius: 24px;
   padding: 30px;
   margin-bottom: 30px;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1),
-    0 5px 10px rgba(102, 126, 234, 0.1);
-  text-align: center;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1), 0 5px 10px rgba(102, 126, 234, 0.1);
   transition: all 0.3s ease;
 }
 
@@ -379,9 +374,11 @@
 }
 
 .accountDetails {
+  min-width: 300px;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-bottom: 20px;
   gap: 30px;
 }
 
@@ -396,6 +393,47 @@
   color: white;
   font-size: 20px;
   font-weight: bold;
+}
+
+.changePasswordWrapper {
+  display: flex;
+  justify-content: flex-end;
+  /* Align button to the right */
+}
+
+.changePasswordButton {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  padding: 4px 6px;
+  border-radius: 12px;
+  /* Round corners */
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.changePasswordButton:hover {
+  background: linear-gradient(135deg, #764ba2, #667eea);
+  /* Slight variation on hover */
+}
+
+.changePasswordText {
+  margin-left: 4px;
+  /* Space between icon and text */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .sectionCard {
+    padding: 25px 20px;
+  }
+
+  .accountAvatar {
+    width: 40px;
+    height: 40px;
+  }
 }
 
 .loadingContainer {

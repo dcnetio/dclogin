@@ -1,4 +1,4 @@
-import { List, Popup } from "antd-mobile";
+import { Button, List, Popup } from "antd-mobile";
 import styles from "./index.module.css";
 import { useEffect, useState } from "react";
 import DBHelper, { getAllData, store_account } from "@/helpers/DBHelper";
@@ -68,6 +68,11 @@ export default function Account(props: AccountProps) {
           <div className={styles.emptyTxt}>{t("account.empty")}</div>
         )}
       </List>
+      <div className={styles.btn}>
+        <Button color="primary" size="large" block>
+          {t("account.add")}
+        </Button>
+      </div>
     </Popup>
   );
 }

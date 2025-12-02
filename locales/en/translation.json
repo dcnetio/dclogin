@@ -45,6 +45,7 @@
     "disconnect": "断开连接"
   },
   "account": {
+    "add": "添加账号",
     "choose": "选择账号",
     "switch_failed": "切换账号失败",
     "empty": "暂无账号信息",

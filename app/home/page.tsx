@@ -129,14 +129,8 @@ export default function Index() {
   };
 
   useEffect(() => {
-    // 模拟连接过程
-    setTimeout(() => {
-      setIsConnecting(false);
-    }, 2000);
-  }, []);
-
-  useEffect(() => {
     if (initState == appState.init_success) {
+      setIsConnecting(false);
       getUserInfo();
     }
   }, [initState]);
@@ -154,7 +148,7 @@ export default function Index() {
           </div>
           <div>
             <div className="mr-5 text-lg font-medium">{accountName}</div>
-            <div className=" text-sm font-medium">
+            <div className="text-sm font-medium">
               {accountAddress && accountAddress.length > 16
                 ? `${accountAddress.substring(
                     0,
@@ -174,6 +168,16 @@ export default function Index() {
               </button>
             </div>
           </div>
+        </div>
+
+        <div className={styles.changePasswordWrapper}>
+          <button
+            className={styles.changePasswordButton}
+            onClick={() => router.push("/changePassword")}
+          >
+            <RightOutline />
+            <span className={styles.changePasswordText}>修改密码</span>
+          </button>
         </div>
       </div>
 
@@ -295,25 +299,26 @@ export default function Index() {
           {t("wallet.initialization_failed", "初始化失败")}
         </div>
       ) : (
-        <>
-          {/* 使用组件中的 Header */}
-          <Header
-            changeNetworkSuccess={changeSuccess}
-            changeAccountSuccess={changeSuccess}
-          />
-
-          <div className={styles.contentPage} style={{ width: "100%" }}>
-            {isConnecting ? (
-              <div className={styles.loadingContainer}>
-                <div className={styles.loadingText}>
-                  {t("wallet.connecting", "正在连接...")}
-                </div>
+        <div>
+          {isConnecting ? (
+            <div className={styles.loadingContainer}>
+              <div className={styles.loadingText}>
+                {t("wallet.connecting", "正在连接...")}
               </div>
-            ) : (
-              <AccountInfoView />
-            )}
-          </div>
-        </>
+            </div>
+          ) : (
+            <div>
+              {/* 使用组件中的 Header */}
+              <Header
+                changeNetworkSuccess={changeSuccess}
+                changeAccountSuccess={changeSuccess}
+              />
+              <div className={styles.contentPage} style={{ width: "100%" }}>
+                <AccountInfoView />
+              </div>
+            </div>
+          )}
+        </div>
       )}
     </div>
   );

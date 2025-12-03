@@ -1,14 +1,24 @@
-import { Popup } from "antd-mobile";
+import { Button, Popover, Toast } from "antd-mobile";
 import styles from "./index.module.css";
 import Network from "@/components/common/network";
 import Account from "@/components/common/account";
-import { GlobalOutline, DownFill } from "antd-mobile-icons";
+import {
+  GlobalOutline,
+  DownFill,
+  BellOutline,
+  EyeOutline,
+  LockOutline,
+  UserOutline,
+} from "antd-mobile-icons";
 import { useEffect, useState } from "react";
 import { useAppSelector } from "@/lib/hooks";
 import { getCurrentAccount, getCurrentNetwork } from "@/app/index";
 import { appState } from "@/config/constant";
 import { AccountInfo } from "@/types/walletTypes";
 import { useTranslation } from "react-i18next";
+import { Menu, User } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Action } from "antd-mobile/es/components/popover";
 
 interface HeaderProps {
   changeNetworkSuccess: () => void;
@@ -17,17 +27,25 @@ interface HeaderProps {
 
 export default function Header(props: HeaderProps) {
   const { changeNetworkSuccess, changeAccountSuccess } = props;
+  const router = useRouter();
   const { t } = useTranslation();
   const [networkName, setNetworkName] = useState("");
   const [networkVisible, setNetworkVisible] = useState(false);
   const [accountVisible, setAccountVisible] = useState(false);
   const [accountInfo, setAccountInfo] = useState<AccountInfo>();
-  const [notificationCount, setNotificationCount] = useState(5); // 设置通知数量
   const initState = useAppSelector((state) => state.app.initState);
-
   const showChangeNetwork = () => {
     console.log("showChangeNetwork");
     setNetworkVisible(true);
+  };
+
+  const gotoChangePassword = () => {
+    router.push("/changePassword");
+  };
+
+  const gotoChangeAccount = () => {
+    console.log("gotoChangeAccount");
+    // todo 跳转到账户管理页面
   };
 
   const showChangeAccount = () => {
@@ -73,6 +91,26 @@ export default function Header(props: HeaderProps) {
     }
   }, [initState]);
 
+  const [menuVisible, setMenuVisible] = useState(false);
+
+  const toggleMenu = () => {
+    setMenuVisible(!menuVisible);
+  };
+
+  const actions: Action[] = [
+    {
+      key: "password",
+      icon: <LockOutline />,
+      text: "修改密码",
+      onClick: gotoChangePassword,
+    },
+    {
+      key: "account",
+      icon: <UserOutline />,
+      text: "切换账号",
+      onClick: gotoChangeAccount,
+    },
+  ];
   return (
     <div className={styles.header}>
       {/* 账户下拉菜单 */}
@@ -91,9 +129,20 @@ export default function Header(props: HeaderProps) {
         <div className={styles.network} onClick={showChangeNetwork}>
           <GlobalOutline fontSize={16} style={{ color: "#333" }} />
         </div>
-      </div>
-      <Network onSuccess={onNetworkSuccess} visible={networkVisible} />
 
+        {/* 新增菜单按钮 - 使用 Popover 替代 Popover.Menu */}
+        <Popover.Menu
+          onAction={(node) => Toast.show(`选择了 ${node.text}`)}
+          actions={actions}
+          placement="bottom-start"
+          trigger="click"
+        >
+          <Menu size={20} color="#333" className="ml-2" />
+        </Popover.Menu>
+      </div>
+
+      {/* 网络选择器和账户信息组件保持不变 */}
+      <Network onSuccess={onNetworkSuccess} visible={networkVisible} />
       <Account onSuccess={onAccountSuccess} visible={accountVisible} />
     </div>
   );

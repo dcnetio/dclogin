@@ -36,7 +36,7 @@ export default function ChangePasswordLayout({
   // 移动端显示导航栏
   return (
     <section className={styles.mobileContainer}>
-      <NavBar onBack={back}>{t("changePassword.change_password")}</NavBar>
+      <NavBar onBack={back}>{t("changePassword.title")}</NavBar>
       {children}
     </section>
   );

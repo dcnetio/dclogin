@@ -66,9 +66,12 @@
     "bind_nft_account_ing": "绑定账号中...",
     "bind_nft_account_failed": "绑定账号失败",
     "nft_account_binded": "当前账号已被绑定",
-    "bind_nft_account_timeout": "绑定账号超时",
-    "change_password_success": "修改密码成功",
-    "change_password_failed": "修改密码失败"
+    "bind_nft_account_timeout": "绑定账号超时"
+  },
+  "changePassword": {
+    "title": "修改密码",
+    "failed": "修改密码失败",
+    "success": "修改密码成功"
   },
   "DAPP": {
     "info": "授权应用信息",

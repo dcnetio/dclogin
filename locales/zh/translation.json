@@ -69,6 +69,7 @@
     "bind_nft_account_timeout": "绑定账号超时"
   },
   "changePassword": {
+    "title": "修改密码",
     "failed": "修改密码失败",
     "success": "修改密码成功"
   },

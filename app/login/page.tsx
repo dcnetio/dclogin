@@ -7,6 +7,9 @@ import { useTranslation } from "react-i18next";
 import { Button, Input } from "antd-mobile";
 import { createAccountWithLogin } from "@/app/index";
 import { getDC } from "@/components/auth/login/dc";
+import { store } from "@/lib/store";
+import { saveInitState } from "@/lib/slices/appSlice";
+import { appState } from "@/config/constant";
 
 export default function Login() {
   // 保持现有的 state 和 hooks
@@ -32,68 +35,70 @@ export default function Login() {
   }, []);
 
   const gotoConfirm = async () => {
-  // Set loading state to true when login starts
-  setIsLoading(true);
-  
-  // Validate input
-  if (!account) {
-    window.showToast({
-      content: t("login.account_empty"),
-      position: "bottom",
-    });
-    setIsLoading(false); // Reset loading state
-    return;
-  }
-  const dc = getDC();
-  if (dc) {
-    if (!dc.auth) {
+    // Set loading state to true when login starts
+    setIsLoading(true);
+
+    // Validate input
+    if (!account) {
       window.showToast({
-        content: t("login.failed"),
+        content: t("login.account_empty"),
         position: "bottom",
       });
       setIsLoading(false); // Reset loading state
       return;
     }
-    
-    try {
-      const res = await createAccountWithLogin(
-        account,
-        password,
-        safecode,
-        origin
-      );
-      console.log("accountLogin res", res);
-      
-      // Reset loading state after login completes
-      setIsLoading(false);
-      
-      if (res && res.success) {
+    const dc = getDC();
+    if (dc) {
+      if (!dc.auth) {
         window.showToast({
-          content: t("login.success"),
+          content: t("login.failed"),
           position: "bottom",
         });
-        router.push("/home");
+        setIsLoading(false); // Reset loading state
         return;
       }
-      
-      window.showToast({
-        content: t("login.failed"),
-        position: "bottom",
-      });
-    } catch (error) {
-      // Reset loading state if there's an error
-      setIsLoading(false);
-      
-      console.log("accountLogin error", error);
-      window.showToast({
-        content: t("login.failed"),
-        position: "bottom",
-      });
+
+      try {
+        const res = await createAccountWithLogin(
+          account,
+          password,
+          safecode,
+          origin
+        );
+        console.log("accountLogin res", res);
+
+        // Reset loading state after login completes
+        setIsLoading(false);
+
+        if (res && res.success) {
+          window.showToast({
+            content: t("login.success"),
+            position: "bottom",
+          });
+
+          store.dispatch(saveInitState(appState.init_success));
+          router.push("/");
+          return;
+        }
+
+        window.showToast({
+          content: t("login.failed"),
+          position: "bottom",
+        });
+      } catch (error) {
+        // Reset loading state if there's an error
+        setIsLoading(false);
+
+        console.log("accountLogin error", error);
+        window.showToast({
+          content: t("login.failed"),
+          position: "bottom",
+        });
+      }
+    } else {
+      setIsLoading(false); // Reset loading if dc is not available
     }
-  } else {
-    setIsLoading(false); // Reset loading if dc is not available
-  }
-};
+  };
 
   const gotoRegister = () => {
     router.push(`/register${window.location.search}`);
@@ -102,17 +107,17 @@ export default function Login() {
   const toggleSafecode = () => {
     setShowSafecode(!showSafecode);
   };
-return (
-  <div className={styles.content}>
-    <div className={styles.backgroundPattern}>
-      {!isMobile && (
-        <>
-          {/* PC端视图内容 */}
-          <div className={styles.geoDecor1}></div>
-          <div className={styles.geoDecor2}></div>
-          <div className={styles.geoDecor3}></div>
-          <div className={styles.circleDecor}></div>
-          <div className={styles.brandInfo}>
+  return (
+    <div className={styles.content}>
+      <div className={styles.backgroundPattern}>
+        {!isMobile && (
+          <>
+            {/* PC端视图内容 */}
+            <div className={styles.geoDecor1}></div>
+            <div className={styles.geoDecor2}></div>
+            <div className={styles.geoDecor3}></div>
+            <div className={styles.circleDecor}></div>
+            <div className={styles.brandInfo}>
               <div className={styles.brandLogo}>
                 <div className={styles.logoIcon}></div>
               </div>
@@ -211,111 +216,114 @@ return (
           </>
         )}
       </div>
-    <div className={styles.loginContainer}>
-      {/* Logo区域 */}
-      <div className={styles.logoSection}>
-        <div className={styles.logo}>
-          <div className={styles.logoIcon}></div>
-        </div>
-        <h1 className={styles.title}>{t("login.title", "DCWallet")}</h1>
-        <p className={styles.subtitle}>
-          {t("login.subtitle", "您正在使用去中心化统一登录")}
-        </p>
+      <div className={styles.loginContainer}>
+        {/* Logo区域 */}
+        <div className={styles.logoSection}>
+          <div className={styles.logo}>
+            <div className={styles.logoIcon}></div>
+          </div>
+          <h1 className={styles.title}>{t("login.title", "DCWallet")}</h1>
+          <p className={styles.subtitle}>
+            {t("login.subtitle", "您正在使用去中心化统一登录")}
+          </p>
 
-        {/* 移动端描述 - 仅在移动端显示 */}
-        {isMobile && (
-          <div className={styles.mobileDescription}>
-            <p className={styles.mobileIntro}>
-              {t('wallet.mobile_intro_short', 'DCWallet: 安全、私密的去中心化统一登录工具')}
-            </p>
-            
-            <div className={styles.mobileFeatures}>
-              <div className={styles.mobileFeatureItem}>
-                <span className={styles.mobileFeatureIcon}>✓</span>
-                <span>{t('wallet.feature1', '统一登录')}</span>
-              </div>
-              <div className={styles.mobileFeatureItem}>
-                <span className={styles.mobileFeatureIcon}>✓</span>
-                <span>{t('wallet.feature2', '数据安全')}</span>
+          {/* 移动端描述 - 仅在移动端显示 */}
+          {isMobile && (
+            <div className={styles.mobileDescription}>
+              <p className={styles.mobileIntro}>
+                {t(
+                  "wallet.mobile_intro_short",
+                  "DCWallet: 安全、私密的去中心化统一登录工具"
+                )}
+              </p>
+
+              <div className={styles.mobileFeatures}>
+                <div className={styles.mobileFeatureItem}>
+                  <span className={styles.mobileFeatureIcon}>✓</span>
+                  <span>{t("wallet.feature1", "统一登录")}</span>
+                </div>
+                <div className={styles.mobileFeatureItem}>
+                  <span className={styles.mobileFeatureIcon}>✓</span>
+                  <span>{t("wallet.feature2", "数据安全")}</span>
+                </div>
               </div>
             </div>
+          )}
+        </div>
+
+        {/* 表单区域 - 更新类名 */}
+        <div className={styles.formWrapper}>
+          <div className={styles.formSection}>
+            <div className={`${styles.inputGroup} ${styles.accountInput}`}>
+              <Input
+                placeholder={t("login.account")}
+                value={account}
+                onChange={setAccount}
+                onEnterPress={gotoConfirm}
+                clearable
+                className={styles.inputField}
+              />
+            </div>
+
+            <div className={`${styles.inputGroup} ${styles.passwordInput}`}>
+              <Input
+                placeholder={t("login.password")}
+                value={password}
+                onChange={setPassword}
+                onEnterPress={gotoConfirm}
+                clearable
+                type="password"
+                className={styles.inputField}
+              />
+            </div>
+
+            {/* 安全码区域不变 */}
+            <div className={styles.safecodeSection}>
+              {showSafecode ? (
+                <div className={`${styles.inputGroup} ${styles.safecodeInput}`}>
+                  <Input
+                    placeholder={t("login.safecode")}
+                    value={safecode}
+                    onChange={setSafecode}
+                    onEnterPress={gotoConfirm}
+                    clearable
+                  />
+                </div>
+              ) : (
+                <div className={styles.safecodeToggle} onClick={toggleSafecode}>
+                  {t("login.input_safecode", "输入安全码")}
+                </div>
+              )}
+            </div>
           </div>
-        )}
-      </div>
-
-     {/* 表单区域 - 更新类名 */}
-<div className={styles.formWrapper}>
-  <div className={styles.formSection}>
-    <div className={`${styles.inputGroup} ${styles.accountInput}`}>
-      <Input
-        placeholder={t("login.account")}
-        value={account}
-        onChange={setAccount}
-        onEnterPress={gotoConfirm}
-        clearable
-        className={styles.inputField}
-      />
-    </div>
-
-    <div className={`${styles.inputGroup} ${styles.passwordInput}`}>
-      <Input
-        placeholder={t("login.password")}
-        value={password}
-        onChange={setPassword}
-        onEnterPress={gotoConfirm}
-        clearable
-        type="password"
-        className={styles.inputField}
-      />
-    </div>
-
-    {/* 安全码区域不变 */}
-    <div className={styles.safecodeSection}>
-      {showSafecode ? (
-        <div className={`${styles.inputGroup} ${styles.safecodeInput}`}>
-          <Input
-            placeholder={t("login.safecode")}
-            value={safecode}
-            onChange={setSafecode}
-            onEnterPress={gotoConfirm}
-            clearable
-          />
         </div>
-      ) : (
-        <div className={styles.safecodeToggle} onClick={toggleSafecode}>
-          {t("login.input_safecode", "输入安全码")}
+
+        {/* 按钮区域 - 移到容器底部 */}
+        <div className={styles.buttonGroup}>
+          <Button
+            color="primary"
+            fill="solid"
+            onClick={gotoConfirm}
+            block
+            className={styles.loginButton}
+            loading={isLoading}
+            loadingText={t("login.logging_in", "登录中...")}
+          >
+            {t("login.login", "登录")}
+          </Button>
         </div>
-      )}
-    </div>
-  </div>
-</div>
 
-      {/* 按钮区域 - 移到容器底部 */}
-     <div className={styles.buttonGroup}>
-  <Button 
-    color="primary" 
-    fill="solid" 
-    onClick={gotoConfirm} 
-    block
-    className={styles.loginButton}
-    loading={isLoading}
-    loadingText={t("login.logging_in", "登录中...")}
-  >
-    {t("login.login", "登录")}
-  </Button>
-</div>
+        {/* 注册提示 - 确保可见 */}
+        <div className={styles.registerPrompt} onClick={gotoRegister}>
+          {t("login.no_account", "没有账户?")}
+          <span className={styles.registerLink}>
+            {t("login.register_now", "立即注册")}
+          </span>
+        </div>
 
-      {/* 注册提示 - 确保可见 */}
-      <div className={styles.registerPrompt} onClick={gotoRegister}>
-        {t("login.no_account", "没有账户?")}
-        <span className={styles.registerLink}>
-          {t("login.register_now", "立即注册")}
-        </span>
+        {/* 底部区域 */}
+        <div className={styles.bottomSection}></div>
       </div>
-
-      {/* 底部区域 */}
-      <div className={styles.bottomSection}></div>
     </div>
-  </div>
-);
+  );
 }

@@ -1,0 +1,44 @@
+/* ========== 布局调整 =========== */
+
+.mobile-stack {
+  display: flex;
+  flex-direction: column;
+  margin-top: 2rem;
+}
+
+@media (min-width: 768px) {
+  .mobile-stack {
+    margin-top: 2rem;
+    /* 中等屏幕增加上边距 */
+  }
+}
+
+
+@media (min-width: 1024px) {
+  .mobile-stack {
+    margin-top: 4rem;
+    /* 大屏幕增加更大的上边距 */
+  }
+}
+
+
+/* ========== 动画 =========== */
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-spinner {
+  border: 4px solid var(--spinner-bg, #e5e7eb);
+  border-top: 4px solid var(--primary-color, #6b46c1);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  animation: spin 1s linear infinite;
+}

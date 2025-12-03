@@ -615,6 +615,29 @@ async function resPonseWallet(
   }
 }
 
+// 修改密码
+async function changePassword(
+  accountInfo: AccountInfo,
+  newPassword: string,
+  safecode: string
+) {
+  const dc = getDC();
+  if (!dc) {
+    return [false, new Error(i18n.t("account.auth_no_module"))];
+  }
+  const mnemonic = await unlockWallet(accountInfo);
+  if (!mnemonic) {
+    return;
+  }
+  const [success, error] = await dc.auth.nftAccountPasswordModify(
+    accountInfo.nftAccount,
+    newPassword,
+    safecode,
+    mnemonic
+  );
+  return [success, error];
+}
+
 export {
   chooseStoredAccount,
   authenticateWithPasskey,
@@ -626,4 +649,5 @@ export {
   setCurrentAccount,
   createAccount,
   bindNFTAccount,
+  changePassword,
 };

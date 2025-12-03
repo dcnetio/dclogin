@@ -113,7 +113,7 @@ export default function Login() {
         // 初始化成功，
         store.dispatch(saveInitState(appState.init_success));
         if (window.location.pathname === "/") {
-          router.push(`/home${window.location.search}`);
+          router.push(`/${window.location.search}`);
         }
       }
     } catch (error) {

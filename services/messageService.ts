@@ -506,7 +506,7 @@ async function createAccountWithRegister(
     const errInfo = bindRes[1];
     const errMsg = errInfo && errInfo.message;
     window.showToast({
-      content: i18n.t(errMsg || "account.bind_nft_account_failed"),
+      content: errMsg || i18n.t("account.bind_nft_account_failed"),
       position: "bottom",
     });
     if (

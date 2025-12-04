@@ -1,16 +1,13 @@
 "use client";
 import ethersHelper from "@/helpers/ethersHelper";
 import { NetworkStauts } from "@/config/constant";
-import { AccountInfo } from "../types/walletTypes";
-
-// 定义一个变量，用于存储BroadcastChannel对象
-let currentAccount: AccountInfo | null = null; //当前账号
 
 // 数据库
 import DBHelper from "@/helpers/DBHelper";
 import i18n from "@/locales/i18n";
-import { getCurrentNetwork, getNetworkStatus, switchChain } from "./networkService";
-import { generateWalletAccount } from "./accountService";
+import { getCurrentNetwork, getNetworkStatus, switchChain } from "../network";
+import { generateWalletAccount } from "../account/wallet";
+import { getCurrentAccount } from "../account/state";
 
 // 转账
 async function transfer(
@@ -29,6 +26,7 @@ async function transfer(
     });
     return;
   }
+  const currentAccount = getCurrentAccount();
   if (currentAccount == null) {
     //待测试 跳出提示框,提示用户没有可用账号
     window.showToast({

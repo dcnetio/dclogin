@@ -4,213 +4,15 @@ import ethersHelper from "@/helpers/ethersHelper";
 import { MsgStatus } from "@/config/constant";
 import { store } from "@/lib/store";
 import { updateAuthStep } from "@/lib/slices/authSlice";
-import { AccountInfo, ConnectReqMessage } from "../types/walletTypes";
-import type { APPInfo } from "web-dc-api";
-import { KeyManager, NFTBindStatus, Ed25519PrivKey } from "web-dc-api";
-// 数据库
+import { AccountInfo, ConnectReqMessage } from "@/types/walletTypes";
+import { KeyManager, Ed25519PrivKey } from "web-dc-api";
 import DBHelper from "@/helpers/DBHelper";
-import {
-  showEncodePassword,
-  showSetEncodePassword,
-} from "@/components/note/noteHelper";
 import i18n from "@/locales/i18n";
-import { getCurrentChain, getCurrentNetwork } from "./networkService";
+import { getCurrentNetwork } from "../network";
 import { getDC } from "@/components/auth/login/dc";
-// 定义一个变量，用于存储BroadcastChannel对象
-let currentAccount: AccountInfo | null = null; //当前账号
+import { getCurrentAccount } from "./state";
+import { getEncodePwd, setEncodePwd } from "./security";
 
-// 获取已有的账号
-async function chooseStoredAccount(): Promise<AccountInfo | null> {
-  if (currentAccount) {
-    console.log("currentAccount 已经存在", currentAccount);
-    return currentAccount;
-  }
-  //判断用户是否已经创建过钱包账号,如果没有,则跳出状态等待框,提示用户账号创建中
-  const accounts = await DBHelper.getAllData(DBHelper.store_account);
-  if (!accounts || accounts.length == 0) {
-    return null;
-  }
-  const accountinfo = await DBHelper.getData(
-    DBHelper.store_keyinfo,
-    "choosedAccount"
-  );
-  if (accountinfo && accountinfo.value) {
-    // 更新当前账号
-    await DBHelper.updateData(DBHelper.store_keyinfo, {
-      key: "choosedAccount",
-      value: accounts[accounts.length - 1],
-    });
-  } else {
-    await DBHelper.addData(DBHelper.store_keyinfo, {
-      key: "choosedAccount",
-      value: accounts[accounts.length - 1],
-    });
-  }
-  currentAccount = accounts[accounts.length - 1];
-  return currentAccount;
-}
-
-const bindNFTAccount = async (
-  account: string = "",
-  password: string = "",
-  safecode: string = "",
-  mnemonic: string = "",
-  pubKeyStr: string = ""
-): Promise<[boolean, Error | null]> => {
-  const dc = getDC();
-  if (!dc) {
-    return [false, new Error(i18n.t("account.auth_no_module"))];
-  }
-  const [bindStatus, err] = await dc.auth.bindNFTAccount(
-    account,
-    password,
-    safecode,
-    mnemonic
-  );
-  if (err || bindStatus !== NFTBindStatus.Success) {
-    return [false, err || new Error(i18n.t("account.bind_nft_account_failed"))];
-  }
-  // 循环checkNFT绑定状态
-  const checkFlag = await _checkBind(account, pubKeyStr);
-  if (!checkFlag) {
-    return [false, new Error(i18n.t("account.bind_nft_account_timeout"))];
-  }
-  return [true, null];
-};
-
-const _checkBind = (account: string, pubKeyStr: string) => {
-  const maxNum = 20;
-  let interval: any = null, // 定时器
-    intervalNum = 0; // 定时判断是否绑定成功
-  return new Promise((resolve) => {
-    const dc = getDC();
-    if (!dc) {
-      resolve(false);
-      return;
-    }
-    // 初始化定时器
-    if (interval) {
-      clearInterval(interval);
-    }
-    intervalNum = 0;
-    interval = setInterval(async () => {
-      intervalNum++;
-      // 判断是否绑定成功
-      const [bindFlag, err] = await dc.auth.isNftAccountBindSuccess(
-        account,
-        pubKeyStr
-      );
-      if (!err && bindFlag) {
-        // 绑定成功停止定时任务
-        clearInterval(interval);
-        intervalNum = 0;
-        resolve(true);
-      } else if (intervalNum > maxNum) {
-        // 超时停止定时任务
-        clearInterval(interval);
-        intervalNum = 0;
-        resolve(false);
-      }
-    }, 1000);
-  });
-};
-
-// 创建账号
-async function createAccount(
-  mnemonic: string | null = null,
-  nftAccount: string,
-  address: string = "",
-  connectingApp: APPInfo | null = null
-) {
-  let accounts: AccountInfo[] = [];
-  try {
-    //待测试 跳出状态等待框,提示用户账号创建中，需要手动关闭
-    // 保存用户信息
-    const account = await createWalletAccount(mnemonic, nftAccount, address);
-    console.log("11111111111111111111account 创建", account);
-    //待测试 关闭状态等待框
-    window.clearToast();
-    if (!account) {
-      return;
-    }
-    //待测试 跳出账号创建成功提示框
-    window.showToast({
-      content: i18n.t("account.create_success"),
-      position: "bottom",
-    });
-    accounts.push(account);
-  } catch (e) {
-    console.error("获取账号信息失败:", e);
-    //待测试 跳出提示框,提示用户创建账号失败
-    window.showToast({
-      content: i18n.t("account.create_failed"),
-      position: "bottom",
-    });
-    return;
-  }
-  const accountinfo = await DBHelper.getData(
-    DBHelper.store_keyinfo,
-    "choosedAccount"
-  );
-  if (accountinfo && accountinfo.value) {
-    // 更新当前账号
-    await DBHelper.updateData(DBHelper.store_keyinfo, {
-      key: "choosedAccount",
-      value: accounts[accounts.length - 1],
-    });
-  } else {
-    await DBHelper.addData(DBHelper.store_keyinfo, {
-      key: "choosedAccount",
-      value: accounts[accounts.length - 1],
-    });
-  }
-  currentAccount = accounts[accounts.length - 1];
-  return currentAccount;
-}
-
-// 获取用户加密密码
-async function getEncodePwd(info: {
-  iv: Uint8Array;
-  encodeMnimonic: ArrayBuffer;
-  credentialId?: string;
-}): Promise<ArrayBuffer | null> {
-  return new Promise((resolve, reject) => {
-    const dc = getDC();
-    if (!dc) {
-      reject(new Error("dc is null"));
-    }
-    // todo 显示用户加密密码页面
-    const connectingApp: APPInfo | null = dc?.appInfo || null;
-    const appInfo = {
-      appId: connectingApp.appId || "",
-      appName: connectingApp.appName || "",
-      appIcon: connectingApp.appIcon || "",
-      appUrl: connectingApp.appUrl || "",
-      appVersion: connectingApp.appVersion || "",
-    };
-    const handleBack = (userHandleHash: ArrayBuffer | null) => {
-      // 处理结果
-      resolve(userHandleHash);
-    };
-    const failBack = () => {
-      // 处理结果
-      resolve(null);
-    };
-    showEncodePassword(info, appInfo, handleBack, failBack);
-  });
-}
-
-// 设置用户加密密码
-async function setEncodePwd(): Promise<[Uint8Array | null, string | null]> {
-  return new Promise((resolve) => {
-    showSetEncodePassword(
-      (userHandle: Uint8Array | null, credentialId: string | null) => {
-        // 处理结果
-        resolve([userHandle, credentialId]);
-      }
-    );
-  });
-}
 // 根据账号,生成签名的钱包账号对象
 async function generateWalletAccount(seedAccount: string) {
   let account = null;
@@ -250,7 +52,7 @@ async function generateWalletAccount(seedAccount: string) {
       });
       return;
     }
-  } catch (error) {
+  } catch {
     //待测试 跳出提示框,提示用户解锁钱包失败
     window.showToast({
       content: i18n.t("account.unlock_wallet_failed"),
@@ -345,90 +147,6 @@ async function createWalletAccount(
     return null;
   }
 }
-
-// 使用 Passkey 进行身份验证,并提取出userHandleHash
-async function authenticateWithPasskey(credentialId: string) {
-  const challenge = window.crypto.getRandomValues(new Uint8Array(32));
-
-  const arrayBuffer = utilHelper.base64UrlToArrayBuffer(credentialId);
-  if (!arrayBuffer) {
-    return null;
-  }
-  const publickeyrType: PublicKeyCredentialType = "public-key";
-  const required: UserVerificationRequirement = "required";
-  const credentialidBuffer = arrayBuffer;
-  const getCredentialOptions = {
-    challenge: challenge,
-    rpId: window.location.hostname,
-    allowCredentials: [
-      {
-        id: credentialidBuffer,
-        type: publickeyrType,
-      },
-    ],
-    userVerification: required,
-    timeout: 60000,
-    extensions: {
-      hmacCreateSecret: true,
-    },
-  };
-
-  try {
-    const assertion = await navigator.credentials.get({
-      publicKey: getCredentialOptions,
-    });
-    if (!assertion) {
-      return null;
-    }
-    // 检查 assertion 中的扩展数据
-    const clientExtensionResults = (
-      assertion as PublicKeyCredential
-    ).getClientExtensionResults();
-    console.log("HMAC Secret Used:", clientExtensionResults.hmacCreateSecret);
-    console.log("Authentication successful");
-    const response = (assertion as PublicKeyCredential)
-      .response as AuthenticatorAssertionResponse;
-    console.log("response12 successful", response);
-    console.log(
-      "response.authenticatorData successful",
-      new TextDecoder("utf-8").decode(response.authenticatorData)
-    );
-    console.log(
-      "response.clientDataJSON successful",
-      new TextDecoder("utf-8").decode(response.clientDataJSON)
-    );
-    console.log(
-      "response.signature successful",
-      new TextDecoder().decode(response.signature)
-    );
-    console.log(
-      "response.userHandle successful",
-      response.userHandle
-        ? new TextDecoder("utf-8").decode(response.userHandle)
-        : "没有response.userHandle"
-    );
-    if (response.userHandle) {
-      const userHandleHash = await crypto.subtle.digest(
-        "SHA-256",
-        response.userHandle
-      );
-      return userHandleHash;
-    } else {
-      return null;
-    }
-  } catch (error) {
-    console.error("Authentication failed", error);
-    return null;
-  }
-}
-
-const getCurrentAccount = (): AccountInfo | null => {
-  return currentAccount;
-};
-
-const setCurrentAccount = (account: AccountInfo) => {
-  currentAccount = account;
-};
 
 // 解锁钱包并返回数据信息
 async function unlockWallet(chooseAccount: AccountInfo) {
@@ -560,6 +278,7 @@ async function resPonseWallet(
     );
     return;
   }
+  const currentAccount = getCurrentAccount();
   if (bool) {
     // DCAPP进入
     const keymanager = new KeyManager();
@@ -635,39 +354,9 @@ async function resPonseWallet(
   }
 }
 
-// 修改密码
-async function changePassword(
-  accountInfo: AccountInfo,
-  newPassword: string,
-  safecode: string
-) {
-  const dc = getDC();
-  if (!dc) {
-    return [false, new Error(i18n.t("account.auth_no_module"))];
-  }
-  const mnemonic = await unlockWallet(accountInfo);
-  if (!mnemonic) {
-    return;
-  }
-  const [success, error] = await dc.auth.nftAccountPasswordModify(
-    accountInfo.nftAccount,
-    newPassword,
-    safecode,
-    mnemonic
-  );
-  return [success, error];
-}
-
 export {
-  chooseStoredAccount,
-  authenticateWithPasskey,
-  getEncodePwd,
   generateWalletAccount,
+  createWalletAccount,
   unlockWallet,
   resPonseWallet,
-  getCurrentAccount,
-  setCurrentAccount,
-  createAccount,
-  bindNFTAccount,
-  changePassword,
 };

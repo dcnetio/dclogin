@@ -8,7 +8,6 @@ import {
   CheckShieldOutline,
   LinkOutline,
   ExclamationCircleOutline,
-  CloseCircleOutline,
   CloseOutline,
 } from "antd-mobile-icons";
 import { APPInfo } from "web-dc-api";

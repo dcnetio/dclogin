@@ -7,10 +7,8 @@ import {
   LockOutline,
   // AppstoreOutline,
   LeftOutline,
-  RightOutline,
 } from "antd-mobile-icons";
 
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Header from "@/components/common/header";
 import { useAppSelector } from "@/lib/hooks";
@@ -23,19 +21,10 @@ import { Copy } from "lucide-react";
 import DAPPNote from "@/components/note/DAPPNote";
 
 export default function Index() {
-  const router = useRouter();
   const { t } = useTranslation();
   const initState = useAppSelector((state) => state.app.initState);
-  const [currencySymbol, setCurrencySymbol] = useState("");
-  // const [isLoading, setIsLoading] = useState(true);
   const [accountName, setAccountName] = useState("");
   const [accountAddress, setAccountAddress] = useState("");
-  // const [storageSpace, setStorageSpace] = useState("0 GB");
-  // const [usedStorageSpace, setUsedStorageSpace] = useState("0 GB");
-  // const [storagePercentage, setStoragePercentage] = useState(0);
-  // const [tokenAmount, setTokenAmount] = useState("0");
-  // const [isMobile, setIsMobile] = useState(true);
-  const [activeView, setActiveView] = useState("account"); // "account" or "wallet"
   const [isConnecting, setIsConnecting] = useState(true); // 新增连接状态变量
   const [activeTab, setActiveTab] = useState("tokens"); // 添加 activeTab 状态变量并初始化
 
@@ -48,33 +37,6 @@ export default function Index() {
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
-
-  // Navigation functions
-  const goToWallet = () => {
-    setActiveView("wallet");
-  };
-
-  const goToAccount = () => {
-    setActiveView("account");
-  };
-
-  const sendBalance = () => {
-    router.push("/transfer");
-  };
-
-  const gotoActivity = () => {
-    router.push("/activity");
-  };
-
-  const buyTokens = () => {
-    // Implement token purchase flow
-    console.log("Buy tokens");
-  };
-
-  const upgradeStorage = () => {
-    // Implement storage upgrade flow
-    console.log("Upgrade storage");
-  };
 
   const changeSuccess = async () => {
     // 切换成功后，获取账户信息
@@ -93,7 +55,6 @@ export default function Index() {
         // setIsLoading(false);
         return;
       }
-      setCurrencySymbol(network.currencySymbol);
 
       // Simulate getting storage info from the DC API
       // if (dc && dc.auth) {
@@ -302,6 +263,7 @@ export default function Index() {
                 changeAccountSuccess={changeSuccess}
               />
               <div className={styles.contentPage} style={{ width: "100%" }}>
+                {/* <WagmiTest /> */}
                 <AccountInfoView />
               </div>
             </div>

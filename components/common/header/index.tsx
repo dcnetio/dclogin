@@ -1,12 +1,10 @@
-import { Button, Popover, Toast } from "antd-mobile";
+import { Popover, Toast } from "antd-mobile";
 import styles from "./index.module.css";
 import Network from "@/components/common/network";
 import Account from "@/components/common/account";
 import {
   GlobalOutline,
   DownFill,
-  BellOutline,
-  EyeOutline,
   LockOutline,
   UserOutline,
 } from "antd-mobile-icons";
@@ -16,7 +14,7 @@ import { getCurrentAccount, getCurrentNetwork } from "@/app/index";
 import { appState } from "@/config/constant";
 import { AccountInfo } from "@/types/walletTypes";
 import { useTranslation } from "react-i18next";
-import { Menu, User } from "lucide-react";
+import { Menu } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Action } from "antd-mobile/es/components/popover";
 
@@ -29,7 +27,6 @@ export default function Header(props: HeaderProps) {
   const { changeNetworkSuccess, changeAccountSuccess } = props;
   const router = useRouter();
   const { t } = useTranslation();
-  const [networkName, setNetworkName] = useState("");
   const [networkVisible, setNetworkVisible] = useState(false);
   const [accountVisible, setAccountVisible] = useState(false);
   const [accountInfo, setAccountInfo] = useState<AccountInfo>();
@@ -53,8 +50,7 @@ export default function Header(props: HeaderProps) {
     setAccountVisible(true);
   };
 
-  const onNetworkSuccess = async (name: string) => {
-    setNetworkName(name);
+  const onNetworkSuccess = async () => {
     setNetworkVisible(false);
     changeNetworkSuccess?.();
     if (!accountInfo || !accountInfo.nftAccount) {
@@ -71,9 +67,6 @@ export default function Header(props: HeaderProps) {
   const getNowNetwork = async () => {
     const info = getCurrentNetwork();
     console.log("getCurrentNetwork info", info);
-    if (info) {
-      setNetworkName(info.name);
-    }
   };
 
   const getNowAccount = async () => {
@@ -90,12 +83,6 @@ export default function Header(props: HeaderProps) {
       getNowAccount();
     }
   }, [initState]);
-
-  const [menuVisible, setMenuVisible] = useState(false);
-
-  const toggleMenu = () => {
-    setMenuVisible(!menuVisible);
-  };
 
   const actions: Action[] = [
     {

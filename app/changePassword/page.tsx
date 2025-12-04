@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { Button, Input } from "antd-mobile";
 import { getDC } from "@/components/auth/login/dc";
-import { changePassword, getCurrentAccount } from "@/services/accountService";
+import { changePassword, getCurrentAccount } from "@/services/account";
 import { AccountInfo } from "@/types/walletTypes";
 import { appState } from "@/config/constant";
 import { useAppSelector } from "@/lib/hooks";
@@ -127,7 +127,7 @@ export default function ChangePassword() {
       });
       // 返回上一页或者跳转到登录页
       router.push("/");
-    } catch (error) {
+    } catch {
       window.showToast({
         content: t("changePassword.failed", "密码修改失败"),
         position: "bottom",

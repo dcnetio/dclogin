@@ -8,7 +8,6 @@ import StoreProvider from "@/contexts/storeProvider";
 import { ToastProvider } from "@/contexts/ToastProvider";
 import Login from "@/components/auth/login";
 import Locales from "./locales";
-import { basePath } from "@/config/define";
 import Script from "next/script";
 import { RefreshProtectionProvider } from "@/contexts/RefreshProtectionContext";
 import { ProtectionStatus } from "@/components/ProtectionStatus";
@@ -89,8 +88,8 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <div className={styles.container}>
-          <StoreProvider>
-            <Locales>
+            <StoreProvider>
+              <Locales>
               {showHeader && isMobile && (
                 <NavBar
                   onBack={
@@ -110,8 +109,8 @@ export default function RootLayout({
                 <ProtectionStatus />
                 <StrictRefreshBlocker />
               </RefreshProtectionProvider>
-            </Locales>
-          </StoreProvider>
+              </Locales>
+            </StoreProvider>
         </div>
       </body>
     </html>

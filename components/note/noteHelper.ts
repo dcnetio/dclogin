@@ -15,7 +15,7 @@ import { EncodePasswordType, MsgStatus } from "@/config/constant";
 import NavigationService from "@/lib/navigation";
 import { store } from "@/lib/store";
 import { updateAuthStep } from "@/lib/slices/authSlice";
-import { authenticateWithPasskey } from "@/services/accountService";
+import { authenticateWithPasskey } from "@/services/account";
 export const showAddDAPPNote = (info: APPInfo, confirmCallback: () => void) => {
   const containerId = "add-dapp-note-container";
   // 先检查是否已存在，如果存在则移除

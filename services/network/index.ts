@@ -1,7 +1,7 @@
 "use client";
 import ethersHelper from "@/helpers/ethersHelper";
 import { DEFAULT_NETWORKS, NetworkStauts } from "@/config/constant";
-import { ChainInfo } from "../types/walletTypes";
+import { ChainInfo } from "@/types/walletTypes";
 // 数据库
 import DBHelper from "@/helpers/DBHelper";
 

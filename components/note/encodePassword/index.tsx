@@ -8,19 +8,29 @@ import {
   CheckShieldOutline,
   LinkOutline,
   ExclamationCircleOutline,
+  CloseCircleOutline,
+  CloseOutline,
 } from "antd-mobile-icons";
 import { APPInfo } from "web-dc-api";
 
 interface EncodePasswordProps {
   type: number; // 类型，1设置，2验证
   appInfo: APPInfo;
+  cancalFun?: () => void;
   confirmFun: (password: string) => void;
   onForgotPassword?: () => void;
   gotoWebAuth?: () => void; // 可选的WebAuth跳转函数
 }
 
 export default function EncodePassword(props: EncodePasswordProps) {
-  const { type, appInfo, confirmFun, onForgotPassword, gotoWebAuth } = props;
+  const {
+    type,
+    appInfo,
+    cancalFun,
+    confirmFun,
+    onForgotPassword,
+    gotoWebAuth,
+  } = props;
   const { t } = useTranslation();
   const [password, setPassword] = useState("");
 
@@ -36,28 +46,46 @@ export default function EncodePassword(props: EncodePasswordProps) {
   };
 
   const handleForgotPassword = () => {
-    if(onForgotPassword){
+    if (onForgotPassword) {
       onForgotPassword();
     }
   };
 
   const hanldeWebAuth = () => {
-    if(gotoWebAuth){
+    if (gotoWebAuth) {
       gotoWebAuth();
     }
   };
-  
 
-  const canWebAuth = typeof window !== "undefined" && typeof window.PublicKeyCredential !== "undefined";
+  const close = () => {
+    cancalFun?.();
+  };
+
+  const canWebAuth =
+    typeof window !== "undefined" &&
+    typeof window.PublicKeyCredential !== "undefined";
 
   return (
     <div className={styles.simplePage}>
       <div className={styles.simpleCard}>
+        {/**右侧关闭按钮 */}
+        {type === EncodePasswordType.VERIFY && (
+          <div className="flex justify-end ">
+            <CloseOutline
+              fontSize={24}
+              onClick={close}
+              className="p-1 rounded-sm transition-transform duration-200 
+            hover:bg-gray-200 active:scale-95 cursor-pointer"
+            />
+          </div>
+        )}
         {/* title 快捷访问密码 */}
-        { (!appInfo || !appInfo.appName ) && <div className={styles.appInfoHeader}>
-          <LinkOutline className={styles.appInfoIcon} />
-          <span>{t("encode.password")}</span>
-        </div> }
+        {(!appInfo || !appInfo.appName) && (
+          <div className={styles.appInfoHeader}>
+            <LinkOutline className={styles.appInfoIcon} />
+            <span>{t("encode.password")}</span>
+          </div>
+        )}
         {/* 应用信息区域 */}
         {!!appInfo && !!appInfo.appName && (
           <div className={styles.appInfoSection}>
@@ -121,9 +149,11 @@ export default function EncodePassword(props: EncodePasswordProps) {
           </div>
         </div>
         {/* 忘记密码链接 */}
-        {canWebAuth && <div className={styles.webauthLink} onClick={hanldeWebAuth}>
-          <span className={styles.linkText}>使用WebAuth认证</span>
-        </div>}
+        {canWebAuth && (
+          <div className={styles.webauthLink} onClick={hanldeWebAuth}>
+            <span className={styles.linkText}>使用WebAuth认证</span>
+          </div>
+        )}
 
         {/* 按钮区域 */}
         <div className={styles.btnD}>

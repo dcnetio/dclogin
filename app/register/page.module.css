@@ -16,7 +16,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: 
+  background-image:
     radial-gradient(circle at 20% 80%, rgba(149, 128, 255, 0.1) 0%, transparent 50%),
     radial-gradient(circle at 80% 20%, rgba(106, 130, 251, 0.1) 0%, transparent 50%);
   background-size: 800px 800px, 600px 600px;
@@ -56,6 +56,7 @@
 
 /* 移动端容器优化 */
 @media (max-width: 480px) {
+
   /* 内容区域 */
   .content {
     padding: 0;
@@ -66,7 +67,7 @@
     justify-content: flex-start;
     overflow-y: auto;
   }
-  
+
   /* 注册容器 */
   .registerContainer {
     min-height: 100vh;
@@ -81,18 +82,18 @@
     box-shadow: none;
     border-radius: 0;
   }
-  
+
   /* Logo区域 */
   .logoSection {
     margin-bottom: 16px;
     padding-top: 10px;
     text-align: center;
   }
-  
+
   .logo {
     margin-bottom: 16px;
   }
-  
+
   .logoIcon {
     width: 56px;
     height: 56px;
@@ -100,19 +101,19 @@
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     border-radius: 16px;
   }
-  
+
   .title {
     font-size: 26px;
     font-weight: 700;
     margin-bottom: 6px;
   }
-  
+
   .subtitle {
     font-size: 15px;
     color: #666;
     margin-bottom: 10px;
   }
-  
+
   /* 移动描述区域 */
   .mobileDescription {
     margin: 10px 0;
@@ -125,7 +126,7 @@
     position: relative;
     overflow: hidden;
   }
-  
+
   .mobileDescription::before {
     content: '';
     position: absolute;
@@ -135,7 +136,7 @@
     height: 100%;
     background: linear-gradient(135deg, #667eea, #764ba2);
   }
-  
+
   .mobileIntro {
     font-size: 14px;
     line-height: 1.6;
@@ -144,20 +145,20 @@
     padding: 14px 16px 14px 18px;
     font-weight: 500;
   }
-  
+
   .mobileFeatures {
     display: flex;
     justify-content: space-around;
     margin: 5px 0 10px;
     padding: 0 12px;
   }
-  
+
   .mobileFeatureItem {
     display: flex;
     align-items: center;
     gap: 8px;
   }
-  
+
   .mobileFeatureIcon {
     display: flex;
     align-items: center;
@@ -170,7 +171,7 @@
     font-size: 14px;
     box-shadow: 0 2px 6px rgba(106, 130, 251, 0.3);
   }
-  
+
   /* 表单区域 */
   .formWrapper {
     flex: 0 1 auto;
@@ -180,20 +181,20 @@
     padding: 10px 0;
     margin-top: 10px;
   }
-  
+
   .formSection {
     display: flex;
     flex-direction: column;
     gap: 12px;
     width: 100%;
   }
-  
+
   /* 输入框样式 */
   .inputGroup {
     margin-bottom: 12px;
     position: relative;
   }
-  
+
   .inputGroup :global(.adm-input) {
     --font-size: 16px;
     --placeholder-color: #aaa;
@@ -203,19 +204,19 @@
     background: #fafafa;
     transition: all 0.3s ease;
   }
-  
+
   .inputGroup :global(.adm-input:focus-within) {
     border-color: #667eea;
     background: #ffffff;
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
   }
-  
+
   /* 按钮区域 */
   .buttonGroup {
     margin-top: 24px;
     gap: 10px;
   }
-  
+
   .buttonGroup :global(.adm-button) {
     --border-radius: 12px;
     --height: 48px;
@@ -224,7 +225,7 @@
     font-weight: 600;
     box-shadow: 0 4px 12px rgba(106, 130, 251, 0.3);
   }
-  
+
   /* 登录提示 */
   .loginPrompt {
     margin-top: 16px;
@@ -234,7 +235,7 @@
     cursor: pointer;
     text-align: center;
   }
-  
+
   /* 底部区域 */
   .bottomSection {
     height: 20px;
@@ -247,7 +248,7 @@
   .content {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    width: 100%; 
+    width: 100%;
     height: 100vh;
     padding: 0;
     margin: 0;
@@ -261,11 +262,11 @@
     right: 0;
     bottom: 0;
   }
-  
+
   .backgroundPattern {
     grid-column: 1;
     position: relative;
-    background: 
+    background:
       radial-gradient(circle at 30% 60%, rgba(106, 130, 251, 0.15) 0%, transparent 60%),
       radial-gradient(circle at 70% 30%, rgba(118, 75, 162, 0.15) 0%, transparent 60%),
       linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
@@ -274,36 +275,38 @@
     justify-content: center;
     overflow: hidden;
   }
-  
+
   /* 几何装饰元素 */
-  .geoDecor1, .geoDecor2, .geoDecor3 {
+  .geoDecor1,
+  .geoDecor2,
+  .geoDecor3 {
     position: absolute;
     border-radius: 50%;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     opacity: 0.1;
   }
-  
+
   .geoDecor1 {
     width: 300px;
     height: 300px;
     top: -150px;
     left: -150px;
   }
-  
+
   .geoDecor2 {
     width: 200px;
     height: 200px;
     bottom: -100px;
     right: 10%;
   }
-  
+
   .geoDecor3 {
     width: 150px;
     height: 150px;
     top: 40%;
     left: 10%;
   }
-  
+
   /* 圆环装饰 */
   .circleDecor {
     position: absolute;
@@ -315,22 +318,21 @@
     left: 50%;
     transform: translate(-50%, -50%);
   }
-  
+
   /* 品牌信息块 */
   .brandInfo {
     position: relative;
     text-align: center;
-    z-index: 5;
     width: 80%;
     max-width: 500px;
   }
-  
+
   .brandLogo {
     width: 100px;
     height: 100px;
     margin: 0 auto 30px;
   }
-  
+
   .brandTitle {
     font-size: 42px;
     font-weight: 700;
@@ -338,21 +340,21 @@
     margin-bottom: 16px;
     letter-spacing: -0.5px;
   }
-  
+
   .brandTagline {
     font-size: 18px;
     color: #666;
     margin-bottom: 30px;
     line-height: 1.6;
   }
-  
+
   .brandFeatures {
     display: flex;
     justify-content: center;
     gap: 30px;
     margin-top: 30px;
   }
-  
+
   .featureItem {
     display: flex;
     align-items: center;
@@ -360,7 +362,7 @@
     color: #555;
     font-size: 16px;
   }
-  
+
   .featureIcon {
     width: 20px;
     height: 20px;
@@ -371,7 +373,7 @@
     justify-content: center;
     color: #667eea;
   }
-  
+
   /* 注册容器 */
   .registerContainer {
     grid-column: 2;
@@ -390,19 +392,19 @@
     overflow-y: auto;
     max-width: none;
   }
-  
+
   .logoSection {
     margin-bottom: 40px;
     text-align: center;
   }
-  
+
   .logo {
     display: flex;
     justify-content: center;
     margin-bottom: 24px;
     transition: all 0.4s ease;
   }
-  
+
   .logoIcon {
     width: 80px;
     height: 80px;
@@ -411,7 +413,7 @@
     position: relative;
     box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
   }
-  
+
   .logoIcon::before {
     content: '';
     position: absolute;
@@ -423,50 +425,50 @@
     background: white;
     border-radius: 8px;
   }
-  
+
   .title {
     font-size: 32px;
     color: #333;
     margin-bottom: 12px;
   }
-  
+
   .subtitle {
     font-size: 18px;
     color: #666;
   }
-  
+
   .formSection {
     width: 100%;
     max-width: 380px;
     gap: 24px;
   }
-  
+
   .inputGroup :global(.adm-input) {
     padding: 16px 20px;
     font-size: 16px;
     border-radius: 14px;
   }
-  
+
   .buttonGroup {
     gap: 16px;
     margin-top: 16px;
     width: 100%;
     max-width: 380px;
   }
-  
+
   .buttonGroup :global(.adm-button) {
     height: 54px;
     font-size: 16px;
     font-weight: 500;
     border-radius: 14px;
   }
-  
+
   .loginPrompt {
     font-size: 15px;
     padding: 10px 4px;
     margin-top: 20px;
   }
-  
+
   .formWrapper {
     display: flex;
     flex-direction: column;
@@ -658,7 +660,7 @@
   .inputGroup {
     margin-bottom: 24px;
   }
-  
+
   .inputGroup::after {
     top: -18px;
     font-size: 13px;
@@ -695,7 +697,7 @@
     margin-top: 24px;
     width: 100%;
   }
-  
+
   .buttonGroup :global(.adm-button) {
     --height: 48px;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
@@ -703,11 +705,11 @@
     border: none !important;
     box-shadow: 0 4px 12px rgba(106, 130, 251, 0.3);
   }
-  
+
   .buttonGroup :global(.adm-button[data-color="primary"]) {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
   }
-  
+
   /* 确保按钮文字清晰可见 */
   .buttonGroup :global(.adm-button-text) {
     color: white !important;
@@ -720,7 +722,7 @@
   .buttonGroup {
     margin-top: 20px;
   }
-  
+
   .buttonGroup :global(.adm-button) {
     --height: 44px;
     --text-font-size: 15px;

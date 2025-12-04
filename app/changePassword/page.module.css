@@ -471,7 +471,6 @@
   .brandInfo {
     position: relative;
     text-align: center;
-    z-index: 5;
     width: 80%;
     max-width: 500px;
   }

@@ -395,34 +395,6 @@
   font-weight: bold;
 }
 
-.changePasswordWrapper {
-  display: flex;
-  justify-content: flex-end;
-  /* Align button to the right */
-}
-
-.changePasswordButton {
-  display: flex;
-  align-items: center;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: white;
-  padding: 4px 6px;
-  border-radius: 12px;
-  /* Round corners */
-  font-size: 12px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-.changePasswordButton:hover {
-  background: linear-gradient(135deg, #764ba2, #667eea);
-  /* Slight variation on hover */
-}
-
-.changePasswordText {
-  margin-left: 4px;
-  /* Space between icon and text */
-}
 
 /* Responsive Design */
 @media (max-width: 768px) {

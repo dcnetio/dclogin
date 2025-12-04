@@ -112,9 +112,6 @@ export default function ChangePassword() {
         safecode
       );
 
-      // 重置加载状态
-      setIsLoading(false);
-
       if (error || !success) {
         console.log("Change password error", error);
         window.showToast({
@@ -131,13 +128,13 @@ export default function ChangePassword() {
       // 返回上一页或者跳转到登录页
       router.push("/");
     } catch (error) {
-      // 出错时重置加载状态
-      setIsLoading(false);
-
       window.showToast({
         content: t("changePassword.failed", "密码修改失败"),
         position: "bottom",
       });
+    } finally {
+      // 无论成功与否，都重置加载状态
+      setIsLoading(false);
     }
   };
 

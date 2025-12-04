@@ -174,10 +174,10 @@ async function getEncodePwd(info: {
   encodeMnimonic: ArrayBuffer;
   credentialId?: string;
 }): Promise<ArrayBuffer | null> {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const dc = getDC();
     if (!dc) {
-      resolve(null);
+      reject(new Error("dc is null"));
     }
     // todo 显示用户加密密码页面
     const connectingApp: APPInfo | null = dc?.appInfo || null;
@@ -188,10 +188,15 @@ async function getEncodePwd(info: {
       appUrl: connectingApp.appUrl || "",
       appVersion: connectingApp.appVersion || "",
     };
-    showEncodePassword(info, appInfo, (userHandleHash: ArrayBuffer | null) => {
+    const handleBack = (userHandleHash: ArrayBuffer | null) => {
       // 处理结果
       resolve(userHandleHash);
-    });
+    };
+    const failBack = () => {
+      // 处理结果
+      resolve(null);
+    };
+    showEncodePassword(info, appInfo, handleBack, failBack);
   });
 }
 
@@ -231,12 +236,21 @@ async function generateWalletAccount(seedAccount: string) {
   }
 
   //跳出密码设置框,提示用户输入密码加密
-  const userHandleHash = await getEncodePwd({
-    iv: account.iv,
-    encodeMnimonic: account.mnemonic,
-    credentialId: account.credentialId || "",
-  });
-  if (!userHandleHash) {
+  let userHandleHash = null;
+  try {
+    userHandleHash = await getEncodePwd({
+      iv: account.iv,
+      encodeMnimonic: account.mnemonic,
+      credentialId: account.credentialId || "",
+    });
+    if (!userHandleHash) {
+      window.showToast({
+        content: i18n.t("account.unlock_wallet_cancel"),
+        position: "bottom",
+      });
+      return;
+    }
+  } catch (error) {
     //待测试 跳出提示框,提示用户解锁钱包失败
     window.showToast({
       content: i18n.t("account.unlock_wallet_failed"),
@@ -432,19 +446,25 @@ async function unlockWallet(chooseAccount: AccountInfo) {
   //   return;
   // }
   //跳出密码设置框,提示用户输入密码加密
-  const userHandleHash = await getEncodePwd({
-    iv: chooseAccount.iv,
-    encodeMnimonic: chooseAccount.mnemonic,
-    credentialId: chooseAccount.credentialId || "",
-  });
-  if (!userHandleHash) {
-    //跳出提示框,提示用户解锁钱包失败
-    // store.dispatch(
-    //   updateAuthStep({
-    //     type: MsgStatus.failed,
-    //     content: i18n.t("account.unlock_wallet_failed"),
-    //   })
-    // );
+  let userHandleHash = null;
+  try {
+    userHandleHash = await getEncodePwd({
+      iv: chooseAccount.iv,
+      encodeMnimonic: chooseAccount.mnemonic,
+      credentialId: chooseAccount.credentialId || "",
+    });
+    if (!userHandleHash) {
+      //跳出提示框,提示用户解锁钱包失败
+      return;
+    }
+  } catch (error) {
+    console.error("getEncodePwd error", error);
+    store.dispatch(
+      updateAuthStep({
+        type: MsgStatus.failed,
+        content: i18n.t("account.unlock_wallet_failed"),
+      })
+    );
     return;
   }
   //解密出助记词

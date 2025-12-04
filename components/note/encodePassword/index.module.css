@@ -1,27 +1,27 @@
 /* 简化页面基础样式 */
 .simplePage {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100vh;
-    background-color: rgba(0,0,0,0.4);
-    z-index: 3;
-    position: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 3;
+  position: fixed;
 }
 
 /* 简化卡片容器样式 */
 .simpleCard {
   background: white;
   border-radius: 16px;
-  padding: 40px 18px;
+  padding: 20px 18px 40px;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
   width: 90%;
   max-width: 500px;
   position: relative;
-  z-index: 1;
+  z-index: 11;
 }
 
 /* 应用信息区域样式 */
@@ -138,6 +138,7 @@
   font-size: 1rem;
   font-weight: 500;
 }
+
 /* webauth链接样式 */
 .webauthLink {
   margin-top: 18px;

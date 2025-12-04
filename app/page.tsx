@@ -171,16 +171,6 @@ export default function Index() {
             </div>
           </div>
         </div>
-
-        <div className={styles.changePasswordWrapper}>
-          <button
-            className={styles.changePasswordButton}
-            onClick={() => router.push("/changePassword")}
-          >
-            <RightOutline />
-            <span className={styles.changePasswordText}>修改密码</span>
-          </button>
-        </div>
       </div>
 
       {/* 余额展示 */}

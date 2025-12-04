@@ -1,6 +1,6 @@
 // "use client";
 import logger from "redux-logger";
-import storage from 'redux-persist/lib/storage'; 
+import storage from './storage'; 
 import {configureStore, combineReducers} from '@reduxjs/toolkit'
 import {appSlice} from "@/lib/slices/appSlice";
 import {walletSlice} from "@/lib/slices/walletSlice";

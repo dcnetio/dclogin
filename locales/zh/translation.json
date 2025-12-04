@@ -7,7 +7,8 @@
     "from": "自",
     "to": "至",
     "set": "设置",
-    "security_protected": "安全守护中"
+    "security_protected": "安全守护中",
+    "copied": "已复制"
   },
   "transfer": {
     "transfer": "转账",
@@ -154,7 +155,9 @@
     "web_auth_failed": "webAuth授权失败"
   },
   "wallet": {
-    "wallet": "钱包"
+    "wallet": "钱包",
+    "tagline": "您通往新一代互联网的安全入口",
+    "description": "DCWallet 是基于去中心化云服务开发的统一登录工具，不存储任何用户隐私信息。"
   },
   "dc": {
     "failed": "获取Dc信息失败",
@@ -167,5 +170,16 @@
     "failed": "赠送存储失败",
     "time_out": "赠送存储超时",
     "has_space": "用户已有存储"
+  },
+  "home": {
+    "buy": "买入",
+    "swap": "兑换",
+    "send": "发送",
+    "receive": "收款",
+    "tokens": "代币",
+    "collections": "收藏品",
+    "activities": "活动",
+    "ethereum_earn": "Ethereum · 赚取",
+    "empty_activity": "Nothing to see yet. Swap your first token today."
   }
 }

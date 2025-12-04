@@ -1,4 +1,4 @@
-import { Popover, Toast } from "antd-mobile";
+import { Popover } from "antd-mobile";
 import styles from "./index.module.css";
 import Network from "@/components/common/network";
 import Account from "@/components/common/account";
@@ -26,11 +26,18 @@ interface HeaderProps {
 export default function Header(props: HeaderProps) {
   const { changeNetworkSuccess, changeAccountSuccess } = props;
   const router = useRouter();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [networkVisible, setNetworkVisible] = useState(false);
   const [accountVisible, setAccountVisible] = useState(false);
   const [accountInfo, setAccountInfo] = useState<AccountInfo>();
   const initState = useAppSelector((state) => state.app.initState);
+
+  const toggleLanguage = () => {
+    const currentLang = i18n.language;
+    const nextLang = currentLang.startsWith("zh") ? "en" : "zh";
+    i18n.changeLanguage(nextLang);
+  };
+
   const showChangeNetwork = () => {
     console.log("showChangeNetwork");
     setNetworkVisible(true);
@@ -88,13 +95,13 @@ export default function Header(props: HeaderProps) {
     {
       key: "password",
       icon: <LockOutline />,
-      text: "修改密码",
+      text: t("changePassword.title", "修改密码"),
       onClick: gotoChangePassword,
     },
     {
       key: "account",
       icon: <UserOutline />,
-      text: "切换账号",
+      text: t("account.choose", "切换账号"),
       onClick: gotoChangeAccount,
     },
   ];
@@ -112,6 +119,13 @@ export default function Header(props: HeaderProps) {
         </div>
       </div>
       <div className={styles.right}>
+        {/* 语言切换按钮 */}
+        <div onClick={toggleLanguage} style={{ marginRight: 16, cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+           <span style={{ fontSize: 14, fontWeight: 'bold', color: '#333' }}>
+             {i18n.language.startsWith("zh") ? "EN" : "中文"}
+           </span>
+        </div>
+
         {/* 地球图标 */}
         <div className={styles.network} onClick={showChangeNetwork}>
           <GlobalOutline fontSize={16} style={{ color: "#333" }} />
@@ -119,12 +133,16 @@ export default function Header(props: HeaderProps) {
 
         {/* 新增菜单按钮 - 使用 Popover 替代 Popover.Menu */}
         <Popover.Menu
-          onAction={(node) => Toast.show(`选择了 ${node.text}`)}
+          onAction={(node) => {
+            if (node.onClick) node.onClick();
+          }}
           actions={actions}
           placement="bottom-start"
           trigger="click"
         >
-          <Menu size={20} color="#333" className="ml-2" />
+          <div style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', marginLeft: 12 }}>
+            <Menu size={20} color="#333" />
+          </div>
         </Popover.Menu>
       </div>
 

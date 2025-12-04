@@ -2,7 +2,7 @@
 import React, { useEffect } from "react";
 import styles from "./index.module.css";
 import { useAppSelector } from "@/lib/hooks";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "react-i18next";
 import { useRouter } from "next/navigation";
 import { User, Shield, ExternalLink } from "lucide-react";
 import Image from "next/image";
@@ -45,15 +45,14 @@ export default function DAPPNote() {
                   DCWallet
                 </h1>
                 <p className="text-gray-600 text-sm sm:text-base lg:text-xl leading-relaxed">
-                  您通往新一代互联网的安全入口
+                  {t("wallet.tagline", "您通往新一代互联网的安全入口")}
                 </p>
               </div>
 
               {/* DCWallet描述 */}
               <div className="mb-4 sm:mb-6 lg:mb-8">
                 <p className="text-gray-700 leading-relaxed text-sm sm:text-base lg:text-lg">
-                  DCWallet
-                  是基于去中心化云服务开发的统一登录工具，不存储任何用户隐私信息。
+                  {t("wallet.description", "DCWallet 是基于去中心化云服务开发的统一登录工具，不存储任何用户隐私信息。")}
                 </p>
               </div>
             </div>

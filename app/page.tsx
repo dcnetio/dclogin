@@ -150,25 +150,25 @@ export default function Index() {
           <div className={styles.btn}>
             <SendOutline />
           </div>
-          <div className={styles.txt}>买入</div>
+          <div className={styles.txt}>{t("home.buy", "买入")}</div>
         </div>
         <div className={styles.btnD}>
           <div className={styles.btn}>
             <AddOutline />
           </div>
-          <div className={styles.txt}>兑换</div>
+          <div className={styles.txt}>{t("home.swap", "兑换")}</div>
         </div>
         <div className={styles.btnD}>
           <div className={styles.btn}>
             <LockOutline />
           </div>
-          <div className={styles.txt}>发送</div>
+          <div className={styles.txt}>{t("home.send", "发送")}</div>
         </div>
         <div className={styles.btnD}>
           <div className={styles.btn}>
             <LeftOutline />
           </div>
-          <div className={styles.txt}>收款</div>
+          <div className={styles.txt}>{t("home.receive", "收款")}</div>
         </div>
       </div>
 
@@ -184,7 +184,7 @@ export default function Index() {
               setActiveTab("tokens");
             }}
           >
-            代币
+            {t("home.tokens", "代币")}
           </button>
           <button
             className={`${styles.tabItem} ${
@@ -195,7 +195,7 @@ export default function Index() {
               setActiveTab("collections");
             }}
           >
-            收藏品
+            {t("home.collections", "收藏品")}
           </button>
           <button
             className={`${styles.tabItem} ${
@@ -206,7 +206,7 @@ export default function Index() {
               setActiveTab("activities");
             }}
           >
-            活动
+            {t("home.activities", "活动")}
           </button>
         </div>
         {activeTab === "tokens" && (
@@ -215,7 +215,7 @@ export default function Index() {
             <div className={styles.tokenItem}>
               <div className={styles.tokenIcon}></div>
               <div className={styles.tokenInfo}>
-                <div className={styles.tokenName}>Ethereum · 赚取</div>
+                <div className={styles.tokenName}>{t("home.ethereum_earn", "Ethereum · 赚取")}</div>
                 <div className={styles.tokenChange}>-1.61%</div>
               </div>
               <div className={styles.tokenValue}>US$0.00</div>
@@ -228,7 +228,7 @@ export default function Index() {
             {/* 收藏品列表 */}
             {/* 如果没有收藏品，显示空状态提示 */}
             <div className={styles.emptyActivity}>
-              Nothing to see yet. Swap your first token today.
+              {t("home.empty_activity", "Nothing to see yet. Swap your first token today.")}
             </div>
           </div>
         )}
@@ -237,7 +237,7 @@ export default function Index() {
             {/* 活动列表 */}
             {/* 如果没有活动记录，显示空状态提示 */}
             <div className={styles.emptyActivity}>
-              Nothing to see yet. Swap your first token today.
+              {t("home.empty_activity", "Nothing to see yet. Swap your first token today.")}
             </div>
           </div>
         )}

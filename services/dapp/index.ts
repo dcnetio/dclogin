@@ -1,10 +1,10 @@
 "use client";
 import utilHelper from "@/helpers/utilHelper";
 import ethersHelper from "@/helpers/ethersHelper";
-import { MsgStatus, NetworkStauts } from "@/config/constant";
+import { MsgStatus } from "@/config/constant";
 import { store } from "@/lib/store";
 import { updateAppInfo, updateAuthStep } from "@/lib/slices/authSlice";
-import { getCurrentChain } from "@/services/networkService";
+import { getCurrentChain } from "@/services/network";
 import { applyFreeSpace } from "@/app/tools/subSpace";
 
 import type { Ed25519PrivKey } from "web-dc-api";
@@ -13,7 +13,6 @@ import { KeyManager } from "web-dc-api";
 import { showSignatureDAPPNote } from "@/components/note/noteHelper";
 import i18n from "@/locales/i18n";
 import {
-  authenticateWithPasskey,
   bindNFTAccount,
   chooseStoredAccount,
   createAccount,
@@ -21,16 +20,15 @@ import {
   resPonseWallet,
   setCurrentAccount,
   unlockWallet,
-} from "./accountService";
+} from "../account";
 import { HDNodeWallet } from "ethers/wallet";
 import {
-  AccountInfo,
-  SignReqMessage,
   ConnectReqMessage,
   isConnectReqMessage,
   isSignReqMessage,
   EIP712SignReqMessage,
   isEIP712SignReqMessage,
+  SignReqMessage,
 } from "@/types/walletTypes";
 import { checkDCInitialized, getDC } from "@/components/auth/login/dc";
 
@@ -44,34 +42,38 @@ const location = urlParams.get("origin");
 const openerOrigin = location;
 let iframeChannel = null;
 
-let networkStatus: number = NetworkStauts.disconnect; //网络状态
 let messageData: ConnectReqMessage = { origin: "" };
 let portData: MessagePort | null = null;
 
 // 监听DAPP窗口发送的消息;
 if (typeof window !== "undefined") {
-  if (
-    window.location.href.indexOf("/test") == -1 &&
-    window.location.href.indexOf("/iframe") == -1
-  ) {
-    console.log(
-      "===============监听DAPP窗口发送的消息 11111",
-      window.location.href
-    );
+  try {
+    console.log("Initializing DApp message listener");
+    if (
+      window.location.href.indexOf("/test") == -1 &&
+      window.location.href.indexOf("/iframe") == -1
+    ) {
+      console.log(
+        "===============监听DAPP窗口发送的消息 11111",
+        window.location.href
+      );
 
-    window.addEventListener("message", function (event) {
-      //判断消息来源
-      if (
-        !(
-          event.origin === openerOrigin ||
-          (event.origin === "null" && openerOrigin === "file://")
-        ) ||
-        event.ports.length == 0
-      ) {
-        return;
-      }
-      onDAPPMessage(event);
-    });
+      window.addEventListener("message", function (event) {
+        //判断消息来源
+        if (
+          !(
+            event.origin === openerOrigin ||
+            (event.origin === "null" && openerOrigin === "file://")
+          ) ||
+          event.ports.length == 0
+        ) {
+          return;
+        }
+        onDAPPMessage(event);
+      });
+    }
+  } catch (e) {
+    console.error("Failed to initialize DApp listener", e);
   }
 }
 
@@ -129,7 +131,7 @@ async function onDAPPMessage(event: MessageEvent) {
       iframeChannel = event.ports[0];
       iframeChannel.onmessage = onDAPPMessage;
       // 循环判断dc是否存在，并设置超时，超过3s则直接返回
-      const dc = await checkDCInitialized();
+      await checkDCInitialized();
       const loadedMessage = {
         type: "loaded",
         origin: openerOrigin,
@@ -226,13 +228,6 @@ async function connectCmdHandler(
       })
     );
     return;
-  }
-  // 异步获取当前网络状态,更新钱包网络状态
-  const flag = await ethersHelper.checkNetworkStatus();
-  if (flag) {
-    networkStatus = NetworkStauts.connected;
-  } else {
-    networkStatus = NetworkStauts.disconnect;
   }
 
   messageData = message;
@@ -506,7 +501,7 @@ async function createAccountWithRegister(
     const errInfo = bindRes[1];
     const errMsg = errInfo && errInfo.message;
     window.showToast({
-      content: i18n.t(errMsg || "account.bind_nft_account_failed"),
+      content: errMsg || i18n.t("account.bind_nft_account_failed"),
       position: "bottom",
     });
     if (

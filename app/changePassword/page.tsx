@@ -1,26 +1,25 @@
 "use client";
-import React from "react";
 import styles from "./page.module.css";
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { Button, Input } from "antd-mobile";
-import { createAccountWithLogin } from "@/app/index";
 import { getDC } from "@/components/auth/login/dc";
-import { store } from "@/lib/store";
-import { saveInitState } from "@/lib/slices/appSlice";
+import { changePassword, getCurrentAccount } from "@/services/account";
+import { AccountInfo } from "@/types/walletTypes";
 import { appState } from "@/config/constant";
+import { useAppSelector } from "@/lib/hooks";
 
-export default function Login() {
-  // 保持现有的 state 和 hooks
-  const searchParams = useSearchParams();
-  const origin = searchParams?.get("origin") || "";
+export default function ChangePassword() {
   const router = useRouter();
   const { t } = useTranslation();
-  const [account, setAccount] = useState("");
-  const [password, setPassword] = useState("");
-  const [safecode, setSafecode] = useState("000000");
+  const initState = useAppSelector((state) => state.app.initState);
+  const [accountInfo, setAccountInfo] = useState<AccountInfo | null>(null);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [isMobile, setIsMobile] = useState(true);
+  const [passwordsMatch, setPasswordsMatch] = useState(true);
+  const [safecode, setSafecode] = useState("000000");
   const [showSafecode, setShowSafecode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -34,74 +33,113 @@ export default function Login() {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  const gotoConfirm = async () => {
-    // Set loading state to true when login starts
+  useEffect(() => {
+    if (initState == appState.init_success) {
+      const accountInfo = getCurrentAccount();
+      if (accountInfo && accountInfo.nftAccount) {
+        setAccountInfo(accountInfo);
+      }
+    }
+  }, [initState]);
+
+  const handleChangePassword = async () => {
+    // 设置加载状态
     setIsLoading(true);
 
-    // Validate input
-    if (!account) {
-      window.showToast({
-        content: t("login.account_empty"),
-        position: "bottom",
-      });
-      setIsLoading(false); // Reset loading state
-      return;
-    }
-    const dc = getDC();
-    if (dc) {
-      if (!dc.auth) {
+    try {
+      // 检查新密码是否为空
+      if (!newPassword) {
         window.showToast({
-          content: t("login.failed"),
+          content: t("changePassword.new_password_empty", "请输入新密码"),
           position: "bottom",
         });
-        setIsLoading(false); // Reset loading state
+        setIsLoading(false);
         return;
       }
 
-      try {
-        const res = await createAccountWithLogin(
-          account,
-          password,
-          safecode,
-          origin
-        );
-        console.log("accountLogin res", res);
-
-        // Reset loading state after login completes
-        setIsLoading(false);
-
-        if (res && res.success) {
-          window.showToast({
-            content: t("login.success"),
-            position: "bottom",
-          });
-
-          store.dispatch(saveInitState(appState.init_success));
-          router.push("/");
-          return;
-        }
-
+      // 检查密码长度
+      if (newPassword.length < 2) {
         window.showToast({
-          content: t("login.failed"),
+          content: t("changePassword.password_length", "密码长度至少2位"),
           position: "bottom",
         });
-      } catch (error) {
-        // Reset loading state if there's an error
         setIsLoading(false);
-
-        console.log("accountLogin error", error);
-        window.showToast({
-          content: t("login.failed"),
-          position: "bottom",
-        });
+        return;
       }
-    } else {
-      setIsLoading(false); // Reset loading if dc is not available
+
+      // 检查确认密码是否输入
+      if (!confirmPassword) {
+        window.showToast({
+          content: t(
+            "changePassword.confirm_password_empty",
+            "请确认您的新密码"
+          ),
+          position: "bottom",
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      // 确认两次输入的新密码是否匹配
+      if (newPassword !== confirmPassword) {
+        window.showToast({
+          content: t(
+            "changePassword.passwords_not_match",
+            "两次输入的新密码不一致"
+          ),
+          position: "bottom",
+        });
+        setPasswordsMatch(false);
+        setIsLoading(false);
+        return;
+      }
+
+      // 获取DC实例并检查auth是否存在
+      const dc = getDC();
+      if (!dc || !dc.auth) {
+        window.showToast({
+          content: t("changePassword.failed", "修改密码失败"),
+          position: "bottom",
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      // 调用修改密码接口（这里需要您实现具体的修改密码逻辑）
+      const [success, error] = await changePassword(
+        accountInfo,
+        newPassword,
+        safecode
+      );
+
+      if (error || !success) {
+        console.log("Change password error", error);
+        window.showToast({
+          content: error.message || t("changePassword.failed", "密码修改失败"),
+          position: "bottom",
+        });
+        return;
+      }
+
+      window.showToast({
+        content: t("changePassword.success", "密码修改成功"),
+        position: "bottom",
+      });
+      // 返回上一页或者跳转到登录页
+      router.push("/");
+    } catch {
+      window.showToast({
+        content: t("changePassword.failed", "密码修改失败"),
+        position: "bottom",
+      });
+    } finally {
+      // 无论成功与否，都重置加载状态
+      setIsLoading(false);
     }
   };
 
-  const gotoRegister = () => {
-    router.push(`/register${window.location.search}`);
+  const goBack = () => {
+    router.back();
   };
 
   const toggleSafecode = () => {
@@ -109,14 +147,17 @@ export default function Login() {
   };
   return (
     <div className={styles.content}>
+      {/* 背景区域 - 只在PC端显示 */}
       <div className={styles.backgroundPattern}>
         {!isMobile && (
           <>
-            {/* PC端视图内容 */}
+            {/* 装饰元素 */}
             <div className={styles.geoDecor1}></div>
             <div className={styles.geoDecor2}></div>
             <div className={styles.geoDecor3}></div>
             <div className={styles.circleDecor}></div>
+
+            {/* 品牌信息 */}
             <div className={styles.brandInfo}>
               <div className={styles.brandLogo}>
                 <div className={styles.logoIcon}></div>
@@ -216,18 +257,22 @@ export default function Login() {
           </>
         )}
       </div>
-      <div className={styles.loginContainer}>
+
+      {/* 修改密码表单容器 */}
+      <div className={styles.changePasswordContainer}>
         {/* Logo区域 */}
         <div className={styles.logoSection}>
           <div className={styles.logo}>
             <div className={styles.logoIcon}></div>
           </div>
-          <h1 className={styles.title}>{t("login.title", "DCWallet")}</h1>
+          <h2 className={styles.title}>
+            {t("changePassword.change_password", "修改密码")}
+          </h2>
           <p className={styles.subtitle}>
-            {t("login.subtitle", "您正在使用去中心化统一登录")}
+            {t("changePassword.subtitle", "为您的账户设置新的登录密码")}
           </p>
 
-          {/* 移动端描述 - 仅在移动端显示 */}
+          {/* 移动端描述 */}
           {isMobile && (
             <div className={styles.mobileDescription}>
               <p className={styles.mobileIntro}>
@@ -251,74 +296,101 @@ export default function Login() {
           )}
         </div>
 
-        {/* 表单区域 - 更新类名 */}
+        {/* 表单区域 */}
         <div className={styles.formWrapper}>
           <div className={styles.formSection}>
             <div className={`${styles.inputGroup} ${styles.accountInput}`}>
-              <Input
-                placeholder={t("login.account")}
-                value={account}
-                onChange={setAccount}
-                onEnterPress={gotoConfirm}
-                clearable
-                className={styles.inputField}
-              />
+              <Input value={accountInfo?.nftAccount} disabled />
             </div>
 
             <div className={`${styles.inputGroup} ${styles.passwordInput}`}>
               <Input
-                placeholder={t("login.password")}
-                value={password}
-                onChange={setPassword}
-                onEnterPress={gotoConfirm}
+                id="newPasswordInput"
+                placeholder={t("changePassword.new_password", "新密码")}
+                value={newPassword}
+                onChange={(val) => {
+                  setNewPassword(val);
+                  // 当密码更改时，重置密码匹配状态
+                  if (confirmPassword && val !== confirmPassword) {
+                    setPasswordsMatch(false);
+                  } else {
+                    setPasswordsMatch(true);
+                  }
+                }}
+                onEnterPress={() =>
+                  document.getElementById("confirmPasswordInput")?.focus()
+                }
                 clearable
                 type="password"
-                className={styles.inputField}
               />
             </div>
 
-            {/* 安全码区域不变 */}
-            <div className={styles.safecodeSection}>
-              {showSafecode ? (
-                <div className={`${styles.inputGroup} ${styles.safecodeInput}`}>
-                  <Input
-                    placeholder={t("login.safecode")}
-                    value={safecode}
-                    onChange={setSafecode}
-                    onEnterPress={gotoConfirm}
-                    clearable
-                  />
-                </div>
-              ) : (
-                <div className={styles.safecodeToggle} onClick={toggleSafecode}>
-                  {t("login.input_safecode", "输入安全码")}
+            {/* 密码确认输入框 */}
+            <div className={`${styles.inputGroup} ${styles.passwordInput}`}>
+              <Input
+                id="confirmPasswordInput"
+                placeholder={t(
+                  "changePassword.confirm_password_placeholder",
+                  "请再次输入新密码"
+                )}
+                value={confirmPassword}
+                onChange={(val) => {
+                  setConfirmPassword(val);
+                  setPasswordsMatch(val === newPassword);
+                }}
+                onEnterPress={handleChangePassword}
+                clearable
+                type="password"
+              />
+
+              {/* 密码不匹配时显示错误提示 */}
+              {confirmPassword.length > 0 && !passwordsMatch && (
+                <div className={styles.passwordError}>
+                  {t(
+                    "changePassword.passwords_not_match",
+                    "两次输入的新密码不一致"
+                  )}
                 </div>
               )}
             </div>
           </div>
+          {/* 安全码区域不变 */}
+          <div className={styles.safecodeSection}>
+            {showSafecode ? (
+              <div className={`${styles.inputGroup} ${styles.safecodeInput}`}>
+                <Input
+                  placeholder={t("login.safecode")}
+                  value={safecode}
+                  onChange={setSafecode}
+                  onEnterPress={handleChangePassword}
+                  clearable
+                />
+              </div>
+            ) : (
+              <div className={styles.safecodeToggle} onClick={toggleSafecode}>
+                {t("login.input_safecode", "输入安全码")}
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* 按钮区域 - 移到容器底部 */}
+        {/* 按钮组 */}
         <div className={styles.buttonGroup}>
           <Button
             color="primary"
             fill="solid"
-            onClick={gotoConfirm}
+            onClick={handleChangePassword}
             block
-            className={styles.loginButton}
             loading={isLoading}
-            loadingText={t("login.logging_in", "登录中...")}
+            loadingText={t("changePassword.changing", "修改中...")}
           >
-            {t("login.login", "登录")}
+            {t("changePassword.change_password", "修改密码")}
           </Button>
         </div>
 
-        {/* 注册提示 - 确保可见 */}
-        <div className={styles.registerPrompt} onClick={gotoRegister}>
-          {t("login.no_account", "没有账户?")}
-          <span className={styles.registerLink}>
-            {t("login.register_now", "立即注册")}
-          </span>
+        {/* 返回链接 */}
+        <div className={styles.backPrompt} onClick={goBack}>
+          {t("changePassword.back", "返回")}
         </div>
 
         {/* 底部区域 */}

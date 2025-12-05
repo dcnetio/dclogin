@@ -1,0 +1,96 @@
+"use client";
+import { getDC } from "@/components/auth/login/dc";
+import i18n from "@/locales/i18n";
+import { NFTBindStatus } from "web-dc-api";
+import { AccountInfo } from "@/types/walletTypes";
+import { unlockWallet } from "./wallet";
+
+const bindNFTAccount = async (
+  account: string = "",
+  password: string = "",
+  safecode: string = "",
+  mnemonic: string = "",
+  pubKeyStr: string = ""
+): Promise<[boolean, Error | null]> => {
+  const dc = getDC();
+  if (!dc) {
+    return [false, new Error(i18n.t("account.auth_no_module"))];
+  }
+  const [bindStatus, err] = await dc.auth.bindNFTAccount(
+    account,
+    password,
+    safecode,
+    mnemonic
+  );
+  if (err || bindStatus !== NFTBindStatus.Success) {
+    return [false, err || new Error(i18n.t("account.bind_nft_account_failed"))];
+  }
+  // 循环checkNFT绑定状态
+  const checkFlag = await _checkBind(account, pubKeyStr);
+  if (!checkFlag) {
+    return [false, new Error(i18n.t("account.bind_nft_account_timeout"))];
+  }
+  return [true, null];
+};
+
+const _checkBind = (account: string, pubKeyStr: string) => {
+  const maxNum = 20;
+  let interval: any = null, // 定时器
+    intervalNum = 0; // 定时判断是否绑定成功
+  return new Promise((resolve) => {
+    const dc = getDC();
+    if (!dc) {
+      resolve(false);
+      return;
+    }
+    // 初始化定时器
+    if (interval) {
+      clearInterval(interval);
+    }
+    intervalNum = 0;
+    interval = setInterval(async () => {
+      intervalNum++;
+      // 判断是否绑定成功
+      const [bindFlag, err] = await dc.auth.isNftAccountBindSuccess(
+        account,
+        pubKeyStr
+      );
+      if (!err && bindFlag) {
+        // 绑定成功停止定时任务
+        clearInterval(interval);
+        intervalNum = 0;
+        resolve(true);
+      } else if (intervalNum > maxNum) {
+        // 超时停止定时任务
+        clearInterval(interval);
+        intervalNum = 0;
+        resolve(false);
+      }
+    }, 1000);
+  });
+};
+
+// 修改密码
+async function changePassword(
+  accountInfo: AccountInfo,
+  newPassword: string,
+  safecode: string
+) {
+  const dc = getDC();
+  if (!dc) {
+    return [false, new Error(i18n.t("account.auth_no_module"))];
+  }
+  const mnemonic = await unlockWallet(accountInfo);
+  if (!mnemonic) {
+    return;
+  }
+  const [success, error] = await dc.auth.nftAccountPasswordModify(
+    accountInfo.nftAccount,
+    newPassword,
+    safecode,
+    mnemonic
+  );
+  return [success, error];
+}
+
+export { bindNFTAccount, changePassword };

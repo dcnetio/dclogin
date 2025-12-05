@@ -67,29 +67,6 @@ const getUserBalance = async (address: string) => {
   }
 };
 
-async function checkNetworkStatus() {
-  try {
-    if (!jsonRpcProvider) {
-      console.log("请先连接到网络");
-      return false;
-    }
-    const blockNumber = await utilHelper.withTimeout(
-      jsonRpcProvider.getBlockNumber(),
-      3000,
-      "getBlockNumber 调用超时"
-    );
-    console.log("区块号:", blockNumber);
-    return true;
-  } catch (error) {
-    if (error.message.includes("Timeout")) {
-      // console.error("调用超时，请检查网络连接或节点状态");
-    } else {
-      console.error("其他错误:", error.message);
-    }
-    return false;
-  }
-}
-
 // 转账
 const transfer = async (
   wallet: ethers.HDNodeWallet,
@@ -291,7 +268,6 @@ const checkTransactionStatus = async (txHash: string) => {
 const ethersHelper = {
   getProvider,
   connectWithHttps,
-  checkNetworkStatus,
   createWalletAccount,
   createWalletAccountWithMnemonic,
   getBlockNumber,

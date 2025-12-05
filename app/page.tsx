@@ -1,181 +1,275 @@
 "use client";
-import React, { useEffect } from "react";
-import styles from "./page.module.css";
+import styles from "./page.module.css"; // 确保引入了样式文件
+import "antd-mobile/es/global";
+import {
+  SendOutline,
+  AddOutline,
+  LockOutline,
+  // AppstoreOutline,
+  LeftOutline,
+} from "antd-mobile-icons";
+
+import { useEffect, useState } from "react";
+import Header from "@/components/common/header";
 import { useAppSelector } from "@/lib/hooks";
-import { useTranslation } from "next-i18next";
-import { useRouter } from "next/navigation";
-import { User, Shield, ExternalLink } from "lucide-react";
-import Image from "next/image";
-import { useRefreshProtection } from "@/contexts/RefreshProtectionContext";
+import { appState } from "@/config/constant";
+import { getCurrentAccount, getCurrentNetwork } from "@/app/index";
+import type { ChainInfo } from "@/types/walletTypes";
+// import type { User } from "web-dc-api";
+import { useTranslation } from "react-i18next";
+import { Copy } from "lucide-react";
+import DAPPNote from "@/components/note/DAPPNote";
 
-export default function Auth() {
-  const router = useRouter();
+export default function Index() {
   const { t } = useTranslation();
-  const authInfo = useAppSelector((state) => state.auth.authInfo);
-  const appInfo = useAppSelector((state) => state.auth.appInfo);
-  const { enabled } = useRefreshProtection();
+  const initState = useAppSelector((state) => state.app.initState);
+  const [accountName, setAccountName] = useState("");
+  const [accountAddress, setAccountAddress] = useState("");
+  const [isConnecting, setIsConnecting] = useState(true); // 新增连接状态变量
+  const [activeTab, setActiveTab] = useState("tokens"); // 添加 activeTab 状态变量并初始化
 
-  const handleLogin = () => {
-    router.push(`/login${window.location.search}`);
-  };
-  const handleRegister = () => {
-    router.push(`/register${window.location.search}`);
-  };
   useEffect(() => {
-    console.log("debug========refresh protection enabled:", enabled, new Date());
-  }, [enabled]);
-  return (
-    <div className={styles["min-h-screen"]}>
-      {/* 响应式容器 */}
-      <div
-        className={`${styles["min-h-screen"]} ${styles.flex} ${styles["items-center"]} ${styles["justify-center"]} px-3 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-8`}
-      >
-        <div className="w-full max-w-xs sm:max-w-2xl md:max-w-4xl lg:max-w-6xl mx-auto">
-          {/* 主要内容区域 */}
-          <div className={`${styles["mobile-stack"]} flex flex-col `}>
-            {/* DCWallet介绍区域 */}
-            <div className="text-center mobile-order-1">
-              {/* Logo和标题 */}
-              <div className="mb-4 sm:mb-6 lg:mb-8">
-                <h1 className="text-2xl sm:text-3xl lg:text-5xl font-bold text-purple-600 mb-2 sm:mb-3 lg:mb-4">
-                  DCWallet
-                </h1>
-                <p className="text-gray-600 text-sm sm:text-base lg:text-xl leading-relaxed">
-                  您通往新一代互联网的安全入口
-                </p>
-              </div>
+    const checkMobile = () => {
+      // setIsMobile(window.innerWidth <= 768);
+    };
 
-              {/* DCWallet描述 */}
-              <div className="mb-4 sm:mb-6 lg:mb-8">
-                <p className="text-gray-700 leading-relaxed text-sm sm:text-base lg:text-lg">
-                  DCWallet
-                  是基于去中心化云服务开发的统一登录工具，不存储任何用户隐私信息。
-                </p>
-              </div>
-            </div>
-            {/* 授权状态区域 */}
-            <div className="flex justify-center items-center mobile-order-2 sm:mt-8 lg:mt-0">
-              <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 lg:p-10 w-full max-w-sm sm:max-w-md lg:max-w-lg xl:max-w-xl">
-                {/* 头部区域 */}
-                <div className="text-center mb-8">
-                  <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <User className="w-8 h-8 text-white" />
-                  </div>
-                  <p className="text-gray-600 text-sm sm:text-base">
-                    {authInfo.content}
-                  </p>
-                </div>
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
-                {/* 应用信息卡片 */}
-                {!!appInfo && !!appInfo.appId && (
-                  <div className="bg-gray-50 rounded-xl p-4 mb-6 border border-gray-100">
-                    <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-lg font-semibold text-gray-800 flex items-center">
-                        <ExternalLink className="w-5 h-5 mr-2 text-blue-600" />
-                        应用信息
-                      </h3>
-                    </div>
+  const changeSuccess = async () => {
+    // 切换成功后，获取账户信息
+    getUserInfo();
+  };
+  // 获取用户信息的逻辑
+  const getUserInfo = async () => {
+    // setIsLoading(true);
+    const accountInfo = getCurrentAccount();
+    if (accountInfo && accountInfo.nftAccount) {
+      setAccountAddress(accountInfo.account);
+      setAccountName(accountInfo.nftAccount);
 
-                    <div className="space-y-2">
-                      {appInfo.appId && (
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-600">
-                            应用名称
-                          </span>
-                          <div className="flex items-center">
-                            <span className="text-sm font-medium text-gray-800">
-                              {appInfo.appName} ({appInfo.appId})
-                            </span>
-                            {appInfo.appIcon && (
-                              <Image
-                                src={appInfo.appIcon}
-                                alt="App Icon"
-                                className="w-5 h-5 ml-2 rounded"
-                                width={40} // 必需
-                                height={40} // 必需
-                                priority={true} // 如果是 LCP 图像
-                              />
-                            )}
-                          </div>
-                        </div>
-                      )}
+      const network: ChainInfo | null = getCurrentNetwork();
+      if (!network) {
+        // setIsLoading(false);
+        return;
+      }
 
-                      {appInfo.appUrl && (
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-600">
-                            应用地址
-                          </span>
-                          <span className="text-sm font-medium text-gray-800 truncate max-w-48">
-                            {appInfo.appUrl}
-                          </span>
-                        </div>
-                      )}
+      // Simulate getting storage info from the DC API
+      // if (dc && dc.auth) {
+      //     const [userInfo, err] = await dc.auth.getUserInfoWithAccount(
+      //       "0x" + accountInfo.account
+      //     );
+      //     if(err || !userInfo) {
+      //       console.error("Failed to get user storage info", err);
+      //       setStorageSpace("0 GB");
+      //       setUsedStorageSpace("0 GB");
+      //       setStoragePercentage(0);
+      //       return;
+      //     }
+      //     console.log("User Info:", userInfo);
+      //     if (userInfo && userInfo.subscribeSpace) {
+      //       const totalSpaceGB = (userInfo.subscribeSpace / (1024 * 1024 * 1024)).toFixed(2);
+      //       setStorageSpace(`${totalSpaceGB} GB`);
 
-                      {appInfo.appVersion && (
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-600">版本号</span>
-                          <span className="text-sm font-medium text-gray-800">
-                            {appInfo.appVersion}
-                          </span>
-                        </div>
-                      )}
-                    </div>
+      //       // Mock used storage (30% of total for demo)
+      //       const usedSpace = userInfo.subscribeSpace * 0.3;
+      //       const usedSpaceGB = (usedSpace / (1024 * 1024 * 1024)).toFixed(2);
+      //       setUsedStorageSpace(`${usedSpaceGB} GB`);
+      //       setStoragePercentage(30);
 
-                    <div className="mt-3 pt-3 border-t border-gray-200">
-                      <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
-                        <p className="text-amber-800 text-xs sm:text-sm font-medium">
-                          ⚠️ {t("DAPP.warning")}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-                {/* 登录注册按钮 */}
-                {!!authInfo.needLogin && (
-                  <div className="space-y-3 mb-6">
-                    <button
-                      onClick={handleLogin}
-                      className="w-full py-3 px-6 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl font-medium shadow-lg hover:from-blue-700 hover:to-blue-800 transform hover:scale-[1.02] transition-all duration-200 ease-in-out"
-                    >
-                      <div className="flex items-center justify-center">
-                        <User className="w-5 h-5 mr-2" />
-                        登录账户
-                      </div>
-                    </button>
+      //       // Mock token amount
+      //       setTokenAmount("150");
 
-                    <button
-                      onClick={handleRegister}
-                      className="w-full py-3 px-6 bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-xl font-medium shadow-lg hover:from-emerald-700 hover:to-emerald-800 transform hover:scale-[1.02] transition-all duration-200 ease-in-out"
-                    >
-                      <div className="flex items-center justify-center">
-                        <User className="w-5 h-5 mr-2" />
-                        注册新账户
-                      </div>
-                    </button>
-                  </div>
-                )}
+      //       // Set app accounts (mock data for now)
+      //       setAppAccounts(mockAppAccounts);
+      //     }
+      // }
+    }
+    // setIsLoading(false);
+  };
 
-                {/* 安全提示 */}
-                <div className="text-center">
-                  <div className="inline-flex items-center px-4 py-2 bg-green-50 rounded-full border border-green-200">
-                    <Shield className="w-4 h-4 text-green-600 mr-2" />
-                    <span className="text-sm text-green-700 font-medium">
-                      您的隐私信息受到完全保护
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
+  useEffect(() => {
+    console.log("==========initState", initState);
+    if (initState == appState.init_success) {
+      setIsConnecting(false);
+      getUserInfo();
+    }
+  }, [initState]);
+
+  const AccountInfoView = () => (
+    <div className={styles.accountInfoView}>
+      {/* 账户卡 */}
+      <div className={styles.sectionCard}>
+        <div className={styles.sectionHeader}>
+          <h2>{t("account.details", "账户详情")}</h2>
+        </div>
+        <div className={styles.accountDetails}>
+          <div className={styles.accountAvatar}>
+            {accountName.charAt(0).toUpperCase()}
           </div>
-
-          {/* DCWallet开源地址 */}
-          <div className="text-center mt-6 sm:mt-8 lg:mt-10">
-            <p className="text-sm text-gray-400">
-              DCWallet 开源地址 • Powered by Decentralized Cloud Services
-            </p>
+          <div>
+            <div className="mr-5 text-lg font-medium">{accountName}</div>
+            <div className="text-sm font-medium">
+              {accountAddress && accountAddress.length > 16
+                ? `${accountAddress.substring(
+                    0,
+                    8
+                  )}...${accountAddress.substring(accountAddress.length - 8)}`
+                : accountAddress}
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(accountAddress || "");
+                  window.showToast({
+                    content: t("common.copied", "已复制"),
+                    position: "bottom",
+                  });
+                }}
+              >
+                <Copy className="w-4 h-4 ml-2 text-blue-600" />
+              </button>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* 余额展示 */}
+      <div className={styles.balanceCard}>
+        <div className={styles.balanceLabel}>US$</div>
+        <div className={styles.balance}>
+          <span className={styles.balanceAmount}>0.00</span>
+          <span className={styles.currencySymbol}>USD</span>
+        </div>
+        <div className={styles.balanceChange}>+US$0.00 (+0.00%)</div>
+      </div>
+
+      {/* 功能按钮区域 */}
+      <div className={styles.btns}>
+        <div className={styles.btnD}>
+          <div className={styles.btn}>
+            <SendOutline />
+          </div>
+          <div className={styles.txt}>{t("home.buy", "买入")}</div>
+        </div>
+        <div className={styles.btnD}>
+          <div className={styles.btn}>
+            <AddOutline />
+          </div>
+          <div className={styles.txt}>{t("home.swap", "兑换")}</div>
+        </div>
+        <div className={styles.btnD}>
+          <div className={styles.btn}>
+            <LockOutline />
+          </div>
+          <div className={styles.txt}>{t("home.send", "发送")}</div>
+        </div>
+        <div className={styles.btnD}>
+          <div className={styles.btn}>
+            <LeftOutline />
+          </div>
+          <div className={styles.txt}>{t("home.receive", "收款")}</div>
+        </div>
+      </div>
+
+      {/* 代币和收藏品标签页 */}
+      <div className={styles.tabSection}>
+        <div className={styles.tabs}>
+          <button
+            className={`${styles.tabItem} ${
+              activeTab === "tokens" ? styles.active : ""
+            }`}
+            onClick={() => {
+              console.log("点击代币标签");
+              setActiveTab("tokens");
+            }}
+          >
+            {t("home.tokens", "代币")}
+          </button>
+          <button
+            className={`${styles.tabItem} ${
+              activeTab === "collections" ? styles.active : ""
+            }`}
+            onClick={() => {
+              console.log("点击收藏标签");
+              setActiveTab("collections");
+            }}
+          >
+            {t("home.collections", "收藏品")}
+          </button>
+          <button
+            className={`${styles.tabItem} ${
+              activeTab === "activities" ? styles.active : ""
+            }`}
+            onClick={() => {
+              console.log("点击活动标签");
+              setActiveTab("activities");
+            }}
+          >
+            {t("home.activities", "活动")}
+          </button>
+        </div>
+        {activeTab === "tokens" && (
+          <div className={styles.tokensList}>
+            {/* 代币列表 */}
+            <div className={styles.tokenItem}>
+              <div className={styles.tokenIcon}></div>
+              <div className={styles.tokenInfo}>
+                <div className={styles.tokenName}>{t("home.ethereum_earn", "Ethereum · 赚取")}</div>
+                <div className={styles.tokenChange}>-1.61%</div>
+              </div>
+              <div className={styles.tokenValue}>US$0.00</div>
+            </div>
+            {/* 更多代币项... */}
+          </div>
+        )}
+        {activeTab === "collections" && (
+          <div className={styles.collectionsList}>
+            {/* 收藏品列表 */}
+            {/* 如果没有收藏品，显示空状态提示 */}
+            <div className={styles.emptyActivity}>
+              {t("home.empty_activity", "Nothing to see yet. Swap your first token today.")}
+            </div>
+          </div>
+        )}
+        {activeTab === "activities" && (
+          <div className={styles.activityList}>
+            {/* 活动列表 */}
+            {/* 如果没有活动记录，显示空状态提示 */}
+            <div className={styles.emptyActivity}>
+              {t("home.empty_activity", "Nothing to see yet. Swap your first token today.")}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  return (
+    <div>
+      {initState == appState.init_failed ? (
+        <div className={styles.note}>
+          {t("wallet.initialization_failed", "初始化失败")}
+        </div>
+      ) : (
+        <div>
+          {isConnecting ? (
+            <DAPPNote />
+          ) : (
+            <div>
+              {/* 使用组件中的 Header */}
+              <Header
+                changeNetworkSuccess={changeSuccess}
+                changeAccountSuccess={changeSuccess}
+              />
+              <div className={styles.contentPage} style={{ width: "100%" }}>
+                {/* <WagmiTest /> */}
+                <AccountInfoView />
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

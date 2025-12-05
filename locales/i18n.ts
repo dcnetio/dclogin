@@ -28,6 +28,11 @@ i18n
     debug: false,
     supportedLngs: Object.values(I18N_LANGUAGES),
     fallbackLng: I18N_LANGUAGES.ZH,
+    load: 'languageOnly', // 只加载语言代码，忽略区域代码（如 zh-CN -> zh）
+    detection: {
+      order: ['localStorage', 'navigator'], // 优先从 localStorage 获取，如果没有则检测浏览器语言
+      caches: ['localStorage'], // 缓存语言到 localStorage
+    },
     interpolation: { escapeValue: false },
     // i18next-http-backend translation file path
     // https://github.com/i18next/i18next-http-backend

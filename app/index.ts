@@ -6,12 +6,12 @@ export {
   switchChain,
   addChain,
   updateChain,
-} from "../services/networkService";
-export { getCurrentAccount } from "../services/accountService";
+} from "../services/network";
+export { getCurrentAccount } from "../services/account";
 export {
   initCommChannel,
   connectCmdHandler,
   createAccountWithLogin,
   createAccountWithRegister,
-} from "../services/messageService";
-export { transfer, refreshRecordStatus } from "../services/transactionService";
+} from "../services/dapp";
+export { transfer, refreshRecordStatus } from "../services/transaction";

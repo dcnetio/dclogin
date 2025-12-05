@@ -32,7 +32,7 @@ const nextConfig = {
   // === 编译器配置 ===
   compiler: {
     // 生产环境移除 console
-    removeConsole:  false,
+    removeConsole: false,
     // removeConsole:
     //   process.env.NODE_ENV === "production"
     //     ? {
@@ -48,7 +48,7 @@ const nextConfig = {
   },
 
   // === 性能优化 ===
-  compress: true, // 启用 gzip 压缩
+  compress: process.env.NODE_ENV === "production", // 启用 gzip 压缩
 
   // === 构建配置 ===
   // generateBuildId: async () => {

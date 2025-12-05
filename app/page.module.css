@@ -1,37 +1,409 @@
-/* ========== 布局调整 =========== */
-
-.mobile-stack {
+/* 基础样式 */
+.contentPage {
+  width: 100%;
+  /* 确保 contentPage 宽度为 100% */
+  max-width: 100%;
   display: flex;
   flex-direction: column;
-  margin-top: 2rem;
+  align-items: center;
+  padding: 30px 24px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: calc(100vh - 60px);
+  position: relative;
+  overflow: hidden;
 }
 
-@media (min-width: 768px) {
-  .mobile-stack {
-    margin-top: 2rem; /* 中等屏幕增加上边距 */
+
+/* 余额展示区域 */
+.balanceCard {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 100%;
+  /* 修改为100% */
+  background: rgba(255, 255, 255, 0.98);
+  border-radius: 24px;
+  padding: 30px;
+  margin-bottom: 30px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1),
+    0 5px 10px rgba(102, 126, 234, 0.1);
+  text-align: center;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.balanceLabel {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.balanceAmount {
+  font-size: 42px;
+  font-weight: 700;
+  color: #667eea;
+  margin: 10px 0;
+}
+
+.currencySymbol {
+  font-size: 24px;
+  opacity: 0.8;
+}
+
+.balanceChange {
+  font-size: 14px;
+  color: #999;
+  margin-top: 8px;
+}
+
+/* 动作按钮区域 */
+.btns {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  width: 100%;
+  max-width: 100%;
+  /* 修改为100% */
+  margin-top: 20px;
+}
+
+.btnD {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn {
+  width: 60px;
+  height: 60px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 25px rgba(102, 126, 234, 0.4);
+}
+
+.btn:active {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 15px rgba(102, 126, 234, 0.3);
+}
+
+.txt {
+  color: #555;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.tabSection {
+  margin-top: 30px;
+  width: 100%;
+  max-width: 100%;
+  /* 修改为100% */
+}
+
+.tabs {
+  display: flex;
+  gap: 20px;
+  border-bottom: 1px solid rgba(106, 130, 251, 0.1);
+  padding-bottom: 10px;
+}
+
+.tabItem {
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.tabItem.active {
+  border-bottom: 2px solid #667eea;
+}
+
+.tokensList,
+.collectionsList,
+.activityList {
+  margin-top: 20px;
+}
+
+.tokenItem,
+.collectionItem,
+.activityItem {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 15px;
+  background: #fff;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.tokenIcon,
+.collectionIcon,
+.activityIcon {
+  width: 40px;
+  height: 40px;
+  background: #f5f5f5;
+  border-radius: 8px;
+}
+
+.tokenInfo,
+.collectionInfo,
+.activityInfo {
+  flex: 1;
+  margin-left: 15px;
+}
+
+.tokenName,
+.collectionName,
+.activityName {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.tokenChange,
+.collectionChange,
+.activityChange {
+  font-size: 14px;
+  color: #999;
+}
+
+.tokenValue,
+.collectionValue,
+.activityValue {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.emptyActivity {
+  text-align: center;
+  color: #aab2c0;
+  font-size: 16px;
+  margin-top: 50px;
+}
+
+/* 空状态提示 */
+.note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(100vh - 60px);
+  color: #aab2c0;
+  font-size: 18px;
+}
+
+/* 头部样式 */
+.header {
+  background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+  /* 更改头部背景为新的渐变色 */
+  padding: 15px 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  position: relative;
+  z-index: 10;
+}
+
+/* 网络选择器 */
+.networkSelector {
+  display: flex;
+  align-items: center;
+  background: rgba(106, 130, 251, 0.1);
+  border-radius: 12px;
+  padding: 8px 12px;
+  font-size: 14px;
+  color: #667eea;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.networkSelector:hover {
+  background: rgba(106, 130, 251, 0.15);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .contentPage {
+    padding: 20px 16px;
+  }
+
+  .balanceCard {
+    padding: 25px 20px;
+    border-radius: 20px;
+  }
+
+  .balance {
+    font-size: 36px;
+  }
+
+  .btns {
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+
+  .btn {
+    width: 45px;
+    height: 45px;
+  }
+
+  .txt {
+    font-size: 14px;
+  }
+
+  .tabs {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .tabItem {
+    padding: 8px 15px;
+    font-size: 14px;
   }
 }
 
+@media (max-width: 480px) {
+  .balanceCard {
+    padding: 20px;
+  }
 
-@media (min-width: 1024px) {
-  .mobile-stack {
-    margin-top: 4rem; /* 大屏幕增加更大的上边距 */
+  .balance {
+    font-size: 32px;
+  }
+
+  .btns {
+    gap: 20px;
+  }
+
+  .btn {
+    width: 50px;
+    height: 50px;
+  }
+
+  .txt {
+    font-size: 12px;
+  }
+
+  .tabs {
+    gap: 5px;
+  }
+
+  .tabItem {
+    padding: 5px 10px;
+    font-size: 12px;
   }
 }
 
+@media (min-width: 1200px) {
+  .contentPage {
+    padding: 60px 48px;
+  }
 
-/* ========== 动画 =========== */
+  .balanceCard {
+    padding: 60px;
+    border-radius: 32px;
+  }
 
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  .balance {
+    font-size: 64px;
+  }
+
+  .btns {
+    gap: 60px;
+  }
+
+  .btn {
+    width: 80px;
+    height: 80px;
+  }
+
+  .txt {
+    font-size: 20px;
+  }
+
+  .tabs {
+    gap: 40px;
+  }
+
+  .tabItem {
+    padding: 20px 40px;
+    font-size: 20px;
+  }
 }
 
-.loading-spinner {
-  border: 4px solid var(--spinner-bg, #e5e7eb);
-  border-top: 4px solid var(--primary-color, #6b46c1);
+.navBar {
+  /* 这里可以进一步定义navBar的样式 */
+}
+
+/* 添加缺失的 accountInfoView 样式 */
+.accountInfoView {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sectionCard {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.98);
+  border-radius: 24px;
+  padding: 30px;
+  margin-bottom: 30px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1), 0 5px 10px rgba(102, 126, 234, 0.1);
+  transition: all 0.3s ease;
+}
+
+.sectionHeader h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 20px 0;
+}
+
+.accountDetails {
+  min-width: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  gap: 30px;
+}
+
+.accountAvatar {
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  animation: spin 1s linear infinite;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .sectionCard {
+    padding: 25px 20px;
+  }
+
+  .accountAvatar {
+    width: 40px;
+    height: 40px;
+  }
 }

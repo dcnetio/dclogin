@@ -1,3 +1,5 @@
+/* 复用登录和注册页面的样式 */
+
 /* 基础样式 */
 .content {
   display: flex;
@@ -23,8 +25,8 @@
   background-position: 0 0, 100% 100%;
 }
 
-/* 登录容器美化 */
-.loginContainer,
+/* 修改密码容器美化 */
+.changePasswordContainer,
 .registerContainer {
   position: relative;
   z-index: 1;
@@ -190,35 +192,6 @@
   border-color: #667eea;
 }
 
-/* 安全码区域样式 */
-.safecodeSection {
-  margin: 0;
-}
-
-.safecodeToggle {
-  text-align: right;
-  color: #667eea;
-  font-size: 14px;
-  font-weight: 500;
-  padding: 5px 2px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-}
-
-.safecodeToggle:hover {
-  text-decoration: underline;
-  opacity: 0.9;
-}
-
-.safecodeToggle::before {
-  content: '🔒';
-  font-size: 14px;
-  margin-right: 6px;
-  opacity: 0.8;
-}
-
 /* 移动端描述区域样式 */
 .mobileDescription {
   margin: 16px 0 24px;
@@ -276,8 +249,8 @@
   box-shadow: 0 2px 6px rgba(106, 130, 251, 0.3);
 }
 
-/* 注册提示样式 */
-.registerPrompt {
+/* 返回提示样式 */
+.backPrompt {
   text-align: center;
   padding: 8px;
   color: #666;
@@ -286,18 +259,18 @@
   transition: all 0.2s ease;
 }
 
-.registerPrompt:hover {
+.backPrompt:hover {
   opacity: 0.8;
 }
 
-.registerLink {
+.backLink {
   color: #667eea;
   font-weight: 600;
   margin-left: 6px;
   position: relative;
 }
 
-.registerLink::after {
+.backLink::after {
   content: '';
   position: absolute;
   left: 0;
@@ -549,8 +522,8 @@
     color: #667eea;
   }
 
-  /* 登录容器 */
-  .loginContainer {
+  /* 修改密码容器 */
+  .changePasswordContainer {
     grid-column: 2;
     width: 100%;
     height: 100vh;
@@ -662,9 +635,35 @@
     filter: brightness(1.05);
   }
 
-  /* 安全码样式 */
-  .safecodeSection {
-    margin-top: 10px;
+  /* 返回提示链接 */
+  .backPrompt {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 15px;
+    color: #555;
+  }
+
+  .backLink {
+    color: #667eea;
+    font-weight: 600;
+    margin-left: 6px;
+    position: relative;
+    cursor: pointer;
+  }
+
+  .backLink::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 1px;
+    background: #667eea;
+    opacity: 0.6;
+  }
+
+  .backLink:hover::after {
+    opacity: 1;
   }
 
   .safecodeToggle {
@@ -681,36 +680,6 @@
     margin-right: 8px;
   }
 
-  /* 注册提示链接 */
-  .registerPrompt {
-    margin-top: 20px;
-    text-align: center;
-    font-size: 15px;
-    color: #555;
-  }
-
-  .registerLink {
-    color: #667eea;
-    font-weight: 600;
-    margin-left: 6px;
-    position: relative;
-    cursor: pointer;
-  }
-
-  .registerLink::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: -1px;
-    height: 1px;
-    background: #667eea;
-    opacity: 0.6;
-  }
-
-  .registerLink:hover::after {
-    opacity: 1;
-  }
 }
 
 /* 平板端适配 */
@@ -720,7 +689,7 @@
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   }
 
-  .loginContainer {
+  .changePasswordContainer {
     max-width: 420px;
     padding: 40px;
   }
@@ -752,8 +721,8 @@
     position: relative;
   }
 
-  /* 登录容器 */
-  .loginContainer {
+  /* 修改密码容器 */
+  .changePasswordContainer {
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -806,7 +775,7 @@
     margin-bottom: 8px;
   }
 
-  /* 按钮和注册区域 */
+  /* 按钮和返回区域 */
   .buttonGroup {
     margin-top: 16px;
     gap: 8px;
@@ -816,8 +785,8 @@
     height: 44px;
   }
 
-  /* 使注册提示始终可见 */
-  .registerPrompt {
+  /* 使返回提示始终可见 */
+  .backPrompt {
     position: relative;
     margin: 12px 0;
     padding: 8px;
@@ -882,4 +851,36 @@
 .buttonGroup :global(.adm-dot-loading) {
   font-size: 18px;
   color: rgba(255, 255, 255, 0.9);
+}
+
+/* 密码错误提示 */
+.passwordError {
+  color: #ff4d4f;
+  font-size: 14px;
+  margin-top: 5px;
+  text-align: left;
+}
+
+.safecodeToggle {
+  text-align: right;
+  color: #667eea;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 5px 2px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.safecodeToggle:hover {
+  text-decoration: underline;
+  opacity: 0.9;
+}
+
+.safecodeToggle::before {
+  content: '🔒';
+  font-size: 14px;
+  margin-right: 6px;
+  opacity: 0.8;
 }

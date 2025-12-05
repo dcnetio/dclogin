@@ -15,11 +15,8 @@ import { EncodePasswordType, MsgStatus } from "@/config/constant";
 import NavigationService from "@/lib/navigation";
 import { store } from "@/lib/store";
 import { updateAuthStep } from "@/lib/slices/authSlice";
-import { authenticateWithPasskey } from "@/services/accountService";
-export const showAddDAPPNote = (
-  info: APPInfo,
-  confirmCallback: () => void
-) => {
+import { authenticateWithPasskey } from "@/services/account";
+export const showAddDAPPNote = (info: APPInfo, confirmCallback: () => void) => {
   const containerId = "add-dapp-note-container";
   // 先检查是否已存在，如果存在则移除
   const existingContainer = document.getElementById(containerId);
@@ -72,11 +69,11 @@ export const showSignatureDAPPNote = (
   );
 };
 
-
 export const showEncodePassword = (
-  info: {iv: Uint8Array, encodeMnimonic: ArrayBuffer, credentialId?: string},
+  info: { iv: Uint8Array; encodeMnimonic: ArrayBuffer; credentialId?: string },
   appInfo: APPInfo,
-  confirmCallback: (userHandleHash: ArrayBuffer | null) => void
+  confirmCallback: (userHandleHash: ArrayBuffer | null) => void,
+  failBack: () => void
 ) => {
   const containerId = "encode-password-container";
   // 先检查是否已存在，如果存在则移除
@@ -92,14 +89,29 @@ export const showEncodePassword = (
     React.createElement(EncodePassword, {
       type: EncodePasswordType.VERIFY,
       appInfo,
+      cancalFun: () => {
+        document.body.removeChild(container);
+        window.showToast({
+          content: i18n.t("account.unlock_wallet_cancel"),
+          position: "bottom",
+        });
+        failBack();
+      },
       confirmFun: async (password: string) => {
         // 确认结束
         console.log("确认EncodePassword=====");
         // 解密
         const userHandle = Buffer.from(password);
-        const userHandleHash = await crypto.subtle.digest("SHA-256", userHandle);
-        const mnemonic = await utilHelper.decryptMnemonic(info.iv, info.encodeMnimonic, userHandleHash);
-        if(!mnemonic){
+        const userHandleHash = await crypto.subtle.digest(
+          "SHA-256",
+          userHandle
+        );
+        const mnemonic = await utilHelper.decryptMnemonic(
+          info.iv,
+          info.encodeMnimonic,
+          userHandleHash
+        );
+        if (!mnemonic) {
           window.showToast({
             content: i18n.t("account.unlock_wallet_failed"),
             position: "bottom",
@@ -111,7 +123,7 @@ export const showEncodePassword = (
       },
       onForgotPassword: () => {
         NavigationService.replace(`/login${window.location.search}`);
-        confirmCallback(null);
+        failBack();
         document.body.removeChild(container);
       },
       gotoWebAuth: async () => {
@@ -125,11 +137,11 @@ export const showEncodePassword = (
               type: MsgStatus.failed,
               content: i18n.t("account.auth_doing"),
             })
-          )
+          );
           //用户确认后,调出webauthn进行校验,并提取出userHandleHash
           userHandleHash = await authenticateWithPasskey(info.credentialId);
           console.log("userHandleHash success", userHandleHash);
-          if(!userHandleHash){
+          if (!userHandleHash) {
             window.showToast({
               content: i18n.t("account.unlock_wallet_failed"),
               position: "bottom",
@@ -138,7 +150,7 @@ export const showEncodePassword = (
           }
           confirmCallback(userHandleHash);
           document.body.removeChild(container);
-        }else {
+        } else {
           window.showToast({
             content: i18n.t("auth.web_auth_failed"),
             position: "bottom",
@@ -150,7 +162,10 @@ export const showEncodePassword = (
 };
 
 export const showSetEncodePassword = (
-  confirmCallback: (userHandle: Uint8Array | null, credentialId: string | null) => void
+  confirmCallback: (
+    userHandle: Uint8Array | null,
+    credentialId: string | null
+  ) => void
 ) => {
   const containerId = "encode-password-container";
   // 先检查是否已存在，如果存在则移除
@@ -166,11 +181,11 @@ export const showSetEncodePassword = (
     React.createElement(EncodePassword, {
       type: EncodePasswordType.SET,
       appInfo: {
-        appId: '',
-        appName: '',
-        appIcon: '',
-        appUrl: '',
-        appVersion: '',
+        appId: "",
+        appName: "",
+        appIcon: "",
+        appUrl: "",
+        appVersion: "",
       },
       confirmFun: async (password: string) => {
         // 确认结束
@@ -193,7 +208,7 @@ export const showSetEncodePassword = (
           // 提取 response 对象
           userHandle = credential.userHandle;
           credentialId = credential.id;
-          if(!userHandle || !credentialId){
+          if (!userHandle || !credentialId) {
             window.showToast({
               content: i18n.t("auth.web_auth_failed"),
               position: "bottom",
@@ -202,7 +217,7 @@ export const showSetEncodePassword = (
           }
           confirmCallback(userHandle, credentialId);
           document.body.removeChild(container);
-        }else {
+        } else {
           window.showToast({
             content: i18n.t("auth.web_auth_failed"),
             position: "bottom",

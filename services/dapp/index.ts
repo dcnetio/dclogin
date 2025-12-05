@@ -229,8 +229,6 @@ async function connectCmdHandler(
     );
     return;
   }
-  // 异步获取当前网络状态,更新钱包网络状态
-  await ethersHelper.checkNetworkStatus();
 
   messageData = message;
   portData = port;

@@ -112,7 +112,7 @@ export default function Login() {
         );
         // 初始化成功，
         store.dispatch(saveInitState(appState.init_success));
-        router.replace(`${window.location.pathname}${window.location.search}`);
+        router.replace(`/${window.location.pathname}${window.location.search}`);
       }
     } catch (error) {
       console.error("login error", error);

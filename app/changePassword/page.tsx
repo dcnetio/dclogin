@@ -5,15 +5,13 @@ import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { Button, Input } from "antd-mobile";
 import { getDC } from "@/components/auth/login/dc";
-import { changePassword, getCurrentAccount } from "@/services/account";
+import { changePassword } from "@/services/account";
 import { AccountInfo } from "@/types/walletTypes";
-import { appState } from "@/config/constant";
 import { useAppSelector } from "@/lib/hooks";
 
 export default function ChangePassword() {
   const router = useRouter();
   const { t } = useTranslation();
-  const initState = useAppSelector((state) => state.app.initState);
   const [accountInfo, setAccountInfo] = useState<AccountInfo | null>(null);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -22,6 +20,7 @@ export default function ChangePassword() {
   const [safecode, setSafecode] = useState("000000");
   const [showSafecode, setShowSafecode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const account = useAppSelector((state) => state.wallet.account);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -34,13 +33,10 @@ export default function ChangePassword() {
   }, []);
 
   useEffect(() => {
-    if (initState == appState.init_success) {
-      const accountInfo = getCurrentAccount();
-      if (accountInfo && accountInfo.nftAccount) {
-        setAccountInfo(accountInfo);
-      }
+    if (account && account.nftAccount) {
+      setAccountInfo(account);
     }
-  }, [initState]);
+  }, [account?.nftAccount]);
 
   const handleChangePassword = async () => {
     // 设置加载状态

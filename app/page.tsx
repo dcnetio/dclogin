@@ -1,19 +1,21 @@
 "use client";
-import React, { useEffect, useCallback, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "@/components/common/header";
 import PointsExchangeModal from "@/components/modals/PointsExchangeModal";
 import StorageSubscriptionModal from "@/components/modals/StorageSubscriptionModal";
 import { getDC } from "@/components/auth/login/dc";
 import { APPThemeConfig } from "@/config/define";
-import { appState } from "@/config/constant";
 import { useAppSelector } from "@/lib/hooks";
-import { ChainInfo } from "@/types/walletTypes";
-import { getCurrentNetwork } from "@/services/network";
-import { getCurrentAccount } from "@/services/account";
-import DAPPNote from "@/components/note/DAPPNote";
+import { getUserInfoWithNft } from "@/services/account";
+import { User } from "web-dc-api";
+import { Toast } from "antd-mobile";
+import ethers from "@/helpers/ethersHelper";
+interface UserInfo extends User {
+  points: number;
+}
 
 const Dashboard = () => {
-  const [user, setUser] = useState<any>(null);
+  const [userInfo, setUserInfo] = useState<UserInfo>(null);
   const [apps, setApps] = useState<any[]>([]);
   const [loginHistory, setLoginHistory] = useState<any[]>([]);
   const [displayedLoginHistory, setDisplayedLoginHistory] = useState<any[]>([]);
@@ -23,50 +25,26 @@ const Dashboard = () => {
   const [showExchangeModal, setShowExchangeModal] = useState(false);
   const [showStorageModal, setShowStorageModal] = useState(false);
 
-  const initState = useAppSelector((state) => state.app.initState);
-  const [isConnecting, setIsConnecting] = useState(true); // 新增连接状态变量
+  const account = useAppSelector((state) => state.wallet.account);
 
   const HISTORY_PAGE_SIZE = 3;
-  const changeSuccess = async () => {
-    // 切换成功后，获取账户信息
-    getUserInfo();
-  };
   // 获取用户信息的逻辑
   const getUserInfo = async () => {
     // setIsLoading(true);
-    const accountInfo = getCurrentAccount();
-    if (accountInfo && accountInfo.nftAccount) {
-      setUser(accountInfo);
+    // 获取用户信息
+    const [userInfo, error] = await getUserInfoWithNft(account.nftAccount);
+    if (error) {
+      Toast.show({
+        content: error.message || "获取用户信息失败",
+        position: "bottom",
+      });
+      return;
     }
-    // setIsLoading(false);
+    // 获取用户余额
+    const balance = await ethers.getUserBalance(account.account);
+    userInfo.points = balance;
+    setUserInfo(userInfo);
   };
-
-  // 处理登录请求
-  const handleLoginRequest = useCallback(async () => {
-    try {
-      const dc = await getDC();
-      if (!dc) {
-        throw new Error("未获取到有效的 DC 实例");
-      }
-
-      const [accountInfo, loginError] = await dc.auth.accountLoginWithWallet();
-      if (loginError || !accountInfo) {
-        throw new Error(loginError || "登录失败");
-      }
-    } catch (err) {
-      setError(err.message || "登录失败");
-    }
-  }, [getDC]);
-
-  // 处理登出请求
-  const handleLogoutRequest = useCallback(async () => {
-    try {
-      // 清除本地状态
-      setUser(null);
-    } catch (err) {
-      setError(err.message || "登出失败");
-    }
-  }, []);
 
   const handleLoadMoreHistory = () => {
     setHistoryPage((prevPage) => prevPage + 1);
@@ -114,32 +92,11 @@ const Dashboard = () => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
   };
 
-  const getNowNetwork = async () => {
-    // 获取当前网络信息的逻辑
-  };
-
-  const getNowAccount = async () => {
-    // 获取当前账户信息的逻辑
-  };
-
   useEffect(() => {
-    console.log("==========initState", initState);
-    if (initState == appState.init_success) {
-      setIsConnecting(false);
+    if (account && account.nftAccount) {
       getUserInfo();
     }
-  }, [initState]);
-
-  // 监听头部组件发出的登录/登出请求
-  useEffect(() => {
-    window.addEventListener("header-login-request", handleLoginRequest);
-    window.addEventListener("header-logout-request", handleLogoutRequest);
-
-    return () => {
-      window.removeEventListener("header-login-request", handleLoginRequest);
-      window.removeEventListener("header-logout-request", handleLogoutRequest);
-    };
-  }, [handleLoginRequest, handleLogoutRequest]);
+  }, [account?.nftAccount]);
 
   useEffect(() => {
     // 当历史记录或页码变化时，更新显示的记录
@@ -148,15 +105,7 @@ const Dashboard = () => {
     setDisplayedLoginHistory(loginHistory.slice(startIndex, endIndex));
   }, [loginHistory, historyPage]);
 
-  if (isConnecting) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <DAPPNote />
-      </div>
-    );
-  }
-
-  if (error && !user) {
+  if (error && !userInfo) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
         <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full">
@@ -202,25 +151,24 @@ const Dashboard = () => {
             </div>
             <div className="mt-4">
               <div className="flex justify-between text-sm mb-1">
-                <span>已使用: {formatBytes(user?.storageUsed || 0)}</span>
-                <span>总共: {formatBytes(user?.storageTotal || 0)}</span>
+                <span>已使用: {formatBytes(userInfo?.usedSpace || 0)}</span>
+                <span>总共: {formatBytes(userInfo?.subscribeSpace || 0)}</span>
               </div>
               <div className="w-full bg-gray-700 rounded-full h-2">
                 <div
                   className="bg-green-500 h-2 rounded-full"
                   style={{
                     width: `${
-                      ((user?.storageUsed || 0) / (user?.storageTotal || 1)) *
+                      ((userInfo?.usedSpace ? userInfo?.usedSpace : 0) /
+                        (userInfo?.subscribeSpace || 1)) *
                       100
                     }%`,
                   }}
                 ></div>
               </div>
               <p className="mt-2 text-sm text-gray-800">
-                到期时间:{" "}
-                {user?.storageExpiry
-                  ? new Date(user.storageExpiry).toLocaleDateString()
-                  : "N/A"}
+                到期区块高度:{" "}
+                {userInfo?.expireNumber ? userInfo.expireNumber : "N/A"}
               </p>
               <button
                 onClick={handleSubscribeStorage}
@@ -260,7 +208,9 @@ const Dashboard = () => {
               </div>
             </div>
             <div className="mt-4">
-              <div className="text-3xl font-bold">{user?.points || 0} 积分</div>
+              <div className="text-3xl font-bold">
+                {userInfo?.points || 0} 积分
+              </div>
               <button
                 onClick={() => setShowExchangeModal(true)}
                 className="mt-4 w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 px-4 rounded"
@@ -343,14 +293,14 @@ const Dashboard = () => {
         isOpen={showStorageModal}
         onClose={() => setShowStorageModal(false)}
         onSelectPlan={handleSelectStoragePlan}
-        userPoints={user?.points || 0}
+        userPoints={userInfo?.points || 0}
       />
 
       {/* 积分兑换模态框 */}
       <PointsExchangeModal
         isOpen={showExchangeModal}
         onClose={() => setShowExchangeModal(false)}
-        userPoints={user?.points || 0}
+        userPoints={userInfo?.points || 0}
         onExchange={handleExchangePoints}
       />
     </div>

@@ -2,8 +2,9 @@
 import { getDC } from "@/components/auth/login/dc";
 import i18n from "@/locales/i18n";
 import { NFTBindStatus } from "web-dc-api";
-import { AccountInfo } from "@/types/walletTypes";
+import { AccountInfo, ConnectReqMessage } from "@/types/walletTypes";
 import { unlockWallet } from "./wallet";
+import { connectCmdHandler } from "../dapp";
 
 const bindNFTAccount = async (
   account: string = "",
@@ -92,5 +93,36 @@ async function changePassword(
   );
   return [success, error];
 }
+async function login(): Promise<[AccountInfo | null, Error | null]> {
+  //连接网络，并把用户信息保存下来
+  const message: ConnectReqMessage = {
+    origin: window.location.origin,
+  };
+  //改为判断是否有origin参数,如果有则表示是从DAPP打开的
+  const res = await connectCmdHandler(message, false);
+  console.log("res====", res);
+  if (!res) {
+    // 跳转到首页
+    return [null, null];
+  }
+  if (res.success) {
+    return [res.data, null];
+  }
+  return [null, res.error];
+}
 
-export { bindNFTAccount, changePassword };
+/**
+ * 通过nftAccount 获取用户信息
+ * @param nftAccount
+ * @returns
+ */
+async function getUserInfoWithNft(nftAccount: string) {
+  const dc = getDC();
+  if (!dc) {
+    return [false, new Error(i18n.t("account.auth_no_module"))];
+  }
+  const [userInfo, err] = await dc.auth?.getUserInfoWithNft(nftAccount);
+  return [userInfo, err];
+}
+
+export { bindNFTAccount, changePassword, login, getUserInfoWithNft };

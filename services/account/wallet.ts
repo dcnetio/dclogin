@@ -5,13 +5,14 @@ import { MsgStatus } from "@/config/constant";
 import { store } from "@/lib/store";
 import { updateAuthStep } from "@/lib/slices/authSlice";
 import { AccountInfo, ConnectReqMessage } from "@/types/walletTypes";
-import { KeyManager, Ed25519PrivKey } from "web-dc-api";
+import { KeyManager, Ed25519PrivKey, Account } from "web-dc-api";
 import DBHelper from "@/helpers/DBHelper";
 import i18n from "@/locales/i18n";
 import { getCurrentNetwork } from "../network";
 import { getDC } from "@/components/auth/login/dc";
 import { getCurrentAccount } from "./state";
 import { getEncodePwd, setEncodePwd } from "./security";
+import { saveAccountInfo } from "@/lib/slices/walletSlice";
 
 // 根据账号,生成签名的钱包账号对象
 async function generateWalletAccount(seedAccount: string) {
@@ -121,7 +122,7 @@ async function createWalletAccount(
       const account = {
         nftAccount,
         account: address,
-        type: "eth", // todo 账号类型
+        type: "DCT", // todo 账号类型
         credentialId: credentialId || "",
         mnemonic: encryptedMnemonic,
         iv: iv,
@@ -208,7 +209,11 @@ async function resPonseWallet(
   message: ConnectReqMessage = {} as ConnectReqMessage,
   bool: boolean = false,
   port: MessagePort | null = null
-) {
+): Promise<{
+  success: boolean;
+  data: AccountInfo | null;
+  error?: Error | null;
+}> {
   const currentChain = getCurrentNetwork();
   if (!currentChain) {
     //待测试 跳出提示框,提示用户获取网络信息失败
@@ -341,15 +346,20 @@ async function resPonseWallet(
       });
   } else {
     // 钱包本身访问
+    // 保存用户信息
+    const toSaveAccountInfo = {
+      url: currentAccount.url,
+      name: currentAccount.name,
+      nftAccount: currentAccount.nftAccount,
+      account: currentAccount.account,
+      credentialId: currentAccount.credentialId,
+      timeStamp: currentAccount.timeStamp,
+      type: currentAccount.type,
+    };
+    store.dispatch(saveAccountInfo(toSaveAccountInfo));
     return {
       success: true,
-      data: {
-        nftAccount: currentAccount?.nftAccount,
-        ethAccount: wallet.address,
-        chainId: currentChain.chainId,
-        chainName: currentChain.name,
-        signature: signature,
-      },
+      data: currentAccount,
     };
   }
 }

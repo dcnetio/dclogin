@@ -8,6 +8,7 @@ let _dcConfig = {
 let _APPThemeConfig = {
   appThemeAuthor: "DcChain",
 };
+let _DefChainId = 176;
 if (
   typeof process !== "undefined" &&
   process.env &&
@@ -24,3 +25,4 @@ export const basePath = _basePath;
 export const apiUrl = _apiUrl;
 export const dcConfig = _dcConfig;
 export const APPThemeConfig = _APPThemeConfig;
+export const DefChainId = _DefChainId;

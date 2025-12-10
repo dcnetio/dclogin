@@ -7,7 +7,7 @@ import { updateAppInfo, updateAuthStep } from "@/lib/slices/authSlice";
 import { getCurrentChain } from "@/services/network";
 import { applyFreeSpace } from "@/app/tools/subSpace";
 
-import type { Ed25519PrivKey } from "web-dc-api";
+import type { Account, Ed25519PrivKey } from "web-dc-api";
 import { KeyManager } from "web-dc-api";
 
 import { showSignatureDAPPNote } from "@/components/note/noteHelper";
@@ -29,6 +29,7 @@ import {
   EIP712SignReqMessage,
   isEIP712SignReqMessage,
   SignReqMessage,
+  AccountInfo,
 } from "@/types/walletTypes";
 import { checkDCInitialized, getDC } from "@/components/auth/login/dc";
 
@@ -214,7 +215,11 @@ async function connectCmdHandler(
   message: ConnectReqMessage,
   bool: boolean,
   port: MessagePort | null = null
-) {
+): Promise<{
+  success: boolean;
+  data: AccountInfo | null;
+  error: Error | null;
+}> {
   const connectingApp = message.data;
   // 获取当前网络
   const chain = await getCurrentChain();
@@ -528,7 +533,11 @@ async function createAccountWithLogin(
   password: string,
   safecode: string,
   origin?: string
-) {
+): Promise<{
+  success: boolean;
+  data: AccountInfo | null;
+  error: Error | null;
+}> {
   try {
     const dc = getDC();
     if (!dc) {

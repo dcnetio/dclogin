@@ -91,4 +91,10 @@ async function createAccount(
   return account;
 }
 
-export { chooseStoredAccount, createAccount };
+// 获取所有的账号
+async function getAllAccounts() {
+  const accounts = await DBHelper.getAllData(DBHelper.store_account);
+  return accounts;
+}
+
+export { chooseStoredAccount, createAccount, getAllAccounts };

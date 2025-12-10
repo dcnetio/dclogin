@@ -74,10 +74,6 @@ export default function Login() {
       // 初始化网络数据
       await initNetworks();
       console.log("debug===========initNetworks end", new Date());
-      //连接网络，并把用户信息保存下来
-      const message: ConnectReqMessage = {
-        origin: window.location.origin,
-      };
       if (!openerOrigin) {
         // 循环判断dc是否存在，并设置超时，超过3s则直接返回
         const dc = await checkDCInitialized();
@@ -93,26 +89,12 @@ export default function Login() {
         // 判断如果是login，register，则跳过
         if (
           window.location.pathname.indexOf("login") > -1 ||
-          window.location.pathname.indexOf("register") > -1
+          window.location.pathname.indexOf("register") > -1 ||
+          window.location.pathname === "/" ||
+          window.location.pathname === ""
         ) {
           return;
         }
-        //改为判断是否有origin参数,如果有则表示是从DAPP打开的
-        const accountInfo = await connectCmdHandler(message, false);
-        console.log("accountInfo====", accountInfo);
-        if (!accountInfo) {
-          return;
-        }
-        // 提示成功，并跳转到首页
-        store.dispatch(
-          updateAuthStep({
-            type: MsgStatus.failed,
-            content: t("auth.success"),
-          })
-        );
-        // 初始化成功，
-        store.dispatch(saveInitState(appState.init_success));
-        router.replace(`${window.location.pathname}${window.location.search}`);
       }
     } catch (error) {
       console.error("login error", error);

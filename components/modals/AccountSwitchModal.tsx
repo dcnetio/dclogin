@@ -1,60 +1,44 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
-interface Account {
-  id: string;
-  publicKey: string;
-  name: string;
+import { AddOutline, CloseOutline } from "antd-mobile-icons";
+import { AccountInfo } from "@/types/walletTypes";
+import { getAllAccounts } from "@/services/account";
+import { UserCircleIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useAppSelector } from "@/lib/hooks";
+interface Account extends AccountInfo {
   isCurrent: boolean;
 }
 
 interface AccountSwitchModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAccountSwitch: (account: Account) => void;
-  onLoginNewAccount: () => void;
+  onAccountSwitch: (account: AccountInfo) => void;
 }
 
 const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
   isOpen,
   onClose,
   onAccountSwitch,
-  onLoginNewAccount,
 }) => {
-  const [accountInfo, setAccountInfo] = useState<Account | null>(null);
+  const router = useRouter();
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  const account = useAppSelector((state) => state.wallet.account);
 
-  // 初始化账号列表
-  useEffect(() => {
-    // 从本地存储获取已保存的账号
-    const savedAccounts = localStorage.getItem("dc_accounts");
-    let accountList: Account[] = [];
-
-    if (savedAccounts) {
-      accountList = JSON.parse(savedAccounts);
+  const getAccounts = useCallback(async () => {
+    const data = (await getAllAccounts()) || [];
+    if (data) {
+      // 确保当前账号被标记
+      const updatedAccounts = data.map((acc) => ({
+        ...acc,
+        isCurrent: acc.nftAccount === (account?.nftAccount || ""),
+      }));
+      setAccounts(updatedAccounts);
     } else {
-      // 如果没有保存的账号，创建当前账号
-      const publicKey = accountInfo?.publicKey || "";
-      accountList = [
-        {
-          id: `account_${Date.now()}`,
-          publicKey: publicKey,
-          name: `用户${publicKey ? publicKey.substring(0, 8) : "未知"}`,
-          isCurrent: true,
-        },
-      ];
-      localStorage.setItem("dc_accounts", JSON.stringify(accountList));
+      setAccounts([]);
     }
-
-    // 确保当前账号被标记
-    const updatedAccounts = accountList.map((acc) => ({
-      ...acc,
-      isCurrent: acc.publicKey === (accountInfo?.publicKey || ""),
-    }));
-
-    setAccounts(updatedAccounts);
-  }, [isOpen, accountInfo]);
-
+  }, [account?.nftAccount]);
   // 切换账号
   const handleSwitchAccount = (account: Account) => {
     if (account.isCurrent) return;
@@ -62,7 +46,7 @@ const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
     // 更新本地存储中的当前账号标记
     const updatedAccounts = accounts.map((acc) => ({
       ...acc,
-      isCurrent: acc.publicKey === account.publicKey,
+      isCurrent: acc.nftAccount === account.nftAccount,
     }));
 
     setAccounts(updatedAccounts);
@@ -75,14 +59,17 @@ const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
 
   // 登录新账号
   const handleLoginNewAccount = () => {
-    onLoginNewAccount();
+    // 进入登录页面
+    router.push("/login");
     onClose();
   };
 
   // 删除账号
-  const handleDeleteAccount = (accountId: string, publicKey: string) => {
+  const handleDeleteAccount = (nftAccount: string) => {
     // 不能删除当前账号
-    const accountToDelete = accounts.find((acc) => acc.id === accountId);
+    const accountToDelete = accounts.find(
+      (acc) => acc.nftAccount === nftAccount
+    );
     if (accountToDelete?.isCurrent) {
       alert("不能删除当前账号");
       return;
@@ -94,16 +81,22 @@ const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
       return;
     }
 
-    setIsDeleting(accountId);
+    setIsDeleting(nftAccount);
 
     // 模拟删除操作
     setTimeout(() => {
-      const updatedAccounts = accounts.filter((acc) => acc.id !== accountId);
+      const updatedAccounts = accounts.filter(
+        (acc) => acc.nftAccount !== nftAccount
+      );
       setAccounts(updatedAccounts);
       localStorage.setItem("dc_accounts", JSON.stringify(updatedAccounts));
       setIsDeleting(null);
     }, 500);
   };
+  // 初始化账号列表
+  useEffect(() => {
+    getAccounts();
+  }, [isOpen, account]);
 
   if (!isOpen) return null;
 
@@ -112,21 +105,16 @@ const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
       <div className="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
         <div className="p-4 border-b border-gray-200 flex justify-between items-center">
           <h3 className="text-xl font-bold">账号管理</h3>
-          <button onClick={onClose} className="text-gray-800 hover:text-white">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
+          <button
+            onClick={onClose}
+            className="text-gray-800 hover:text-gray-300"
+          >
+            <CloseOutline
+              fontSize={24}
+              onClick={close}
+              className="p-1 rounded-sm transition-transform duration-200 
+            hover:bg-gray-200 active:scale-95 cursor-pointer"
+            />
           </button>
         </div>
 
@@ -134,20 +122,9 @@ const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
           <div className="mb-4">
             <button
               onClick={handleLoginNewAccount}
-              className="w-full py-2 bg-blue-600 hover:bg-blue-700 rounded-lg flex items-center justify-center"
+              className="w-full py-2 bg-blue-600 hover:bg-blue-700 rounded-lg flex items-center justify-center text-white"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 mr-2"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-                  clipRule="evenodd"
-                />
-              </svg>
+              <AddOutline className="mr-2" fontSize={18} />
               登录新账号
             </button>
           </div>
@@ -155,10 +132,10 @@ const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
           <div className="space-y-3">
             {accounts.map((account) => (
               <div
-                key={account.id}
+                key={account.nftAccount}
                 className={`flex items-center justify-between p-3 rounded-lg ${
                   account.isCurrent
-                    ? "bg-blue-900/50 border border-blue-500"
+                    ? "bg-blue-800/50 border border-blue-200 text-white"
                     : "bg-gray-100 hover:bg-gray-200"
                 }`}
               >
@@ -166,30 +143,25 @@ const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
                   className="flex items-center cursor-pointer flex-1"
                   onClick={() => handleSwitchAccount(account)}
                 >
-                  <div className="bg-gray-100 rounded-full p-2 mr-3">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </div>
+                  <UserCircleIcon className="w-6 h-6 mr-3" size={30} />
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium truncate">{account.name}</p>
-                    <p className="text-xs text-gray-600 truncate">
-                      {account.publicKey
-                        ? `${account.publicKey.substring(0, 24)}...`
-                        : "未知公钥"}
+                    <p className="font-medium truncate">
+                      {account.account
+                        ? `${account.account.slice(0, 10)}
+                          ...
+                          ${account.account.slice(-8)}`
+                        : "未知"}
+                    </p>
+                    <p
+                      className={`text-xs  truncate ${
+                        account.isCurrent ? "text-white" : "text-gray-800"
+                      }`}
+                    >
+                      {account.nftAccount ? account.nftAccount : "未知"}
                     </p>
                   </div>
                   {account.isCurrent && (
-                    <span className="ml-2 bg-green-500 text-white text-xs px-2 py-1 rounded">
+                    <span className="ml-2 bg-green-600/90 text-white text-xs px-2 py-1 rounded">
                       当前
                     </span>
                   )}
@@ -197,13 +169,11 @@ const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
 
                 {!account.isCurrent && (
                   <button
-                    onClick={() =>
-                      handleDeleteAccount(account.id, account.publicKey)
-                    }
-                    disabled={isDeleting === account.id}
+                    onClick={() => handleDeleteAccount(account.nftAccount)}
+                    disabled={isDeleting === account.nftAccount}
                     className="ml-2 p-2 text-red-400 hover:text-red-300 hover:bg-red-900/30 rounded-full"
                   >
-                    {isDeleting === account.id ? (
+                    {isDeleting === account.nftAccount ? (
                       <svg
                         className="animate-spin h-5 w-5"
                         xmlns="http://www.w3.org/2000/svg"

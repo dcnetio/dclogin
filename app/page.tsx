@@ -1,43 +1,32 @@
 "use client";
-import styles from "./page.module.css"; // 确保引入了样式文件
-import "antd-mobile/es/global";
-import {
-  SendOutline,
-  AddOutline,
-  LockOutline,
-  // AppstoreOutline,
-  LeftOutline,
-} from "antd-mobile-icons";
-
-import { useEffect, useState } from "react";
+import React, { useEffect, useCallback, useState } from "react";
 import Header from "@/components/common/header";
-import { useAppSelector } from "@/lib/hooks";
+import PointsExchangeModal from "@/components/modals/PointsExchangeModal";
+import StorageSubscriptionModal from "@/components/modals/StorageSubscriptionModal";
+import { getDC } from "@/components/auth/login/dc";
+import { APPThemeConfig } from "@/config/define";
 import { appState } from "@/config/constant";
-import { getCurrentAccount, getCurrentNetwork } from "@/app/index";
-import type { ChainInfo } from "@/types/walletTypes";
-// import type { User } from "web-dc-api";
-import { useTranslation } from "react-i18next";
-import { Copy } from "lucide-react";
+import { useAppSelector } from "@/lib/hooks";
+import { ChainInfo } from "@/types/walletTypes";
+import { getCurrentNetwork } from "@/services/network";
+import { getCurrentAccount } from "@/services/account";
 import DAPPNote from "@/components/note/DAPPNote";
 
-export default function Index() {
-  const { t } = useTranslation();
+const Dashboard = () => {
+  const [user, setUser] = useState<any>(null);
+  const [apps, setApps] = useState<any[]>([]);
+  const [loginHistory, setLoginHistory] = useState<any[]>([]);
+  const [displayedLoginHistory, setDisplayedLoginHistory] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [historyPage, setHistoryPage] = useState(1);
+  const [showExchangeModal, setShowExchangeModal] = useState(false);
+  const [showStorageModal, setShowStorageModal] = useState(false);
+
   const initState = useAppSelector((state) => state.app.initState);
-  const [accountName, setAccountName] = useState("");
-  const [accountAddress, setAccountAddress] = useState("");
   const [isConnecting, setIsConnecting] = useState(true); // 新增连接状态变量
-  const [activeTab, setActiveTab] = useState("tokens"); // 添加 activeTab 状态变量并初始化
 
-  useEffect(() => {
-    const checkMobile = () => {
-      // setIsMobile(window.innerWidth <= 768);
-    };
-
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
-
+  const HISTORY_PAGE_SIZE = 3;
   const changeSuccess = async () => {
     // 切换成功后，获取账户信息
     getUserInfo();
@@ -47,47 +36,90 @@ export default function Index() {
     // setIsLoading(true);
     const accountInfo = getCurrentAccount();
     if (accountInfo && accountInfo.nftAccount) {
-      setAccountAddress(accountInfo.account);
-      setAccountName(accountInfo.nftAccount);
-
-      const network: ChainInfo | null = getCurrentNetwork();
-      if (!network) {
-        // setIsLoading(false);
-        return;
-      }
-
-      // Simulate getting storage info from the DC API
-      // if (dc && dc.auth) {
-      //     const [userInfo, err] = await dc.auth.getUserInfoWithAccount(
-      //       "0x" + accountInfo.account
-      //     );
-      //     if(err || !userInfo) {
-      //       console.error("Failed to get user storage info", err);
-      //       setStorageSpace("0 GB");
-      //       setUsedStorageSpace("0 GB");
-      //       setStoragePercentage(0);
-      //       return;
-      //     }
-      //     console.log("User Info:", userInfo);
-      //     if (userInfo && userInfo.subscribeSpace) {
-      //       const totalSpaceGB = (userInfo.subscribeSpace / (1024 * 1024 * 1024)).toFixed(2);
-      //       setStorageSpace(`${totalSpaceGB} GB`);
-
-      //       // Mock used storage (30% of total for demo)
-      //       const usedSpace = userInfo.subscribeSpace * 0.3;
-      //       const usedSpaceGB = (usedSpace / (1024 * 1024 * 1024)).toFixed(2);
-      //       setUsedStorageSpace(`${usedSpaceGB} GB`);
-      //       setStoragePercentage(30);
-
-      //       // Mock token amount
-      //       setTokenAmount("150");
-
-      //       // Set app accounts (mock data for now)
-      //       setAppAccounts(mockAppAccounts);
-      //     }
-      // }
+      setUser(accountInfo);
     }
     // setIsLoading(false);
+  };
+
+  // 处理登录请求
+  const handleLoginRequest = useCallback(async () => {
+    try {
+      const dc = await getDC();
+      if (!dc) {
+        throw new Error("未获取到有效的 DC 实例");
+      }
+
+      const [accountInfo, loginError] = await dc.auth.accountLoginWithWallet();
+      if (loginError || !accountInfo) {
+        throw new Error(loginError || "登录失败");
+      }
+    } catch (err) {
+      setError(err.message || "登录失败");
+    }
+  }, [getDC]);
+
+  // 处理登出请求
+  const handleLogoutRequest = useCallback(async () => {
+    try {
+      // 清除本地状态
+      setUser(null);
+    } catch (err) {
+      setError(err.message || "登出失败");
+    }
+  }, []);
+
+  const handleLoadMoreHistory = () => {
+    setHistoryPage((prevPage) => prevPage + 1);
+  };
+
+  const handleSubscribeStorage = () => {
+    setShowStorageModal(true);
+  };
+
+  const handleSelectStoragePlan = (plan: any) => {
+    alert(
+      `您选择了 ${plan.name}：${plan.storage}${plan.unit}/${plan.duration}，价格：¥${plan.price}`
+    );
+    setShowStorageModal(false);
+  };
+
+  const handleExchangePoints = async (points: number) => {
+    try {
+      const dc = await getDC();
+      if (!dc) {
+        throw new Error("未获取到有效的 DC 实例");
+      }
+
+      let [kvdb] = await dc.keyValue.getStore(
+        dc.appInfo.appId,
+        "keyvalue_user_pub",
+        APPThemeConfig.appThemeAuthor
+      );
+      if (!kvdb) {
+        throw new Error("用户主题不存在");
+      }
+
+      alert(`成功兑换 ${points} 积分`);
+    } catch (err) {
+      setError(err.message || "兑换失败");
+    }
+  };
+
+  const formatBytes = (bytes: number, decimals = 2) => {
+    if (bytes === 0) return "0 Bytes";
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
+  };
+
+  const getNowNetwork = async () => {
+    // 获取当前网络信息的逻辑
+  };
+
+  const getNowAccount = async () => {
+    // 获取当前账户信息的逻辑
   };
 
   useEffect(() => {
@@ -98,178 +130,231 @@ export default function Index() {
     }
   }, [initState]);
 
-  const AccountInfoView = () => (
-    <div className={styles.accountInfoView}>
-      {/* 账户卡 */}
-      <div className={styles.sectionCard}>
-        <div className={styles.sectionHeader}>
-          <h2>{t("account.details", "账户详情")}</h2>
+  // 监听头部组件发出的登录/登出请求
+  useEffect(() => {
+    window.addEventListener("header-login-request", handleLoginRequest);
+    window.addEventListener("header-logout-request", handleLogoutRequest);
+
+    return () => {
+      window.removeEventListener("header-login-request", handleLoginRequest);
+      window.removeEventListener("header-logout-request", handleLogoutRequest);
+    };
+  }, [handleLoginRequest, handleLogoutRequest]);
+
+  useEffect(() => {
+    // 当历史记录或页码变化时，更新显示的记录
+    const startIndex = 0;
+    const endIndex = historyPage * HISTORY_PAGE_SIZE;
+    setDisplayedLoginHistory(loginHistory.slice(startIndex, endIndex));
+  }, [loginHistory, historyPage]);
+
+  if (isConnecting) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <DAPPNote />
+      </div>
+    );
+  }
+
+  if (error && !user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+        <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full">
+          <h2 className="text-xl font-bold text-red-400 mb-4">错误</h2>
+          <p className="text-gray-900 mb-4">{error}</p>
+          <button
+            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            onClick={() => window.location.reload()}
+          >
+            重试
+          </button>
         </div>
-        <div className={styles.accountDetails}>
-          <div className={styles.accountAvatar}>
-            {accountName.charAt(0).toUpperCase()}
-          </div>
-          <div>
-            <div className="mr-5 text-lg font-medium">{accountName}</div>
-            <div className="text-sm font-medium">
-              {accountAddress && accountAddress.length > 16
-                ? `${accountAddress.substring(
-                    0,
-                    8
-                  )}...${accountAddress.substring(accountAddress.length - 8)}`
-                : accountAddress}
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-100 text-gray-900">
+      {/* 顶部用户信息栏 */}
+      <Header />
+
+      <div className="container mx-auto p-4">
+        {/* 账户概览卡片 */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          {/* 存储使用情况 */}
+          <div className="bg-white rounded-lg shadow p-6">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-medium text-gray-900">存储使用</h3>
+              <div className="bg-green-500 rounded-full p-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M4 5a2 2 0 00-2 7v8a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0011.172 3H8.828a2 2 0 00-1.414.586L6.293 4.707A1 1 0 015.586 5H4zm6 9a3 3 0 100-6 3 3 0 000 6z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
+            </div>
+            <div className="mt-4">
+              <div className="flex justify-between text-sm mb-1">
+                <span>已使用: {formatBytes(user?.storageUsed || 0)}</span>
+                <span>总共: {formatBytes(user?.storageTotal || 0)}</span>
+              </div>
+              <div className="w-full bg-gray-700 rounded-full h-2">
+                <div
+                  className="bg-green-500 h-2 rounded-full"
+                  style={{
+                    width: `${
+                      ((user?.storageUsed || 0) / (user?.storageTotal || 1)) *
+                      100
+                    }%`,
+                  }}
+                ></div>
+              </div>
+              <p className="mt-2 text-sm text-gray-800">
+                到期时间:{" "}
+                {user?.storageExpiry
+                  ? new Date(user.storageExpiry).toLocaleDateString()
+                  : "N/A"}
+              </p>
               <button
-                onClick={() => {
-                  navigator.clipboard.writeText(accountAddress || "");
-                  window.showToast({
-                    content: t("common.copied", "已复制"),
-                    position: "bottom",
-                  });
-                }}
+                onClick={handleSubscribeStorage}
+                className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded flex items-center justify-center"
               >
-                <Copy className="w-4 h-4 ml-2 text-blue-600" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 mr-2"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z" />
+                </svg>
+                订阅更多存储
+              </button>
+            </div>
+          </div>
+
+          {/* 积分余额 */}
+          <div className="bg-white rounded-lg shadow p-6">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-medium text-gray-900">积分余额</h3>
+              <div className="bg-yellow-500 rounded-full p-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0 1 1 0 002 0zm-1 4a1 1 0 110-2 1 1 0 010 2z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
+            </div>
+            <div className="mt-4">
+              <div className="text-3xl font-bold">{user?.points || 0} 积分</div>
+              <button
+                onClick={() => setShowExchangeModal(true)}
+                className="mt-4 w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 px-4 rounded"
+              >
+                兑换积分
               </button>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* 余额展示 */}
-      <div className={styles.balanceCard}>
-        <div className={styles.balanceLabel}>US$</div>
-        <div className={styles.balance}>
-          <span className={styles.balanceAmount}>0.00</span>
-          <span className={styles.currencySymbol}>USD</span>
-        </div>
-        <div className={styles.balanceChange}>+US$0.00 (+0.00%)</div>
-      </div>
-
-      {/* 功能按钮区域 */}
-      <div className={styles.btns}>
-        <div className={styles.btnD}>
-          <div className={styles.btn}>
-            <SendOutline />
-          </div>
-          <div className={styles.txt}>{t("home.buy", "买入")}</div>
-        </div>
-        <div className={styles.btnD}>
-          <div className={styles.btn}>
-            <AddOutline />
-          </div>
-          <div className={styles.txt}>{t("home.swap", "兑换")}</div>
-        </div>
-        <div className={styles.btnD}>
-          <div className={styles.btn}>
-            <LockOutline />
-          </div>
-          <div className={styles.txt}>{t("home.send", "发送")}</div>
-        </div>
-        <div className={styles.btnD}>
-          <div className={styles.btn}>
-            <LeftOutline />
-          </div>
-          <div className={styles.txt}>{t("home.receive", "收款")}</div>
-        </div>
-      </div>
-
-      {/* 代币和收藏品标签页 */}
-      <div className={styles.tabSection}>
-        <div className={styles.tabs}>
-          <button
-            className={`${styles.tabItem} ${
-              activeTab === "tokens" ? styles.active : ""
-            }`}
-            onClick={() => {
-              console.log("点击代币标签");
-              setActiveTab("tokens");
-            }}
-          >
-            {t("home.tokens", "代币")}
-          </button>
-          <button
-            className={`${styles.tabItem} ${
-              activeTab === "collections" ? styles.active : ""
-            }`}
-            onClick={() => {
-              console.log("点击收藏标签");
-              setActiveTab("collections");
-            }}
-          >
-            {t("home.collections", "收藏品")}
-          </button>
-          <button
-            className={`${styles.tabItem} ${
-              activeTab === "activities" ? styles.active : ""
-            }`}
-            onClick={() => {
-              console.log("点击活动标签");
-              setActiveTab("activities");
-            }}
-          >
-            {t("home.activities", "活动")}
-          </button>
-        </div>
-        {activeTab === "tokens" && (
-          <div className={styles.tokensList}>
-            {/* 代币列表 */}
-            <div className={styles.tokenItem}>
-              <div className={styles.tokenIcon}></div>
-              <div className={styles.tokenInfo}>
-                <div className={styles.tokenName}>{t("home.ethereum_earn", "Ethereum · 赚取")}</div>
-                <div className={styles.tokenChange}>-1.61%</div>
-              </div>
-              <div className={styles.tokenValue}>US$0.00</div>
+        {/* 登录历史 */}
+        <div className="bg-white rounded-lg shadow p-6 mb-8">
+          <h3 className="text-lg font-medium text-gray-900 mb-4">登录历史</h3>
+          {displayedLoginHistory.length > 0 ? (
+            <div className="space-y-3">
+              {displayedLoginHistory.map((history) => (
+                <div key={history.id} className="bg-white rounded-lg p-4">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <h4 className="font-medium">{history.appName}</h4>
+                      <p className="text-sm text-gray-900">{history.domain}</p>
+                    </div>
+                    <div className="text-sm text-gray-900">
+                      {new Date(history.timestamp).toLocaleString()}
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {displayedLoginHistory.length < loginHistory.length && (
+                <button
+                  onClick={handleLoadMoreHistory}
+                  className="w-full py-2 bg-white hover:bg-gray-200 rounded-lg text-center"
+                >
+                  加载更多
+                </button>
+              )}
             </div>
-            {/* 更多代币项... */}
-          </div>
-        )}
-        {activeTab === "collections" && (
-          <div className={styles.collectionsList}>
-            {/* 收藏品列表 */}
-            {/* 如果没有收藏品，显示空状态提示 */}
-            <div className={styles.emptyActivity}>
-              {t("home.empty_activity", "Nothing to see yet. Swap your first token today.")}
-            </div>
-          </div>
-        )}
-        {activeTab === "activities" && (
-          <div className={styles.activityList}>
-            {/* 活动列表 */}
-            {/* 如果没有活动记录，显示空状态提示 */}
-            <div className={styles.emptyActivity}>
-              {t("home.empty_activity", "Nothing to see yet. Swap your first token today.")}
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-
-  return (
-    <div>
-      {initState == appState.init_failed ? (
-        <div className={styles.note}>
-          {t("wallet.initialization_failed", "初始化失败")}
-        </div>
-      ) : (
-        <div>
-          {isConnecting ? (
-            <DAPPNote />
           ) : (
-            <div>
-              {/* 使用组件中的 Header */}
-              <Header
-                changeNetworkSuccess={changeSuccess}
-                changeAccountSuccess={changeSuccess}
-              />
-              <div className={styles.contentPage} style={{ width: "100%" }}>
-                {/* <WagmiTest /> */}
-                <AccountInfoView />
-              </div>
-            </div>
+            <p className="text-gray-600">暂无登录历史</p>
           )}
         </div>
-      )}
+
+        {/* 应用列表 */}
+        <div className="bg-white rounded-lg shadow p-6 mb-8">
+          <h3 className="text-lg font-medium text-gray-900 mb-4">应用列表</h3>
+          {apps.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {apps.map((app) => (
+                <div
+                  key={app.id}
+                  className="bg-gray-100 rounded-lg p-4 flex items-center"
+                >
+                  <img
+                    src={
+                      app.iconUrl ||
+                      "https://images.unsplash.com/photo-1637593992672-ed85a851fdc3?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80"
+                    }
+                    alt={app.name}
+                    className="w-12 h-12 rounded-lg mr-4"
+                    onError={(e) => {
+                      e.currentTarget.src =
+                        "https://images.unsplash.com/photo-1637593992672-ed85a851fdc3?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80";
+                    }}
+                  />
+                  <div>
+                    <h4 className="font-medium">{app.name}</h4>
+                    <p className="text-sm text-gray-900">{app.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-600">暂无应用</p>
+          )}
+        </div>
+      </div>
+
+      {/* 存储订阅模态框 */}
+      <StorageSubscriptionModal
+        isOpen={showStorageModal}
+        onClose={() => setShowStorageModal(false)}
+        onSelectPlan={handleSelectStoragePlan}
+        userPoints={user?.points || 0}
+      />
+
+      {/* 积分兑换模态框 */}
+      <PointsExchangeModal
+        isOpen={showExchangeModal}
+        onClose={() => setShowExchangeModal(false)}
+        userPoints={user?.points || 0}
+        onExchange={handleExchangePoints}
+      />
     </div>
   );
-}
+};
+
+export default Dashboard;

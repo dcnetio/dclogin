@@ -88,8 +88,8 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <div className={styles.container}>
-            <StoreProvider>
-              <Locales>
+          <StoreProvider>
+            <Locales>
               {showHeader && isMobile && (
                 <NavBar
                   onBack={
@@ -109,8 +109,8 @@ export default function RootLayout({
                 <ProtectionStatus />
                 <StrictRefreshBlocker />
               </RefreshProtectionProvider>
-              </Locales>
-            </StoreProvider>
+            </Locales>
+          </StoreProvider>
         </div>
       </body>
     </html>

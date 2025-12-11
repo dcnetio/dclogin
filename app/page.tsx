@@ -10,6 +10,8 @@ import { getUserInfoWithNft } from "@/services/account";
 import { User } from "web-dc-api";
 import { Toast } from "antd-mobile";
 import ethers from "@/helpers/ethersHelper";
+import { getAuthRecordsWithNft } from "@/services/account/record";
+import { AuthRecord } from "@/types/pageType";
 interface UserInfo extends User {
   points: number;
 }
@@ -17,7 +19,7 @@ interface UserInfo extends User {
 const Dashboard = () => {
   const [userInfo, setUserInfo] = useState<UserInfo>(null);
   const [apps, setApps] = useState<any[]>([]);
-  const [loginHistory, setLoginHistory] = useState<any[]>([]);
+  const [loginHistory, setLoginHistory] = useState<AuthRecord[]>([]);
   const [displayedLoginHistory, setDisplayedLoginHistory] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -44,6 +46,17 @@ const Dashboard = () => {
     const balance = await ethers.getUserBalance(account.account);
     userInfo.points = balance;
     setUserInfo(userInfo);
+    // 获取授权记录
+    getAuthHistorys(account.nftAccount);
+  };
+
+  const getAuthHistorys = async (nftAccount: string): Promise<AuthRecord[]> => {
+    try {
+      const records = await getAuthRecordsWithNft(nftAccount);
+      setLoginHistory(records);
+    } catch (error) {
+      return [];
+    }
   };
 
   const handleLoadMoreHistory = () => {
@@ -168,7 +181,7 @@ const Dashboard = () => {
               </div>
               <p className="mt-2 text-sm text-gray-800">
                 到期区块高度:{" "}
-                {userInfo?.expireNumber ? userInfo.expireNumber : "N/A"}
+                {userInfo?.expireNumber ? userInfo.expireNumber : "-"}
               </p>
               <button
                 onClick={handleSubscribeStorage}

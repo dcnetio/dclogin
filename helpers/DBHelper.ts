@@ -9,7 +9,8 @@ const _store_chain = "walletchain";
 const _store_record = "transferrecods";
 const _store_apps = "walletapps";
 const _store_keyinfo = "walletkeyinfo";
-const dbversion = 1;
+const _auth_record = "authrecods";
+const dbversion = 2;
 // 数据库实例
 let dbInstance: IndexedDBHelper | null = null;
 
@@ -58,6 +59,15 @@ async function _initializeDatabase() {
       // key,value信息存储,主要用来存储非标准信息,连接过的网络信息(固定key:"connectedChain")与最近选择的账号信息(固定key:"chosedAccount")
       name: _store_keyinfo,
       keyPath: "key",
+    },
+    {
+      // 授权记录
+      name: _auth_record,
+      keyPath: "recordId", // 记录id，用于唯一标识授权记录
+      indexes: [
+        { name: "appId", keyPath: "appId", unique: false },
+        { name: "nftAccount", keyPath: "nftAccount", unique: false },
+      ],
     },
   ];
   const dbHelper = new IndexedDBHelper(dbname, storeConfigs, dbversion);
@@ -143,6 +153,7 @@ export const store_chain = _store_chain;
 export const store_record = _store_record;
 export const store_apps = _store_apps;
 export const store_keyinfo = _store_keyinfo;
+export const auth_record = _auth_record;
 
 export const initializeDatabase = _initializeDatabase;
 export const getAllData = _getAllData;
@@ -158,6 +169,7 @@ const databaseHelper = {
   store_record,
   store_apps,
   store_keyinfo,
+  auth_record,
   initializeDatabase,
   getAllData,
   getData,

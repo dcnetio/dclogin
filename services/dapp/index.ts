@@ -218,7 +218,7 @@ async function connectCmdHandler(
 ): Promise<{
   success: boolean;
   data: AccountInfo | null;
-  error: Error | null;
+  error?: Error | null;
 }> {
   const connectingApp = message.data;
   // 获取当前网络
@@ -238,6 +238,7 @@ async function connectCmdHandler(
   messageData = message;
   portData = port;
   let chooseAccount = await chooseStoredAccount();
+  console.log("---------chooseAccount", Date.now());
   if (!chooseAccount) {
     // 如果用户没有登录账号，判断是否有账号信息传过来，有的话直接用
     if (

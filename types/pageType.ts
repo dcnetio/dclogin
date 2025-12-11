@@ -9,7 +9,6 @@ export interface ActivityItem {
   from: string;
 }
 
-
 export declare const LocalesInfo: {
   transfer: {
     transfer: string;
@@ -19,3 +18,12 @@ export declare const LocalesInfo: {
     balance: string;
   };
 };
+
+export interface AuthRecord {
+  recordId?: string;
+  appId: string;
+  appName: string;
+  nftAccount: string;
+  account: string;
+  timestamp: number;
+}

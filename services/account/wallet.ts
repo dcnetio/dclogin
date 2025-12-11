@@ -13,6 +13,7 @@ import { getDC } from "@/components/auth/login/dc";
 import { getCurrentAccount } from "./state";
 import { getEncodePwd, setEncodePwd } from "./security";
 import { saveAccountInfo } from "@/lib/slices/walletSlice";
+import { addAuthRecord } from "./record";
 
 // 根据账号,生成签名的钱包账号对象
 async function generateWalletAccount(seedAccount: string) {
@@ -320,6 +321,17 @@ async function resPonseWallet(
     setTimeout(() => {
       port.close();
     }, 1000);
+    // 存储授权记录
+    const recordId = window.crypto.randomUUID();
+    console.log("recordId:", recordId);
+    await addAuthRecord({
+      recordId: recordId,
+      appId: connectingApp.appId,
+      appName: connectingApp.appName,
+      nftAccount: currentAccount?.nftAccount,
+      account: wallet.address,
+      timestamp: new Date().getTime(),
+    });
     // 连接记录存储到数据库
     const app = {
       appId: connectingApp?.appId,

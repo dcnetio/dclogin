@@ -81,15 +81,15 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <Script id="wallet-origin" strategy="beforeInteractive">
-          {`globalThis.walletOpenOrgin = window.location.origin;`}
+          {`globalThis.walletOpenOrigin = window.location.origin;`}
         </Script>
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <div className={styles.container}>
-            <StoreProvider>
-              <Locales>
+          <StoreProvider>
+            <Locales>
               {showHeader && isMobile && (
                 <NavBar
                   onBack={
@@ -109,8 +109,8 @@ export default function RootLayout({
                 <ProtectionStatus />
                 <StrictRefreshBlocker />
               </RefreshProtectionProvider>
-              </Locales>
-            </StoreProvider>
+            </Locales>
+          </StoreProvider>
         </div>
       </body>
     </html>

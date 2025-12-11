@@ -81,7 +81,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <Script id="wallet-origin" strategy="beforeInteractive">
-          {`globalThis.walletOpenOrgin = window.location.origin;`}
+          {`globalThis.walletOpenOrigin = window.location.origin;`}
         </Script>
       </head>
       <body

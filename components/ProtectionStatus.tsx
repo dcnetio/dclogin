@@ -1,14 +1,20 @@
 "use client";
-
+import { CloseOutline } from "antd-mobile-icons";
 import { useRefreshProtection } from "@/contexts/RefreshProtectionContext";
+import { useEffect, useState } from "react";
 
 export const ProtectionStatus = () => {
   const { enabled } = useRefreshProtection();
+  const [visible, setVisible] = useState(enabled);
 
-  if (!enabled) return null;
+  useEffect(() => {
+    setVisible(enabled);
+  }, [enabled]);
+
+  if (!visible) return null;
 
   return (
-    <div className="fixed top-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded z-50 flex items-start max-w-md shadow-lg">
+    <div className="fixed bottom-8 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded z-50 flex items-start max-w-md shadow-lg">
       <div className="flex-shrink-0">
         <svg
           className="h-5 w-5 text-red-500 mt-0.5"
@@ -31,6 +37,11 @@ export const ProtectionStatus = () => {
           刷新会影响授权，请勿刷新，如遇问题请重新打开授权。
         </p>
       </div>
+      <CloseOutline
+        className="ml-auto"
+        fontSize={20}
+        onClick={() => setVisible(false)}
+      />
     </div>
   );
 };

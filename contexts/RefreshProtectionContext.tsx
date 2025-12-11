@@ -82,6 +82,7 @@ export const RefreshProtectionProvider: React.FC<
 
     if (hasInlineProtection || hasOpenParam) {
       setEnabled(true);
+      return;
 
       // 如果内联脚本没有设置保护，则在这里设置
       if (!hasInlineProtection) {

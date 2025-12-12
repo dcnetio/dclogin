@@ -10,16 +10,14 @@ import { useRouter } from "next/navigation";
 import { Toast } from "antd-mobile";
 import { User2 } from "lucide-react";
 import { useAppSelector } from "@/lib/hooks";
-import { AccountInfo, AccountInfoPub } from "@/types/walletTypes";
+import { AccountInfo } from "@/types/walletTypes";
 const Header = () => {
   const { t } = useTranslation();
   const router = useRouter();
-  const [accountInfo, setAccountInfo] = useState<AccountInfoPub | null>(null);
+  const [accountInfo, setAccountInfo] = useState<AccountInfo | null>(null);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showAccountSwitchModal, setShowAccountSwitchModal] = useState(false);
-  const account: AccountInfoPub = useAppSelector(
-    (state) => state.wallet.account
-  );
+  const account: AccountInfo = useAppSelector((state) => state.wallet.account);
 
   const handleLogin = async () => {
     try {
@@ -62,12 +60,6 @@ const Header = () => {
     } catch (err) {
       console.error("登出失败:", err);
     }
-  };
-
-  const handleAccountSwitch = (account: any) => {
-    // 模拟切换账号
-    alert(`切换到账号: ${account.name}`);
-    // 实际应用中这里需要重新初始化DC连接
   };
 
   const handleLoginNewAccount = () => {
@@ -132,7 +124,6 @@ const Header = () => {
       <AccountSwitchModal
         isOpen={showAccountSwitchModal}
         onClose={() => setShowAccountSwitchModal(false)}
-        onAccountSwitch={handleAccountSwitch}
       />
     </div>
   );

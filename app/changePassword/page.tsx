@@ -6,13 +6,13 @@ import { useTranslation } from "react-i18next";
 import { Button, Input } from "antd-mobile";
 import { getDC } from "@/components/auth/login/dc";
 import { changePassword } from "@/services/account";
-import { AccountInfo, AccountInfoPub } from "@/types/walletTypes";
+import { AccountInfo } from "@/types/walletTypes";
 import { useAppSelector } from "@/lib/hooks";
 
 export default function ChangePassword() {
   const router = useRouter();
   const { t } = useTranslation();
-  const [accountInfo, setAccountInfo] = useState<AccountInfoPub | null>(null);
+  const [accountInfo, setAccountInfo] = useState<AccountInfo | null>(null);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isMobile, setIsMobile] = useState(true);
@@ -20,9 +20,7 @@ export default function ChangePassword() {
   const [safecode, setSafecode] = useState("000000");
   const [showSafecode, setShowSafecode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const account: AccountInfoPub = useAppSelector(
-    (state) => state.wallet.account
-  );
+  const account: AccountInfo = useAppSelector((state) => state.wallet.account);
 
   useEffect(() => {
     const checkMobile = () => {

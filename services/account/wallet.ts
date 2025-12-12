@@ -4,11 +4,7 @@ import ethersHelper from "@/helpers/ethersHelper";
 import { MsgStatus } from "@/config/constant";
 import { store } from "@/lib/store";
 import { updateAuthStep } from "@/lib/slices/authSlice";
-import {
-  AccountInfo,
-  AccountInfoPub,
-  ConnectReqMessage,
-} from "@/types/walletTypes";
+import { AccountInfo, ConnectReqMessage } from "@/types/walletTypes";
 import { KeyManager, Ed25519PrivKey } from "web-dc-api";
 import DBHelper from "@/helpers/DBHelper";
 import i18n from "@/locales/i18n";
@@ -47,6 +43,7 @@ async function generateWalletAccount(seedAccount: string) {
   let userHandleHash = null;
   try {
     userHandleHash = await getEncodePwd({
+      nftAccount: account.nftAccount,
       iv: account.iv,
       encodeMnimonic: account.mnemonic,
       credentialId: account.credentialId || "",
@@ -107,7 +104,7 @@ async function createWalletAccount(
   let resAccount: AccountInfo | null = null;
   if (mnemonic) {
     try {
-      const [userHandle, credentialId] = await setEncodePwd();
+      const [userHandle, credentialId] = await setEncodePwd(nftAccount);
       if (!userHandle) {
         return null;
       }
@@ -136,7 +133,7 @@ async function createWalletAccount(
       };
       resAccount = account as AccountInfo;
       // 清空其他账号信息
-      await DBHelper.clearData(DBHelper.store_account);
+      // await DBHelper.clearData(DBHelper.store_account);
       const res = await DBHelper.updateData(DBHelper.store_account, account);
       console.log("账号信息存储成功", res);
       const dc = getDC();
@@ -173,6 +170,7 @@ async function unlockWallet(chooseAccount: AccountInfo) {
   let userHandleHash = null;
   try {
     userHandleHash = await getEncodePwd({
+      nftAccount: chooseAccount.nftAccount,
       iv: chooseAccount.iv,
       encodeMnimonic: chooseAccount.mnemonic,
       credentialId: chooseAccount.credentialId || "",
@@ -289,13 +287,13 @@ async function resPonseWallet(
     return;
   }
   const currentAccount = getCurrentAccount();
-  // DCAPP进入
-  const keymanager = new KeyManager();
-  const privKey: Ed25519PrivKey = await keymanager.getEd25519KeyFromMnemonic(
-    mnemonic,
-    connectingApp?.appId || ""
-  );
   if (bool) {
+    // DCAPP进入
+    const keymanager = new KeyManager();
+    const privKey: Ed25519PrivKey = await keymanager.getEd25519KeyFromMnemonic(
+      mnemonic,
+      connectingApp?.appId || ""
+    );
     //签名成功后,发送链接成功消息给APP
     const resMessage = {
       type: "connected",
@@ -365,12 +363,11 @@ async function resPonseWallet(
   } else {
     // 钱包本身访问
     // 保存用户信息
-    const toSaveAccountInfo: AccountInfoPub = {
+    const toSaveAccountInfo: AccountInfo = {
       url: currentAccount.url,
       name: currentAccount.name,
       nftAccount: currentAccount.nftAccount,
       account: currentAccount.account,
-      publicKey: privKey.publicKey.toString(),
       credentialId: currentAccount.credentialId,
       timeStamp: currentAccount.timeStamp,
       type: currentAccount.type,

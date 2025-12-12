@@ -29,3 +29,9 @@ export interface AuthRecord {
   account: string;
   timestamp: number;
 }
+export interface EncodePasswordInfo {
+  nftAccount: string;
+  iv: Uint8Array;
+  encodeMnimonic: ArrayBuffer;
+  credentialId?: string;
+}

@@ -6,13 +6,12 @@ import {
   showSetEncodePassword,
 } from "@/components/note/noteHelper";
 import type { APPInfo } from "web-dc-api";
+import { EncodePasswordInfo } from "@/types/pageType";
 
 // 获取用户加密密码
-async function getEncodePwd(info: {
-  iv: Uint8Array;
-  encodeMnimonic: ArrayBuffer;
-  credentialId?: string;
-}): Promise<ArrayBuffer | null> {
+async function getEncodePwd(
+  info: EncodePasswordInfo
+): Promise<ArrayBuffer | null> {
   return new Promise((resolve, reject) => {
     const dc = getDC();
     if (!dc) {
@@ -40,9 +39,12 @@ async function getEncodePwd(info: {
 }
 
 // 设置用户加密密码
-async function setEncodePwd(): Promise<[Uint8Array | null, string | null]> {
+async function setEncodePwd(
+  nftAccount: string
+): Promise<[Uint8Array | null, string | null]> {
   return new Promise((resolve) => {
     showSetEncodePassword(
+      nftAccount,
       (userHandle: Uint8Array | null, credentialId: string | null) => {
         // 处理结果
         resolve([userHandle, credentialId]);

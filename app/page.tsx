@@ -6,13 +6,13 @@ import StorageSubscriptionModal from "@/components/modals/StorageSubscriptionMod
 import { getDC } from "@/components/auth/login/dc";
 import { APPThemeConfig } from "@/config/define";
 import { useAppSelector } from "@/lib/hooks";
-import { getUserInfoWithAccount } from "@/services/account";
+import { getUserInfoWithNft } from "@/services/account";
 import { User } from "web-dc-api";
 import { Toast } from "antd-mobile";
 import ethers from "@/helpers/ethersHelper";
 import { getAuthRecordsWithAccount } from "@/services/account/record";
 import { AuthRecord } from "@/types/pageType";
-import { AccountInfoPub } from "@/types/walletTypes";
+import { AccountInfo } from "@/types/walletTypes";
 interface UserInfo extends User {
   points: number;
 }
@@ -28,16 +28,14 @@ const Dashboard = () => {
   const [showExchangeModal, setShowExchangeModal] = useState(false);
   const [showStorageModal, setShowStorageModal] = useState(false);
 
-  const account: AccountInfoPub = useAppSelector(
-    (state) => state.wallet.account
-  );
+  const account: AccountInfo = useAppSelector((state) => state.wallet.account);
 
   const HISTORY_PAGE_SIZE = 3;
   // 获取用户信息的逻辑
   const getUserInfo = async () => {
     // setIsLoading(true);
     // 获取用户信息
-    const [userInfo, error] = await getUserInfoWithAccount(account.publicKey);
+    const [userInfo, error] = await getUserInfoWithNft(account.nftAccount);
     if (error) {
       Toast.show({
         content: error.message || "获取用户信息失败",

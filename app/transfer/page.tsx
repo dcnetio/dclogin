@@ -2,7 +2,7 @@
 import { Button, Input } from "antd-mobile";
 import styles from "./page.module.css";
 import { useEffect, useState } from "react";
-import { AccountInfo, AccountInfoPub, ChainInfo } from "@/types/walletTypes";
+import { AccountInfo, ChainInfo } from "@/types/walletTypes";
 import ethers from "@/helpers/ethersHelper";
 import { getCurrentNetwork } from "@/app/index";
 import { useRouter } from "next/navigation";
@@ -13,14 +13,12 @@ export default function Transfer() {
   const router = useRouter();
   const { t } = useTranslation();
   const [address, setAddress] = useState("");
-  const [accountInfo, setAccountInfo] = useState<AccountInfoPub>();
+  const [accountInfo, setAccountInfo] = useState<AccountInfo>();
   const [balance, setBalance] = useState("0");
   const [amount, setAmount] = useState("");
   const [currencySymbol, setCurrencySymbol] = useState("");
 
-  const account: AccountInfoPub = useAppSelector(
-    (state) => state.wallet.account
-  );
+  const account: AccountInfo = useAppSelector((state) => state.wallet.account);
 
   const gotoConfirm = () => {
     if (!balance || !amount) {

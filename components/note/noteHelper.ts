@@ -16,6 +16,7 @@ import NavigationService from "@/lib/navigation";
 import { store } from "@/lib/store";
 import { updateAuthStep } from "@/lib/slices/authSlice";
 import { authenticateWithPasskey } from "@/services/account";
+import { EncodePasswordInfo } from "@/types/pageType";
 export const showAddDAPPNote = (info: APPInfo, confirmCallback: () => void) => {
   const containerId = "add-dapp-note-container";
   // 先检查是否已存在，如果存在则移除
@@ -70,7 +71,7 @@ export const showSignatureDAPPNote = (
 };
 
 export const showEncodePassword = (
-  info: { iv: Uint8Array; encodeMnimonic: ArrayBuffer; credentialId?: string },
+  info: EncodePasswordInfo,
   appInfo: APPInfo,
   confirmCallback: (userHandleHash: ArrayBuffer | null) => void,
   failBack: () => void
@@ -88,6 +89,7 @@ export const showEncodePassword = (
   root.render(
     React.createElement(EncodePassword, {
       type: EncodePasswordType.VERIFY,
+      nftAccount: info.nftAccount,
       appInfo,
       cancalFun: () => {
         document.body.removeChild(container);
@@ -162,6 +164,7 @@ export const showEncodePassword = (
 };
 
 export const showSetEncodePassword = (
+  nftAccount: string,
   confirmCallback: (
     userHandle: Uint8Array | null,
     credentialId: string | null
@@ -180,6 +183,7 @@ export const showSetEncodePassword = (
   root.render(
     React.createElement(EncodePassword, {
       type: EncodePasswordType.SET,
+      nftAccount: nftAccount,
       appInfo: {
         appId: "",
         appName: "",

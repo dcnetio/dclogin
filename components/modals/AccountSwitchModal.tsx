@@ -1,11 +1,18 @@
 import React, { useState, useEffect, useCallback } from "react";
 
 import { AddOutline, CloseOutline } from "antd-mobile-icons";
-import { AccountInfo, AccountInfoPub } from "@/types/walletTypes";
-import { getAllAccounts } from "@/services/account";
+import { AccountInfo } from "@/types/walletTypes";
+import {
+  changeAccount,
+  deleteAccount,
+  getAllAccounts,
+} from "@/services/account";
 import { UserCircleIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/lib/hooks";
+import { saveAccountInfo } from "@/lib/slices/walletSlice";
+import { store } from "@/lib/store";
+import { useTranslation } from "react-i18next";
 interface UserInfo extends AccountInfo {
   isCurrent: boolean;
 }
@@ -13,20 +20,17 @@ interface UserInfo extends AccountInfo {
 interface AccountSwitchModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAccountSwitch: (account: AccountInfo) => void;
 }
 
 const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
   isOpen,
   onClose,
-  onAccountSwitch,
 }) => {
+  const { t } = useTranslation();
   const router = useRouter();
   const [accounts, setAccounts] = useState<UserInfo[]>([]);
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
-  const account: AccountInfoPub = useAppSelector(
-    (state) => state.wallet.account
-  );
+  const account: AccountInfo = useAppSelector((state) => state.wallet.account);
 
   const getAccounts = useCallback(async () => {
     const data = (await getAllAccounts()) || [];
@@ -34,28 +38,48 @@ const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
       // 确保当前账号被标记
       const updatedAccounts = data.map((acc) => ({
         ...acc,
-        isCurrent: acc.nftAccount === (account?.nftAccount || ""),
+        isCurrent: acc.account === (account?.account || ""),
       }));
       setAccounts(updatedAccounts);
     } else {
       setAccounts([]);
     }
-  }, [account?.nftAccount]);
+  }, [account?.account]);
   // 切换账号
-  const handleSwitchAccount = (account: UserInfo) => {
+  const handleSwitchAccount = async (account: UserInfo) => {
     if (account.isCurrent) return;
+    const info: AccountInfo = accounts.find(
+      (acc) => acc.account === account.account
+    );
+    // 设置当前用户为新的
+    const bool = await changeAccount(info);
+    if (!bool) {
+      window.showToast({
+        content: t("account.switch_failed"),
+        position: "bottom",
+      });
+      return;
+    }
 
     // 更新本地存储中的当前账号标记
     const updatedAccounts = accounts.map((acc) => ({
       ...acc,
-      isCurrent: acc.nftAccount === account.nftAccount,
+      isCurrent: acc.account === account.account,
     }));
 
     setAccounts(updatedAccounts);
-    localStorage.setItem("dc_accounts", JSON.stringify(updatedAccounts));
 
-    // 通知父组件切换账号
-    onAccountSwitch(account);
+    // 保存用户信息
+    const toSaveAccountInfo: AccountInfo = {
+      url: info.url,
+      name: info.name,
+      nftAccount: info.nftAccount,
+      account: info.account,
+      credentialId: info.credentialId,
+      timeStamp: info.timeStamp,
+      type: info.type,
+    };
+    store.dispatch(saveAccountInfo(toSaveAccountInfo));
     onClose();
   };
 
@@ -67,11 +91,9 @@ const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
   };
 
   // 删除账号
-  const handleDeleteAccount = (nftAccount: string) => {
+  const handleDeleteAccount = async (account: string) => {
     // 不能删除当前账号
-    const accountToDelete = accounts.find(
-      (acc) => acc.nftAccount === nftAccount
-    );
+    const accountToDelete = accounts.find((acc) => acc.account === account);
     if (accountToDelete?.isCurrent) {
       alert("不能删除当前账号");
       return;
@@ -83,15 +105,15 @@ const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
       return;
     }
 
-    setIsDeleting(nftAccount);
+    setIsDeleting(account);
+
+    // 删除数据库
+    await deleteAccount(account);
 
     // 模拟删除操作
     setTimeout(() => {
-      const updatedAccounts = accounts.filter(
-        (acc) => acc.nftAccount !== nftAccount
-      );
+      const updatedAccounts = accounts.filter((acc) => acc.account !== account);
       setAccounts(updatedAccounts);
-      localStorage.setItem("dc_accounts", JSON.stringify(updatedAccounts));
       setIsDeleting(null);
     }, 500);
   };
@@ -134,7 +156,7 @@ const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
           <div className="space-y-3">
             {accounts.map((item) => (
               <div
-                key={item.nftAccount}
+                key={item.account}
                 className={`flex items-center justify-between p-3 rounded-lg ${
                   item.isCurrent
                     ? "bg-blue-800/50 border border-blue-200 text-white"
@@ -171,11 +193,11 @@ const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
 
                 {!item.isCurrent && (
                   <button
-                    onClick={() => handleDeleteAccount(item.nftAccount)}
-                    disabled={isDeleting === item.nftAccount}
+                    onClick={() => handleDeleteAccount(item.account)}
+                    disabled={isDeleting === item.account}
                     className="ml-2 p-2 text-red-400 hover:text-red-300 hover:bg-red-900/30 rounded-full"
                   >
-                    {isDeleting === item.nftAccount ? (
+                    {isDeleting === item.account ? (
                       <svg
                         className="animate-spin h-5 w-5"
                         xmlns="http://www.w3.org/2000/svg"

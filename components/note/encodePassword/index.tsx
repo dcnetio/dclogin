@@ -14,6 +14,7 @@ import { APPInfo } from "web-dc-api";
 
 interface EncodePasswordProps {
   type: number; // 类型，1设置，2验证
+  nftAccount: string;
   appInfo: APPInfo;
   cancalFun?: () => void;
   confirmFun: (password: string) => void;
@@ -24,6 +25,7 @@ interface EncodePasswordProps {
 export default function EncodePassword(props: EncodePasswordProps) {
   const {
     type,
+    nftAccount,
     appInfo,
     cancalFun,
     confirmFun,
@@ -123,7 +125,7 @@ export default function EncodePassword(props: EncodePasswordProps) {
           {/* 明确设置输入框样式防止不可见 */}
           <div className={styles.inputWrapper}>
             <Input
-              placeholder="请输入密码"
+              placeholder={`请输入${nftAccount}账号的解密密码`}
               value={password}
               onChange={setPassword}
               onEnterPress={gotoConfirm}

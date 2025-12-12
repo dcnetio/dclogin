@@ -2,7 +2,7 @@
 import DBHelper from "@/helpers/DBHelper";
 import { AccountInfo } from "@/types/walletTypes";
 import i18n from "@/locales/i18n";
-import { createWalletAccount } from "./wallet";
+import { createWalletAccount, generateWalletAccount } from "./wallet";
 import { getCurrentAccount, setCurrentAccount } from "./state";
 
 // 获取已有的账号
@@ -23,16 +23,23 @@ async function chooseStoredAccount(): Promise<AccountInfo | null> {
   );
   if (accountinfo && accountinfo.value) {
     // 更新当前账号
+    let index = accounts.findIndex(
+      (item) => item.account === accountinfo.value.account
+    );
+    if (index === -1) {
+      index = accounts.length - 1;
+    }
     await DBHelper.updateData(DBHelper.store_keyinfo, {
       key: "choosedAccount",
-      value: accounts[accounts.length - 1],
+      value: accounts[index],
     });
-  } else {
-    await DBHelper.addData(DBHelper.store_keyinfo, {
-      key: "choosedAccount",
-      value: accounts[accounts.length - 1],
-    });
+    setCurrentAccount(accounts[index]);
+    return accounts[index];
   }
+  await DBHelper.addData(DBHelper.store_keyinfo, {
+    key: "choosedAccount",
+    value: accounts[accounts.length - 1],
+  });
   const account = accounts[accounts.length - 1];
   setCurrentAccount(account);
   return account;
@@ -91,10 +98,37 @@ async function createAccount(
   return account;
 }
 
+async function changeAccount(info: AccountInfo): Promise<boolean> {
+  // 需要解密判断
+  const wallet = await generateWalletAccount(info.account);
+  if (!wallet) {
+    return false;
+  }
+  await DBHelper.updateData(DBHelper.store_keyinfo, {
+    key: "choosedAccount",
+    value: info,
+  });
+  setCurrentAccount(info);
+  return true;
+}
+
 // 获取所有的账号
 async function getAllAccounts() {
   const accounts = await DBHelper.getAllData(DBHelper.store_account);
   return accounts;
 }
 
-export { chooseStoredAccount, createAccount, getAllAccounts };
+/**
+ * 删除账号
+ * @param account
+ */
+async function deleteAccount(account: string) {
+  await DBHelper.deleteData(DBHelper.store_account, account);
+}
+export {
+  chooseStoredAccount,
+  createAccount,
+  changeAccount,
+  getAllAccounts,
+  deleteAccount,
+};

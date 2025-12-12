@@ -1,8 +1,8 @@
-import { AccountInfoPub, ChainInfo } from "@/types/walletTypes";
+import { AccountInfo, ChainInfo } from "@/types/walletTypes";
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  account: {} as AccountInfoPub,
+  account: {} as AccountInfo,
   network: {} as ChainInfo,
 };
 

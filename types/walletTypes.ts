@@ -20,6 +20,10 @@ export type AccountInfo = {
   type: string;
 };
 
+export interface AccountInfoPub extends AccountInfo {
+  publicKey: string;
+}
+
 export interface TransactionRecord {
   chainId: number;
   hash: string;

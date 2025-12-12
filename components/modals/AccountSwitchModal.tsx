@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useCallback } from "react";
 
 import { AddOutline, CloseOutline } from "antd-mobile-icons";
-import { AccountInfo } from "@/types/walletTypes";
+import { AccountInfo, AccountInfoPub } from "@/types/walletTypes";
 import { getAllAccounts } from "@/services/account";
 import { UserCircleIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/lib/hooks";
-interface Account extends AccountInfo {
+interface UserInfo extends AccountInfo {
   isCurrent: boolean;
 }
 
@@ -22,9 +22,11 @@ const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
   onAccountSwitch,
 }) => {
   const router = useRouter();
-  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [accounts, setAccounts] = useState<UserInfo[]>([]);
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
-  const account = useAppSelector((state) => state.wallet.account);
+  const account: AccountInfoPub = useAppSelector(
+    (state) => state.wallet.account
+  );
 
   const getAccounts = useCallback(async () => {
     const data = (await getAllAccounts()) || [];
@@ -40,7 +42,7 @@ const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
     }
   }, [account?.nftAccount]);
   // 切换账号
-  const handleSwitchAccount = (account: Account) => {
+  const handleSwitchAccount = (account: UserInfo) => {
     if (account.isCurrent) return;
 
     // 更新本地存储中的当前账号标记
@@ -130,50 +132,50 @@ const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
           </div>
 
           <div className="space-y-3">
-            {accounts.map((account) => (
+            {accounts.map((item) => (
               <div
-                key={account.nftAccount}
+                key={item.nftAccount}
                 className={`flex items-center justify-between p-3 rounded-lg ${
-                  account.isCurrent
+                  item.isCurrent
                     ? "bg-blue-800/50 border border-blue-200 text-white"
                     : "bg-gray-100 hover:bg-gray-200"
                 }`}
               >
                 <div
                   className="flex items-center cursor-pointer flex-1"
-                  onClick={() => handleSwitchAccount(account)}
+                  onClick={() => handleSwitchAccount(item)}
                 >
                   <UserCircleIcon className="w-6 h-6 mr-3" size={30} />
                   <div className="flex-1 min-w-0">
                     <p className="font-medium truncate">
-                      {account.account
-                        ? `${account.account.slice(0, 10)}
+                      {item.account
+                        ? `${item.account.slice(0, 10)}
                           ...
-                          ${account.account.slice(-8)}`
+                          ${item.account.slice(-8)}`
                         : "未知"}
                     </p>
                     <p
                       className={`text-xs  truncate ${
-                        account.isCurrent ? "text-white" : "text-gray-800"
+                        item.isCurrent ? "text-white" : "text-gray-800"
                       }`}
                     >
-                      {account.nftAccount ? account.nftAccount : "未知"}
+                      {item.nftAccount ? item.nftAccount : "未知"}
                     </p>
                   </div>
-                  {account.isCurrent && (
+                  {item.isCurrent && (
                     <span className="ml-2 bg-green-600/90 text-white text-xs px-2 py-1 rounded">
                       当前
                     </span>
                   )}
                 </div>
 
-                {!account.isCurrent && (
+                {!item.isCurrent && (
                   <button
-                    onClick={() => handleDeleteAccount(account.nftAccount)}
-                    disabled={isDeleting === account.nftAccount}
+                    onClick={() => handleDeleteAccount(item.nftAccount)}
+                    disabled={isDeleting === item.nftAccount}
                     className="ml-2 p-2 text-red-400 hover:text-red-300 hover:bg-red-900/30 rounded-full"
                   >
-                    {isDeleting === account.nftAccount ? (
+                    {isDeleting === item.nftAccount ? (
                       <svg
                         className="animate-spin h-5 w-5"
                         xmlns="http://www.w3.org/2000/svg"

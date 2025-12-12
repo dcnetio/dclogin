@@ -14,18 +14,18 @@ const addAuthRecord = async (record: AuthRecord): Promise<boolean> => {
   }
 };
 
-const getAuthRecordsWithNft = async (
-  nftAccount: string = ""
+const getAuthRecordsWithAccount = async (
+  account: string = ""
 ): Promise<AuthRecord[]> => {
   try {
-    if (nftAccount === "") {
+    if (account === "") {
       const records = await DBHelper.getAllData(DBHelper.auth_record);
       return records;
     }
     const records = await DBHelper.queryData(
       DBHelper.auth_record,
-      "nftAccount",
-      nftAccount
+      "account",
+      account
     );
     return records;
   } catch (error) {
@@ -33,4 +33,4 @@ const getAuthRecordsWithNft = async (
   }
 };
 
-export { addAuthRecord, getAuthRecordsWithNft };
+export { addAuthRecord, getAuthRecordsWithAccount };

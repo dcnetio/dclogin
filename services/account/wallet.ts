@@ -4,8 +4,12 @@ import ethersHelper from "@/helpers/ethersHelper";
 import { MsgStatus } from "@/config/constant";
 import { store } from "@/lib/store";
 import { updateAuthStep } from "@/lib/slices/authSlice";
-import { AccountInfo, ConnectReqMessage } from "@/types/walletTypes";
-import { KeyManager, Ed25519PrivKey, Account } from "web-dc-api";
+import {
+  AccountInfo,
+  AccountInfoPub,
+  ConnectReqMessage,
+} from "@/types/walletTypes";
+import { KeyManager, Ed25519PrivKey } from "web-dc-api";
 import DBHelper from "@/helpers/DBHelper";
 import i18n from "@/locales/i18n";
 import { getCurrentNetwork } from "../network";
@@ -285,13 +289,13 @@ async function resPonseWallet(
     return;
   }
   const currentAccount = getCurrentAccount();
+  // DCAPP进入
+  const keymanager = new KeyManager();
+  const privKey: Ed25519PrivKey = await keymanager.getEd25519KeyFromMnemonic(
+    mnemonic,
+    connectingApp?.appId || ""
+  );
   if (bool) {
-    // DCAPP进入
-    const keymanager = new KeyManager();
-    const privKey: Ed25519PrivKey = await keymanager.getEd25519KeyFromMnemonic(
-      mnemonic,
-      connectingApp?.appId || ""
-    );
     //签名成功后,发送链接成功消息给APP
     const resMessage = {
       type: "connected",
@@ -328,8 +332,10 @@ async function resPonseWallet(
       recordId: recordId,
       appId: connectingApp.appId,
       appName: connectingApp.appName,
+      appIcon: connectingApp.appIcon,
+      appUrl: connectingApp.appUrl,
       nftAccount: currentAccount?.nftAccount,
-      account: wallet.address,
+      account: currentAccount?.account,
       timestamp: new Date().getTime(),
     });
     // 连接记录存储到数据库
@@ -359,11 +365,12 @@ async function resPonseWallet(
   } else {
     // 钱包本身访问
     // 保存用户信息
-    const toSaveAccountInfo = {
+    const toSaveAccountInfo: AccountInfoPub = {
       url: currentAccount.url,
       name: currentAccount.name,
       nftAccount: currentAccount.nftAccount,
       account: currentAccount.account,
+      publicKey: privKey.publicKey.toString(),
       credentialId: currentAccount.credentialId,
       timeStamp: currentAccount.timeStamp,
       type: currentAccount.type,

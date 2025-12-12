@@ -7,7 +7,7 @@ import { updateAppInfo, updateAuthStep } from "@/lib/slices/authSlice";
 import { getCurrentChain } from "@/services/network";
 import { applyFreeSpace } from "@/app/tools/subSpace";
 
-import type { Account, Ed25519PrivKey } from "web-dc-api";
+import type { Ed25519PrivKey } from "web-dc-api";
 import { KeyManager } from "web-dc-api";
 
 import { showSignatureDAPPNote } from "@/components/note/noteHelper";
@@ -537,7 +537,7 @@ async function createAccountWithLogin(
 ): Promise<{
   success: boolean;
   data: AccountInfo | null;
-  error: Error | null;
+  error?: Error | null;
 }> {
   try {
     const dc = getDC();

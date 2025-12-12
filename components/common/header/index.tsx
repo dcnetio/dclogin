@@ -10,14 +10,16 @@ import { useRouter } from "next/navigation";
 import { Toast } from "antd-mobile";
 import { User2 } from "lucide-react";
 import { useAppSelector } from "@/lib/hooks";
-import { AccountInfo } from "@/types/walletTypes";
+import { AccountInfo, AccountInfoPub } from "@/types/walletTypes";
 const Header = () => {
   const { t } = useTranslation();
   const router = useRouter();
-  const [accountInfo, setAccountInfo] = useState<AccountInfo | null>(null);
+  const [accountInfo, setAccountInfo] = useState<AccountInfoPub | null>(null);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showAccountSwitchModal, setShowAccountSwitchModal] = useState(false);
-  const account = useAppSelector((state) => state.wallet.account);
+  const account: AccountInfoPub = useAppSelector(
+    (state) => state.wallet.account
+  );
 
   const handleLogin = async () => {
     try {

@@ -112,17 +112,17 @@ async function login(): Promise<[AccountInfo | null, Error | null]> {
 }
 
 /**
- * 通过nftAccount 获取用户信息
- * @param nftAccount
+ * 通过account 获取用户信息
+ * @param account
  * @returns
  */
-async function getUserInfoWithNft(nftAccount: string) {
+async function getUserInfoWithAccount(account: string) {
   const dc = getDC();
   if (!dc) {
     return [false, new Error(i18n.t("account.auth_no_module"))];
   }
-  const [userInfo, err] = await dc.auth?.getUserInfoWithNft(nftAccount);
+  const [userInfo, err] = await dc.auth?.getUserInfoWithAccount(account);
   return [userInfo, err];
 }
 
-export { bindNFTAccount, changePassword, login, getUserInfoWithNft };
+export { bindNFTAccount, changePassword, login, getUserInfoWithAccount };

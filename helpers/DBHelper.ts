@@ -10,7 +10,7 @@ const _store_record = "transferrecods";
 const _store_apps = "walletapps";
 const _store_keyinfo = "walletkeyinfo";
 const _auth_record = "authrecods";
-const dbversion = 2;
+const dbversion = 7;
 // 数据库实例
 let dbInstance: IndexedDBHelper | null = null;
 
@@ -67,6 +67,7 @@ async function _initializeDatabase() {
       indexes: [
         { name: "appId", keyPath: "appId", unique: false },
         { name: "nftAccount", keyPath: "nftAccount", unique: false },
+        { name: "account", keyPath: "account", unique: false },
       ],
     },
   ];

@@ -23,6 +23,8 @@ export interface AuthRecord {
   recordId?: string;
   appId: string;
   appName: string;
+  appIcon: string;
+  appUrl: string;
   nftAccount: string;
   account: string;
   timestamp: number;

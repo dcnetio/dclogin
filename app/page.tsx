@@ -6,12 +6,13 @@ import StorageSubscriptionModal from "@/components/modals/StorageSubscriptionMod
 import { getDC } from "@/components/auth/login/dc";
 import { APPThemeConfig } from "@/config/define";
 import { useAppSelector } from "@/lib/hooks";
-import { getUserInfoWithNft } from "@/services/account";
+import { getUserInfoWithAccount } from "@/services/account";
 import { User } from "web-dc-api";
 import { Toast } from "antd-mobile";
 import ethers from "@/helpers/ethersHelper";
-import { getAuthRecordsWithNft } from "@/services/account/record";
+import { getAuthRecordsWithAccount } from "@/services/account/record";
 import { AuthRecord } from "@/types/pageType";
+import { AccountInfoPub } from "@/types/walletTypes";
 interface UserInfo extends User {
   points: number;
 }
@@ -27,14 +28,16 @@ const Dashboard = () => {
   const [showExchangeModal, setShowExchangeModal] = useState(false);
   const [showStorageModal, setShowStorageModal] = useState(false);
 
-  const account = useAppSelector((state) => state.wallet.account);
+  const account: AccountInfoPub = useAppSelector(
+    (state) => state.wallet.account
+  );
 
   const HISTORY_PAGE_SIZE = 3;
   // 获取用户信息的逻辑
   const getUserInfo = async () => {
     // setIsLoading(true);
     // 获取用户信息
-    const [userInfo, error] = await getUserInfoWithNft(account.nftAccount);
+    const [userInfo, error] = await getUserInfoWithAccount(account.publicKey);
     if (error) {
       Toast.show({
         content: error.message || "获取用户信息失败",
@@ -47,12 +50,13 @@ const Dashboard = () => {
     userInfo.points = balance;
     setUserInfo(userInfo);
     // 获取授权记录
-    getAuthHistorys(account.nftAccount);
+    getAuthHistorys(account.account);
   };
 
-  const getAuthHistorys = async (nftAccount: string): Promise<AuthRecord[]> => {
+  const getAuthHistorys = async (accountStr: string): Promise<AuthRecord[]> => {
     try {
-      const records = await getAuthRecordsWithNft(nftAccount);
+      console.log("getAuthHistorys accountStr", accountStr);
+      const records = await getAuthRecordsWithAccount(accountStr);
       setLoginHistory(records);
     } catch (error) {
       return [];
@@ -239,15 +243,15 @@ const Dashboard = () => {
           <h3 className="text-lg font-medium text-gray-900 mb-4">登录历史</h3>
           {displayedLoginHistory.length > 0 ? (
             <div className="space-y-3">
-              {displayedLoginHistory.map((history) => (
-                <div key={history.id} className="bg-white rounded-lg p-4">
+              {displayedLoginHistory.map((item: AuthRecord) => (
+                <div key={item.recordId} className="bg-white rounded-lg p-4">
                   <div className="flex justify-between items-center">
                     <div>
-                      <h4 className="font-medium">{history.appName}</h4>
-                      <p className="text-sm text-gray-900">{history.domain}</p>
+                      <h4 className="font-medium">{item.appName}</h4>
+                      <p className="text-sm text-gray-900">{item.appUrl}</p>
                     </div>
                     <div className="text-sm text-gray-900">
-                      {new Date(history.timestamp).toLocaleString()}
+                      {new Date(item.timestamp).toLocaleString()}
                     </div>
                   </div>
                 </div>

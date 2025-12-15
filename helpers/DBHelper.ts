@@ -3,14 +3,14 @@ import IndexedDBHelper from "./indexedDBHelper";
 /**
  * DB
  */
-const dbname = "dcwallet";
-const _store_account = "walletaccount";
-const _store_chain = "walletchain";
-const _store_record = "transferrecods";
-const _store_apps = "walletapps";
-const _store_keyinfo = "walletkeyinfo";
-const _auth_record = "authrecods";
-const dbversion = 7;
+const dbname = "dc_wallet";
+const _store_account = "wallet_account";
+const _store_chain = "wallet_chain";
+const _store_record = "transfer_records";
+const _store_apps = "wallet_apps";
+const _store_keyinfo = "wallet_key_info";
+// const _auth_record = "auth_records";
+const dbversion = 8;
 // 数据库实例
 let dbInstance: IndexedDBHelper | null = null;
 
@@ -60,16 +60,16 @@ async function _initializeDatabase() {
       name: _store_keyinfo,
       keyPath: "key",
     },
-    {
-      // 授权记录
-      name: _auth_record,
-      keyPath: "recordId", // 记录id，用于唯一标识授权记录
-      indexes: [
-        { name: "appId", keyPath: "appId", unique: false },
-        { name: "nftAccount", keyPath: "nftAccount", unique: false },
-        { name: "account", keyPath: "account", unique: false },
-      ],
-    },
+    // {
+    //   // 授权记录
+    //   name: _auth_record,
+    //   keyPath: "recordId", // 记录id，用于唯一标识授权记录
+    //   indexes: [
+    //     { name: "appId", keyPath: "appId", unique: false },
+    //     { name: "nftAccount", keyPath: "nftAccount", unique: false },
+    //     { name: "account", keyPath: "account", unique: false },
+    //   ],
+    // },
   ];
   const dbHelper = new IndexedDBHelper(dbname, storeConfigs, dbversion);
 
@@ -154,7 +154,7 @@ export const store_chain = _store_chain;
 export const store_record = _store_record;
 export const store_apps = _store_apps;
 export const store_keyinfo = _store_keyinfo;
-export const auth_record = _auth_record;
+// export const auth_record = _auth_record;
 
 export const initializeDatabase = _initializeDatabase;
 export const getAllData = _getAllData;
@@ -170,7 +170,7 @@ const databaseHelper = {
   store_record,
   store_apps,
   store_keyinfo,
-  auth_record,
+  // auth_record,
   initializeDatabase,
   getAllData,
   getData,

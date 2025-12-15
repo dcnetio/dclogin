@@ -13,11 +13,15 @@ import ethers from "@/helpers/ethersHelper";
 import { getAuthRecordsWithAccount } from "@/services/account/record";
 import { AuthRecord } from "@/types/pageType";
 import { AccountInfo } from "@/types/walletTypes";
+import { useSearchParams } from "next/navigation";
+import DAPPNote from "@/components/note/DAPPNote";
 interface UserInfo extends User {
   points: number;
 }
 
 const Dashboard = () => {
+  const searchParams = useSearchParams();
+  const origin = searchParams.get("origin");
   const [userInfo, setUserInfo] = useState<UserInfo>(null);
   const [apps, setApps] = useState<any[]>([]);
   const [loginHistory, setLoginHistory] = useState<AuthRecord[]>([]);
@@ -57,6 +61,11 @@ const Dashboard = () => {
       const records = await getAuthRecordsWithAccount(accountStr);
       setLoginHistory(records);
     } catch (error) {
+      console.log("getAuthHistorys error", error);
+      Toast.show({
+        content: error.message || "获取授权记录失败",
+        position: "bottom",
+      });
       return [];
     }
   };
@@ -120,6 +129,13 @@ const Dashboard = () => {
     setDisplayedLoginHistory(loginHistory.slice(startIndex, endIndex));
   }, [loginHistory, historyPage]);
 
+  if (!!origin && (!account || !account.nftAccount)) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <DAPPNote />
+      </div>
+    );
+  }
   if (error && !userInfo) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">

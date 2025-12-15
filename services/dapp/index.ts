@@ -32,6 +32,7 @@ import {
   AccountInfo,
 } from "@/types/walletTypes";
 import { checkDCInitialized, getDC } from "@/components/auth/login/dc";
+import { initUserDB } from "../account/threadDB";
 
 // 获取查询字符串
 let queryString = "";
@@ -269,6 +270,18 @@ async function connectCmdHandler(
   if (dc) {
     if (connectingApp && connectingApp.appId) {
       await dc.auth.generateAppAccount(connectingApp.appId, mnemonic);
+    }
+    // 获取用户信息，重新设置公钥
+    const keymanager = new KeyManager();
+    const privKey: Ed25519PrivKey = await keymanager.getEd25519KeyFromMnemonic(
+      mnemonic,
+      connectingApp?.appId || ""
+    );
+    // 保存公钥到上下文中
+    dc.setPublicKey(privKey.publicKey);
+    if (!bool) {
+      // 钱包自己登录
+      await initUserDB(mnemonic);
     }
   }
   return await resPonseWallet(mnemonic, message, bool, port);
@@ -518,6 +531,12 @@ async function createAccountWithRegister(
       walletAccount = null; // 清除钱包账号
     }
     return;
+  }
+  try {
+    // 绑定成功后进行数据库初始化
+    const threadID = await initUserDB(mnemonic);
+  } catch (error) {
+    console.log("=================initUserDB error", error);
   }
   walletAccount = null; // 清除钱包账号
   window.showToast({

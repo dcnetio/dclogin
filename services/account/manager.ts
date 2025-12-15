@@ -2,8 +2,10 @@
 import DBHelper from "@/helpers/DBHelper";
 import { AccountInfo } from "@/types/walletTypes";
 import i18n from "@/locales/i18n";
-import { createWalletAccount, generateWalletAccount } from "./wallet";
+import { createWalletAccount, generateWalletAccountWithLogin } from "./wallet";
 import { getCurrentAccount, setCurrentAccount } from "./state";
+import { getDC } from "@/components/auth/login/dc";
+import { Ed25519PrivKey, KeyManager } from "web-dc-api";
 
 // 获取已有的账号
 async function chooseStoredAccount(): Promise<AccountInfo | null> {
@@ -100,7 +102,7 @@ async function createAccount(
 
 async function changeAccount(info: AccountInfo): Promise<boolean> {
   // 需要解密判断
-  const wallet = await generateWalletAccount(info.account);
+  const wallet = await generateWalletAccountWithLogin(info.account);
   if (!wallet) {
     return false;
   }

@@ -1,12 +1,7 @@
 "use client";
 import { useEffect } from "react";
 import { initializeDatabase } from "@/helpers/DBHelper";
-import {
-  connectCmdHandler,
-  initBaseinfo,
-  initNetworks,
-  initCommChannel,
-} from "@/app/index";
+import { initBaseinfo, initNetworks, initCommChannel } from "@/app/index";
 import { store } from "@/lib/store";
 import { saveInitState } from "@/lib/slices/appSlice";
 import { appState, MsgStatus } from "@/config/constant";

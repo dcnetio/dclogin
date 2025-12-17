@@ -1,6 +1,7 @@
-import { versionName } from "../version.json";
+import { versionName, peerAddr } from "../config.json";
 let _basePath = "/" + versionName;
 let _apiUrl = "/api";
+let _peerUrl = peerAddr;
 let _dcConfig = {
   wssUrl: "wss://dcchain.baybird.cn",
   backWssUrl: "wss://dcchain.baybird.cn",
@@ -34,3 +35,4 @@ export const apiUrl = _apiUrl;
 export const dcConfig = _dcConfig;
 export const APPThemeConfig = _APPThemeConfig;
 export const DefChainId = _DefChainId;
+export const peerUrl = _peerUrl;

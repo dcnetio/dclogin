@@ -125,3 +125,22 @@ export enum MsgStatus {
   success = 0,
   failed = 1,
 }
+
+// 货币代码 人民币CNY，美元USD
+export enum CurrencyType {
+  USD = "USD",
+  CNY = "CNY",
+}
+
+// 套餐类型 1.nowcode会员费 2.app发布时的应用购买 3.存储购买
+export enum PackageType {
+  NOWCODE_MEMBER = 1,
+  APP_PUBLISH = 2,
+  STORAGE_PURCHASE = 3,
+}
+
+//套餐名称语言 如: zh, en
+export enum PackageLang {
+  zh = "zh",
+  en = "en",
+}

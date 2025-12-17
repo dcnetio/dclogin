@@ -1,19 +1,16 @@
-import React, { useState } from "react";
-
-interface StoragePlan {
-  id: number;
-  name: string;
-  storage: number;
-  price: number;
-  unit: string;
-  duration: string;
-  popular: boolean;
-}
+import { CurrencyType, PackageLang, PackageType } from "@/config/constant";
+import { useAppSelector } from "@/lib/hooks";
+import i18n from "@/locales/i18n";
+import { container } from "@/server/dc-contianer";
+import { PackageInfo } from "@/server/wxPay/interface";
+import { AccountInfo } from "@/types/walletTypes";
+import { Toast } from "antd-mobile";
+import React, { useEffect, useState } from "react";
 
 interface StorageSubscriptionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelectPlan: (plan: StoragePlan) => void;
+  onSelectPlan: (plan: PackageInfo) => void;
   userPoints: number;
 }
 
@@ -24,71 +21,38 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
   userPoints,
 }) => {
   // 存储套餐数据
-  const storagePlans: StoragePlan[] = [
-    {
-      id: 1,
-      name: "基础套餐",
-      storage: 1,
-      price: 10,
-      unit: "GB",
-      duration: "月",
-      popular: false,
-    },
-    {
-      id: 2,
-      name: "标准套餐",
-      storage: 5,
-      price: 45,
-      unit: "GB",
-      duration: "月",
-      popular: false,
-    },
-    {
-      id: 3,
-      name: "高级套餐",
-      storage: 10,
-      price: 80,
-      unit: "GB",
-      duration: "月",
-      popular: true,
-    },
-    {
-      id: 4,
-      name: "专业套餐",
-      storage: 50,
-      price: 350,
-      unit: "GB",
-      duration: "月",
-      popular: false,
-    },
-    {
-      id: 5,
-      name: "企业套餐",
-      storage: 100,
-      price: 600,
-      unit: "GB",
-      duration: "月",
-      popular: false,
-    },
-    {
-      id: 6,
-      name: "年度套餐",
-      storage: 10,
-      price: 800,
-      unit: "GB",
-      duration: "年",
-      popular: false,
-    },
-  ];
+  const [storagePlans, setStoragePlans] = useState<PackageInfo[]>([]);
 
-  const [selectedPlan, setSelectedPlan] = useState<StoragePlan | null>(null);
+  const [selectedPlan, setSelectedPlan] = useState<PackageInfo | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<string>("wechat");
   const [isProcessing, setIsProcessing] = useState(false);
+  const [step, setStep] = useState<number>(1);
 
-  if (!isOpen) return null;
+  const account: AccountInfo = useAppSelector((state) => state.wallet.account);
 
-  const handleSelectPlan = (plan: StoragePlan) => {
+  useEffect(() => {
+    if (isOpen) {
+      getPackagesList();
+    }
+  }, [isOpen]);
+
+  const handleSelectPlan = (plan: PackageInfo) => {
     setSelectedPlan(plan);
+  };
+
+  const backStep = () => {
+    setStep(step - 1);
+  };
+
+  const nextStep = () => {
+    if (selectedPlan) {
+      setStep(step + 1);
+    } else {
+      Toast.show({
+        content: "请先选择一个存储套餐",
+        position: "center",
+      });
+    }
   };
 
   const handlePayment = () => {
@@ -99,9 +63,6 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
     // 模拟支付处理
     setTimeout(() => {
       setIsProcessing(false);
-      alert(
-        `成功购买 ${selectedPlan.name}：${selectedPlan.storage}${selectedPlan.unit}/${selectedPlan.duration}，价格：¥${selectedPlan.price}`
-      );
       setSelectedPlan(null);
     }, 2000);
   };
@@ -112,6 +73,39 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
     setSelectedPlan(null);
   };
 
+  const getPackagesList = async () => {
+    try {
+      const wxPayManager = container.get("wxPayManager");
+      if (!wxPayManager) {
+        Toast.show({
+          icon: "fail",
+          content: "微信支付管理器未初始化",
+          position: "center",
+        });
+        return [];
+      }
+      const lang = i18n.language || "en";
+      const [infos, error] = await wxPayManager.getPackages({
+        pkgType: PackageType.STORAGE_PURCHASE,
+        lang:
+          lang && lang.indexOf("en") !== -1 ? PackageLang.en : PackageLang.zh,
+        currency: CurrencyType.CNY,
+      });
+      if (error) {
+        Toast.show({
+          icon: "fail",
+          content: error.message || "获取支付订单失败",
+          position: "center",
+        });
+        return [];
+      }
+      setStoragePlans(infos);
+    } catch (error) {
+      console.error("获取支付订单出错:", error);
+    }
+  };
+
+  if (!isOpen) return null;
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto border border-gray-200">
@@ -144,134 +138,155 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
         </div>
 
         <div className="p-6">
-          {!selectedPlan ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {storagePlans.map((plan) => (
-                <div
-                  key={plan.id}
-                  className={`relative rounded-xl p-6 transition-all duration-300 transform hover:scale-105 cursor-pointer ${
-                    plan.popular
-                      ? "bg-gradient-to-br from-blue-900 to-indigo-800 border-2 border-blue-500 shadow-lg shadow-blue-500/20"
-                      : "bg-white border border-gray-300 hover:border-blue-500 shadow-lg shadow-gray-300/20"
-                  }`}
-                  onClick={() => handleSelectPlan(plan)}
-                >
-                  {plan.popular && (
-                    <div className="absolute top-0 right-0 bg-blue-500 text-white text-xs font-bold px-4 py-1 rounded-bl-lg rounded-tr-xl">
-                      热门推荐
-                    </div>
-                  )}
-
-                  <div className="text-center">
-                    <h3
-                      className={`text-xl font-bold ${
-                        plan.popular ? "text-blue-300" : "text-white"
-                      }`}
-                    >
-                      {plan.name}
-                    </h3>
-
-                    <div className="my-6">
-                      <div className="text-4xl font-extrabold">
-                        <span
-                          className={`${
-                            plan.popular ? "text-blue-300" : "text-gray-600"
-                          }`}
-                        >
-                          {plan.storage}
-                        </span>
-                        <span
-                          className={`text-lg ${
-                            plan.popular ? "text-gray-100" : "text-gray-500"
-                          }`}
-                        >
-                          {plan.unit}
-                        </span>
+          {step === 1 ? (
+            <div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {storagePlans.map((plan) => (
+                  <div
+                    key={plan.pkgId}
+                    className={`relative rounded-xl p-6 transition-all duration-300 transform hover:scale-105 cursor-pointer ${
+                      plan.pkgId === selectedPlan?.pkgId
+                        ? "bg-gradient-to-br from-blue-900 to-indigo-800 border-2 border-blue-500 shadow-lg shadow-blue-500/20"
+                        : "bg-white border border-gray-300 hover:border-blue-500 shadow-lg shadow-gray-300/20"
+                    }`}
+                    onClick={() => handleSelectPlan(plan)}
+                  >
+                    {plan.pkgId === selectedPlan?.pkgId && (
+                      <div className="absolute top-0 right-0 bg-blue-500 text-white text-xs font-bold px-4 py-1 rounded-bl-lg rounded-tr-xl">
+                        热门推荐
                       </div>
-                      <div
-                        className={`text-sm mt-1 ${
-                          plan.popular ? "text-gray-100" : "text-gray-600"
+                    )}
+                    <div className="text-center">
+                      <h3
+                        className={`text-xl font-bold ${
+                          plan.pkgId === selectedPlan?.pkgId
+                            ? "text-blue-300"
+                            : "text-white"
                         }`}
                       >
-                        /{plan.duration}
+                        {plan.pkgName}
+                      </h3>
+
+                      <div className="my-6">
+                        <div className="text-4xl font-extrabold">
+                          <span
+                            className={`${
+                              plan.pkgId === selectedPlan?.pkgId
+                                ? "text-blue-300"
+                                : "text-gray-600"
+                            }`}
+                          >
+                            {plan.spaceSize}
+                          </span>
+                          <span
+                            className={`text-lg ${
+                              plan.pkgId === selectedPlan?.pkgId
+                                ? "text-gray-100"
+                                : "text-gray-500"
+                            }`}
+                          >
+                            {plan.currency}
+                          </span>
+                        </div>
+                        <div
+                          className={`text-sm mt-1 ${
+                            plan.pkgId === selectedPlan?.pkgId
+                              ? "text-gray-100"
+                              : "text-gray-600"
+                          }`}
+                        >
+                          /{plan.validDays}天
+                        </div>
                       </div>
-                    </div>
 
-                    <div className="my-6">
-                      <div className="text-3xl font-bold text-green-400">
-                        ¥{plan.price}
+                      <div className="my-6">
+                        <div className="text-3xl font-bold text-green-400">
+                          {plan.currency === CurrencyType.CNY ? "¥" : "$"}
+                          {plan.amount?.toFixed(2)}
+                        </div>
                       </div>
-                    </div>
 
-                    <button
-                      className={`w-full py-3 rounded-lg font-bold transition ${
-                        plan.popular
-                          ? "bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white shadow-lg"
-                          : "bg-gray-100 hover:bg-gray-200 text-gray-900 "
-                      }`}
-                    >
-                      选择此套餐
-                    </button>
-
-                    <div className="mt-6 pt-6 border-t border-gray-700">
-                      <ul
-                        className={`space-y-3  text-sm ${
-                          plan.popular ? "text-gray-100" : "text-gray-600"
+                      <button
+                        className={`w-full py-3 rounded-lg font-bold transition ${
+                          plan.pkgId === selectedPlan?.pkgId
+                            ? "bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white shadow-lg"
+                            : "bg-gray-100 hover:bg-gray-200 text-gray-900 "
                         }`}
                       >
-                        <li className="flex items-center">
-                          <svg
-                            className="h-5 w-5 text-green-500 mr-2"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M5 13l4 4L19 7"
-                            />
-                          </svg>
-                          高速上传下载
-                        </li>
-                        <li className="flex items-center">
-                          <svg
-                            className="h-5 w-5 text-green-500 mr-2"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M5 13l4 4L19 7"
-                            />
-                          </svg>
-                          数据加密存储
-                        </li>
-                        <li className="flex items-center">
-                          <svg
-                            className="h-5 w-5 text-green-500 mr-2"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M5 13l4 4L19 7"
-                            />
-                          </svg>
-                          24/7 技术支持
-                        </li>
-                      </ul>
+                        选择此套餐
+                      </button>
+
+                      <div className="mt-6 pt-6 border-t border-gray-700">
+                        <ul
+                          className={`space-y-3  text-sm ${
+                            plan.pkgId === selectedPlan?.pkgId
+                              ? "text-gray-100"
+                              : "text-gray-600"
+                          }`}
+                        >
+                          <li className="flex items-center">
+                            <svg
+                              className="h-5 w-5 text-green-500 mr-2"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M5 13l4 4L19 7"
+                              />
+                            </svg>
+                            高速上传下载
+                          </li>
+                          <li className="flex items-center">
+                            <svg
+                              className="h-5 w-5 text-green-500 mr-2"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M5 13l4 4L19 7"
+                              />
+                            </svg>
+                            数据加密存储
+                          </li>
+                          <li className="flex items-center">
+                            <svg
+                              className="h-5 w-5 text-green-500 mr-2"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M5 13l4 4L19 7"
+                              />
+                            </svg>
+                            24/7 技术支持
+                          </li>
+                        </ul>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
+              <div className="flex m-8">
+                <button
+                  onClick={nextStep}
+                  className="flex-1  py-3 bg-gray-700 hover:bg-gray-600 rounded-lg font-bold text-white"
+                  disabled={!selectedPlan || !account}
+                >
+                  下一步
+                </button>
+              </div>
             </div>
           ) : (
             <div className="max-w-2xl mx-auto">
@@ -279,13 +294,15 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
                 <h3 className="text-xl font-bold mb-4">确认购买</h3>
                 <div className="flex items-center justify-between p-4 bg-white rounded-lg">
                   <div>
-                    <h4 className="font-bold">{selectedPlan.name}</h4>
+                    <h4 className="font-bold">{selectedPlan.pkgName}</h4>
                     <p className="text-gray-600">
-                      {selectedPlan.storage}
-                      {selectedPlan.unit}/{selectedPlan.duration}
+                      {selectedPlan.spaceSize}GB /{selectedPlan.validDays}天
                     </p>
                   </div>
-                  <div className="text-xl font-bold">¥{selectedPlan.price}</div>
+                  <div className="text-xl font-bold">
+                    {selectedPlan.currency === CurrencyType.CNY ? "¥" : "$"}
+                    {selectedPlan.amount?.toFixed(2)}
+                  </div>
                 </div>
               </div>
 
@@ -349,7 +366,7 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
                     <p className="font-bold">{userPoints} 积分</p>
                     <p className="text-gray-600 text-sm">
                       可抵扣 ¥
-                      {Math.min(userPoints / 100, selectedPlan.price).toFixed(
+                      {Math.min(userPoints / 100, selectedPlan.amount).toFixed(
                         2
                       )}
                     </p>
@@ -365,7 +382,7 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
 
               <div className="flex space-x-4">
                 <button
-                  onClick={() => setSelectedPlan(null)}
+                  onClick={backStep}
                   className="flex-1 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg font-bold text-white"
                 >
                   返回
@@ -400,7 +417,7 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
                       处理中...
                     </>
                   ) : (
-                    `确认支付 ¥${selectedPlan.price}`
+                    `确认支付 ¥${selectedPlan.amount.toFixed(2)}`
                   )}
                 </button>
               </div>

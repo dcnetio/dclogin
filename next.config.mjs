@@ -2,7 +2,7 @@
 import { readFile } from "fs/promises";
 
 const versionJson = JSON.parse(
-  await readFile(new URL("./version.json", import.meta.url), "utf8")
+  await readFile(new URL("./config.json", import.meta.url), "utf8")
 );
 
 const versionPath =

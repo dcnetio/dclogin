@@ -16,7 +16,19 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { NavBar } from "antd-mobile";
 import { useTranslation } from "react-i18next";
+import { container } from "@/server/dc-contianer";
+import { unstableSetRender } from "antd-mobile"; // Support since version ^5.40.0
+import { createRoot } from "react-dom/client";
 
+unstableSetRender((node, container) => {
+  container._reactRoot ||= createRoot(container);
+  const root = container._reactRoot;
+  root.render(node);
+  return async () => {
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    root.unmount();
+  };
+});
 const geistSans = localFont({
   src: "../fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -54,6 +66,21 @@ export default function RootLayout({
     }
   };
 
+  const initServer = async () => {
+    try {
+      // 初始化服务
+      const { initializeServices } = await import("../server/dc-init");
+      const bool = await initializeServices(container);
+      if (bool) {
+        console.log("✅ 所有服务初始化完成");
+      } else {
+        console.error("❌ 服务初始化失败");
+      }
+    } catch (error) {
+      console.error("初始化过程出错:", error);
+    }
+  };
+
   useEffect(() => {
     // 路由变化时更新 showHeader
     setShowHeader(pathname !== "/");
@@ -73,6 +100,7 @@ export default function RootLayout({
     }
 
     checkMobile();
+    initServer();
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
   }, []);

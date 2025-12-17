@@ -7,7 +7,9 @@ import { PropsWithChildren } from "react";
 export default function StoreProvider({ children }: PropsWithChildren) {
   return (
     <Provider store={store}>
-      <PersistGate persistor={persistor} loading={null}>{children}</PersistGate>
+      <PersistGate persistor={persistor} loading={null}>
+        {children}
+      </PersistGate>
     </Provider>
   );
 }

@@ -18,6 +18,9 @@ import { AuthRecord } from "@/types/pageType";
 import { AccountInfo } from "@/types/walletTypes";
 import { useSearchParams } from "next/navigation";
 import DAPPNote from "@/components/note/DAPPNote";
+import { container } from "@/server/dc-contianer";
+import i18n from "@/locales/i18n";
+import { CurrencyType, PackageType } from "@/config/constant";
 interface UserInfo extends User {
   points: number;
 }

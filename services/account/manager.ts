@@ -2,7 +2,7 @@
 import DBHelper from "@/helpers/DBHelper";
 import { AccountInfo } from "@/types/walletTypes";
 import i18n from "@/locales/i18n";
-import { createWalletAccount, generateWalletAccountWithLogin } from "./wallet";
+import { createWalletAccount, generateWalletAccountWithChange } from "./wallet";
 import { getCurrentAccount, setCurrentAccount } from "./state";
 import { getDC } from "@/components/auth/login/dc";
 import { Ed25519PrivKey, KeyManager } from "web-dc-api";
@@ -55,19 +55,16 @@ async function createAccount(
 ) {
   let accounts: AccountInfo[] = [];
   try {
-    //待测试 跳出状态等待框,提示用户账号创建中，需要手动关闭
     // 保存用户信息
     const account = await createWalletAccount(mnemonic, nftAccount, address);
     console.log("11111111111111111111account 创建", account);
-    //待测试 关闭状态等待框
-    window.clearToast();
     if (!account) {
       return;
     }
     //待测试 跳出账号创建成功提示框
     window.showToast({
       content: i18n.t("account.create_success"),
-      position: "bottom",
+      position: "center",
     });
     accounts.push(account);
   } catch (e) {
@@ -75,7 +72,7 @@ async function createAccount(
     //待测试 跳出提示框,提示用户创建账号失败
     window.showToast({
       content: i18n.t("account.create_failed"),
-      position: "bottom",
+      position: "center",
     });
     return;
   }
@@ -102,7 +99,7 @@ async function createAccount(
 
 async function changeAccount(info: AccountInfo): Promise<boolean> {
   // 需要解密判断
-  const wallet = await generateWalletAccountWithLogin(info.account);
+  const wallet = await generateWalletAccountWithChange(info.account);
   if (!wallet) {
     return false;
   }

@@ -27,7 +27,7 @@ const Header = () => {
         // 提示失败
         Toast.show({
           content: t("login.failed"),
-          position: "bottom",
+          position: "center",
         });
         setAccountInfo(null);
         return;

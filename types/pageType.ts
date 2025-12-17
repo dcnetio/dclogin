@@ -20,6 +20,7 @@ export declare const LocalesInfo: {
 };
 
 export interface AuthRecord {
+  _id?: string;
   recordId?: string;
   appId: string;
   appName: string;

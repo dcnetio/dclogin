@@ -24,7 +24,7 @@ export default function Transfer() {
     if (!balance || !amount) {
       window.showToast({
         content: t("transfer.enter_info"),
-        position: "bottom",
+        position: "center",
       });
       return;
     }

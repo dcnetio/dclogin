@@ -28,7 +28,7 @@ export default function Account(props: AccountProps) {
     }
     window.showToast({
       content: t("account.switch_failed"),
-      position: "bottom",
+      position: "center",
     });
   };
 

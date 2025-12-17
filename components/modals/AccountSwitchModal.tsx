@@ -56,7 +56,7 @@ const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
     if (!bool) {
       window.showToast({
         content: t("account.switch_failed"),
-        position: "bottom",
+        position: "center",
       });
       return;
     }

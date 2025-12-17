@@ -69,7 +69,8 @@
     "bind_nft_account_ing": "Binding account...",
     "bind_nft_account_failed": "Failed to bind account",
     "nft_account_binded": "Current account is already bound",
-    "bind_nft_account_timeout": "Bind account timeout"
+    "bind_nft_account_timeout": "Bind account timeout",
+    "init_user_db_ing": "初始化用户数据库中..."
   },
   "changePassword": {
     "title": "Change Password",

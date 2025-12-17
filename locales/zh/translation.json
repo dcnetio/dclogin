@@ -68,7 +68,8 @@
     "bind_nft_account_ing": "绑定账号中...",
     "bind_nft_account_failed": "绑定账号失败",
     "nft_account_binded": "当前账号已被绑定",
-    "bind_nft_account_timeout": "绑定账号超时"
+    "bind_nft_account_timeout": "绑定账号超时",
+    "init_user_db_ing": "初始化用户数据库中..."
   },
   "changePassword": {
     "title": "修改密码",

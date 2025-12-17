@@ -125,4 +125,13 @@ async function getUserInfoWithNft(nftAccount: string) {
   return [userInfo, err];
 }
 
-export { bindNFTAccount, changePassword, login, getUserInfoWithNft };
+async function getToken(publicKeyBase32: string) {
+  const dc = getDC();
+  if (!dc) {
+    return [false, new Error(i18n.t("account.auth_no_module"))];
+  }
+  const [res, err] = await dc.auth?.getToken(publicKeyBase32);
+  return [res, err];
+}
+
+export { bindNFTAccount, changePassword, login, getUserInfoWithNft, getToken };

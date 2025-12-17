@@ -10,7 +10,10 @@ import { getUserInfoWithNft } from "@/services/account";
 import { User } from "web-dc-api";
 import { Toast } from "antd-mobile";
 import ethers from "@/helpers/ethersHelper";
-import { getAuthRecordsWithAccount } from "@/services/account/record";
+import {
+  asyncAuthRecord,
+  getAuthRecordsWithAccount,
+} from "@/services/account/record";
 import { AuthRecord } from "@/types/pageType";
 import { AccountInfo } from "@/types/walletTypes";
 import { useSearchParams } from "next/navigation";
@@ -25,7 +28,9 @@ const Dashboard = () => {
   const [userInfo, setUserInfo] = useState<UserInfo>(null);
   const [apps, setApps] = useState<any[]>([]);
   const [loginHistory, setLoginHistory] = useState<AuthRecord[]>([]);
-  const [displayedLoginHistory, setDisplayedLoginHistory] = useState<any[]>([]);
+  const [displayedLoginHistory, setDisplayedLoginHistory] = useState<
+    AuthRecord[]
+  >([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [historyPage, setHistoryPage] = useState(1);
@@ -43,7 +48,7 @@ const Dashboard = () => {
     if (error) {
       Toast.show({
         content: error.message || "获取用户信息失败",
-        position: "bottom",
+        position: "center",
       });
       return;
     }
@@ -60,11 +65,17 @@ const Dashboard = () => {
       console.log("getAuthHistorys accountStr", accountStr);
       const records = await getAuthRecordsWithAccount(accountStr);
       setLoginHistory(records);
+      // 同步授权记录
+      const flag = await asyncAuthRecord(accountStr);
+      if (flag) {
+        const nrecords = await getAuthRecordsWithAccount(accountStr);
+        setLoginHistory(nrecords);
+      }
     } catch (error) {
       console.log("getAuthHistorys error", error);
       Toast.show({
         content: error.message || "获取授权记录失败",
-        position: "bottom",
+        position: "center",
       });
       return [];
     }
@@ -116,6 +127,18 @@ const Dashboard = () => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
   };
 
+  const handleRefreshLoginHistory = async () => {
+    if (account && account.account) {
+      const accountStr = account.account;
+      // 同步授权记录
+      const flag = await asyncAuthRecord(accountStr);
+      if (flag) {
+        const nrecords = await getAuthRecordsWithAccount(accountStr);
+        setLoginHistory(nrecords);
+      }
+    }
+  };
+
   useEffect(() => {
     if (account && account.nftAccount) {
       getUserInfo();
@@ -126,7 +149,7 @@ const Dashboard = () => {
     // 当历史记录或页码变化时，更新显示的记录
     const startIndex = 0;
     const endIndex = historyPage * HISTORY_PAGE_SIZE;
-    setDisplayedLoginHistory(loginHistory.slice(startIndex, endIndex));
+    setDisplayedLoginHistory(loginHistory.slice(startIndex, endIndex) || []);
   }, [loginHistory, historyPage]);
 
   if (!!origin && (!account || !account.nftAccount)) {
@@ -254,7 +277,15 @@ const Dashboard = () => {
 
         {/* 登录历史 */}
         <div className="bg-white rounded-lg shadow p-6 mb-8">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">登录历史</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-4 flex justify-between">
+            <span>登录历史</span>
+            <button
+              onClick={handleRefreshLoginHistory}
+              className="ml-4 text-sm text-blue-500 hover:text-blue-700"
+            >
+              刷新
+            </button>
+          </h3>
           {displayedLoginHistory.length > 0 ? (
             <div className="space-y-3">
               {displayedLoginHistory.map((item: AuthRecord) => (

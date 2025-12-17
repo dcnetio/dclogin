@@ -16,7 +16,7 @@ export const initDC = async (dcConfig) => {
     // 确认框
     window.showToast({
       content: i18n.t("dc.init_failed"),
-      position: "bottom",
+      position: "center",
     });
     return null;
   }

@@ -42,7 +42,7 @@ export default function Login() {
     if (!account) {
       window.showToast({
         content: t("login.account_empty"),
-        position: "bottom",
+        position: "center",
       });
       setIsLoading(false); // Reset loading state
       return;
@@ -52,7 +52,7 @@ export default function Login() {
       if (!dc.auth) {
         window.showToast({
           content: t("login.failed"),
-          position: "bottom",
+          position: "center",
         });
         setIsLoading(false); // Reset loading state
         return;
@@ -73,7 +73,7 @@ export default function Login() {
         if (res && res.success) {
           window.showToast({
             content: t("login.success"),
-            position: "bottom",
+            position: "center",
           });
 
           store.dispatch(saveInitState(appState.init_success));
@@ -83,7 +83,7 @@ export default function Login() {
 
         window.showToast({
           content: t("login.failed"),
-          position: "bottom",
+          position: "center",
         });
       } catch (error) {
         // Reset loading state if there's an error
@@ -92,7 +92,7 @@ export default function Login() {
         console.log("accountLogin error", error);
         window.showToast({
           content: t("login.failed"),
-          position: "bottom",
+          position: "center",
         });
       }
     } else {

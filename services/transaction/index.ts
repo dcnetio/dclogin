@@ -22,7 +22,7 @@ async function transfer(
     //待测试 跳出提示框,提示用户未连接钱包
     window.showToast({
       content: i18n.t("account.wallet_not_connect"),
-      position: "bottom",
+      position: "center",
     });
     return;
   }
@@ -31,7 +31,7 @@ async function transfer(
     //待测试 跳出提示框,提示用户没有可用账号
     window.showToast({
       content: i18n.t("account.no_account"),
-      position: "bottom",
+      position: "center",
     });
     return;
   }
@@ -52,7 +52,7 @@ async function transfer(
       //待测试 跳出提示框,提示用户转账失败
       window.showToast({
         content: i18n.t("transfer.transfer_failed"),
-        position: "bottom",
+        position: "center",
       });
       return;
     }
@@ -85,7 +85,7 @@ async function transfer(
       //待测试 界面提示用户转账待确认
       window.showToast({
         content: i18n.t("transfer.transfer_pending"),
-        position: "bottom",
+        position: "center",
       });
       return;
     }
@@ -100,7 +100,7 @@ async function transfer(
     //待测试 界面提示转账成功
     window.showToast({
       content: i18n.t("transfer.transfer_success"),
-      position: "bottom",
+      position: "center",
     });
     return true;
   } catch (error) {
@@ -117,7 +117,7 @@ async function refreshRecordStatus(hash: string) {
     //待测试 跳出提示框,提示用户获取交易记录失败
     window.showToast({
       content: i18n.t("transfer.get_transferlist_failed"),
-      position: "bottom",
+      position: "center",
     });
     return;
   }
@@ -134,7 +134,7 @@ async function refreshRecordStatus(hash: string) {
       //待测试 跳出提示框,提示用户切换网络失败
       window.showToast({
         content: i18n.t("network.switch_failed"),
-        position: "bottom",
+        position: "center",
       });
       return;
     }
@@ -147,7 +147,4 @@ async function refreshRecordStatus(hash: string) {
   DBHelper.updateData(DBHelper.store_record, record);
 }
 
-export {
-  transfer,
-  refreshRecordStatus
-}
+export { transfer, refreshRecordStatus };

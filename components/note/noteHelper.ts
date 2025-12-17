@@ -95,7 +95,7 @@ export const showEncodePassword = (
         document.body.removeChild(container);
         window.showToast({
           content: i18n.t("account.unlock_wallet_cancel"),
-          position: "bottom",
+          position: "center",
         });
         failBack();
       },
@@ -116,7 +116,7 @@ export const showEncodePassword = (
         if (!mnemonic) {
           window.showToast({
             content: i18n.t("account.unlock_wallet_failed"),
-            position: "bottom",
+            position: "center",
           });
           return;
         }
@@ -146,7 +146,7 @@ export const showEncodePassword = (
           if (!userHandleHash) {
             window.showToast({
               content: i18n.t("account.unlock_wallet_failed"),
-              position: "bottom",
+              position: "center",
             });
             return;
           }
@@ -155,7 +155,7 @@ export const showEncodePassword = (
         } else {
           window.showToast({
             content: i18n.t("auth.web_auth_failed"),
-            position: "bottom",
+            position: "center",
           });
         }
       },
@@ -215,7 +215,7 @@ export const showSetEncodePassword = (
           if (!userHandle || !credentialId) {
             window.showToast({
               content: i18n.t("auth.web_auth_failed"),
-              position: "bottom",
+              position: "center",
             });
             return;
           }
@@ -224,7 +224,7 @@ export const showSetEncodePassword = (
         } else {
           window.showToast({
             content: i18n.t("auth.web_auth_failed"),
-            position: "bottom",
+            position: "center",
           });
         }
       },

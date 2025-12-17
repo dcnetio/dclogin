@@ -39,7 +39,7 @@ export default function EncodePassword(props: EncodePasswordProps) {
     if (!password) {
       window.showToast({
         content: t("encode.password_empty"),
-        position: "bottom",
+        position: "center",
       });
       return;
     }

@@ -5,8 +5,8 @@ import TransItem from "@/components/transfer/transItem";
 import { useEffect, useState } from "react";
 import { AccountInfo } from "@/types/walletTypes";
 import { getCurrentAccount, transfer } from "@/app/index";
-import GASItem from '@/components/transfer/gasItem'
-import GASTotal from '@/components/transfer/gasTotal'
+import GASItem from "@/components/transfer/gasItem";
+import GASTotal from "@/components/transfer/gasTotal";
 import { Button, Dialog } from "antd-mobile";
 import { appState } from "@/config/constant";
 import { useAppSelector } from "@/lib/hooks";
@@ -29,8 +29,8 @@ export default function TransferConfirm() {
   const transferBN = async () => {
     if (!amount) {
       window.showToast({
-        content: t('transfer.enter_info'),
-        position: "bottom",
+        content: t("transfer.enter_info"),
+        position: "center",
       });
       return;
     }
@@ -38,12 +38,17 @@ export default function TransferConfirm() {
     Dialog.confirm({
       content: (
         <div className={styles.pop}>
-          <div className={styles.sTitle}>{t('transfer.confirm_transfer')}：</div>
-          <div className={styles.address}>{t('transfer.confirm_to')} {to} {t('transfer.transfer')} {amount} {currencySymbol}</div>
+          <div className={styles.sTitle}>
+            {t("transfer.confirm_transfer")}：
+          </div>
+          <div className={styles.address}>
+            {t("transfer.confirm_to")} {to} {t("transfer.transfer")} {amount}{" "}
+            {currencySymbol}
+          </div>
         </div>
       ),
-      confirmText: t('common.confirm'),
-      cancelText: t('common.cancel'),
+      confirmText: t("common.confirm"),
+      cancelText: t("common.cancel"),
       onConfirm: async () => {
         console.log("transferBN");
         // todo 调用js转账，需要auth认证
@@ -51,18 +56,18 @@ export default function TransferConfirm() {
           to,
           amount,
           21000, //todo gasLimit:
-          '0.5' // todo gasPrice
+          "0.5" // todo gasPrice
         ); // gasPrice:
         if (res) {
           window.showToast({
-            content: t('transfer.transfer_success'),
-            position: "bottom",
+            content: t("transfer.transfer_success"),
+            position: "center",
           });
-          router.replace('/activity');
+          router.replace("/activity");
         } else {
           window.showToast({
-            content: t('transfer.transfer_failed'),
-            position: "bottom",
+            content: t("transfer.transfer_failed"),
+            position: "center",
           });
         }
       },
@@ -83,12 +88,15 @@ export default function TransferConfirm() {
       <div className={styles.content}>
         <div className={styles.balanceD}>
           <div className={styles.tag}>
-            {t('activity.sending')}{currencySymbol}
+            {t("activity.sending")}
+            {currencySymbol}
           </div>
-          <div className={styles.balance}>{amount} {currencySymbol}</div>
+          <div className={styles.balance}>
+            {amount} {currencySymbol}
+          </div>
         </div>
-        <GASItem amount={amount} currencySymbol={currencySymbol}/>
-        <GASTotal amount={amount} currencySymbol={currencySymbol}/>
+        <GASItem amount={amount} currencySymbol={currencySymbol} />
+        <GASTotal amount={amount} currencySymbol={currencySymbol} />
       </div>
       <div className={styles.btnD}>
         <div className={styles.btn}>
@@ -100,12 +108,12 @@ export default function TransferConfirm() {
             }}
             block
           >
-            {t('common.cancel')}
+            {t("common.cancel")}
           </Button>
         </div>
         <div className={styles.btn}>
           <Button color="primary" fill="solid" onClick={transferBN} block>
-            {t('common.confirm')}
+            {t("common.confirm")}
           </Button>
         </div>
       </div>

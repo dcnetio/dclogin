@@ -21,10 +21,6 @@ export default function OrderListPage() {
 
   const account: AccountInfo = useAppSelector((state) => state.wallet.account);
 
-  const filteredOrders = orders.filter((order) =>
-    order._id.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
   const handleViewDetail = (order) => {
     setSelectedOrder(order);
   };
@@ -34,12 +30,12 @@ export default function OrderListPage() {
   };
 
   const getAllOrders = async () => {
-    const orders = await getOrderRecordsWithNFT(account.nftAccount);
-    setOrders(orders);
+    const records = await getOrderRecordsWithNFT(account.nftAccount);
+    setOrders(records);
     const _orders: OrderRecord[] = [];
     let updateFlag = false;
     // 获取未完成订单状态，并更新
-    for (const order of orders) {
+    for (const order of records) {
       if (order.status !== StoragePurchaseStatus.SUCCESS) {
         const flag = await getStoragePurchaseStatus(order.orderId, order);
         if (flag) {
@@ -95,7 +91,7 @@ export default function OrderListPage() {
   }, [account?.nftAccount]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="h-full bg-gray-50">
       <div className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <h1 className="text-xl font-bold text-gray-900">订单列表</h1>
@@ -126,7 +122,7 @@ export default function OrderListPage() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredOrders.map((order) => (
+              {orders.map((order) => (
                 <tr
                   key={order._id}
                   className="hover:bg-gray-50 transition-colors"
@@ -144,7 +140,7 @@ export default function OrderListPage() {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-semibold text-gray-900">
                       {order.currency === CurrencyType.CNY ? "¥" : "$"}
-                      {order.amount.toFixed(2)}
+                      {order.amount ? (order.amount * 0.01).toFixed(2) : 0}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -175,7 +171,7 @@ export default function OrderListPage() {
         </div>
 
         <div className="md:hidden space-y-4">
-          {filteredOrders.map((order) => (
+          {orders.map((order) => (
             <div key={order._id} className="bg-white rounded-lg shadow-sm p-4">
               <div className="flex flex-1  justify-between items-start mb-3">
                 <div>
@@ -201,7 +197,7 @@ export default function OrderListPage() {
               <div className="flex justify-between items-center pt-3 border-t border-gray-100">
                 <div className="text-lg font-semibold text-gray-900">
                   {order.currency === CurrencyType.CNY ? "¥" : "$"}
-                  {order.amount.toFixed(2)}
+                  {order.amount ? (order.amount * 0.01).toFixed(2) : 0}
                 </div>
                 <button
                   onClick={() => handleViewDetail(order)}
@@ -213,19 +209,17 @@ export default function OrderListPage() {
             </div>
           ))}
         </div>
-
-        {filteredOrders.length === 0 && (
-          <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-            <div className="text-gray-400 mb-4">
-              <Search size={48} className="mx-auto" />
-            </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              未找到订单
-            </h3>
-            <p className="text-gray-500">尝试使用不同的搜索条件</p>
-          </div>
-        )}
       </div>
+      {orders.length === 0 && (
+        <div className="bg-white rounded-lg shadow-sm p-12 text-center">
+          <div className="text-gray-400 mb-4">
+            <Search size={48} className="mx-auto" />
+          </div>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
+            暂无订单信息
+          </h3>
+        </div>
+      )}
 
       {selectedOrder && (
         <OrderDetail order={selectedOrder} onClose={handleCloseDetail} />

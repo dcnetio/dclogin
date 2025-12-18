@@ -77,7 +77,7 @@ const getAuthRecordsWithAccount = async (
     const query = {
       condition: "",
       sort: {
-        fieldPath: "timestamp",
+        fieldPath: "createTime",
         desc: true,
       },
     };
@@ -111,7 +111,7 @@ const getAuthRecordsWithRecordId = async (
     const query = {
       condition: "",
       sort: {
-        fieldPath: "timestamp",
+        fieldPath: "createTime",
         desc: true,
       },
     };

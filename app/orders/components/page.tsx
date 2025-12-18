@@ -99,7 +99,9 @@ export default function OrderDetail({ order, onClose }: OrderDetailProps) {
                 <span className="text-gray-600 mr-4">支付金额:</span>
                 <span className="text-gray-900">
                   {order.currency === CurrencyType.CNY ? "¥" : "$"}
-                  {paymentInfo.amount.toFixed(2)}
+                  {paymentInfo.amount
+                    ? (paymentInfo.amount * 0.01).toFixed(2)
+                    : 0}
                 </span>
               </div>
               <div className="flex">

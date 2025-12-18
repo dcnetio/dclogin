@@ -64,7 +64,7 @@ const getOrderRecordsWithNFT = async (
     const query = {
       condition: "",
       sort: {
-        fieldPath: "timestamp",
+        fieldPath: "createTime",
         desc: true,
       },
     };

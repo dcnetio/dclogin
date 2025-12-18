@@ -33,6 +33,7 @@ const OrderRecords = {
     orderId: { type: "string" }, // 订单ID
     nftAccount: { type: "string" }, // 购买账户
     pkgId: { type: "number" }, // 套餐ID
+    pkgName: { type: "string" }, // 套餐名称
     amount: { type: "number" }, // 购买金额
     currency: { type: "string" }, // 货币类型
     status: { type: "number" }, // 订单状态 1.等待确认 2.购买成功
@@ -55,5 +56,5 @@ const dbCollections = [
   OrderRecordsCollection,
 ];
 
-const dbVersion = 5;
+const dbVersion = 6;
 export { dbCollections, dbVersion, tableNames };

@@ -233,6 +233,7 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
         orderId: tradeNo,
         nftAccount: account.nftAccount || "",
         pkgId: selectedPlan?.pkgId || 0,
+        pkgName: selectedPlan?.pkgName || "",
         amount: selectedPlan?.amount || 0,
         currency: selectedPlan?.currency || CurrencyType.CNY,
         status: StoragePurchaseStatus.WAITING_CONFIRM,
@@ -289,7 +290,6 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
         });
       } else if (status === StoragePurchaseStatus.WAITING_CONFIRM) {
         Toast.show({
-          icon: "info",
           content: "订单待确认，请稍后查看",
           position: "center",
         });
@@ -335,7 +335,7 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
         <div className="p-6">
           {step === 1 ? (
             <div>
-              <p className="text-gray-900 mt-1">选择适合您的存储方案</p>
+              <p className="text-gray-900 mb-4">选择适合您的存储方案</p>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {storagePlans.map((plan) => (
                   <div
@@ -375,13 +375,13 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
                             {plan.spaceSize}
                           </span>
                           <span
-                            className={`text-lg ${
+                            className={`ml-2 text-lg  ${
                               plan.pkgId === selectedPlan?.pkgId
                                 ? "text-gray-100"
                                 : "text-gray-500"
                             }`}
                           >
-                            {plan.currency}
+                            {plan.currency === CurrencyType.CNY ? "元" : "美元"}
                           </span>
                         </div>
                         <div
@@ -398,7 +398,7 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
                       <div className="my-6">
                         <div className="text-3xl font-bold text-green-400">
                           {plan.currency === CurrencyType.CNY ? "¥" : "$"}
-                          {plan.amount?.toFixed(2)}
+                          {plan.amount ? (plan.amount * 0.01).toFixed(2) : 0}
                         </div>
                       </div>
 
@@ -411,65 +411,6 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
                       >
                         选择此套餐
                       </button>
-
-                      <div className="mt-6 pt-6 border-t border-gray-700">
-                        <ul
-                          className={`space-y-3  text-sm ${
-                            plan.pkgId === selectedPlan?.pkgId
-                              ? "text-gray-100"
-                              : "text-gray-600"
-                          }`}
-                        >
-                          <li className="flex items-center">
-                            <svg
-                              className="h-5 w-5 text-green-500 mr-2"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M5 13l4 4L19 7"
-                              />
-                            </svg>
-                            高速上传下载
-                          </li>
-                          <li className="flex items-center">
-                            <svg
-                              className="h-5 w-5 text-green-500 mr-2"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M5 13l4 4L19 7"
-                              />
-                            </svg>
-                            数据加密存储
-                          </li>
-                          <li className="flex items-center">
-                            <svg
-                              className="h-5 w-5 text-green-500 mr-2"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M5 13l4 4L19 7"
-                              />
-                            </svg>
-                            24/7 技术支持
-                          </li>
-                        </ul>
-                      </div>
                     </div>
                   </div>
                 ))}
@@ -504,7 +445,9 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
                   </div>
                   <div className="text-xl font-bold">
                     {selectedPlan.currency === CurrencyType.CNY ? "¥" : "$"}
-                    {selectedPlan.amount?.toFixed(2)}
+                    {selectedPlan.amount
+                      ? (selectedPlan.amount * 0.01).toFixed(2)
+                      : 0}
                   </div>
                 </div>
               </div>
@@ -599,8 +542,12 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
                     </>
                   ) : (
                     `确认支付 ${
-                      order.currency === CurrencyType.CNY ? "¥" : "$"
-                    }${selectedPlan.amount.toFixed(2)}`
+                      selectedPlan?.currency === CurrencyType.CNY ? "¥" : "$"
+                    }${
+                      selectedPlan.amount
+                        ? (selectedPlan.amount * 0.01).toFixed(2)
+                        : 0
+                    }`
                   )}
                 </button>
               </div>
@@ -608,11 +555,12 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
           ) : (
             /* 显示二维码*/
             <div className="flex flex-col items-center">
-              <h2 className="text-2xl font-bold">扫一扫付款</h2>
+              <p>套餐名称：{selectedPlan?.pkgName}</p>
+              <h2 className="text-2xl font-bold m-4">扫一扫付款</h2>
               <img
                 src={qrCodeUrl}
                 alt="QR Code"
-                className="m-8 w-64 h-64 bg-gray-200"
+                className="m-4 w-64 h-64 bg-gray-200"
               />
               <button
                 onClick={finishPayment}

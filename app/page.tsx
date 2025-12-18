@@ -144,6 +144,25 @@ const Dashboard = () => {
     router.push("/orders");
   };
 
+  const exchangePoints = async () => {
+    if (!userInfo) {
+      Toast.show({
+        content: "未登录",
+        position: "center",
+      });
+      return;
+    }
+    if (!userInfo?.points || userInfo.points == 0) {
+      // Optionally show a message or handle the case when points are insufficient
+      Toast.show({
+        content: "积分不足",
+        position: "center",
+      });
+      return;
+    }
+    setShowExchangeModal(true);
+  };
+
   useEffect(() => {
     if (account && account.nftAccount) {
       getUserInfo();
@@ -229,7 +248,7 @@ const Dashboard = () => {
                 到期区块高度:{" "}
                 {userInfo?.expireNumber ? userInfo.expireNumber : "-"}
               </p>
-              <div>
+              <div className="flex flex-col md:flex-row gap-2 mt-4">
                 <button
                   onClick={handleSubscribeStorage}
                   className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded flex items-center justify-center"
@@ -245,7 +264,7 @@ const Dashboard = () => {
                   订阅更多存储
                 </button>
 
-                {account && (
+                {account && account.account && (
                   <button
                     onClick={gotoOrderRecords}
                     className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded flex items-center justify-center"
@@ -282,8 +301,12 @@ const Dashboard = () => {
                 {userInfo?.points || 0} 积分
               </div>
               <button
-                onClick={() => setShowExchangeModal(true)}
-                className="mt-4 w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 px-4 rounded"
+                onClick={exchangePoints}
+                className={`mt-4 w-full  text-white py-2 px-4 rounded ${
+                  userInfo?.points && userInfo?.points > 0
+                    ? "bg-yellow-600 hover:bg-yellow-700"
+                    : "bg-gray-400 cursor-not-allowed"
+                }`}
               >
                 兑换积分
               </button>

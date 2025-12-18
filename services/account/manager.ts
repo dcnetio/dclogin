@@ -4,8 +4,6 @@ import { AccountInfo } from "@/types/walletTypes";
 import i18n from "@/locales/i18n";
 import { createWalletAccount, generateWalletAccountWithChange } from "./wallet";
 import { getCurrentAccount, setCurrentAccount } from "./state";
-import { getDC } from "@/components/auth/login/dc";
-import { Ed25519PrivKey, KeyManager } from "web-dc-api";
 
 // 获取已有的账号
 async function chooseStoredAccount(): Promise<AccountInfo | null> {

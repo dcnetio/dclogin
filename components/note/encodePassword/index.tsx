@@ -11,6 +11,7 @@ import {
   CloseOutline,
 } from "antd-mobile-icons";
 import { APPInfo } from "web-dc-api";
+import { dcConfig } from "@/config/define";
 
 interface EncodePasswordProps {
   type: number; // 类型，1设置，2验证
@@ -88,37 +89,41 @@ export default function EncodePassword(props: EncodePasswordProps) {
           </div>
         )}
         {/* 应用信息区域 */}
-        {!!appInfo && !!appInfo.appName && (
-          <div className={styles.appInfoSection}>
-            <div className={styles.appInfoHeader}>
-              <LinkOutline className={styles.appInfoIcon} />
-              <span>{t("DAPP.info")}</span>
-            </div>
-            <div className={styles.appInfoContent}>
-              <div className={styles.appInfoItem}>
-                <span className={styles.appInfoLabel}>{t("DAPP.app")}</span>
-                <span className={styles.appInfoValue}>{appInfo.appName}</span>
+        {!!appInfo &&
+          !!appInfo.appName &&
+          appInfo.appId !== dcConfig.appInfo.appId && (
+            <div className={styles.appInfoSection}>
+              <div className={styles.appInfoHeader}>
+                <LinkOutline className={styles.appInfoIcon} />
+                <span>{t("DAPP.info")}</span>
               </div>
-              <div className={styles.appInfoItem}>
-                <span className={styles.appInfoLabel}>{t("DAPP.appUrl")}</span>
-                <span className={styles.appInfoValue}>{appInfo.appUrl}</span>
-              </div>
-              <div className={styles.appInfoItem}>
-                <span className={styles.appInfoLabel}>
-                  {t("DAPP.appVersion")}
-                </span>
-                <span className={styles.appInfoValue}>
-                  {appInfo.appVersion}
-                </span>
-              </div>
+              <div className={styles.appInfoContent}>
+                <div className={styles.appInfoItem}>
+                  <span className={styles.appInfoLabel}>{t("DAPP.app")}</span>
+                  <span className={styles.appInfoValue}>{appInfo.appName}</span>
+                </div>
+                <div className={styles.appInfoItem}>
+                  <span className={styles.appInfoLabel}>
+                    {t("DAPP.appUrl")}
+                  </span>
+                  <span className={styles.appInfoValue}>{appInfo.appUrl}</span>
+                </div>
+                <div className={styles.appInfoItem}>
+                  <span className={styles.appInfoLabel}>
+                    {t("DAPP.appVersion")}
+                  </span>
+                  <span className={styles.appInfoValue}>
+                    {appInfo.appVersion}
+                  </span>
+                </div>
 
-              <div className={styles.appInfoWarning}>
-                <ExclamationCircleOutline className={styles.warningIcon} />
-                {t("DAPP.warning")}
+                <div className={styles.appInfoWarning}>
+                  <ExclamationCircleOutline className={styles.warningIcon} />
+                  {t("DAPP.warning")}
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
         {/* 密码输入区域 */}
         <div className={styles.passwordContainer}>

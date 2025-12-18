@@ -3,7 +3,11 @@ import utilHelper from "@/helpers/utilHelper";
 import ethersHelper from "@/helpers/ethersHelper";
 import { MsgStatus } from "@/config/constant";
 import { store } from "@/lib/store";
-import { updateAppInfo, updateAuthStep } from "@/lib/slices/authSlice";
+import {
+  setShouldReturnUserInfo,
+  updateAppInfo,
+  updateAuthStep,
+} from "@/lib/slices/authSlice";
 import { getCurrentChain } from "@/services/network";
 import { applyFreeSpace } from "@/app/tools/subSpace";
 
@@ -134,7 +138,7 @@ async function onDAPPMessage(event: MessageEvent) {
     case "channelPort2":
       iframeChannel = event.ports[0];
       iframeChannel.onmessage = onDAPPMessage;
-      // 循环判断dc是否存在，并设置超时，超过3s则直接返回
+      // 循环判断dc是否存在，并设置超时，超过60s则直接返回
       await checkDCInitialized();
       const loadedMessage = {
         type: "loaded",
@@ -159,9 +163,11 @@ async function onDAPPMessage(event: MessageEvent) {
               appVersion: connectingApp?.appVersion || "",
             };
             dc.setAppInfo(dappInfo);
-            // 保存shouldReturnUserInfo
-            dc.setShouldReturnUserInfo(connectingApp?.shouldReturnUserInfo);
           }
+
+          store.dispatch(
+            setShouldReturnUserInfo(connectingApp?.shouldReturnUserInfo)
+          );
 
           //显示提示页面
           store.dispatch(
@@ -176,6 +182,16 @@ async function onDAPPMessage(event: MessageEvent) {
           connectCmdHandler(message, true, event.ports[0]);
           return;
         } else {
+          //显示提示页面
+          store.dispatch(
+            updateAppInfo({
+              appId: dcConfig.appInfo?.appId,
+              appName: dcConfig.appInfo?.appName,
+              appIcon: "",
+              appUrl: "",
+              appVersion: "",
+            })
+          );
           connectCmdHandler(message, true, event.ports[0]);
         }
       }
@@ -268,23 +284,21 @@ async function connectCmdHandler(
   if (!mnemonic) {
     return;
   }
-  const dc = getDC();
-  if (dc) {
-    const appId = dc.appInfo.appId;
-    if (appId) {
+  const connectingApp = message.data;
+  const appInfo = connectingApp || null;
+  // 不是来自默认Dapp的
+  if (!appInfo || !appInfo.appId) {
+    const appId = dcConfig.appInfo?.appId || "";
+    const dc = getDC();
+    if (dc) {
+      const keymanager = new KeyManager();
+      const privKey: Ed25519PrivKey =
+        await keymanager.getEd25519KeyFromMnemonic(mnemonic, appId || "");
       await dc.auth.generateAppAccount(appId, mnemonic);
-    }
-    const keymanager = new KeyManager();
-    const parentPrivKey: Ed25519PrivKey =
-      await keymanager.getEd25519KeyFromMnemonic(mnemonic, "");
-    dc.setParentPublicKey(parentPrivKey.publicKey);
-    // 获取用户信息，重新设置公钥
-    const privKey: Ed25519PrivKey = await keymanager.getEd25519KeyFromMnemonic(
-      mnemonic,
-      appId || ""
-    );
-    dc.setPublicKey(privKey.publicKey);
-    if (appId === dcConfig.appInfo.appId) {
+      const parentPrivKey: Ed25519PrivKey =
+        await keymanager.getEd25519KeyFromMnemonic(mnemonic, "");
+      dc.setParentPublicKey(parentPrivKey.publicKey);
+      dc.setPublicKey(privKey.publicKey);
       window.showToast({
         content: i18n.t("account.init_user_db_ing"), // "初始化用户数据库中"
         position: "center",
@@ -300,7 +314,7 @@ async function connectCmdHandler(
       }
     }
   }
-  return await resPonseWallet(mnemonic, message, bool, port);
+  return await resPonseWallet(mnemonic, chooseAccount, message, bool, port);
 }
 
 /** 收到签名请求处理,message格式为
@@ -476,6 +490,10 @@ async function createAccountWithRegister(
   if (!dc) {
     return;
   }
+  const appInfo = store.getState().auth.appInfo || null;
+  if (!dc.appInfo || !dc.appInfo.appId || dc.appInfo.appId !== appInfo?.appId) {
+    dc.setAppInfo(appInfo);
+  }
   // 判断account是否已经存在
   const [nftBinded, error] = await dc.auth.isNftAccountBinded(account);
   if (error || nftBinded) {
@@ -548,7 +566,8 @@ async function createAccountWithRegister(
     return;
   }
   try {
-    const appId = dc.appInfo.appId;
+    const appInfo = store.getState().auth.appInfo || null;
+    const appId = appInfo?.appId;
     await dc.auth.generateAppAccount(appId, mnemonic);
     // 获取用户信息，重新设置公钥
     const keymanager = new KeyManager();
@@ -600,6 +619,14 @@ async function createAccountWithLogin(
     if (!dc) {
       return;
     }
+    const appInfo = store.getState().auth.appInfo || null;
+    if (
+      !dc.appInfo ||
+      !dc.appInfo.appId ||
+      dc.appInfo.appId !== appInfo?.appId
+    ) {
+      dc.setAppInfo(appInfo);
+    }
     const [mnemonic, err] = await dc.auth.accountLogin(
       account,
       password,
@@ -621,7 +648,8 @@ async function createAccountWithLogin(
       return;
     }
     if (dc) {
-      const appId = dc.appInfo.appId;
+      const appInfo = store.getState().auth.appInfo || null;
+      const appId = appInfo?.appId;
       // 获取用户信息，重新设置公钥
       const keymanager = new KeyManager();
       const privKey: Ed25519PrivKey =
@@ -644,13 +672,14 @@ async function createAccountWithLogin(
       };
       const res = await resPonseWallet(
         mnemonic,
+        accountInfo,
         origin ? messageData : message,
         true,
         portData
       );
       return res;
     } else {
-      return await resPonseWallet(mnemonic);
+      return await resPonseWallet(mnemonic, accountInfo);
     }
   } catch (error) {
     console.log("createAccountWithLogin error", error);

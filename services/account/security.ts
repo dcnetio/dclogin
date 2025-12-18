@@ -1,24 +1,19 @@
 "use client";
 import utilHelper from "@/helpers/utilHelper";
-import { getDC } from "@/components/auth/login/dc";
 import {
   showEncodePassword,
   showSetEncodePassword,
 } from "@/components/note/noteHelper";
 import type { APPInfo } from "web-dc-api";
 import { EncodePasswordInfo } from "@/types/pageType";
+import { store } from "@/lib/store";
 
 // 获取用户加密密码
 async function getEncodePwd(
   info: EncodePasswordInfo
 ): Promise<ArrayBuffer | null> {
   return new Promise((resolve, reject) => {
-    const dc = getDC();
-    if (!dc) {
-      reject(new Error("dc is null"));
-    }
-    // todo 显示用户加密密码页面
-    const connectingApp: APPInfo | null = dc?.appInfo || null;
+    const connectingApp = store.getState().auth.appInfo || null;
     const appInfo = {
       appId: connectingApp?.appId || "",
       appName: connectingApp?.appName || "",

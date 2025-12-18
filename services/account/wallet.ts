@@ -78,10 +78,11 @@ async function generateWalletAccount(seedAccount: string) {
       position: "center",
     });
   }
-  const dc = getDC();
-  if (dc) {
-    const appId = dc.appInfo?.appId;
-    if (appId) {
+  const connectingApp = store.getState().auth.appInfo || null;
+  const appId = connectingApp?.appId;
+  if (appId) {
+    const dc = getDC();
+    if (dc) {
       await dc.auth.generateAppAccount(appId, mnemonic);
     }
   }
@@ -99,6 +100,10 @@ async function generateWalletAccount(seedAccount: string) {
 
 // 根据账号,生成签名的钱包账号对象（切换账号）
 async function generateWalletAccountWithChange(seedAccount: string) {
+  const dc = getDC();
+  if (!dc) {
+    return;
+  }
   let account = null;
   // 数据库里获取账号信息
   try {
@@ -158,27 +163,22 @@ async function generateWalletAccountWithChange(seedAccount: string) {
       position: "center",
     });
   }
-  const dc = getDC();
-  if (dc) {
-    const appId = dcConfig.appInfo.appId;
-    await dc.auth.generateAppAccount(appId, mnemonic);
-    // 获取用户信息，重新设置公钥
-    const keymanager = new KeyManager();
-    const privKey: Ed25519PrivKey = await keymanager.getEd25519KeyFromMnemonic(
-      mnemonic,
-      appId || ""
-    );
-    const parentPrivKey: Ed25519PrivKey =
-      await keymanager.getEd25519KeyFromMnemonic(mnemonic, "");
-    dc.setParentPublicKey(parentPrivKey.publicKey);
-    // 保存公钥到上下文中
-    dc.setPublicKey(privKey.publicKey);
-    if (appId === dcConfig.appInfo.appId) {
-      dc.setPrivateKey(privKey);
-      // 设置threadDB
-      await initUserDB();
-    }
-  }
+  const appId = dcConfig.appInfo.appId;
+  await dc.auth.generateAppAccount(appId, mnemonic);
+  // 获取用户信息，重新设置公钥
+  const keymanager = new KeyManager();
+  const privKey: Ed25519PrivKey = await keymanager.getEd25519KeyFromMnemonic(
+    mnemonic,
+    appId || ""
+  );
+  const parentPrivKey: Ed25519PrivKey =
+    await keymanager.getEd25519KeyFromMnemonic(mnemonic, "");
+  dc.setParentPublicKey(parentPrivKey.publicKey);
+  // 保存公钥到上下文中
+  dc.setPublicKey(privKey.publicKey);
+  dc.setPrivateKey(privKey);
+  // 设置threadDB
+  await initUserDB();
   // 通过助记词导入钱包,生成带私钥钱包账号
   const wallet = await ethersHelper.createWalletAccountWithMnemonic(mnemonic);
   if (!wallet) {
@@ -231,8 +231,9 @@ async function createWalletAccount(
       // await DBHelper.clearData(DBHelper.store_account);
       const res = await DBHelper.updateData(DBHelper.store_account, account);
       console.log("账号信息存储成功", res);
+      const shouldReturnUserInfo = store.getState().auth.shouldReturnUserInfo;
       const dc = getDC();
-      if (dc && dc.shouldReturnUserInfo) {
+      if (dc && shouldReturnUserInfo) {
         // 存储到dc
         dc.setAccountInfo(resAccount);
       }
@@ -304,6 +305,7 @@ async function unlockWallet(chooseAccount: AccountInfo) {
 
 async function resPonseWallet(
   mnemonic: string,
+  accountInfo: AccountInfo,
   message: ConnectReqMessage = {} as ConnectReqMessage,
   bool: boolean = false,
   port: MessagePort | null = null
@@ -325,9 +327,9 @@ async function resPonseWallet(
   }
   let connectingApp = message.data;
   if (!connectingApp) {
-    const dc = getDC();
-    if (dc && dc.appInfo) {
-      connectingApp = dc.appInfo;
+    const appInfo = store.getState().auth.appInfo || null;
+    if (appInfo) {
+      connectingApp = appInfo;
     }
   }
   // 通过助记词导入钱包,生成带私钥钱包账号
@@ -338,17 +340,6 @@ async function resPonseWallet(
       updateAuthStep({
         type: MsgStatus.failed,
         content: i18n.t("account.unlock_wallet_failed"),
-      })
-    );
-    return;
-  }
-  const dc = getDC();
-  if (!dc) {
-    //待测试 跳出提示框,提示用户签名失败
-    store.dispatch(
-      updateAuthStep({
-        type: MsgStatus.failed,
-        content: i18n.t("sign.sign_failed"),
       })
     );
     return;
@@ -387,7 +378,7 @@ async function resPonseWallet(
         chainName: currentChain.name,
         signature: signature,
         privateKey: privKey.raw,
-        accountInfo: dc.accountInfo || {},
+        accountInfo: accountInfo || {},
       },
     };
     if (!port) {

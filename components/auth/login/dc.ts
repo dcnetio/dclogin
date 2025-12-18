@@ -1,5 +1,6 @@
 // lib/dc-init.js
 let dcInstance = null;
+import { store } from "@/lib/store";
 import i18n from "@/locales/i18n";
 
 export const initDC = async (dcConfig) => {
@@ -22,6 +23,9 @@ export const initDC = async (dcConfig) => {
   }
   console.log(`DC init success`, new Date());
 
+  const appInfo = store.getState().auth.appInfo || null;
+  dc.setAppInfo(appInfo);
+
   dcInstance = dc;
   return dc;
 };
@@ -34,7 +38,7 @@ export const getDC = () => {
 };
 export const checkDCInitialized = async () => {
   console.log("checkDCInitialized ", new Date());
-  const MAX_WAIT_TIME = 30000; // 30秒超时
+  const MAX_WAIT_TIME = 60000; // 60秒超时
   const CHECK_INTERVAL = 500; // 500ms检查一次
 
   return new Promise<any>((resolve) => {

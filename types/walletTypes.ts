@@ -41,8 +41,8 @@ export type ConnectReqMessage = {
     appId: string;
     appName: string;
     appIcon?: string;
-    appUrl: string;
-    appVersion: string;
+    appUrl?: string;
+    appVersion?: string;
     // account?: string,
     // chainId?: string,
     accountInfo?: AccountInfo;

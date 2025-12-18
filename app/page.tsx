@@ -97,27 +97,27 @@ const Dashboard = () => {
     setShowStorageModal(false);
   };
 
-  const handleExchangePoints = async (points: number) => {
-    try {
-      const dc = await getDC();
-      if (!dc) {
-        throw new Error("未获取到有效的 DC 实例");
-      }
+  // const handleExchangePoints = async (points: number) => {
+  //   try {
+  //     const dc = await getDC();
+  //     if (!dc) {
+  //       throw new Error("未获取到有效的 DC 实例");
+  //     }
 
-      let [kvdb] = await dc.keyValue.getStore(
-        dc.appInfo.appId,
-        "keyvalue_user_pub",
-        APPThemeConfig.appThemeAuthor
-      );
-      if (!kvdb) {
-        throw new Error("用户主题不存在");
-      }
+  //     let [kvdb] = await dc.keyValue.getStore(
+  //       dc.appInfo.appId,
+  //       "keyvalue_user_pub",
+  //       APPThemeConfig.appThemeAuthor
+  //     );
+  //     if (!kvdb) {
+  //       throw new Error("用户主题不存在");
+  //     }
 
-      alert(`成功兑换 ${points} 积分`);
-    } catch (err) {
-      setError(err.message || "兑换失败");
-    }
-  };
+  //     alert(`成功兑换 ${points} 积分`);
+  //   } catch (err) {
+  //     setError(err.message || "兑换失败");
+  //   }
+  // };
 
   const formatBytes = (bytes: number, decimals = 2) => {
     if (bytes === 0) return "0 Bytes";
@@ -398,12 +398,12 @@ const Dashboard = () => {
       />
 
       {/* 积分兑换模态框 */}
-      <PointsExchangeModal
+      {/* <PointsExchangeModal
         isOpen={showExchangeModal}
         onClose={() => setShowExchangeModal(false)}
         userPoints={userInfo?.points || 0}
         onExchange={handleExchangePoints}
-      />
+      /> */}
     </div>
   );
 };

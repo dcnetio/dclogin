@@ -13,10 +13,10 @@ import ethers from "@/helpers/ethersHelper";
 import {
   asyncAuthRecord,
   getAuthRecordsWithAccount,
-} from "@/services/account/record";
+} from "@/services/threadDB/auths";
 import { AuthRecord } from "@/types/pageType";
 import { AccountInfo } from "@/types/walletTypes";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import DAPPNote from "@/components/note/DAPPNote";
 import { container } from "@/server/dc-contianer";
 import i18n from "@/locales/i18n";
@@ -26,6 +26,7 @@ interface UserInfo extends User {
 }
 
 const Dashboard = () => {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const origin = searchParams.get("origin");
   const [userInfo, setUserInfo] = useState<UserInfo>(null);
@@ -93,9 +94,6 @@ const Dashboard = () => {
   };
 
   const handleSelectStoragePlan = (plan: any) => {
-    alert(
-      `您选择了 ${plan.name}：${plan.storage}${plan.unit}/${plan.duration}，价格：¥${plan.price}`
-    );
     setShowStorageModal(false);
   };
 
@@ -140,6 +138,10 @@ const Dashboard = () => {
         setLoginHistory(nrecords);
       }
     }
+  };
+
+  const gotoOrderRecords = () => {
+    router.push("/orders");
   };
 
   useEffect(() => {
@@ -227,20 +229,31 @@ const Dashboard = () => {
                 到期区块高度:{" "}
                 {userInfo?.expireNumber ? userInfo.expireNumber : "-"}
               </p>
-              <button
-                onClick={handleSubscribeStorage}
-                className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded flex items-center justify-center"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 mr-2"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
+              <div>
+                <button
+                  onClick={handleSubscribeStorage}
+                  className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded flex items-center justify-center"
                 >
-                  <path d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z" />
-                </svg>
-                订阅更多存储
-              </button>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 mr-2"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z" />
+                  </svg>
+                  订阅更多存储
+                </button>
+
+                {account && (
+                  <button
+                    onClick={gotoOrderRecords}
+                    className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded flex items-center justify-center"
+                  >
+                    订阅记录
+                  </button>
+                )}
+              </div>
             </div>
           </div>
 

@@ -1,8 +1,8 @@
 // import DBHelper from "@/helpers/DBHelper";
 import { getDC } from "@/components/auth/login/dc";
 import DBHelper from "@/helpers/DBHelper";
+import { tableNames } from "@/helpers/threadDBHelper";
 import { AuthRecord } from "@/types/pageType";
-const tableName = "auth_records";
 /**
  * 授权记录
  */
@@ -53,7 +53,7 @@ const addAuthRecord = async (record: AuthRecord): Promise<boolean> => {
     // 每次发布都是新增一条数据
     const [_id, error] = await dc.db.create(
       theadId,
-      tableName,
+      tableNames.auth_records,
       JSON.stringify(record)
     );
     if (error) {
@@ -87,7 +87,7 @@ const getAuthRecordsWithAccount = async (
     const theadId = dc.dbThreadId;
     const [res, error] = await dc.db.find(
       theadId,
-      tableName,
+      tableNames.auth_records,
       JSON.stringify(query)
     );
     if (error) {
@@ -121,7 +121,7 @@ const getAuthRecordsWithRecordId = async (
     const theadId = dc.dbThreadId;
     const [res, error] = await dc.db.find(
       theadId,
-      tableName,
+      tableNames.auth_records,
       JSON.stringify(query)
     );
     if (error) {

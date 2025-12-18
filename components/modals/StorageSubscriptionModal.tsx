@@ -1,11 +1,28 @@
-import { CurrencyType, PackageLang, PackageType } from "@/config/constant";
+import {
+  appState,
+  CurrencyType,
+  MsgStatus,
+  PackageLang,
+  PackageType,
+  StoragePurchaseStatus,
+} from "@/config/constant";
+import { dcConfig } from "@/config/define";
 import { useAppSelector } from "@/lib/hooks";
 import i18n from "@/locales/i18n";
 import { container } from "@/server/dc-contianer";
 import { PackageInfo } from "@/server/wxPay/interface";
 import { AccountInfo } from "@/types/walletTypes";
 import { Toast } from "antd-mobile";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import { login } from "@/services/account";
+import { useTranslation } from "react-i18next";
+import { store } from "@/lib/store";
+import { updateAuthStep } from "@/lib/slices/authSlice";
+import { saveInitState } from "@/lib/slices/appSlice";
+import { addOrderRecord, updateOrderRecord } from "@/services/threadDB/orders";
+import { OrderRecord } from "@/types/pageType";
+import QRCode from "qrcode";
 
 interface StorageSubscriptionModalProps {
   isOpen: boolean;
@@ -20,6 +37,8 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
   onSelectPlan,
   userPoints,
 }) => {
+  const { t } = useTranslation();
+  const router = useRouter();
   // 存储套餐数据
   const [storagePlans, setStoragePlans] = useState<PackageInfo[]>([]);
 
@@ -27,12 +46,17 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
   const [paymentMethod, setPaymentMethod] = useState<string>("wechat");
   const [isProcessing, setIsProcessing] = useState(false);
   const [step, setStep] = useState<number>(1);
+  const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
+  const [orderInfo, setOrderInfo] = useState<OrderRecord>(null);
 
   const account: AccountInfo = useAppSelector((state) => state.wallet.account);
+  const authInfo = useAppSelector((state) => state.auth.authInfo);
 
   useEffect(() => {
     if (isOpen) {
       getPackagesList();
+      setStep(1);
+      setIsProcessing(false);
     }
   }, [isOpen]);
 
@@ -41,12 +65,19 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
   };
 
   const backStep = () => {
-    setStep(step - 1);
+    setStep(1);
   };
 
   const nextStep = () => {
+    if (!account || !account.nftAccount) {
+      Toast.show({
+        content: "请先登录",
+        position: "center",
+      });
+      return;
+    }
     if (selectedPlan) {
-      setStep(step + 1);
+      setStep(2);
     } else {
       Toast.show({
         content: "请先选择一个存储套餐",
@@ -55,22 +86,59 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
     }
   };
 
+  const gotoLogin = async () => {
+    try {
+      // 登录逻辑
+      const [user, error] = await login();
+      if (error) {
+        // 提示失败
+        Toast.show({
+          content: t("login.failed"),
+          position: "center",
+        });
+        return;
+      }
+      if (!user) {
+        if (authInfo.needLogin) {
+          // 未登录过，前往登录页
+          router.replace(`/login`);
+        }
+        return;
+      }
+      // 提示成功，并跳转到首页
+      store.dispatch(
+        updateAuthStep({
+          type: MsgStatus.failed,
+          content: t("auth.success"),
+        })
+      );
+      // 初始化成功，
+      store.dispatch(saveInitState(appState.init_success));
+      router.replace(`${window.location.pathname}${window.location.search}`);
+    } catch (err) {
+      console.error("登录失败:", err);
+    }
+  };
+
   const handlePayment = () => {
     if (!selectedPlan) return;
 
     setIsProcessing(true);
 
-    // 模拟支付处理
-    setTimeout(() => {
-      setIsProcessing(false);
-      setSelectedPlan(null);
-    }, 2000);
+    // 创建支付订单，
+    createPayOrder();
   };
 
-  const handlePointsExchange = () => {
-    if (!selectedPlan) return;
-    onSelectPlan(selectedPlan);
-    setSelectedPlan(null);
+  const finishPayment = () => {
+    if (!orderInfo || !orderInfo.orderId) {
+      Toast.show({
+        icon: "fail",
+        content: "暂无订单信息",
+        position: "center",
+      });
+      return;
+    }
+    getStoragePurchaseStatus(orderInfo.orderId);
   };
 
   const getPackagesList = async () => {
@@ -105,6 +173,134 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
     }
   };
 
+  const createPayOrder = async () => {
+    try {
+      const wxPayManager = container.get("wxPayManager");
+      if (!wxPayManager) {
+        Toast.show({
+          icon: "fail",
+          content: "微信支付管理器未初始化",
+          position: "center",
+        });
+        return [];
+      }
+      const [tradeNo, error] = await wxPayManager.createOrder({
+        account: account.nftAccount || "",
+        pkgId: selectedPlan?.pkgId || 0,
+        description: selectedPlan?.pkgName || "",
+        amount: {
+          total: selectedPlan?.amount || 0,
+        },
+        dappid: dcConfig.appInfo.appId,
+      });
+      if (error) {
+        Toast.show({
+          icon: "fail",
+          content: error.message || "创建支付订单失败",
+          position: "center",
+        });
+        return [];
+      }
+      getNativePrepay(tradeNo);
+    } catch (error) {
+      setIsProcessing(false);
+      console.error("创建支付订单出错:", error);
+    }
+  };
+
+  const getNativePrepay = async (tradeNo: string) => {
+    try {
+      const wxPayManager = container.get("wxPayManager");
+      if (!wxPayManager) {
+        Toast.show({
+          icon: "fail",
+          content: "微信支付管理器未初始化",
+          position: "center",
+        });
+        return [];
+      }
+      const [codeUrl, error] = await wxPayManager.getNativePrepay(tradeNo);
+      if (error) {
+        Toast.show({
+          icon: "fail",
+          content: error.message || "获取支付二维码失败",
+          position: "center",
+        });
+        return [];
+      }
+      // 保存订单
+      const record = {
+        orderId: tradeNo,
+        nftAccount: account.nftAccount || "",
+        pkgId: selectedPlan?.pkgId || 0,
+        amount: selectedPlan?.amount || 0,
+        currency: selectedPlan?.currency || CurrencyType.CNY,
+        status: StoragePurchaseStatus.WAITING_CONFIRM,
+        createTime: Date.now(),
+      };
+      const id = await addOrderRecord(record);
+      setOrderInfo({
+        ...record,
+        _id: id,
+      });
+      const url = await QRCode.toDataURL(codeUrl);
+      setQrCodeUrl(url);
+      setStep(3);
+      setIsProcessing(false);
+    } catch (error) {
+      setIsProcessing(false);
+      console.error("获取支付二维码出错:", error);
+    }
+  };
+
+  const getStoragePurchaseStatus = async (tradeNo: string) => {
+    try {
+      const wxPayManager = container.get("wxPayManager");
+      if (!wxPayManager) {
+        Toast.show({
+          icon: "fail",
+          content: "微信支付管理器未初始化",
+          position: "center",
+        });
+        return [];
+      }
+      const [status, error] = await wxPayManager.getStoragePurchaseStatus(
+        tradeNo
+      );
+      if (error) {
+        Toast.show({
+          icon: "fail",
+          content: error.message || "查询订单失败",
+          position: "center",
+        });
+        return [];
+      }
+      // 根据状态处理
+      if (status === StoragePurchaseStatus.SUCCESS) {
+        // 更新订单状态
+        await updateOrderRecord({
+          ...orderInfo,
+          status: StoragePurchaseStatus.SUCCESS,
+        });
+        Toast.show({
+          icon: "success",
+          content: "订阅成功",
+          position: "center",
+        });
+      } else if (status === StoragePurchaseStatus.WAITING_CONFIRM) {
+        Toast.show({
+          icon: "info",
+          content: "订单待确认，请稍后查看",
+          position: "center",
+        });
+      }
+    } catch (error) {
+      console.error("查询订单出错:", error);
+    } finally {
+      setIsProcessing(false);
+      onClose();
+    }
+  };
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -113,7 +309,6 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
           <div className="flex justify-between items-center">
             <div>
               <h2 className="text-2xl font-bold">存储套餐订阅</h2>
-              <p className="text-gray-900 mt-1">选择适合您的存储方案</p>
             </div>
             <button
               onClick={onClose}
@@ -140,6 +335,7 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
         <div className="p-6">
           {step === 1 ? (
             <div>
+              <p className="text-gray-900 mt-1">选择适合您的存储方案</p>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {storagePlans.map((plan) => (
                   <div
@@ -281,14 +477,21 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
               <div className="flex m-8">
                 <button
                   onClick={nextStep}
-                  className="flex-1  py-3 bg-gray-700 hover:bg-gray-600 rounded-lg font-bold text-white"
-                  disabled={!selectedPlan || !account}
+                  className="flex-1 m-4 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg font-bold text-white"
                 >
                   下一步
                 </button>
+                {(!account || !account.nftAccount) && (
+                  <button
+                    onClick={gotoLogin}
+                    className="flex-1 m-4 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg font-bold text-white"
+                  >
+                    登录
+                  </button>
+                )}
               </div>
             </div>
-          ) : (
+          ) : step === 2 ? (
             <div className="max-w-2xl mx-auto">
               <div className="bg-gray-100 rounded-xl p-6 mb-6">
                 <h3 className="text-xl font-bold mb-4">确认购买</h3>
@@ -308,7 +511,7 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
 
               <div className="bg-gray-100 rounded-xl p-6 mb-6">
                 <h3 className="text-xl font-bold mb-4">支付方式</h3>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   <div
                     className={`border-2 rounded-lg p-4 cursor-pointer transition ${
                       paymentMethod === "wechat"
@@ -330,32 +533,10 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
                       <span className="font-medium">微信支付</span>
                     </div>
                   </div>
-
-                  <div
-                    className={`border-2 rounded-lg p-4 cursor-pointer transition ${
-                      paymentMethod === "alipay"
-                        ? "border-blue-500 bg-blue-500/10"
-                        : "border-gray-700 hover:border-gray-600"
-                    }`}
-                    onClick={() => setPaymentMethod("alipay")}
-                  >
-                    <div className="flex items-center">
-                      <div className="bg-blue-500 rounded-full p-2 mr-3">
-                        <svg
-                          className="h-6 w-6 text-white"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm0 22c-5.514 0-10-4.486-10-10s4.486-10 10-10 10 4.486 10 10-4.486 10-10 10zm-2-17h-2v14h2v-7h2v7h2v-14h-4z" />
-                        </svg>
-                      </div>
-                      <span className="font-medium">支付宝</span>
-                    </div>
-                  </div>
                 </div>
               </div>
 
-              <div className="bg-gray-100 rounded-xl p-6 mb-6">
+              {/* <div className="bg-gray-100 rounded-xl p-6 mb-6">
                 <h3 className="text-xl font-bold mb-4">积分抵扣</h3>
                 <div className="flex items-center justify-between p-4 bg-white rounded-lg">
                   <div>
@@ -378,7 +559,7 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
                 >
                   使用积分抵扣
                 </button>
-              </div>
+              </div> */}
 
               <div className="flex space-x-4">
                 <button
@@ -417,17 +598,30 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
                       处理中...
                     </>
                   ) : (
-                    `确认支付 ¥${selectedPlan.amount.toFixed(2)}`
+                    `确认支付 ${
+                      order.currency === CurrencyType.CNY ? "¥" : "$"
+                    }${selectedPlan.amount.toFixed(2)}`
                   )}
                 </button>
               </div>
             </div>
+          ) : (
+            /* 显示二维码*/
+            <div className="flex flex-col items-center">
+              <h2 className="text-2xl font-bold">扫一扫付款</h2>
+              <img
+                src={qrCodeUrl}
+                alt="QR Code"
+                className="m-8 w-64 h-64 bg-gray-200"
+              />
+              <button
+                onClick={finishPayment}
+                className="py-3 w-64 bg-gray-700 hover:bg-gray-600 rounded-lg font-bold text-white"
+              >
+                已完成支付
+              </button>
+            </div>
           )}
-
-          <div className="mt-8 text-center text-gray-600 text-sm">
-            <p>所有套餐均支持自动续费，可在个人中心取消</p>
-            <p className="mt-2">积分余额: {userPoints} 积分</p>
-          </div>
         </div>
       </div>
     </div>

@@ -39,8 +39,40 @@ export interface PackageInfo {
   /** PackageInfo createTime */
   createTime?: string | null;
 }
+
+interface AmountInfo {
+  /** AmountInfo total */
+  total?: number | null;
+}
+
+export interface CreateOrderRequest {
+  /** CreateOrderRequest account */
+  account?: string | null;
+
+  /** CreateOrderRequest pkgId */
+  pkgId?: number | null;
+
+  /** CreateOrderRequest description */
+  description?: string | null;
+
+  /** CreateOrderRequest amount */
+  amount?: AmountInfo | null;
+
+  /** CreateOrderRequest dappid */
+  dappid?: string | null;
+}
 export interface IWxPayManager {
   getPackages(
     params: GetPackagesReq
   ): Promise<[PackageInfo[] | null, Error | null]>;
+
+  createOrder(
+    params: CreateOrderRequest
+  ): Promise<[string | null, Error | null]>;
+
+  getNativePrepay(outTradeNo: string): Promise<[string | null, Error | null]>;
+
+  getStoragePurchaseStatus(
+    outTradeNo: string
+  ): Promise<[number | null, Error | null]>;
 }

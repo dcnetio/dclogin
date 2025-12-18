@@ -13,8 +13,8 @@ import { getDC } from "@/components/auth/login/dc";
 import { getCurrentAccount } from "./state";
 import { getEncodePwd, setEncodePwd } from "./security";
 import { saveAccountInfo } from "@/lib/slices/walletSlice";
-import { addAuthRecordIndex } from "./record";
-import { initUserDB } from "./threadDB";
+import { addAuthRecordIndex } from "../threadDB/auths";
+import { initUserDB } from "../threadDB";
 import { dcConfig } from "@/config/define";
 
 // 根据账号,生成签名的钱包账号对象

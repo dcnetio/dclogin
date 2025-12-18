@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import AccountSwitchModal from "../../modals/AccountSwitchModal";
 import { login } from "@/services/account";
 import { store } from "@/lib/store";
@@ -19,7 +19,9 @@ const Header = () => {
   const [showAccountSwitchModal, setShowAccountSwitchModal] = useState(false);
   const account: AccountInfo = useAppSelector((state) => state.wallet.account);
 
-  const handleLogin = async () => {
+  const authInfo = useAppSelector((state) => state.auth.authInfo);
+
+  const handleLogin = useCallback(async () => {
     try {
       // 登录逻辑
       const [user, error] = await login();
@@ -33,8 +35,10 @@ const Header = () => {
         return;
       }
       if (!user) {
-        // 未登录过，前往登录页
-        router.replace(`/login`);
+        if (authInfo.needLogin) {
+          // 未登录过，前往登录页
+          router.replace(`/login`);
+        }
         return;
       }
       setAccountInfo(user);
@@ -51,7 +55,7 @@ const Header = () => {
     } catch (err) {
       console.error("登录失败:", err);
     }
-  };
+  }, [authInfo]);
 
   const handleLogout = async () => {
     try {

@@ -33,7 +33,7 @@ import {
   AccountInfo,
 } from "@/types/walletTypes";
 import { checkDCInitialized, getDC } from "@/components/auth/login/dc";
-import { initUserDB } from "../account/threadDB";
+import { initUserDB } from "../threadDB";
 import { dcConfig } from "@/config/define";
 
 // 获取查询字符串

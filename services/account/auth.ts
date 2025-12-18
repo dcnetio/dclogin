@@ -5,6 +5,9 @@ import { NFTBindStatus } from "web-dc-api";
 import { AccountInfo, ConnectReqMessage } from "@/types/walletTypes";
 import { unlockWallet } from "./wallet";
 import { connectCmdHandler } from "../dapp";
+import { store } from "@/lib/store";
+import { updateAppInfo } from "@/lib/slices/authSlice";
+import { dcConfig } from "@/config/define";
 
 const bindNFTAccount = async (
   account: string = "",

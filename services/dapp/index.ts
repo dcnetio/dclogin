@@ -291,6 +291,15 @@ async function connectCmdHandler(
     const appId = dcConfig.appInfo?.appId || "";
     const dc = getDC();
     if (dc) {
+      const nAppInfo = {
+        appId: dcConfig.appInfo?.appId,
+        appName: dcConfig.appInfo?.appName,
+        appIcon: "",
+        appUrl: "",
+        appVersion: "",
+      };
+      store.dispatch(updateAppInfo(nAppInfo));
+      dc.setAppInfo(nAppInfo);
       const keymanager = new KeyManager();
       const privKey: Ed25519PrivKey =
         await keymanager.getEd25519KeyFromMnemonic(mnemonic, appId || "");

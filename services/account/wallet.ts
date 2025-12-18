@@ -16,6 +16,7 @@ import { saveAccountInfo } from "@/lib/slices/walletSlice";
 import { addAuthRecordIndex } from "../threadDB/auths";
 import { initUserDB } from "../threadDB";
 import { dcConfig } from "@/config/define";
+import { getToken } from "./auth";
 
 // 根据账号,生成签名的钱包账号对象
 async function generateWalletAccount(seedAccount: string) {
@@ -104,6 +105,10 @@ async function generateWalletAccountWithChange(seedAccount: string) {
   if (!dc) {
     return;
   }
+  const appInfo = store.getState().auth.appInfo || null;
+  if (!dc.appInfo || !dc.appInfo.appId || dc.appInfo.appId !== appInfo?.appId) {
+    dc.setAppInfo(appInfo);
+  }
   let account = null;
   // 数据库里获取账号信息
   try {
@@ -177,8 +182,13 @@ async function generateWalletAccountWithChange(seedAccount: string) {
   // 保存公钥到上下文中
   dc.setPublicKey(privKey.publicKey);
   dc.setPrivateKey(privKey);
-  // 设置threadDB
-  await initUserDB();
+  // 获取token
+  const [res, err] = await getToken(privKey.publicKey.string());
+  if (res) {
+    // 设置threadDB
+    await initUserDB();
+    window.clearToast();
+  }
   // 通过助记词导入钱包,生成带私钥钱包账号
   const wallet = await ethersHelper.createWalletAccountWithMnemonic(mnemonic);
   if (!wallet) {

@@ -7,7 +7,7 @@ import { saveInitState } from "@/lib/slices/appSlice";
 import { appState, MsgStatus } from "@/config/constant";
 import { useRouter } from "next/navigation";
 import NavigationService from "@/lib/navigation";
-import { updateAppInfo, updateAuthStep } from "@/lib/slices/authSlice";
+import { updateAuthStep } from "@/lib/slices/authSlice";
 import { useTranslation } from "next-i18next";
 import { dcConfig } from "@/config/define";
 import { ConnectReqMessage } from "@/types/walletTypes";
@@ -53,15 +53,6 @@ export default function Login() {
         );
         return;
       }
-      store.dispatch(
-        updateAppInfo({
-          appId: "",
-          appName: "",
-          appIcon: "",
-          appUrl: "",
-          appVersion: "",
-        })
-      );
       console.log("debug===========initBaseinfo start", new Date());
       // 调用初始化函数(默认信息)
       await initBaseinfo(); //初始化网络和账号信息

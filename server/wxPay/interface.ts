@@ -18,17 +18,17 @@ export interface PackageInfo {
   /** PackageInfo lang */
   lang?: string | null;
 
-  /** PackageInfo amount */
+  /** PackageInfo amount 单位分 */
   amount?: number | null;
 
   /** PackageInfo currency */
   currency?: string | null;
 
-  /** PackageInfo validDays */
+  /** PackageInfo validDays 有效天数*/
   validDays?: number | null;
 
-  /** PackageInfo callTimes */
-  callTimes?: number | null;
+  /** PackageInfo pkgRights  用户购买后的权利*/
+  pkgRights?: string | null;
 
   /** PackageInfo chainPkgId */
   chainPkgId?: number | null;
@@ -60,6 +60,8 @@ export interface CreateOrderRequest {
 
   /** CreateOrderRequest dappid */
   dappid?: string | null;
+
+  attach?: string | null; // 使用应用CID 应用发布的时候使用
 }
 export interface IWxPayManager {
   getPackages(

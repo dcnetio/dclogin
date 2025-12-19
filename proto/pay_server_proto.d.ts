@@ -77,6 +77,34 @@ export namespace pb {
          * @returns Promise
          */
         public getStoragePurchaseStatus(request: pb.IGetStoragePurchaseStatusRequest): Promise<pb.GetStoragePurchaseStatusResponse>;
+
+        /**
+         * Calls CreateCidInfo.
+         * @param request CreateCidInfoRequest message or plain object
+         * @param callback Node-style callback called with the error, if any, and CreateCidInfoResponse
+         */
+        public createCidInfo(request: pb.ICreateCidInfoRequest, callback: pb.PayService.CreateCidInfoCallback): void;
+
+        /**
+         * Calls CreateCidInfo.
+         * @param request CreateCidInfoRequest message or plain object
+         * @returns Promise
+         */
+        public createCidInfo(request: pb.ICreateCidInfoRequest): Promise<pb.CreateCidInfoResponse>;
+
+        /**
+         * Calls GetCidInfo.
+         * @param request GetCidInfoRequest message or plain object
+         * @param callback Node-style callback called with the error, if any, and GetCidInfoResponse
+         */
+        public getCidInfo(request: pb.IGetCidInfoRequest, callback: pb.PayService.GetCidInfoCallback): void;
+
+        /**
+         * Calls GetCidInfo.
+         * @param request GetCidInfoRequest message or plain object
+         * @returns Promise
+         */
+        public getCidInfo(request: pb.IGetCidInfoRequest): Promise<pb.GetCidInfoResponse>;
     }
 
     namespace PayService {
@@ -108,6 +136,20 @@ export namespace pb {
          * @param [response] GetStoragePurchaseStatusResponse
          */
         type GetStoragePurchaseStatusCallback = (error: (Error|null), response?: pb.GetStoragePurchaseStatusResponse) => void;
+
+        /**
+         * Callback as used by {@link pb.PayService#createCidInfo}.
+         * @param error Error, if any
+         * @param [response] CreateCidInfoResponse
+         */
+        type CreateCidInfoCallback = (error: (Error|null), response?: pb.CreateCidInfoResponse) => void;
+
+        /**
+         * Callback as used by {@link pb.PayService#getCidInfo}.
+         * @param error Error, if any
+         * @param [response] GetCidInfoResponse
+         */
+        type GetCidInfoCallback = (error: (Error|null), response?: pb.GetCidInfoResponse) => void;
     }
 
     /** Properties of a GetPackagesRequest. */
@@ -338,8 +380,8 @@ export namespace pb {
         /** PackageInfo validDays */
         validDays?: (number|null);
 
-        /** PackageInfo callTimes */
-        callTimes?: (number|null);
+        /** PackageInfo pkgRights */
+        pkgRights?: (number|null);
 
         /** PackageInfo chainPkgId */
         chainPkgId?: (number|null);
@@ -381,8 +423,8 @@ export namespace pb {
         /** PackageInfo validDays. */
         public validDays: number;
 
-        /** PackageInfo callTimes. */
-        public callTimes: number;
+        /** PackageInfo pkgRights. */
+        public pkgRights: number;
 
         /** PackageInfo chainPkgId. */
         public chainPkgId: number;
@@ -481,6 +523,9 @@ export namespace pb {
 
         /** CreateOrderRequest dappid */
         dappid?: (string|null);
+
+        /** CreateOrderRequest attach */
+        attach?: (string|null);
     }
 
     /** Represents a CreateOrderRequest. */
@@ -506,6 +551,9 @@ export namespace pb {
 
         /** CreateOrderRequest dappid. */
         public dappid: string;
+
+        /** CreateOrderRequest attach. */
+        public attach: string;
 
         /**
          * Creates a new CreateOrderRequest instance using the specified properties.
@@ -1419,6 +1467,1278 @@ export namespace pb {
 
         /**
          * Converts this GetStoragePurchaseStatusData to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of a CidInfo. */
+    interface ICidInfo {
+
+        /** CidInfo cid */
+        cid?: (string|null);
+
+        /** CidInfo account */
+        account?: (string|null);
+
+        /** CidInfo dappid */
+        dappid?: (string|null);
+
+        /** CidInfo payStatus */
+        payStatus?: (number|null);
+
+        /** CidInfo checkStatus */
+        checkStatus?: (number|null);
+
+        /** CidInfo checkUserId */
+        checkUserId?: (number|null);
+
+        /** CidInfo checkReason */
+        checkReason?: (string|null);
+
+        /** CidInfo checkTime */
+        checkTime?: (string|null);
+
+        /** CidInfo expiredTime */
+        expiredTime?: (string|null);
+
+        /** CidInfo createTime */
+        createTime?: (string|null);
+    }
+
+    /** Represents a CidInfo. */
+    class CidInfo implements ICidInfo {
+
+        /**
+         * Constructs a new CidInfo.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: pb.ICidInfo);
+
+        /** CidInfo cid. */
+        public cid: string;
+
+        /** CidInfo account. */
+        public account: string;
+
+        /** CidInfo dappid. */
+        public dappid: string;
+
+        /** CidInfo payStatus. */
+        public payStatus: number;
+
+        /** CidInfo checkStatus. */
+        public checkStatus: number;
+
+        /** CidInfo checkUserId. */
+        public checkUserId: number;
+
+        /** CidInfo checkReason. */
+        public checkReason: string;
+
+        /** CidInfo checkTime. */
+        public checkTime: string;
+
+        /** CidInfo expiredTime. */
+        public expiredTime: string;
+
+        /** CidInfo createTime. */
+        public createTime: string;
+
+        /**
+         * Creates a new CidInfo instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns CidInfo instance
+         */
+        public static create(properties?: pb.ICidInfo): pb.CidInfo;
+
+        /**
+         * Encodes the specified CidInfo message. Does not implicitly {@link pb.CidInfo.verify|verify} messages.
+         * @param message CidInfo message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: pb.ICidInfo, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified CidInfo message, length delimited. Does not implicitly {@link pb.CidInfo.verify|verify} messages.
+         * @param message CidInfo message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: pb.ICidInfo, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a CidInfo message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns CidInfo
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): pb.CidInfo;
+
+        /**
+         * Decodes a CidInfo message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns CidInfo
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): pb.CidInfo;
+
+        /**
+         * Verifies a CidInfo message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a CidInfo message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns CidInfo
+         */
+        public static fromObject(object: { [k: string]: any }): pb.CidInfo;
+
+        /**
+         * Creates a plain object from a CidInfo message. Also converts values to other types if specified.
+         * @param message CidInfo
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: pb.CidInfo, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this CidInfo to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of a CreateCidInfoRequest. */
+    interface ICreateCidInfoRequest {
+
+        /** CreateCidInfoRequest cid */
+        cid?: (string|null);
+
+        /** CreateCidInfoRequest account */
+        account?: (string|null);
+
+        /** CreateCidInfoRequest dappid */
+        dappid?: (string|null);
+    }
+
+    /** Represents a CreateCidInfoRequest. */
+    class CreateCidInfoRequest implements ICreateCidInfoRequest {
+
+        /**
+         * Constructs a new CreateCidInfoRequest.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: pb.ICreateCidInfoRequest);
+
+        /** CreateCidInfoRequest cid. */
+        public cid: string;
+
+        /** CreateCidInfoRequest account. */
+        public account: string;
+
+        /** CreateCidInfoRequest dappid. */
+        public dappid: string;
+
+        /**
+         * Creates a new CreateCidInfoRequest instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns CreateCidInfoRequest instance
+         */
+        public static create(properties?: pb.ICreateCidInfoRequest): pb.CreateCidInfoRequest;
+
+        /**
+         * Encodes the specified CreateCidInfoRequest message. Does not implicitly {@link pb.CreateCidInfoRequest.verify|verify} messages.
+         * @param message CreateCidInfoRequest message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: pb.ICreateCidInfoRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified CreateCidInfoRequest message, length delimited. Does not implicitly {@link pb.CreateCidInfoRequest.verify|verify} messages.
+         * @param message CreateCidInfoRequest message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: pb.ICreateCidInfoRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a CreateCidInfoRequest message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns CreateCidInfoRequest
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): pb.CreateCidInfoRequest;
+
+        /**
+         * Decodes a CreateCidInfoRequest message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns CreateCidInfoRequest
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): pb.CreateCidInfoRequest;
+
+        /**
+         * Verifies a CreateCidInfoRequest message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a CreateCidInfoRequest message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns CreateCidInfoRequest
+         */
+        public static fromObject(object: { [k: string]: any }): pb.CreateCidInfoRequest;
+
+        /**
+         * Creates a plain object from a CreateCidInfoRequest message. Also converts values to other types if specified.
+         * @param message CreateCidInfoRequest
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: pb.CreateCidInfoRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this CreateCidInfoRequest to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of a CreateCidInfoResponse. */
+    interface ICreateCidInfoResponse {
+
+        /** CreateCidInfoResponse code */
+        code?: (number|null);
+
+        /** CreateCidInfoResponse message */
+        message?: (string|null);
+    }
+
+    /** Represents a CreateCidInfoResponse. */
+    class CreateCidInfoResponse implements ICreateCidInfoResponse {
+
+        /**
+         * Constructs a new CreateCidInfoResponse.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: pb.ICreateCidInfoResponse);
+
+        /** CreateCidInfoResponse code. */
+        public code: number;
+
+        /** CreateCidInfoResponse message. */
+        public message: string;
+
+        /**
+         * Creates a new CreateCidInfoResponse instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns CreateCidInfoResponse instance
+         */
+        public static create(properties?: pb.ICreateCidInfoResponse): pb.CreateCidInfoResponse;
+
+        /**
+         * Encodes the specified CreateCidInfoResponse message. Does not implicitly {@link pb.CreateCidInfoResponse.verify|verify} messages.
+         * @param message CreateCidInfoResponse message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: pb.ICreateCidInfoResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified CreateCidInfoResponse message, length delimited. Does not implicitly {@link pb.CreateCidInfoResponse.verify|verify} messages.
+         * @param message CreateCidInfoResponse message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: pb.ICreateCidInfoResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a CreateCidInfoResponse message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns CreateCidInfoResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): pb.CreateCidInfoResponse;
+
+        /**
+         * Decodes a CreateCidInfoResponse message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns CreateCidInfoResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): pb.CreateCidInfoResponse;
+
+        /**
+         * Verifies a CreateCidInfoResponse message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a CreateCidInfoResponse message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns CreateCidInfoResponse
+         */
+        public static fromObject(object: { [k: string]: any }): pb.CreateCidInfoResponse;
+
+        /**
+         * Creates a plain object from a CreateCidInfoResponse message. Also converts values to other types if specified.
+         * @param message CreateCidInfoResponse
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: pb.CreateCidInfoResponse, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this CreateCidInfoResponse to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of a GetCidInfoRequest. */
+    interface IGetCidInfoRequest {
+
+        /** GetCidInfoRequest cid */
+        cid?: (string|null);
+    }
+
+    /** Represents a GetCidInfoRequest. */
+    class GetCidInfoRequest implements IGetCidInfoRequest {
+
+        /**
+         * Constructs a new GetCidInfoRequest.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: pb.IGetCidInfoRequest);
+
+        /** GetCidInfoRequest cid. */
+        public cid: string;
+
+        /**
+         * Creates a new GetCidInfoRequest instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns GetCidInfoRequest instance
+         */
+        public static create(properties?: pb.IGetCidInfoRequest): pb.GetCidInfoRequest;
+
+        /**
+         * Encodes the specified GetCidInfoRequest message. Does not implicitly {@link pb.GetCidInfoRequest.verify|verify} messages.
+         * @param message GetCidInfoRequest message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: pb.IGetCidInfoRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified GetCidInfoRequest message, length delimited. Does not implicitly {@link pb.GetCidInfoRequest.verify|verify} messages.
+         * @param message GetCidInfoRequest message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: pb.IGetCidInfoRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a GetCidInfoRequest message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns GetCidInfoRequest
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): pb.GetCidInfoRequest;
+
+        /**
+         * Decodes a GetCidInfoRequest message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns GetCidInfoRequest
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): pb.GetCidInfoRequest;
+
+        /**
+         * Verifies a GetCidInfoRequest message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a GetCidInfoRequest message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns GetCidInfoRequest
+         */
+        public static fromObject(object: { [k: string]: any }): pb.GetCidInfoRequest;
+
+        /**
+         * Creates a plain object from a GetCidInfoRequest message. Also converts values to other types if specified.
+         * @param message GetCidInfoRequest
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: pb.GetCidInfoRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this GetCidInfoRequest to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of a GetCidInfoResponse. */
+    interface IGetCidInfoResponse {
+
+        /** GetCidInfoResponse code */
+        code?: (number|null);
+
+        /** GetCidInfoResponse message */
+        message?: (string|null);
+
+        /** GetCidInfoResponse data */
+        data?: (pb.ICidInfo|null);
+    }
+
+    /** Represents a GetCidInfoResponse. */
+    class GetCidInfoResponse implements IGetCidInfoResponse {
+
+        /**
+         * Constructs a new GetCidInfoResponse.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: pb.IGetCidInfoResponse);
+
+        /** GetCidInfoResponse code. */
+        public code: number;
+
+        /** GetCidInfoResponse message. */
+        public message: string;
+
+        /** GetCidInfoResponse data. */
+        public data?: (pb.ICidInfo|null);
+
+        /**
+         * Creates a new GetCidInfoResponse instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns GetCidInfoResponse instance
+         */
+        public static create(properties?: pb.IGetCidInfoResponse): pb.GetCidInfoResponse;
+
+        /**
+         * Encodes the specified GetCidInfoResponse message. Does not implicitly {@link pb.GetCidInfoResponse.verify|verify} messages.
+         * @param message GetCidInfoResponse message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: pb.IGetCidInfoResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified GetCidInfoResponse message, length delimited. Does not implicitly {@link pb.GetCidInfoResponse.verify|verify} messages.
+         * @param message GetCidInfoResponse message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: pb.IGetCidInfoResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a GetCidInfoResponse message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns GetCidInfoResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): pb.GetCidInfoResponse;
+
+        /**
+         * Decodes a GetCidInfoResponse message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns GetCidInfoResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): pb.GetCidInfoResponse;
+
+        /**
+         * Verifies a GetCidInfoResponse message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a GetCidInfoResponse message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns GetCidInfoResponse
+         */
+        public static fromObject(object: { [k: string]: any }): pb.GetCidInfoResponse;
+
+        /**
+         * Creates a plain object from a GetCidInfoResponse message. Also converts values to other types if specified.
+         * @param message GetCidInfoResponse
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: pb.GetCidInfoResponse, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this GetCidInfoResponse to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of a PageQueryRequest. */
+    interface IPageQueryRequest {
+
+        /** PageQueryRequest page */
+        page?: (number|null);
+
+        /** PageQueryRequest pageSize */
+        pageSize?: (number|null);
+
+        /** PageQueryRequest account */
+        account?: (string|null);
+
+        /** PageQueryRequest dappid */
+        dappid?: (string|null);
+
+        /** PageQueryRequest payStatus */
+        payStatus?: (number|null);
+
+        /** PageQueryRequest checkStatus */
+        checkStatus?: (number|null);
+
+        /** PageQueryRequest startTime */
+        startTime?: (string|null);
+
+        /** PageQueryRequest endTime */
+        endTime?: (string|null);
+    }
+
+    /** Represents a PageQueryRequest. */
+    class PageQueryRequest implements IPageQueryRequest {
+
+        /**
+         * Constructs a new PageQueryRequest.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: pb.IPageQueryRequest);
+
+        /** PageQueryRequest page. */
+        public page: number;
+
+        /** PageQueryRequest pageSize. */
+        public pageSize: number;
+
+        /** PageQueryRequest account. */
+        public account: string;
+
+        /** PageQueryRequest dappid. */
+        public dappid: string;
+
+        /** PageQueryRequest payStatus. */
+        public payStatus: number;
+
+        /** PageQueryRequest checkStatus. */
+        public checkStatus: number;
+
+        /** PageQueryRequest startTime. */
+        public startTime: string;
+
+        /** PageQueryRequest endTime. */
+        public endTime: string;
+
+        /**
+         * Creates a new PageQueryRequest instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns PageQueryRequest instance
+         */
+        public static create(properties?: pb.IPageQueryRequest): pb.PageQueryRequest;
+
+        /**
+         * Encodes the specified PageQueryRequest message. Does not implicitly {@link pb.PageQueryRequest.verify|verify} messages.
+         * @param message PageQueryRequest message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: pb.IPageQueryRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified PageQueryRequest message, length delimited. Does not implicitly {@link pb.PageQueryRequest.verify|verify} messages.
+         * @param message PageQueryRequest message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: pb.IPageQueryRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a PageQueryRequest message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns PageQueryRequest
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): pb.PageQueryRequest;
+
+        /**
+         * Decodes a PageQueryRequest message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns PageQueryRequest
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): pb.PageQueryRequest;
+
+        /**
+         * Verifies a PageQueryRequest message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a PageQueryRequest message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns PageQueryRequest
+         */
+        public static fromObject(object: { [k: string]: any }): pb.PageQueryRequest;
+
+        /**
+         * Creates a plain object from a PageQueryRequest message. Also converts values to other types if specified.
+         * @param message PageQueryRequest
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: pb.PageQueryRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this PageQueryRequest to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of a PageQueryResponse. */
+    interface IPageQueryResponse {
+
+        /** PageQueryResponse code */
+        code?: (number|null);
+
+        /** PageQueryResponse message */
+        message?: (string|null);
+
+        /** PageQueryResponse data */
+        data?: (pb.ICIDPageResult|null);
+    }
+
+    /** Represents a PageQueryResponse. */
+    class PageQueryResponse implements IPageQueryResponse {
+
+        /**
+         * Constructs a new PageQueryResponse.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: pb.IPageQueryResponse);
+
+        /** PageQueryResponse code. */
+        public code: number;
+
+        /** PageQueryResponse message. */
+        public message: string;
+
+        /** PageQueryResponse data. */
+        public data?: (pb.ICIDPageResult|null);
+
+        /**
+         * Creates a new PageQueryResponse instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns PageQueryResponse instance
+         */
+        public static create(properties?: pb.IPageQueryResponse): pb.PageQueryResponse;
+
+        /**
+         * Encodes the specified PageQueryResponse message. Does not implicitly {@link pb.PageQueryResponse.verify|verify} messages.
+         * @param message PageQueryResponse message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: pb.IPageQueryResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified PageQueryResponse message, length delimited. Does not implicitly {@link pb.PageQueryResponse.verify|verify} messages.
+         * @param message PageQueryResponse message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: pb.IPageQueryResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a PageQueryResponse message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns PageQueryResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): pb.PageQueryResponse;
+
+        /**
+         * Decodes a PageQueryResponse message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns PageQueryResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): pb.PageQueryResponse;
+
+        /**
+         * Verifies a PageQueryResponse message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a PageQueryResponse message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns PageQueryResponse
+         */
+        public static fromObject(object: { [k: string]: any }): pb.PageQueryResponse;
+
+        /**
+         * Creates a plain object from a PageQueryResponse message. Also converts values to other types if specified.
+         * @param message PageQueryResponse
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: pb.PageQueryResponse, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this PageQueryResponse to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of a CIDPageResult. */
+    interface ICIDPageResult {
+
+        /** CIDPageResult total */
+        total?: (number|Long|null);
+
+        /** CIDPageResult list */
+        list?: (pb.ICidInfo[]|null);
+
+        /** CIDPageResult page */
+        page?: (number|null);
+
+        /** CIDPageResult pageSize */
+        pageSize?: (number|null);
+
+        /** CIDPageResult totalPages */
+        totalPages?: (number|null);
+    }
+
+    /** Represents a CIDPageResult. */
+    class CIDPageResult implements ICIDPageResult {
+
+        /**
+         * Constructs a new CIDPageResult.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: pb.ICIDPageResult);
+
+        /** CIDPageResult total. */
+        public total: (number|Long);
+
+        /** CIDPageResult list. */
+        public list: pb.ICidInfo[];
+
+        /** CIDPageResult page. */
+        public page: number;
+
+        /** CIDPageResult pageSize. */
+        public pageSize: number;
+
+        /** CIDPageResult totalPages. */
+        public totalPages: number;
+
+        /**
+         * Creates a new CIDPageResult instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns CIDPageResult instance
+         */
+        public static create(properties?: pb.ICIDPageResult): pb.CIDPageResult;
+
+        /**
+         * Encodes the specified CIDPageResult message. Does not implicitly {@link pb.CIDPageResult.verify|verify} messages.
+         * @param message CIDPageResult message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: pb.ICIDPageResult, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified CIDPageResult message, length delimited. Does not implicitly {@link pb.CIDPageResult.verify|verify} messages.
+         * @param message CIDPageResult message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: pb.ICIDPageResult, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a CIDPageResult message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns CIDPageResult
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): pb.CIDPageResult;
+
+        /**
+         * Decodes a CIDPageResult message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns CIDPageResult
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): pb.CIDPageResult;
+
+        /**
+         * Verifies a CIDPageResult message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a CIDPageResult message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns CIDPageResult
+         */
+        public static fromObject(object: { [k: string]: any }): pb.CIDPageResult;
+
+        /**
+         * Creates a plain object from a CIDPageResult message. Also converts values to other types if specified.
+         * @param message CIDPageResult
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: pb.CIDPageResult, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this CIDPageResult to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of an UpdateCheckStatusRequest. */
+    interface IUpdateCheckStatusRequest {
+
+        /** UpdateCheckStatusRequest cid */
+        cid?: (string|null);
+
+        /** UpdateCheckStatusRequest checkStatus */
+        checkStatus?: (number|null);
+
+        /** UpdateCheckStatusRequest checkUserId */
+        checkUserId?: (number|null);
+
+        /** UpdateCheckStatusRequest checkReason */
+        checkReason?: (string|null);
+    }
+
+    /** Represents an UpdateCheckStatusRequest. */
+    class UpdateCheckStatusRequest implements IUpdateCheckStatusRequest {
+
+        /**
+         * Constructs a new UpdateCheckStatusRequest.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: pb.IUpdateCheckStatusRequest);
+
+        /** UpdateCheckStatusRequest cid. */
+        public cid: string;
+
+        /** UpdateCheckStatusRequest checkStatus. */
+        public checkStatus: number;
+
+        /** UpdateCheckStatusRequest checkUserId. */
+        public checkUserId: number;
+
+        /** UpdateCheckStatusRequest checkReason. */
+        public checkReason: string;
+
+        /**
+         * Creates a new UpdateCheckStatusRequest instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns UpdateCheckStatusRequest instance
+         */
+        public static create(properties?: pb.IUpdateCheckStatusRequest): pb.UpdateCheckStatusRequest;
+
+        /**
+         * Encodes the specified UpdateCheckStatusRequest message. Does not implicitly {@link pb.UpdateCheckStatusRequest.verify|verify} messages.
+         * @param message UpdateCheckStatusRequest message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: pb.IUpdateCheckStatusRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified UpdateCheckStatusRequest message, length delimited. Does not implicitly {@link pb.UpdateCheckStatusRequest.verify|verify} messages.
+         * @param message UpdateCheckStatusRequest message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: pb.IUpdateCheckStatusRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes an UpdateCheckStatusRequest message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns UpdateCheckStatusRequest
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): pb.UpdateCheckStatusRequest;
+
+        /**
+         * Decodes an UpdateCheckStatusRequest message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns UpdateCheckStatusRequest
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): pb.UpdateCheckStatusRequest;
+
+        /**
+         * Verifies an UpdateCheckStatusRequest message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates an UpdateCheckStatusRequest message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns UpdateCheckStatusRequest
+         */
+        public static fromObject(object: { [k: string]: any }): pb.UpdateCheckStatusRequest;
+
+        /**
+         * Creates a plain object from an UpdateCheckStatusRequest message. Also converts values to other types if specified.
+         * @param message UpdateCheckStatusRequest
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: pb.UpdateCheckStatusRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this UpdateCheckStatusRequest to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of an UpdateCheckStatusResponse. */
+    interface IUpdateCheckStatusResponse {
+
+        /** UpdateCheckStatusResponse code */
+        code?: (number|null);
+
+        /** UpdateCheckStatusResponse message */
+        message?: (string|null);
+    }
+
+    /** Represents an UpdateCheckStatusResponse. */
+    class UpdateCheckStatusResponse implements IUpdateCheckStatusResponse {
+
+        /**
+         * Constructs a new UpdateCheckStatusResponse.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: pb.IUpdateCheckStatusResponse);
+
+        /** UpdateCheckStatusResponse code. */
+        public code: number;
+
+        /** UpdateCheckStatusResponse message. */
+        public message: string;
+
+        /**
+         * Creates a new UpdateCheckStatusResponse instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns UpdateCheckStatusResponse instance
+         */
+        public static create(properties?: pb.IUpdateCheckStatusResponse): pb.UpdateCheckStatusResponse;
+
+        /**
+         * Encodes the specified UpdateCheckStatusResponse message. Does not implicitly {@link pb.UpdateCheckStatusResponse.verify|verify} messages.
+         * @param message UpdateCheckStatusResponse message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: pb.IUpdateCheckStatusResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified UpdateCheckStatusResponse message, length delimited. Does not implicitly {@link pb.UpdateCheckStatusResponse.verify|verify} messages.
+         * @param message UpdateCheckStatusResponse message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: pb.IUpdateCheckStatusResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes an UpdateCheckStatusResponse message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns UpdateCheckStatusResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): pb.UpdateCheckStatusResponse;
+
+        /**
+         * Decodes an UpdateCheckStatusResponse message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns UpdateCheckStatusResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): pb.UpdateCheckStatusResponse;
+
+        /**
+         * Verifies an UpdateCheckStatusResponse message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates an UpdateCheckStatusResponse message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns UpdateCheckStatusResponse
+         */
+        public static fromObject(object: { [k: string]: any }): pb.UpdateCheckStatusResponse;
+
+        /**
+         * Creates a plain object from an UpdateCheckStatusResponse message. Also converts values to other types if specified.
+         * @param message UpdateCheckStatusResponse
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: pb.UpdateCheckStatusResponse, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this UpdateCheckStatusResponse to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of a DeleteCidInfoRequest. */
+    interface IDeleteCidInfoRequest {
+
+        /** DeleteCidInfoRequest cid */
+        cid?: (string|null);
+    }
+
+    /** Represents a DeleteCidInfoRequest. */
+    class DeleteCidInfoRequest implements IDeleteCidInfoRequest {
+
+        /**
+         * Constructs a new DeleteCidInfoRequest.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: pb.IDeleteCidInfoRequest);
+
+        /** DeleteCidInfoRequest cid. */
+        public cid: string;
+
+        /**
+         * Creates a new DeleteCidInfoRequest instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns DeleteCidInfoRequest instance
+         */
+        public static create(properties?: pb.IDeleteCidInfoRequest): pb.DeleteCidInfoRequest;
+
+        /**
+         * Encodes the specified DeleteCidInfoRequest message. Does not implicitly {@link pb.DeleteCidInfoRequest.verify|verify} messages.
+         * @param message DeleteCidInfoRequest message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: pb.IDeleteCidInfoRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified DeleteCidInfoRequest message, length delimited. Does not implicitly {@link pb.DeleteCidInfoRequest.verify|verify} messages.
+         * @param message DeleteCidInfoRequest message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: pb.IDeleteCidInfoRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a DeleteCidInfoRequest message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns DeleteCidInfoRequest
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): pb.DeleteCidInfoRequest;
+
+        /**
+         * Decodes a DeleteCidInfoRequest message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns DeleteCidInfoRequest
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): pb.DeleteCidInfoRequest;
+
+        /**
+         * Verifies a DeleteCidInfoRequest message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a DeleteCidInfoRequest message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns DeleteCidInfoRequest
+         */
+        public static fromObject(object: { [k: string]: any }): pb.DeleteCidInfoRequest;
+
+        /**
+         * Creates a plain object from a DeleteCidInfoRequest message. Also converts values to other types if specified.
+         * @param message DeleteCidInfoRequest
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: pb.DeleteCidInfoRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this DeleteCidInfoRequest to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of a DeleteCidInfoResponse. */
+    interface IDeleteCidInfoResponse {
+
+        /** DeleteCidInfoResponse code */
+        code?: (number|null);
+
+        /** DeleteCidInfoResponse message */
+        message?: (string|null);
+    }
+
+    /** Represents a DeleteCidInfoResponse. */
+    class DeleteCidInfoResponse implements IDeleteCidInfoResponse {
+
+        /**
+         * Constructs a new DeleteCidInfoResponse.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: pb.IDeleteCidInfoResponse);
+
+        /** DeleteCidInfoResponse code. */
+        public code: number;
+
+        /** DeleteCidInfoResponse message. */
+        public message: string;
+
+        /**
+         * Creates a new DeleteCidInfoResponse instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns DeleteCidInfoResponse instance
+         */
+        public static create(properties?: pb.IDeleteCidInfoResponse): pb.DeleteCidInfoResponse;
+
+        /**
+         * Encodes the specified DeleteCidInfoResponse message. Does not implicitly {@link pb.DeleteCidInfoResponse.verify|verify} messages.
+         * @param message DeleteCidInfoResponse message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: pb.IDeleteCidInfoResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified DeleteCidInfoResponse message, length delimited. Does not implicitly {@link pb.DeleteCidInfoResponse.verify|verify} messages.
+         * @param message DeleteCidInfoResponse message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: pb.IDeleteCidInfoResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a DeleteCidInfoResponse message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns DeleteCidInfoResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): pb.DeleteCidInfoResponse;
+
+        /**
+         * Decodes a DeleteCidInfoResponse message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns DeleteCidInfoResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): pb.DeleteCidInfoResponse;
+
+        /**
+         * Verifies a DeleteCidInfoResponse message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a DeleteCidInfoResponse message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns DeleteCidInfoResponse
+         */
+        public static fromObject(object: { [k: string]: any }): pb.DeleteCidInfoResponse;
+
+        /**
+         * Creates a plain object from a DeleteCidInfoResponse message. Also converts values to other types if specified.
+         * @param message DeleteCidInfoResponse
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: pb.DeleteCidInfoResponse, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this DeleteCidInfoResponse to JSON.
          * @returns JSON object
          */
         public toJSON(): { [k: string]: any };

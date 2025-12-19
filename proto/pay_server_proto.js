@@ -180,6 +180,72 @@ export const pb = $root.pb = (() => {
          * @variation 2
          */
 
+        /**
+         * Callback as used by {@link pb.PayService#createCidInfo}.
+         * @memberof pb.PayService
+         * @typedef CreateCidInfoCallback
+         * @type {function}
+         * @param {Error|null} error Error, if any
+         * @param {pb.CreateCidInfoResponse} [response] CreateCidInfoResponse
+         */
+
+        /**
+         * Calls CreateCidInfo.
+         * @function createCidInfo
+         * @memberof pb.PayService
+         * @instance
+         * @param {pb.ICreateCidInfoRequest} request CreateCidInfoRequest message or plain object
+         * @param {pb.PayService.CreateCidInfoCallback} callback Node-style callback called with the error, if any, and CreateCidInfoResponse
+         * @returns {undefined}
+         * @variation 1
+         */
+        Object.defineProperty(PayService.prototype.createCidInfo = function createCidInfo(request, callback) {
+            return this.rpcCall(createCidInfo, $root.pb.CreateCidInfoRequest, $root.pb.CreateCidInfoResponse, request, callback);
+        }, "name", { value: "CreateCidInfo" });
+
+        /**
+         * Calls CreateCidInfo.
+         * @function createCidInfo
+         * @memberof pb.PayService
+         * @instance
+         * @param {pb.ICreateCidInfoRequest} request CreateCidInfoRequest message or plain object
+         * @returns {Promise<pb.CreateCidInfoResponse>} Promise
+         * @variation 2
+         */
+
+        /**
+         * Callback as used by {@link pb.PayService#getCidInfo}.
+         * @memberof pb.PayService
+         * @typedef GetCidInfoCallback
+         * @type {function}
+         * @param {Error|null} error Error, if any
+         * @param {pb.GetCidInfoResponse} [response] GetCidInfoResponse
+         */
+
+        /**
+         * Calls GetCidInfo.
+         * @function getCidInfo
+         * @memberof pb.PayService
+         * @instance
+         * @param {pb.IGetCidInfoRequest} request GetCidInfoRequest message or plain object
+         * @param {pb.PayService.GetCidInfoCallback} callback Node-style callback called with the error, if any, and GetCidInfoResponse
+         * @returns {undefined}
+         * @variation 1
+         */
+        Object.defineProperty(PayService.prototype.getCidInfo = function getCidInfo(request, callback) {
+            return this.rpcCall(getCidInfo, $root.pb.GetCidInfoRequest, $root.pb.GetCidInfoResponse, request, callback);
+        }, "name", { value: "GetCidInfo" });
+
+        /**
+         * Calls GetCidInfo.
+         * @function getCidInfo
+         * @memberof pb.PayService
+         * @instance
+         * @param {pb.IGetCidInfoRequest} request GetCidInfoRequest message or plain object
+         * @returns {Promise<pb.GetCidInfoResponse>} Promise
+         * @variation 2
+         */
+
         return PayService;
     })();
 
@@ -682,7 +748,7 @@ export const pb = $root.pb = (() => {
          * @property {number|null} [amount] PackageInfo amount
          * @property {string|null} [currency] PackageInfo currency
          * @property {number|null} [validDays] PackageInfo validDays
-         * @property {number|null} [callTimes] PackageInfo callTimes
+         * @property {number|null} [pkgRights] PackageInfo pkgRights
          * @property {number|null} [chainPkgId] PackageInfo chainPkgId
          * @property {number|null} [spaceSize] PackageInfo spaceSize
          * @property {string|null} [createTime] PackageInfo createTime
@@ -760,12 +826,12 @@ export const pb = $root.pb = (() => {
         PackageInfo.prototype.validDays = 0;
 
         /**
-         * PackageInfo callTimes.
-         * @member {number} callTimes
+         * PackageInfo pkgRights.
+         * @member {number} pkgRights
          * @memberof pb.PackageInfo
          * @instance
          */
-        PackageInfo.prototype.callTimes = 0;
+        PackageInfo.prototype.pkgRights = 0;
 
         /**
          * PackageInfo chainPkgId.
@@ -829,8 +895,8 @@ export const pb = $root.pb = (() => {
                 writer.uint32(/* id 6, wireType 2 =*/50).string(message.currency);
             if (message.validDays != null && Object.hasOwnProperty.call(message, "validDays"))
                 writer.uint32(/* id 7, wireType 0 =*/56).int32(message.validDays);
-            if (message.callTimes != null && Object.hasOwnProperty.call(message, "callTimes"))
-                writer.uint32(/* id 8, wireType 0 =*/64).int32(message.callTimes);
+            if (message.pkgRights != null && Object.hasOwnProperty.call(message, "pkgRights"))
+                writer.uint32(/* id 8, wireType 0 =*/64).int32(message.pkgRights);
             if (message.chainPkgId != null && Object.hasOwnProperty.call(message, "chainPkgId"))
                 writer.uint32(/* id 9, wireType 0 =*/72).int32(message.chainPkgId);
             if (message.spaceSize != null && Object.hasOwnProperty.call(message, "spaceSize"))
@@ -893,7 +959,7 @@ export const pb = $root.pb = (() => {
                     message.validDays = reader.int32();
                     break;
                 case 8:
-                    message.callTimes = reader.int32();
+                    message.pkgRights = reader.int32();
                     break;
                 case 9:
                     message.chainPkgId = reader.int32();
@@ -960,9 +1026,9 @@ export const pb = $root.pb = (() => {
             if (message.validDays != null && message.hasOwnProperty("validDays"))
                 if (!$util.isInteger(message.validDays))
                     return "validDays: integer expected";
-            if (message.callTimes != null && message.hasOwnProperty("callTimes"))
-                if (!$util.isInteger(message.callTimes))
-                    return "callTimes: integer expected";
+            if (message.pkgRights != null && message.hasOwnProperty("pkgRights"))
+                if (!$util.isInteger(message.pkgRights))
+                    return "pkgRights: integer expected";
             if (message.chainPkgId != null && message.hasOwnProperty("chainPkgId"))
                 if (!$util.isInteger(message.chainPkgId))
                     return "chainPkgId: integer expected";
@@ -1001,8 +1067,8 @@ export const pb = $root.pb = (() => {
                 message.currency = String(object.currency);
             if (object.validDays != null)
                 message.validDays = object.validDays | 0;
-            if (object.callTimes != null)
-                message.callTimes = object.callTimes | 0;
+            if (object.pkgRights != null)
+                message.pkgRights = object.pkgRights | 0;
             if (object.chainPkgId != null)
                 message.chainPkgId = object.chainPkgId | 0;
             if (object.spaceSize != null)
@@ -1033,7 +1099,7 @@ export const pb = $root.pb = (() => {
                 object.amount = 0;
                 object.currency = "";
                 object.validDays = 0;
-                object.callTimes = 0;
+                object.pkgRights = 0;
                 object.chainPkgId = 0;
                 object.spaceSize = 0;
                 object.createTime = "";
@@ -1052,8 +1118,8 @@ export const pb = $root.pb = (() => {
                 object.currency = message.currency;
             if (message.validDays != null && message.hasOwnProperty("validDays"))
                 object.validDays = message.validDays;
-            if (message.callTimes != null && message.hasOwnProperty("callTimes"))
-                object.callTimes = message.callTimes;
+            if (message.pkgRights != null && message.hasOwnProperty("pkgRights"))
+                object.pkgRights = message.pkgRights;
             if (message.chainPkgId != null && message.hasOwnProperty("chainPkgId"))
                 object.chainPkgId = message.chainPkgId;
             if (message.spaceSize != null && message.hasOwnProperty("spaceSize"))
@@ -1088,6 +1154,7 @@ export const pb = $root.pb = (() => {
          * @property {string|null} [description] CreateOrderRequest description
          * @property {pb.IAmountInfo|null} [amount] CreateOrderRequest amount
          * @property {string|null} [dappid] CreateOrderRequest dappid
+         * @property {string|null} [attach] CreateOrderRequest attach
          */
 
         /**
@@ -1146,6 +1213,14 @@ export const pb = $root.pb = (() => {
         CreateOrderRequest.prototype.dappid = "";
 
         /**
+         * CreateOrderRequest attach.
+         * @member {string} attach
+         * @memberof pb.CreateOrderRequest
+         * @instance
+         */
+        CreateOrderRequest.prototype.attach = "";
+
+        /**
          * Creates a new CreateOrderRequest instance using the specified properties.
          * @function create
          * @memberof pb.CreateOrderRequest
@@ -1179,6 +1254,8 @@ export const pb = $root.pb = (() => {
                 $root.pb.AmountInfo.encode(message.amount, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
             if (message.dappid != null && Object.hasOwnProperty.call(message, "dappid"))
                 writer.uint32(/* id 5, wireType 2 =*/42).string(message.dappid);
+            if (message.attach != null && Object.hasOwnProperty.call(message, "attach"))
+                writer.uint32(/* id 6, wireType 2 =*/50).string(message.attach);
             return writer;
         };
 
@@ -1227,6 +1304,9 @@ export const pb = $root.pb = (() => {
                     break;
                 case 5:
                     message.dappid = reader.string();
+                    break;
+                case 6:
+                    message.attach = reader.string();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -1280,6 +1360,9 @@ export const pb = $root.pb = (() => {
             if (message.dappid != null && message.hasOwnProperty("dappid"))
                 if (!$util.isString(message.dappid))
                     return "dappid: string expected";
+            if (message.attach != null && message.hasOwnProperty("attach"))
+                if (!$util.isString(message.attach))
+                    return "attach: string expected";
             return null;
         };
 
@@ -1308,6 +1391,8 @@ export const pb = $root.pb = (() => {
             }
             if (object.dappid != null)
                 message.dappid = String(object.dappid);
+            if (object.attach != null)
+                message.attach = String(object.attach);
             return message;
         };
 
@@ -1330,6 +1415,7 @@ export const pb = $root.pb = (() => {
                 object.description = "";
                 object.amount = null;
                 object.dappid = "";
+                object.attach = "";
             }
             if (message.account != null && message.hasOwnProperty("account"))
                 object.account = message.account;
@@ -1341,6 +1427,8 @@ export const pb = $root.pb = (() => {
                 object.amount = $root.pb.AmountInfo.toObject(message.amount, options);
             if (message.dappid != null && message.hasOwnProperty("dappid"))
                 object.dappid = message.dappid;
+            if (message.attach != null && message.hasOwnProperty("attach"))
+                object.attach = message.attach;
             return object;
         };
 
@@ -3189,6 +3277,3010 @@ export const pb = $root.pb = (() => {
         };
 
         return GetStoragePurchaseStatusData;
+    })();
+
+    pb.CidInfo = (function() {
+
+        /**
+         * Properties of a CidInfo.
+         * @memberof pb
+         * @interface ICidInfo
+         * @property {string|null} [cid] CidInfo cid
+         * @property {string|null} [account] CidInfo account
+         * @property {string|null} [dappid] CidInfo dappid
+         * @property {number|null} [payStatus] CidInfo payStatus
+         * @property {number|null} [checkStatus] CidInfo checkStatus
+         * @property {number|null} [checkUserId] CidInfo checkUserId
+         * @property {string|null} [checkReason] CidInfo checkReason
+         * @property {string|null} [checkTime] CidInfo checkTime
+         * @property {string|null} [expiredTime] CidInfo expiredTime
+         * @property {string|null} [createTime] CidInfo createTime
+         */
+
+        /**
+         * Constructs a new CidInfo.
+         * @memberof pb
+         * @classdesc Represents a CidInfo.
+         * @implements ICidInfo
+         * @constructor
+         * @param {pb.ICidInfo=} [properties] Properties to set
+         */
+        function CidInfo(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * CidInfo cid.
+         * @member {string} cid
+         * @memberof pb.CidInfo
+         * @instance
+         */
+        CidInfo.prototype.cid = "";
+
+        /**
+         * CidInfo account.
+         * @member {string} account
+         * @memberof pb.CidInfo
+         * @instance
+         */
+        CidInfo.prototype.account = "";
+
+        /**
+         * CidInfo dappid.
+         * @member {string} dappid
+         * @memberof pb.CidInfo
+         * @instance
+         */
+        CidInfo.prototype.dappid = "";
+
+        /**
+         * CidInfo payStatus.
+         * @member {number} payStatus
+         * @memberof pb.CidInfo
+         * @instance
+         */
+        CidInfo.prototype.payStatus = 0;
+
+        /**
+         * CidInfo checkStatus.
+         * @member {number} checkStatus
+         * @memberof pb.CidInfo
+         * @instance
+         */
+        CidInfo.prototype.checkStatus = 0;
+
+        /**
+         * CidInfo checkUserId.
+         * @member {number} checkUserId
+         * @memberof pb.CidInfo
+         * @instance
+         */
+        CidInfo.prototype.checkUserId = 0;
+
+        /**
+         * CidInfo checkReason.
+         * @member {string} checkReason
+         * @memberof pb.CidInfo
+         * @instance
+         */
+        CidInfo.prototype.checkReason = "";
+
+        /**
+         * CidInfo checkTime.
+         * @member {string} checkTime
+         * @memberof pb.CidInfo
+         * @instance
+         */
+        CidInfo.prototype.checkTime = "";
+
+        /**
+         * CidInfo expiredTime.
+         * @member {string} expiredTime
+         * @memberof pb.CidInfo
+         * @instance
+         */
+        CidInfo.prototype.expiredTime = "";
+
+        /**
+         * CidInfo createTime.
+         * @member {string} createTime
+         * @memberof pb.CidInfo
+         * @instance
+         */
+        CidInfo.prototype.createTime = "";
+
+        /**
+         * Creates a new CidInfo instance using the specified properties.
+         * @function create
+         * @memberof pb.CidInfo
+         * @static
+         * @param {pb.ICidInfo=} [properties] Properties to set
+         * @returns {pb.CidInfo} CidInfo instance
+         */
+        CidInfo.create = function create(properties) {
+            return new CidInfo(properties);
+        };
+
+        /**
+         * Encodes the specified CidInfo message. Does not implicitly {@link pb.CidInfo.verify|verify} messages.
+         * @function encode
+         * @memberof pb.CidInfo
+         * @static
+         * @param {pb.ICidInfo} message CidInfo message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        CidInfo.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.cid != null && Object.hasOwnProperty.call(message, "cid"))
+                writer.uint32(/* id 1, wireType 2 =*/10).string(message.cid);
+            if (message.account != null && Object.hasOwnProperty.call(message, "account"))
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.account);
+            if (message.dappid != null && Object.hasOwnProperty.call(message, "dappid"))
+                writer.uint32(/* id 3, wireType 2 =*/26).string(message.dappid);
+            if (message.payStatus != null && Object.hasOwnProperty.call(message, "payStatus"))
+                writer.uint32(/* id 4, wireType 0 =*/32).int32(message.payStatus);
+            if (message.checkStatus != null && Object.hasOwnProperty.call(message, "checkStatus"))
+                writer.uint32(/* id 5, wireType 0 =*/40).int32(message.checkStatus);
+            if (message.checkUserId != null && Object.hasOwnProperty.call(message, "checkUserId"))
+                writer.uint32(/* id 6, wireType 0 =*/48).int32(message.checkUserId);
+            if (message.checkReason != null && Object.hasOwnProperty.call(message, "checkReason"))
+                writer.uint32(/* id 7, wireType 2 =*/58).string(message.checkReason);
+            if (message.checkTime != null && Object.hasOwnProperty.call(message, "checkTime"))
+                writer.uint32(/* id 8, wireType 2 =*/66).string(message.checkTime);
+            if (message.expiredTime != null && Object.hasOwnProperty.call(message, "expiredTime"))
+                writer.uint32(/* id 9, wireType 2 =*/74).string(message.expiredTime);
+            if (message.createTime != null && Object.hasOwnProperty.call(message, "createTime"))
+                writer.uint32(/* id 10, wireType 2 =*/82).string(message.createTime);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified CidInfo message, length delimited. Does not implicitly {@link pb.CidInfo.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof pb.CidInfo
+         * @static
+         * @param {pb.ICidInfo} message CidInfo message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        CidInfo.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a CidInfo message from the specified reader or buffer.
+         * @function decode
+         * @memberof pb.CidInfo
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {pb.CidInfo} CidInfo
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        CidInfo.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.pb.CidInfo();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.cid = reader.string();
+                    break;
+                case 2:
+                    message.account = reader.string();
+                    break;
+                case 3:
+                    message.dappid = reader.string();
+                    break;
+                case 4:
+                    message.payStatus = reader.int32();
+                    break;
+                case 5:
+                    message.checkStatus = reader.int32();
+                    break;
+                case 6:
+                    message.checkUserId = reader.int32();
+                    break;
+                case 7:
+                    message.checkReason = reader.string();
+                    break;
+                case 8:
+                    message.checkTime = reader.string();
+                    break;
+                case 9:
+                    message.expiredTime = reader.string();
+                    break;
+                case 10:
+                    message.createTime = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a CidInfo message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof pb.CidInfo
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {pb.CidInfo} CidInfo
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        CidInfo.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a CidInfo message.
+         * @function verify
+         * @memberof pb.CidInfo
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        CidInfo.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.cid != null && message.hasOwnProperty("cid"))
+                if (!$util.isString(message.cid))
+                    return "cid: string expected";
+            if (message.account != null && message.hasOwnProperty("account"))
+                if (!$util.isString(message.account))
+                    return "account: string expected";
+            if (message.dappid != null && message.hasOwnProperty("dappid"))
+                if (!$util.isString(message.dappid))
+                    return "dappid: string expected";
+            if (message.payStatus != null && message.hasOwnProperty("payStatus"))
+                if (!$util.isInteger(message.payStatus))
+                    return "payStatus: integer expected";
+            if (message.checkStatus != null && message.hasOwnProperty("checkStatus"))
+                if (!$util.isInteger(message.checkStatus))
+                    return "checkStatus: integer expected";
+            if (message.checkUserId != null && message.hasOwnProperty("checkUserId"))
+                if (!$util.isInteger(message.checkUserId))
+                    return "checkUserId: integer expected";
+            if (message.checkReason != null && message.hasOwnProperty("checkReason"))
+                if (!$util.isString(message.checkReason))
+                    return "checkReason: string expected";
+            if (message.checkTime != null && message.hasOwnProperty("checkTime"))
+                if (!$util.isString(message.checkTime))
+                    return "checkTime: string expected";
+            if (message.expiredTime != null && message.hasOwnProperty("expiredTime"))
+                if (!$util.isString(message.expiredTime))
+                    return "expiredTime: string expected";
+            if (message.createTime != null && message.hasOwnProperty("createTime"))
+                if (!$util.isString(message.createTime))
+                    return "createTime: string expected";
+            return null;
+        };
+
+        /**
+         * Creates a CidInfo message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof pb.CidInfo
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {pb.CidInfo} CidInfo
+         */
+        CidInfo.fromObject = function fromObject(object) {
+            if (object instanceof $root.pb.CidInfo)
+                return object;
+            let message = new $root.pb.CidInfo();
+            if (object.cid != null)
+                message.cid = String(object.cid);
+            if (object.account != null)
+                message.account = String(object.account);
+            if (object.dappid != null)
+                message.dappid = String(object.dappid);
+            if (object.payStatus != null)
+                message.payStatus = object.payStatus | 0;
+            if (object.checkStatus != null)
+                message.checkStatus = object.checkStatus | 0;
+            if (object.checkUserId != null)
+                message.checkUserId = object.checkUserId | 0;
+            if (object.checkReason != null)
+                message.checkReason = String(object.checkReason);
+            if (object.checkTime != null)
+                message.checkTime = String(object.checkTime);
+            if (object.expiredTime != null)
+                message.expiredTime = String(object.expiredTime);
+            if (object.createTime != null)
+                message.createTime = String(object.createTime);
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a CidInfo message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof pb.CidInfo
+         * @static
+         * @param {pb.CidInfo} message CidInfo
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        CidInfo.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.defaults) {
+                object.cid = "";
+                object.account = "";
+                object.dappid = "";
+                object.payStatus = 0;
+                object.checkStatus = 0;
+                object.checkUserId = 0;
+                object.checkReason = "";
+                object.checkTime = "";
+                object.expiredTime = "";
+                object.createTime = "";
+            }
+            if (message.cid != null && message.hasOwnProperty("cid"))
+                object.cid = message.cid;
+            if (message.account != null && message.hasOwnProperty("account"))
+                object.account = message.account;
+            if (message.dappid != null && message.hasOwnProperty("dappid"))
+                object.dappid = message.dappid;
+            if (message.payStatus != null && message.hasOwnProperty("payStatus"))
+                object.payStatus = message.payStatus;
+            if (message.checkStatus != null && message.hasOwnProperty("checkStatus"))
+                object.checkStatus = message.checkStatus;
+            if (message.checkUserId != null && message.hasOwnProperty("checkUserId"))
+                object.checkUserId = message.checkUserId;
+            if (message.checkReason != null && message.hasOwnProperty("checkReason"))
+                object.checkReason = message.checkReason;
+            if (message.checkTime != null && message.hasOwnProperty("checkTime"))
+                object.checkTime = message.checkTime;
+            if (message.expiredTime != null && message.hasOwnProperty("expiredTime"))
+                object.expiredTime = message.expiredTime;
+            if (message.createTime != null && message.hasOwnProperty("createTime"))
+                object.createTime = message.createTime;
+            return object;
+        };
+
+        /**
+         * Converts this CidInfo to JSON.
+         * @function toJSON
+         * @memberof pb.CidInfo
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        CidInfo.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return CidInfo;
+    })();
+
+    pb.CreateCidInfoRequest = (function() {
+
+        /**
+         * Properties of a CreateCidInfoRequest.
+         * @memberof pb
+         * @interface ICreateCidInfoRequest
+         * @property {string|null} [cid] CreateCidInfoRequest cid
+         * @property {string|null} [account] CreateCidInfoRequest account
+         * @property {string|null} [dappid] CreateCidInfoRequest dappid
+         */
+
+        /**
+         * Constructs a new CreateCidInfoRequest.
+         * @memberof pb
+         * @classdesc Represents a CreateCidInfoRequest.
+         * @implements ICreateCidInfoRequest
+         * @constructor
+         * @param {pb.ICreateCidInfoRequest=} [properties] Properties to set
+         */
+        function CreateCidInfoRequest(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * CreateCidInfoRequest cid.
+         * @member {string} cid
+         * @memberof pb.CreateCidInfoRequest
+         * @instance
+         */
+        CreateCidInfoRequest.prototype.cid = "";
+
+        /**
+         * CreateCidInfoRequest account.
+         * @member {string} account
+         * @memberof pb.CreateCidInfoRequest
+         * @instance
+         */
+        CreateCidInfoRequest.prototype.account = "";
+
+        /**
+         * CreateCidInfoRequest dappid.
+         * @member {string} dappid
+         * @memberof pb.CreateCidInfoRequest
+         * @instance
+         */
+        CreateCidInfoRequest.prototype.dappid = "";
+
+        /**
+         * Creates a new CreateCidInfoRequest instance using the specified properties.
+         * @function create
+         * @memberof pb.CreateCidInfoRequest
+         * @static
+         * @param {pb.ICreateCidInfoRequest=} [properties] Properties to set
+         * @returns {pb.CreateCidInfoRequest} CreateCidInfoRequest instance
+         */
+        CreateCidInfoRequest.create = function create(properties) {
+            return new CreateCidInfoRequest(properties);
+        };
+
+        /**
+         * Encodes the specified CreateCidInfoRequest message. Does not implicitly {@link pb.CreateCidInfoRequest.verify|verify} messages.
+         * @function encode
+         * @memberof pb.CreateCidInfoRequest
+         * @static
+         * @param {pb.ICreateCidInfoRequest} message CreateCidInfoRequest message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        CreateCidInfoRequest.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.cid != null && Object.hasOwnProperty.call(message, "cid"))
+                writer.uint32(/* id 1, wireType 2 =*/10).string(message.cid);
+            if (message.account != null && Object.hasOwnProperty.call(message, "account"))
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.account);
+            if (message.dappid != null && Object.hasOwnProperty.call(message, "dappid"))
+                writer.uint32(/* id 3, wireType 2 =*/26).string(message.dappid);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified CreateCidInfoRequest message, length delimited. Does not implicitly {@link pb.CreateCidInfoRequest.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof pb.CreateCidInfoRequest
+         * @static
+         * @param {pb.ICreateCidInfoRequest} message CreateCidInfoRequest message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        CreateCidInfoRequest.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a CreateCidInfoRequest message from the specified reader or buffer.
+         * @function decode
+         * @memberof pb.CreateCidInfoRequest
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {pb.CreateCidInfoRequest} CreateCidInfoRequest
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        CreateCidInfoRequest.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.pb.CreateCidInfoRequest();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.cid = reader.string();
+                    break;
+                case 2:
+                    message.account = reader.string();
+                    break;
+                case 3:
+                    message.dappid = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a CreateCidInfoRequest message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof pb.CreateCidInfoRequest
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {pb.CreateCidInfoRequest} CreateCidInfoRequest
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        CreateCidInfoRequest.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a CreateCidInfoRequest message.
+         * @function verify
+         * @memberof pb.CreateCidInfoRequest
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        CreateCidInfoRequest.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.cid != null && message.hasOwnProperty("cid"))
+                if (!$util.isString(message.cid))
+                    return "cid: string expected";
+            if (message.account != null && message.hasOwnProperty("account"))
+                if (!$util.isString(message.account))
+                    return "account: string expected";
+            if (message.dappid != null && message.hasOwnProperty("dappid"))
+                if (!$util.isString(message.dappid))
+                    return "dappid: string expected";
+            return null;
+        };
+
+        /**
+         * Creates a CreateCidInfoRequest message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof pb.CreateCidInfoRequest
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {pb.CreateCidInfoRequest} CreateCidInfoRequest
+         */
+        CreateCidInfoRequest.fromObject = function fromObject(object) {
+            if (object instanceof $root.pb.CreateCidInfoRequest)
+                return object;
+            let message = new $root.pb.CreateCidInfoRequest();
+            if (object.cid != null)
+                message.cid = String(object.cid);
+            if (object.account != null)
+                message.account = String(object.account);
+            if (object.dappid != null)
+                message.dappid = String(object.dappid);
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a CreateCidInfoRequest message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof pb.CreateCidInfoRequest
+         * @static
+         * @param {pb.CreateCidInfoRequest} message CreateCidInfoRequest
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        CreateCidInfoRequest.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.defaults) {
+                object.cid = "";
+                object.account = "";
+                object.dappid = "";
+            }
+            if (message.cid != null && message.hasOwnProperty("cid"))
+                object.cid = message.cid;
+            if (message.account != null && message.hasOwnProperty("account"))
+                object.account = message.account;
+            if (message.dappid != null && message.hasOwnProperty("dappid"))
+                object.dappid = message.dappid;
+            return object;
+        };
+
+        /**
+         * Converts this CreateCidInfoRequest to JSON.
+         * @function toJSON
+         * @memberof pb.CreateCidInfoRequest
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        CreateCidInfoRequest.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return CreateCidInfoRequest;
+    })();
+
+    pb.CreateCidInfoResponse = (function() {
+
+        /**
+         * Properties of a CreateCidInfoResponse.
+         * @memberof pb
+         * @interface ICreateCidInfoResponse
+         * @property {number|null} [code] CreateCidInfoResponse code
+         * @property {string|null} [message] CreateCidInfoResponse message
+         */
+
+        /**
+         * Constructs a new CreateCidInfoResponse.
+         * @memberof pb
+         * @classdesc Represents a CreateCidInfoResponse.
+         * @implements ICreateCidInfoResponse
+         * @constructor
+         * @param {pb.ICreateCidInfoResponse=} [properties] Properties to set
+         */
+        function CreateCidInfoResponse(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * CreateCidInfoResponse code.
+         * @member {number} code
+         * @memberof pb.CreateCidInfoResponse
+         * @instance
+         */
+        CreateCidInfoResponse.prototype.code = 0;
+
+        /**
+         * CreateCidInfoResponse message.
+         * @member {string} message
+         * @memberof pb.CreateCidInfoResponse
+         * @instance
+         */
+        CreateCidInfoResponse.prototype.message = "";
+
+        /**
+         * Creates a new CreateCidInfoResponse instance using the specified properties.
+         * @function create
+         * @memberof pb.CreateCidInfoResponse
+         * @static
+         * @param {pb.ICreateCidInfoResponse=} [properties] Properties to set
+         * @returns {pb.CreateCidInfoResponse} CreateCidInfoResponse instance
+         */
+        CreateCidInfoResponse.create = function create(properties) {
+            return new CreateCidInfoResponse(properties);
+        };
+
+        /**
+         * Encodes the specified CreateCidInfoResponse message. Does not implicitly {@link pb.CreateCidInfoResponse.verify|verify} messages.
+         * @function encode
+         * @memberof pb.CreateCidInfoResponse
+         * @static
+         * @param {pb.ICreateCidInfoResponse} message CreateCidInfoResponse message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        CreateCidInfoResponse.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.code != null && Object.hasOwnProperty.call(message, "code"))
+                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.code);
+            if (message.message != null && Object.hasOwnProperty.call(message, "message"))
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.message);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified CreateCidInfoResponse message, length delimited. Does not implicitly {@link pb.CreateCidInfoResponse.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof pb.CreateCidInfoResponse
+         * @static
+         * @param {pb.ICreateCidInfoResponse} message CreateCidInfoResponse message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        CreateCidInfoResponse.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a CreateCidInfoResponse message from the specified reader or buffer.
+         * @function decode
+         * @memberof pb.CreateCidInfoResponse
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {pb.CreateCidInfoResponse} CreateCidInfoResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        CreateCidInfoResponse.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.pb.CreateCidInfoResponse();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.code = reader.int32();
+                    break;
+                case 2:
+                    message.message = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a CreateCidInfoResponse message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof pb.CreateCidInfoResponse
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {pb.CreateCidInfoResponse} CreateCidInfoResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        CreateCidInfoResponse.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a CreateCidInfoResponse message.
+         * @function verify
+         * @memberof pb.CreateCidInfoResponse
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        CreateCidInfoResponse.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.code != null && message.hasOwnProperty("code"))
+                if (!$util.isInteger(message.code))
+                    return "code: integer expected";
+            if (message.message != null && message.hasOwnProperty("message"))
+                if (!$util.isString(message.message))
+                    return "message: string expected";
+            return null;
+        };
+
+        /**
+         * Creates a CreateCidInfoResponse message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof pb.CreateCidInfoResponse
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {pb.CreateCidInfoResponse} CreateCidInfoResponse
+         */
+        CreateCidInfoResponse.fromObject = function fromObject(object) {
+            if (object instanceof $root.pb.CreateCidInfoResponse)
+                return object;
+            let message = new $root.pb.CreateCidInfoResponse();
+            if (object.code != null)
+                message.code = object.code | 0;
+            if (object.message != null)
+                message.message = String(object.message);
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a CreateCidInfoResponse message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof pb.CreateCidInfoResponse
+         * @static
+         * @param {pb.CreateCidInfoResponse} message CreateCidInfoResponse
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        CreateCidInfoResponse.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.defaults) {
+                object.code = 0;
+                object.message = "";
+            }
+            if (message.code != null && message.hasOwnProperty("code"))
+                object.code = message.code;
+            if (message.message != null && message.hasOwnProperty("message"))
+                object.message = message.message;
+            return object;
+        };
+
+        /**
+         * Converts this CreateCidInfoResponse to JSON.
+         * @function toJSON
+         * @memberof pb.CreateCidInfoResponse
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        CreateCidInfoResponse.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return CreateCidInfoResponse;
+    })();
+
+    pb.GetCidInfoRequest = (function() {
+
+        /**
+         * Properties of a GetCidInfoRequest.
+         * @memberof pb
+         * @interface IGetCidInfoRequest
+         * @property {string|null} [cid] GetCidInfoRequest cid
+         */
+
+        /**
+         * Constructs a new GetCidInfoRequest.
+         * @memberof pb
+         * @classdesc Represents a GetCidInfoRequest.
+         * @implements IGetCidInfoRequest
+         * @constructor
+         * @param {pb.IGetCidInfoRequest=} [properties] Properties to set
+         */
+        function GetCidInfoRequest(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * GetCidInfoRequest cid.
+         * @member {string} cid
+         * @memberof pb.GetCidInfoRequest
+         * @instance
+         */
+        GetCidInfoRequest.prototype.cid = "";
+
+        /**
+         * Creates a new GetCidInfoRequest instance using the specified properties.
+         * @function create
+         * @memberof pb.GetCidInfoRequest
+         * @static
+         * @param {pb.IGetCidInfoRequest=} [properties] Properties to set
+         * @returns {pb.GetCidInfoRequest} GetCidInfoRequest instance
+         */
+        GetCidInfoRequest.create = function create(properties) {
+            return new GetCidInfoRequest(properties);
+        };
+
+        /**
+         * Encodes the specified GetCidInfoRequest message. Does not implicitly {@link pb.GetCidInfoRequest.verify|verify} messages.
+         * @function encode
+         * @memberof pb.GetCidInfoRequest
+         * @static
+         * @param {pb.IGetCidInfoRequest} message GetCidInfoRequest message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        GetCidInfoRequest.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.cid != null && Object.hasOwnProperty.call(message, "cid"))
+                writer.uint32(/* id 1, wireType 2 =*/10).string(message.cid);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified GetCidInfoRequest message, length delimited. Does not implicitly {@link pb.GetCidInfoRequest.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof pb.GetCidInfoRequest
+         * @static
+         * @param {pb.IGetCidInfoRequest} message GetCidInfoRequest message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        GetCidInfoRequest.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a GetCidInfoRequest message from the specified reader or buffer.
+         * @function decode
+         * @memberof pb.GetCidInfoRequest
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {pb.GetCidInfoRequest} GetCidInfoRequest
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        GetCidInfoRequest.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.pb.GetCidInfoRequest();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.cid = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a GetCidInfoRequest message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof pb.GetCidInfoRequest
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {pb.GetCidInfoRequest} GetCidInfoRequest
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        GetCidInfoRequest.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a GetCidInfoRequest message.
+         * @function verify
+         * @memberof pb.GetCidInfoRequest
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        GetCidInfoRequest.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.cid != null && message.hasOwnProperty("cid"))
+                if (!$util.isString(message.cid))
+                    return "cid: string expected";
+            return null;
+        };
+
+        /**
+         * Creates a GetCidInfoRequest message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof pb.GetCidInfoRequest
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {pb.GetCidInfoRequest} GetCidInfoRequest
+         */
+        GetCidInfoRequest.fromObject = function fromObject(object) {
+            if (object instanceof $root.pb.GetCidInfoRequest)
+                return object;
+            let message = new $root.pb.GetCidInfoRequest();
+            if (object.cid != null)
+                message.cid = String(object.cid);
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a GetCidInfoRequest message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof pb.GetCidInfoRequest
+         * @static
+         * @param {pb.GetCidInfoRequest} message GetCidInfoRequest
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        GetCidInfoRequest.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.defaults)
+                object.cid = "";
+            if (message.cid != null && message.hasOwnProperty("cid"))
+                object.cid = message.cid;
+            return object;
+        };
+
+        /**
+         * Converts this GetCidInfoRequest to JSON.
+         * @function toJSON
+         * @memberof pb.GetCidInfoRequest
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        GetCidInfoRequest.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return GetCidInfoRequest;
+    })();
+
+    pb.GetCidInfoResponse = (function() {
+
+        /**
+         * Properties of a GetCidInfoResponse.
+         * @memberof pb
+         * @interface IGetCidInfoResponse
+         * @property {number|null} [code] GetCidInfoResponse code
+         * @property {string|null} [message] GetCidInfoResponse message
+         * @property {pb.ICidInfo|null} [data] GetCidInfoResponse data
+         */
+
+        /**
+         * Constructs a new GetCidInfoResponse.
+         * @memberof pb
+         * @classdesc Represents a GetCidInfoResponse.
+         * @implements IGetCidInfoResponse
+         * @constructor
+         * @param {pb.IGetCidInfoResponse=} [properties] Properties to set
+         */
+        function GetCidInfoResponse(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * GetCidInfoResponse code.
+         * @member {number} code
+         * @memberof pb.GetCidInfoResponse
+         * @instance
+         */
+        GetCidInfoResponse.prototype.code = 0;
+
+        /**
+         * GetCidInfoResponse message.
+         * @member {string} message
+         * @memberof pb.GetCidInfoResponse
+         * @instance
+         */
+        GetCidInfoResponse.prototype.message = "";
+
+        /**
+         * GetCidInfoResponse data.
+         * @member {pb.ICidInfo|null|undefined} data
+         * @memberof pb.GetCidInfoResponse
+         * @instance
+         */
+        GetCidInfoResponse.prototype.data = null;
+
+        /**
+         * Creates a new GetCidInfoResponse instance using the specified properties.
+         * @function create
+         * @memberof pb.GetCidInfoResponse
+         * @static
+         * @param {pb.IGetCidInfoResponse=} [properties] Properties to set
+         * @returns {pb.GetCidInfoResponse} GetCidInfoResponse instance
+         */
+        GetCidInfoResponse.create = function create(properties) {
+            return new GetCidInfoResponse(properties);
+        };
+
+        /**
+         * Encodes the specified GetCidInfoResponse message. Does not implicitly {@link pb.GetCidInfoResponse.verify|verify} messages.
+         * @function encode
+         * @memberof pb.GetCidInfoResponse
+         * @static
+         * @param {pb.IGetCidInfoResponse} message GetCidInfoResponse message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        GetCidInfoResponse.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.code != null && Object.hasOwnProperty.call(message, "code"))
+                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.code);
+            if (message.message != null && Object.hasOwnProperty.call(message, "message"))
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.message);
+            if (message.data != null && Object.hasOwnProperty.call(message, "data"))
+                $root.pb.CidInfo.encode(message.data, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Encodes the specified GetCidInfoResponse message, length delimited. Does not implicitly {@link pb.GetCidInfoResponse.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof pb.GetCidInfoResponse
+         * @static
+         * @param {pb.IGetCidInfoResponse} message GetCidInfoResponse message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        GetCidInfoResponse.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a GetCidInfoResponse message from the specified reader or buffer.
+         * @function decode
+         * @memberof pb.GetCidInfoResponse
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {pb.GetCidInfoResponse} GetCidInfoResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        GetCidInfoResponse.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.pb.GetCidInfoResponse();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.code = reader.int32();
+                    break;
+                case 2:
+                    message.message = reader.string();
+                    break;
+                case 3:
+                    message.data = $root.pb.CidInfo.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a GetCidInfoResponse message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof pb.GetCidInfoResponse
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {pb.GetCidInfoResponse} GetCidInfoResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        GetCidInfoResponse.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a GetCidInfoResponse message.
+         * @function verify
+         * @memberof pb.GetCidInfoResponse
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        GetCidInfoResponse.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.code != null && message.hasOwnProperty("code"))
+                if (!$util.isInteger(message.code))
+                    return "code: integer expected";
+            if (message.message != null && message.hasOwnProperty("message"))
+                if (!$util.isString(message.message))
+                    return "message: string expected";
+            if (message.data != null && message.hasOwnProperty("data")) {
+                let error = $root.pb.CidInfo.verify(message.data);
+                if (error)
+                    return "data." + error;
+            }
+            return null;
+        };
+
+        /**
+         * Creates a GetCidInfoResponse message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof pb.GetCidInfoResponse
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {pb.GetCidInfoResponse} GetCidInfoResponse
+         */
+        GetCidInfoResponse.fromObject = function fromObject(object) {
+            if (object instanceof $root.pb.GetCidInfoResponse)
+                return object;
+            let message = new $root.pb.GetCidInfoResponse();
+            if (object.code != null)
+                message.code = object.code | 0;
+            if (object.message != null)
+                message.message = String(object.message);
+            if (object.data != null) {
+                if (typeof object.data !== "object")
+                    throw TypeError(".pb.GetCidInfoResponse.data: object expected");
+                message.data = $root.pb.CidInfo.fromObject(object.data);
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a GetCidInfoResponse message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof pb.GetCidInfoResponse
+         * @static
+         * @param {pb.GetCidInfoResponse} message GetCidInfoResponse
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        GetCidInfoResponse.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.defaults) {
+                object.code = 0;
+                object.message = "";
+                object.data = null;
+            }
+            if (message.code != null && message.hasOwnProperty("code"))
+                object.code = message.code;
+            if (message.message != null && message.hasOwnProperty("message"))
+                object.message = message.message;
+            if (message.data != null && message.hasOwnProperty("data"))
+                object.data = $root.pb.CidInfo.toObject(message.data, options);
+            return object;
+        };
+
+        /**
+         * Converts this GetCidInfoResponse to JSON.
+         * @function toJSON
+         * @memberof pb.GetCidInfoResponse
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        GetCidInfoResponse.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return GetCidInfoResponse;
+    })();
+
+    pb.PageQueryRequest = (function() {
+
+        /**
+         * Properties of a PageQueryRequest.
+         * @memberof pb
+         * @interface IPageQueryRequest
+         * @property {number|null} [page] PageQueryRequest page
+         * @property {number|null} [pageSize] PageQueryRequest pageSize
+         * @property {string|null} [account] PageQueryRequest account
+         * @property {string|null} [dappid] PageQueryRequest dappid
+         * @property {number|null} [payStatus] PageQueryRequest payStatus
+         * @property {number|null} [checkStatus] PageQueryRequest checkStatus
+         * @property {string|null} [startTime] PageQueryRequest startTime
+         * @property {string|null} [endTime] PageQueryRequest endTime
+         */
+
+        /**
+         * Constructs a new PageQueryRequest.
+         * @memberof pb
+         * @classdesc Represents a PageQueryRequest.
+         * @implements IPageQueryRequest
+         * @constructor
+         * @param {pb.IPageQueryRequest=} [properties] Properties to set
+         */
+        function PageQueryRequest(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * PageQueryRequest page.
+         * @member {number} page
+         * @memberof pb.PageQueryRequest
+         * @instance
+         */
+        PageQueryRequest.prototype.page = 0;
+
+        /**
+         * PageQueryRequest pageSize.
+         * @member {number} pageSize
+         * @memberof pb.PageQueryRequest
+         * @instance
+         */
+        PageQueryRequest.prototype.pageSize = 0;
+
+        /**
+         * PageQueryRequest account.
+         * @member {string} account
+         * @memberof pb.PageQueryRequest
+         * @instance
+         */
+        PageQueryRequest.prototype.account = "";
+
+        /**
+         * PageQueryRequest dappid.
+         * @member {string} dappid
+         * @memberof pb.PageQueryRequest
+         * @instance
+         */
+        PageQueryRequest.prototype.dappid = "";
+
+        /**
+         * PageQueryRequest payStatus.
+         * @member {number} payStatus
+         * @memberof pb.PageQueryRequest
+         * @instance
+         */
+        PageQueryRequest.prototype.payStatus = 0;
+
+        /**
+         * PageQueryRequest checkStatus.
+         * @member {number} checkStatus
+         * @memberof pb.PageQueryRequest
+         * @instance
+         */
+        PageQueryRequest.prototype.checkStatus = 0;
+
+        /**
+         * PageQueryRequest startTime.
+         * @member {string} startTime
+         * @memberof pb.PageQueryRequest
+         * @instance
+         */
+        PageQueryRequest.prototype.startTime = "";
+
+        /**
+         * PageQueryRequest endTime.
+         * @member {string} endTime
+         * @memberof pb.PageQueryRequest
+         * @instance
+         */
+        PageQueryRequest.prototype.endTime = "";
+
+        /**
+         * Creates a new PageQueryRequest instance using the specified properties.
+         * @function create
+         * @memberof pb.PageQueryRequest
+         * @static
+         * @param {pb.IPageQueryRequest=} [properties] Properties to set
+         * @returns {pb.PageQueryRequest} PageQueryRequest instance
+         */
+        PageQueryRequest.create = function create(properties) {
+            return new PageQueryRequest(properties);
+        };
+
+        /**
+         * Encodes the specified PageQueryRequest message. Does not implicitly {@link pb.PageQueryRequest.verify|verify} messages.
+         * @function encode
+         * @memberof pb.PageQueryRequest
+         * @static
+         * @param {pb.IPageQueryRequest} message PageQueryRequest message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        PageQueryRequest.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.page != null && Object.hasOwnProperty.call(message, "page"))
+                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.page);
+            if (message.pageSize != null && Object.hasOwnProperty.call(message, "pageSize"))
+                writer.uint32(/* id 2, wireType 0 =*/16).int32(message.pageSize);
+            if (message.account != null && Object.hasOwnProperty.call(message, "account"))
+                writer.uint32(/* id 3, wireType 2 =*/26).string(message.account);
+            if (message.dappid != null && Object.hasOwnProperty.call(message, "dappid"))
+                writer.uint32(/* id 4, wireType 2 =*/34).string(message.dappid);
+            if (message.payStatus != null && Object.hasOwnProperty.call(message, "payStatus"))
+                writer.uint32(/* id 5, wireType 0 =*/40).int32(message.payStatus);
+            if (message.checkStatus != null && Object.hasOwnProperty.call(message, "checkStatus"))
+                writer.uint32(/* id 6, wireType 0 =*/48).int32(message.checkStatus);
+            if (message.startTime != null && Object.hasOwnProperty.call(message, "startTime"))
+                writer.uint32(/* id 7, wireType 2 =*/58).string(message.startTime);
+            if (message.endTime != null && Object.hasOwnProperty.call(message, "endTime"))
+                writer.uint32(/* id 8, wireType 2 =*/66).string(message.endTime);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified PageQueryRequest message, length delimited. Does not implicitly {@link pb.PageQueryRequest.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof pb.PageQueryRequest
+         * @static
+         * @param {pb.IPageQueryRequest} message PageQueryRequest message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        PageQueryRequest.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a PageQueryRequest message from the specified reader or buffer.
+         * @function decode
+         * @memberof pb.PageQueryRequest
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {pb.PageQueryRequest} PageQueryRequest
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        PageQueryRequest.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.pb.PageQueryRequest();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.page = reader.int32();
+                    break;
+                case 2:
+                    message.pageSize = reader.int32();
+                    break;
+                case 3:
+                    message.account = reader.string();
+                    break;
+                case 4:
+                    message.dappid = reader.string();
+                    break;
+                case 5:
+                    message.payStatus = reader.int32();
+                    break;
+                case 6:
+                    message.checkStatus = reader.int32();
+                    break;
+                case 7:
+                    message.startTime = reader.string();
+                    break;
+                case 8:
+                    message.endTime = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a PageQueryRequest message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof pb.PageQueryRequest
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {pb.PageQueryRequest} PageQueryRequest
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        PageQueryRequest.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a PageQueryRequest message.
+         * @function verify
+         * @memberof pb.PageQueryRequest
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        PageQueryRequest.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.page != null && message.hasOwnProperty("page"))
+                if (!$util.isInteger(message.page))
+                    return "page: integer expected";
+            if (message.pageSize != null && message.hasOwnProperty("pageSize"))
+                if (!$util.isInteger(message.pageSize))
+                    return "pageSize: integer expected";
+            if (message.account != null && message.hasOwnProperty("account"))
+                if (!$util.isString(message.account))
+                    return "account: string expected";
+            if (message.dappid != null && message.hasOwnProperty("dappid"))
+                if (!$util.isString(message.dappid))
+                    return "dappid: string expected";
+            if (message.payStatus != null && message.hasOwnProperty("payStatus"))
+                if (!$util.isInteger(message.payStatus))
+                    return "payStatus: integer expected";
+            if (message.checkStatus != null && message.hasOwnProperty("checkStatus"))
+                if (!$util.isInteger(message.checkStatus))
+                    return "checkStatus: integer expected";
+            if (message.startTime != null && message.hasOwnProperty("startTime"))
+                if (!$util.isString(message.startTime))
+                    return "startTime: string expected";
+            if (message.endTime != null && message.hasOwnProperty("endTime"))
+                if (!$util.isString(message.endTime))
+                    return "endTime: string expected";
+            return null;
+        };
+
+        /**
+         * Creates a PageQueryRequest message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof pb.PageQueryRequest
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {pb.PageQueryRequest} PageQueryRequest
+         */
+        PageQueryRequest.fromObject = function fromObject(object) {
+            if (object instanceof $root.pb.PageQueryRequest)
+                return object;
+            let message = new $root.pb.PageQueryRequest();
+            if (object.page != null)
+                message.page = object.page | 0;
+            if (object.pageSize != null)
+                message.pageSize = object.pageSize | 0;
+            if (object.account != null)
+                message.account = String(object.account);
+            if (object.dappid != null)
+                message.dappid = String(object.dappid);
+            if (object.payStatus != null)
+                message.payStatus = object.payStatus | 0;
+            if (object.checkStatus != null)
+                message.checkStatus = object.checkStatus | 0;
+            if (object.startTime != null)
+                message.startTime = String(object.startTime);
+            if (object.endTime != null)
+                message.endTime = String(object.endTime);
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a PageQueryRequest message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof pb.PageQueryRequest
+         * @static
+         * @param {pb.PageQueryRequest} message PageQueryRequest
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        PageQueryRequest.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.defaults) {
+                object.page = 0;
+                object.pageSize = 0;
+                object.account = "";
+                object.dappid = "";
+                object.payStatus = 0;
+                object.checkStatus = 0;
+                object.startTime = "";
+                object.endTime = "";
+            }
+            if (message.page != null && message.hasOwnProperty("page"))
+                object.page = message.page;
+            if (message.pageSize != null && message.hasOwnProperty("pageSize"))
+                object.pageSize = message.pageSize;
+            if (message.account != null && message.hasOwnProperty("account"))
+                object.account = message.account;
+            if (message.dappid != null && message.hasOwnProperty("dappid"))
+                object.dappid = message.dappid;
+            if (message.payStatus != null && message.hasOwnProperty("payStatus"))
+                object.payStatus = message.payStatus;
+            if (message.checkStatus != null && message.hasOwnProperty("checkStatus"))
+                object.checkStatus = message.checkStatus;
+            if (message.startTime != null && message.hasOwnProperty("startTime"))
+                object.startTime = message.startTime;
+            if (message.endTime != null && message.hasOwnProperty("endTime"))
+                object.endTime = message.endTime;
+            return object;
+        };
+
+        /**
+         * Converts this PageQueryRequest to JSON.
+         * @function toJSON
+         * @memberof pb.PageQueryRequest
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        PageQueryRequest.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return PageQueryRequest;
+    })();
+
+    pb.PageQueryResponse = (function() {
+
+        /**
+         * Properties of a PageQueryResponse.
+         * @memberof pb
+         * @interface IPageQueryResponse
+         * @property {number|null} [code] PageQueryResponse code
+         * @property {string|null} [message] PageQueryResponse message
+         * @property {pb.ICIDPageResult|null} [data] PageQueryResponse data
+         */
+
+        /**
+         * Constructs a new PageQueryResponse.
+         * @memberof pb
+         * @classdesc Represents a PageQueryResponse.
+         * @implements IPageQueryResponse
+         * @constructor
+         * @param {pb.IPageQueryResponse=} [properties] Properties to set
+         */
+        function PageQueryResponse(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * PageQueryResponse code.
+         * @member {number} code
+         * @memberof pb.PageQueryResponse
+         * @instance
+         */
+        PageQueryResponse.prototype.code = 0;
+
+        /**
+         * PageQueryResponse message.
+         * @member {string} message
+         * @memberof pb.PageQueryResponse
+         * @instance
+         */
+        PageQueryResponse.prototype.message = "";
+
+        /**
+         * PageQueryResponse data.
+         * @member {pb.ICIDPageResult|null|undefined} data
+         * @memberof pb.PageQueryResponse
+         * @instance
+         */
+        PageQueryResponse.prototype.data = null;
+
+        /**
+         * Creates a new PageQueryResponse instance using the specified properties.
+         * @function create
+         * @memberof pb.PageQueryResponse
+         * @static
+         * @param {pb.IPageQueryResponse=} [properties] Properties to set
+         * @returns {pb.PageQueryResponse} PageQueryResponse instance
+         */
+        PageQueryResponse.create = function create(properties) {
+            return new PageQueryResponse(properties);
+        };
+
+        /**
+         * Encodes the specified PageQueryResponse message. Does not implicitly {@link pb.PageQueryResponse.verify|verify} messages.
+         * @function encode
+         * @memberof pb.PageQueryResponse
+         * @static
+         * @param {pb.IPageQueryResponse} message PageQueryResponse message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        PageQueryResponse.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.code != null && Object.hasOwnProperty.call(message, "code"))
+                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.code);
+            if (message.message != null && Object.hasOwnProperty.call(message, "message"))
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.message);
+            if (message.data != null && Object.hasOwnProperty.call(message, "data"))
+                $root.pb.CIDPageResult.encode(message.data, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Encodes the specified PageQueryResponse message, length delimited. Does not implicitly {@link pb.PageQueryResponse.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof pb.PageQueryResponse
+         * @static
+         * @param {pb.IPageQueryResponse} message PageQueryResponse message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        PageQueryResponse.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a PageQueryResponse message from the specified reader or buffer.
+         * @function decode
+         * @memberof pb.PageQueryResponse
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {pb.PageQueryResponse} PageQueryResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        PageQueryResponse.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.pb.PageQueryResponse();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.code = reader.int32();
+                    break;
+                case 2:
+                    message.message = reader.string();
+                    break;
+                case 3:
+                    message.data = $root.pb.CIDPageResult.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a PageQueryResponse message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof pb.PageQueryResponse
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {pb.PageQueryResponse} PageQueryResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        PageQueryResponse.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a PageQueryResponse message.
+         * @function verify
+         * @memberof pb.PageQueryResponse
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        PageQueryResponse.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.code != null && message.hasOwnProperty("code"))
+                if (!$util.isInteger(message.code))
+                    return "code: integer expected";
+            if (message.message != null && message.hasOwnProperty("message"))
+                if (!$util.isString(message.message))
+                    return "message: string expected";
+            if (message.data != null && message.hasOwnProperty("data")) {
+                let error = $root.pb.CIDPageResult.verify(message.data);
+                if (error)
+                    return "data." + error;
+            }
+            return null;
+        };
+
+        /**
+         * Creates a PageQueryResponse message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof pb.PageQueryResponse
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {pb.PageQueryResponse} PageQueryResponse
+         */
+        PageQueryResponse.fromObject = function fromObject(object) {
+            if (object instanceof $root.pb.PageQueryResponse)
+                return object;
+            let message = new $root.pb.PageQueryResponse();
+            if (object.code != null)
+                message.code = object.code | 0;
+            if (object.message != null)
+                message.message = String(object.message);
+            if (object.data != null) {
+                if (typeof object.data !== "object")
+                    throw TypeError(".pb.PageQueryResponse.data: object expected");
+                message.data = $root.pb.CIDPageResult.fromObject(object.data);
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a PageQueryResponse message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof pb.PageQueryResponse
+         * @static
+         * @param {pb.PageQueryResponse} message PageQueryResponse
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        PageQueryResponse.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.defaults) {
+                object.code = 0;
+                object.message = "";
+                object.data = null;
+            }
+            if (message.code != null && message.hasOwnProperty("code"))
+                object.code = message.code;
+            if (message.message != null && message.hasOwnProperty("message"))
+                object.message = message.message;
+            if (message.data != null && message.hasOwnProperty("data"))
+                object.data = $root.pb.CIDPageResult.toObject(message.data, options);
+            return object;
+        };
+
+        /**
+         * Converts this PageQueryResponse to JSON.
+         * @function toJSON
+         * @memberof pb.PageQueryResponse
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        PageQueryResponse.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return PageQueryResponse;
+    })();
+
+    pb.CIDPageResult = (function() {
+
+        /**
+         * Properties of a CIDPageResult.
+         * @memberof pb
+         * @interface ICIDPageResult
+         * @property {number|Long|null} [total] CIDPageResult total
+         * @property {Array.<pb.ICidInfo>|null} [list] CIDPageResult list
+         * @property {number|null} [page] CIDPageResult page
+         * @property {number|null} [pageSize] CIDPageResult pageSize
+         * @property {number|null} [totalPages] CIDPageResult totalPages
+         */
+
+        /**
+         * Constructs a new CIDPageResult.
+         * @memberof pb
+         * @classdesc Represents a CIDPageResult.
+         * @implements ICIDPageResult
+         * @constructor
+         * @param {pb.ICIDPageResult=} [properties] Properties to set
+         */
+        function CIDPageResult(properties) {
+            this.list = [];
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * CIDPageResult total.
+         * @member {number|Long} total
+         * @memberof pb.CIDPageResult
+         * @instance
+         */
+        CIDPageResult.prototype.total = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+        /**
+         * CIDPageResult list.
+         * @member {Array.<pb.ICidInfo>} list
+         * @memberof pb.CIDPageResult
+         * @instance
+         */
+        CIDPageResult.prototype.list = $util.emptyArray;
+
+        /**
+         * CIDPageResult page.
+         * @member {number} page
+         * @memberof pb.CIDPageResult
+         * @instance
+         */
+        CIDPageResult.prototype.page = 0;
+
+        /**
+         * CIDPageResult pageSize.
+         * @member {number} pageSize
+         * @memberof pb.CIDPageResult
+         * @instance
+         */
+        CIDPageResult.prototype.pageSize = 0;
+
+        /**
+         * CIDPageResult totalPages.
+         * @member {number} totalPages
+         * @memberof pb.CIDPageResult
+         * @instance
+         */
+        CIDPageResult.prototype.totalPages = 0;
+
+        /**
+         * Creates a new CIDPageResult instance using the specified properties.
+         * @function create
+         * @memberof pb.CIDPageResult
+         * @static
+         * @param {pb.ICIDPageResult=} [properties] Properties to set
+         * @returns {pb.CIDPageResult} CIDPageResult instance
+         */
+        CIDPageResult.create = function create(properties) {
+            return new CIDPageResult(properties);
+        };
+
+        /**
+         * Encodes the specified CIDPageResult message. Does not implicitly {@link pb.CIDPageResult.verify|verify} messages.
+         * @function encode
+         * @memberof pb.CIDPageResult
+         * @static
+         * @param {pb.ICIDPageResult} message CIDPageResult message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        CIDPageResult.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.total != null && Object.hasOwnProperty.call(message, "total"))
+                writer.uint32(/* id 1, wireType 0 =*/8).int64(message.total);
+            if (message.list != null && message.list.length)
+                for (let i = 0; i < message.list.length; ++i)
+                    $root.pb.CidInfo.encode(message.list[i], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+            if (message.page != null && Object.hasOwnProperty.call(message, "page"))
+                writer.uint32(/* id 3, wireType 0 =*/24).int32(message.page);
+            if (message.pageSize != null && Object.hasOwnProperty.call(message, "pageSize"))
+                writer.uint32(/* id 4, wireType 0 =*/32).int32(message.pageSize);
+            if (message.totalPages != null && Object.hasOwnProperty.call(message, "totalPages"))
+                writer.uint32(/* id 5, wireType 0 =*/40).int32(message.totalPages);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified CIDPageResult message, length delimited. Does not implicitly {@link pb.CIDPageResult.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof pb.CIDPageResult
+         * @static
+         * @param {pb.ICIDPageResult} message CIDPageResult message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        CIDPageResult.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a CIDPageResult message from the specified reader or buffer.
+         * @function decode
+         * @memberof pb.CIDPageResult
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {pb.CIDPageResult} CIDPageResult
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        CIDPageResult.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.pb.CIDPageResult();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.total = reader.int64();
+                    break;
+                case 2:
+                    if (!(message.list && message.list.length))
+                        message.list = [];
+                    message.list.push($root.pb.CidInfo.decode(reader, reader.uint32()));
+                    break;
+                case 3:
+                    message.page = reader.int32();
+                    break;
+                case 4:
+                    message.pageSize = reader.int32();
+                    break;
+                case 5:
+                    message.totalPages = reader.int32();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a CIDPageResult message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof pb.CIDPageResult
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {pb.CIDPageResult} CIDPageResult
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        CIDPageResult.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a CIDPageResult message.
+         * @function verify
+         * @memberof pb.CIDPageResult
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        CIDPageResult.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.total != null && message.hasOwnProperty("total"))
+                if (!$util.isInteger(message.total) && !(message.total && $util.isInteger(message.total.low) && $util.isInteger(message.total.high)))
+                    return "total: integer|Long expected";
+            if (message.list != null && message.hasOwnProperty("list")) {
+                if (!Array.isArray(message.list))
+                    return "list: array expected";
+                for (let i = 0; i < message.list.length; ++i) {
+                    let error = $root.pb.CidInfo.verify(message.list[i]);
+                    if (error)
+                        return "list." + error;
+                }
+            }
+            if (message.page != null && message.hasOwnProperty("page"))
+                if (!$util.isInteger(message.page))
+                    return "page: integer expected";
+            if (message.pageSize != null && message.hasOwnProperty("pageSize"))
+                if (!$util.isInteger(message.pageSize))
+                    return "pageSize: integer expected";
+            if (message.totalPages != null && message.hasOwnProperty("totalPages"))
+                if (!$util.isInteger(message.totalPages))
+                    return "totalPages: integer expected";
+            return null;
+        };
+
+        /**
+         * Creates a CIDPageResult message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof pb.CIDPageResult
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {pb.CIDPageResult} CIDPageResult
+         */
+        CIDPageResult.fromObject = function fromObject(object) {
+            if (object instanceof $root.pb.CIDPageResult)
+                return object;
+            let message = new $root.pb.CIDPageResult();
+            if (object.total != null)
+                if ($util.Long)
+                    (message.total = $util.Long.fromValue(object.total)).unsigned = false;
+                else if (typeof object.total === "string")
+                    message.total = parseInt(object.total, 10);
+                else if (typeof object.total === "number")
+                    message.total = object.total;
+                else if (typeof object.total === "object")
+                    message.total = new $util.LongBits(object.total.low >>> 0, object.total.high >>> 0).toNumber();
+            if (object.list) {
+                if (!Array.isArray(object.list))
+                    throw TypeError(".pb.CIDPageResult.list: array expected");
+                message.list = [];
+                for (let i = 0; i < object.list.length; ++i) {
+                    if (typeof object.list[i] !== "object")
+                        throw TypeError(".pb.CIDPageResult.list: object expected");
+                    message.list[i] = $root.pb.CidInfo.fromObject(object.list[i]);
+                }
+            }
+            if (object.page != null)
+                message.page = object.page | 0;
+            if (object.pageSize != null)
+                message.pageSize = object.pageSize | 0;
+            if (object.totalPages != null)
+                message.totalPages = object.totalPages | 0;
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a CIDPageResult message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof pb.CIDPageResult
+         * @static
+         * @param {pb.CIDPageResult} message CIDPageResult
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        CIDPageResult.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.arrays || options.defaults)
+                object.list = [];
+            if (options.defaults) {
+                if ($util.Long) {
+                    let long = new $util.Long(0, 0, false);
+                    object.total = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                } else
+                    object.total = options.longs === String ? "0" : 0;
+                object.page = 0;
+                object.pageSize = 0;
+                object.totalPages = 0;
+            }
+            if (message.total != null && message.hasOwnProperty("total"))
+                if (typeof message.total === "number")
+                    object.total = options.longs === String ? String(message.total) : message.total;
+                else
+                    object.total = options.longs === String ? $util.Long.prototype.toString.call(message.total) : options.longs === Number ? new $util.LongBits(message.total.low >>> 0, message.total.high >>> 0).toNumber() : message.total;
+            if (message.list && message.list.length) {
+                object.list = [];
+                for (let j = 0; j < message.list.length; ++j)
+                    object.list[j] = $root.pb.CidInfo.toObject(message.list[j], options);
+            }
+            if (message.page != null && message.hasOwnProperty("page"))
+                object.page = message.page;
+            if (message.pageSize != null && message.hasOwnProperty("pageSize"))
+                object.pageSize = message.pageSize;
+            if (message.totalPages != null && message.hasOwnProperty("totalPages"))
+                object.totalPages = message.totalPages;
+            return object;
+        };
+
+        /**
+         * Converts this CIDPageResult to JSON.
+         * @function toJSON
+         * @memberof pb.CIDPageResult
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        CIDPageResult.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return CIDPageResult;
+    })();
+
+    pb.UpdateCheckStatusRequest = (function() {
+
+        /**
+         * Properties of an UpdateCheckStatusRequest.
+         * @memberof pb
+         * @interface IUpdateCheckStatusRequest
+         * @property {string|null} [cid] UpdateCheckStatusRequest cid
+         * @property {number|null} [checkStatus] UpdateCheckStatusRequest checkStatus
+         * @property {number|null} [checkUserId] UpdateCheckStatusRequest checkUserId
+         * @property {string|null} [checkReason] UpdateCheckStatusRequest checkReason
+         */
+
+        /**
+         * Constructs a new UpdateCheckStatusRequest.
+         * @memberof pb
+         * @classdesc Represents an UpdateCheckStatusRequest.
+         * @implements IUpdateCheckStatusRequest
+         * @constructor
+         * @param {pb.IUpdateCheckStatusRequest=} [properties] Properties to set
+         */
+        function UpdateCheckStatusRequest(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * UpdateCheckStatusRequest cid.
+         * @member {string} cid
+         * @memberof pb.UpdateCheckStatusRequest
+         * @instance
+         */
+        UpdateCheckStatusRequest.prototype.cid = "";
+
+        /**
+         * UpdateCheckStatusRequest checkStatus.
+         * @member {number} checkStatus
+         * @memberof pb.UpdateCheckStatusRequest
+         * @instance
+         */
+        UpdateCheckStatusRequest.prototype.checkStatus = 0;
+
+        /**
+         * UpdateCheckStatusRequest checkUserId.
+         * @member {number} checkUserId
+         * @memberof pb.UpdateCheckStatusRequest
+         * @instance
+         */
+        UpdateCheckStatusRequest.prototype.checkUserId = 0;
+
+        /**
+         * UpdateCheckStatusRequest checkReason.
+         * @member {string} checkReason
+         * @memberof pb.UpdateCheckStatusRequest
+         * @instance
+         */
+        UpdateCheckStatusRequest.prototype.checkReason = "";
+
+        /**
+         * Creates a new UpdateCheckStatusRequest instance using the specified properties.
+         * @function create
+         * @memberof pb.UpdateCheckStatusRequest
+         * @static
+         * @param {pb.IUpdateCheckStatusRequest=} [properties] Properties to set
+         * @returns {pb.UpdateCheckStatusRequest} UpdateCheckStatusRequest instance
+         */
+        UpdateCheckStatusRequest.create = function create(properties) {
+            return new UpdateCheckStatusRequest(properties);
+        };
+
+        /**
+         * Encodes the specified UpdateCheckStatusRequest message. Does not implicitly {@link pb.UpdateCheckStatusRequest.verify|verify} messages.
+         * @function encode
+         * @memberof pb.UpdateCheckStatusRequest
+         * @static
+         * @param {pb.IUpdateCheckStatusRequest} message UpdateCheckStatusRequest message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        UpdateCheckStatusRequest.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.cid != null && Object.hasOwnProperty.call(message, "cid"))
+                writer.uint32(/* id 1, wireType 2 =*/10).string(message.cid);
+            if (message.checkStatus != null && Object.hasOwnProperty.call(message, "checkStatus"))
+                writer.uint32(/* id 2, wireType 0 =*/16).int32(message.checkStatus);
+            if (message.checkUserId != null && Object.hasOwnProperty.call(message, "checkUserId"))
+                writer.uint32(/* id 3, wireType 0 =*/24).int32(message.checkUserId);
+            if (message.checkReason != null && Object.hasOwnProperty.call(message, "checkReason"))
+                writer.uint32(/* id 4, wireType 2 =*/34).string(message.checkReason);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified UpdateCheckStatusRequest message, length delimited. Does not implicitly {@link pb.UpdateCheckStatusRequest.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof pb.UpdateCheckStatusRequest
+         * @static
+         * @param {pb.IUpdateCheckStatusRequest} message UpdateCheckStatusRequest message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        UpdateCheckStatusRequest.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes an UpdateCheckStatusRequest message from the specified reader or buffer.
+         * @function decode
+         * @memberof pb.UpdateCheckStatusRequest
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {pb.UpdateCheckStatusRequest} UpdateCheckStatusRequest
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        UpdateCheckStatusRequest.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.pb.UpdateCheckStatusRequest();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.cid = reader.string();
+                    break;
+                case 2:
+                    message.checkStatus = reader.int32();
+                    break;
+                case 3:
+                    message.checkUserId = reader.int32();
+                    break;
+                case 4:
+                    message.checkReason = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes an UpdateCheckStatusRequest message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof pb.UpdateCheckStatusRequest
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {pb.UpdateCheckStatusRequest} UpdateCheckStatusRequest
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        UpdateCheckStatusRequest.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies an UpdateCheckStatusRequest message.
+         * @function verify
+         * @memberof pb.UpdateCheckStatusRequest
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        UpdateCheckStatusRequest.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.cid != null && message.hasOwnProperty("cid"))
+                if (!$util.isString(message.cid))
+                    return "cid: string expected";
+            if (message.checkStatus != null && message.hasOwnProperty("checkStatus"))
+                if (!$util.isInteger(message.checkStatus))
+                    return "checkStatus: integer expected";
+            if (message.checkUserId != null && message.hasOwnProperty("checkUserId"))
+                if (!$util.isInteger(message.checkUserId))
+                    return "checkUserId: integer expected";
+            if (message.checkReason != null && message.hasOwnProperty("checkReason"))
+                if (!$util.isString(message.checkReason))
+                    return "checkReason: string expected";
+            return null;
+        };
+
+        /**
+         * Creates an UpdateCheckStatusRequest message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof pb.UpdateCheckStatusRequest
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {pb.UpdateCheckStatusRequest} UpdateCheckStatusRequest
+         */
+        UpdateCheckStatusRequest.fromObject = function fromObject(object) {
+            if (object instanceof $root.pb.UpdateCheckStatusRequest)
+                return object;
+            let message = new $root.pb.UpdateCheckStatusRequest();
+            if (object.cid != null)
+                message.cid = String(object.cid);
+            if (object.checkStatus != null)
+                message.checkStatus = object.checkStatus | 0;
+            if (object.checkUserId != null)
+                message.checkUserId = object.checkUserId | 0;
+            if (object.checkReason != null)
+                message.checkReason = String(object.checkReason);
+            return message;
+        };
+
+        /**
+         * Creates a plain object from an UpdateCheckStatusRequest message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof pb.UpdateCheckStatusRequest
+         * @static
+         * @param {pb.UpdateCheckStatusRequest} message UpdateCheckStatusRequest
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        UpdateCheckStatusRequest.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.defaults) {
+                object.cid = "";
+                object.checkStatus = 0;
+                object.checkUserId = 0;
+                object.checkReason = "";
+            }
+            if (message.cid != null && message.hasOwnProperty("cid"))
+                object.cid = message.cid;
+            if (message.checkStatus != null && message.hasOwnProperty("checkStatus"))
+                object.checkStatus = message.checkStatus;
+            if (message.checkUserId != null && message.hasOwnProperty("checkUserId"))
+                object.checkUserId = message.checkUserId;
+            if (message.checkReason != null && message.hasOwnProperty("checkReason"))
+                object.checkReason = message.checkReason;
+            return object;
+        };
+
+        /**
+         * Converts this UpdateCheckStatusRequest to JSON.
+         * @function toJSON
+         * @memberof pb.UpdateCheckStatusRequest
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        UpdateCheckStatusRequest.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return UpdateCheckStatusRequest;
+    })();
+
+    pb.UpdateCheckStatusResponse = (function() {
+
+        /**
+         * Properties of an UpdateCheckStatusResponse.
+         * @memberof pb
+         * @interface IUpdateCheckStatusResponse
+         * @property {number|null} [code] UpdateCheckStatusResponse code
+         * @property {string|null} [message] UpdateCheckStatusResponse message
+         */
+
+        /**
+         * Constructs a new UpdateCheckStatusResponse.
+         * @memberof pb
+         * @classdesc Represents an UpdateCheckStatusResponse.
+         * @implements IUpdateCheckStatusResponse
+         * @constructor
+         * @param {pb.IUpdateCheckStatusResponse=} [properties] Properties to set
+         */
+        function UpdateCheckStatusResponse(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * UpdateCheckStatusResponse code.
+         * @member {number} code
+         * @memberof pb.UpdateCheckStatusResponse
+         * @instance
+         */
+        UpdateCheckStatusResponse.prototype.code = 0;
+
+        /**
+         * UpdateCheckStatusResponse message.
+         * @member {string} message
+         * @memberof pb.UpdateCheckStatusResponse
+         * @instance
+         */
+        UpdateCheckStatusResponse.prototype.message = "";
+
+        /**
+         * Creates a new UpdateCheckStatusResponse instance using the specified properties.
+         * @function create
+         * @memberof pb.UpdateCheckStatusResponse
+         * @static
+         * @param {pb.IUpdateCheckStatusResponse=} [properties] Properties to set
+         * @returns {pb.UpdateCheckStatusResponse} UpdateCheckStatusResponse instance
+         */
+        UpdateCheckStatusResponse.create = function create(properties) {
+            return new UpdateCheckStatusResponse(properties);
+        };
+
+        /**
+         * Encodes the specified UpdateCheckStatusResponse message. Does not implicitly {@link pb.UpdateCheckStatusResponse.verify|verify} messages.
+         * @function encode
+         * @memberof pb.UpdateCheckStatusResponse
+         * @static
+         * @param {pb.IUpdateCheckStatusResponse} message UpdateCheckStatusResponse message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        UpdateCheckStatusResponse.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.code != null && Object.hasOwnProperty.call(message, "code"))
+                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.code);
+            if (message.message != null && Object.hasOwnProperty.call(message, "message"))
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.message);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified UpdateCheckStatusResponse message, length delimited. Does not implicitly {@link pb.UpdateCheckStatusResponse.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof pb.UpdateCheckStatusResponse
+         * @static
+         * @param {pb.IUpdateCheckStatusResponse} message UpdateCheckStatusResponse message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        UpdateCheckStatusResponse.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes an UpdateCheckStatusResponse message from the specified reader or buffer.
+         * @function decode
+         * @memberof pb.UpdateCheckStatusResponse
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {pb.UpdateCheckStatusResponse} UpdateCheckStatusResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        UpdateCheckStatusResponse.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.pb.UpdateCheckStatusResponse();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.code = reader.int32();
+                    break;
+                case 2:
+                    message.message = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes an UpdateCheckStatusResponse message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof pb.UpdateCheckStatusResponse
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {pb.UpdateCheckStatusResponse} UpdateCheckStatusResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        UpdateCheckStatusResponse.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies an UpdateCheckStatusResponse message.
+         * @function verify
+         * @memberof pb.UpdateCheckStatusResponse
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        UpdateCheckStatusResponse.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.code != null && message.hasOwnProperty("code"))
+                if (!$util.isInteger(message.code))
+                    return "code: integer expected";
+            if (message.message != null && message.hasOwnProperty("message"))
+                if (!$util.isString(message.message))
+                    return "message: string expected";
+            return null;
+        };
+
+        /**
+         * Creates an UpdateCheckStatusResponse message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof pb.UpdateCheckStatusResponse
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {pb.UpdateCheckStatusResponse} UpdateCheckStatusResponse
+         */
+        UpdateCheckStatusResponse.fromObject = function fromObject(object) {
+            if (object instanceof $root.pb.UpdateCheckStatusResponse)
+                return object;
+            let message = new $root.pb.UpdateCheckStatusResponse();
+            if (object.code != null)
+                message.code = object.code | 0;
+            if (object.message != null)
+                message.message = String(object.message);
+            return message;
+        };
+
+        /**
+         * Creates a plain object from an UpdateCheckStatusResponse message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof pb.UpdateCheckStatusResponse
+         * @static
+         * @param {pb.UpdateCheckStatusResponse} message UpdateCheckStatusResponse
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        UpdateCheckStatusResponse.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.defaults) {
+                object.code = 0;
+                object.message = "";
+            }
+            if (message.code != null && message.hasOwnProperty("code"))
+                object.code = message.code;
+            if (message.message != null && message.hasOwnProperty("message"))
+                object.message = message.message;
+            return object;
+        };
+
+        /**
+         * Converts this UpdateCheckStatusResponse to JSON.
+         * @function toJSON
+         * @memberof pb.UpdateCheckStatusResponse
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        UpdateCheckStatusResponse.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return UpdateCheckStatusResponse;
+    })();
+
+    pb.DeleteCidInfoRequest = (function() {
+
+        /**
+         * Properties of a DeleteCidInfoRequest.
+         * @memberof pb
+         * @interface IDeleteCidInfoRequest
+         * @property {string|null} [cid] DeleteCidInfoRequest cid
+         */
+
+        /**
+         * Constructs a new DeleteCidInfoRequest.
+         * @memberof pb
+         * @classdesc Represents a DeleteCidInfoRequest.
+         * @implements IDeleteCidInfoRequest
+         * @constructor
+         * @param {pb.IDeleteCidInfoRequest=} [properties] Properties to set
+         */
+        function DeleteCidInfoRequest(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * DeleteCidInfoRequest cid.
+         * @member {string} cid
+         * @memberof pb.DeleteCidInfoRequest
+         * @instance
+         */
+        DeleteCidInfoRequest.prototype.cid = "";
+
+        /**
+         * Creates a new DeleteCidInfoRequest instance using the specified properties.
+         * @function create
+         * @memberof pb.DeleteCidInfoRequest
+         * @static
+         * @param {pb.IDeleteCidInfoRequest=} [properties] Properties to set
+         * @returns {pb.DeleteCidInfoRequest} DeleteCidInfoRequest instance
+         */
+        DeleteCidInfoRequest.create = function create(properties) {
+            return new DeleteCidInfoRequest(properties);
+        };
+
+        /**
+         * Encodes the specified DeleteCidInfoRequest message. Does not implicitly {@link pb.DeleteCidInfoRequest.verify|verify} messages.
+         * @function encode
+         * @memberof pb.DeleteCidInfoRequest
+         * @static
+         * @param {pb.IDeleteCidInfoRequest} message DeleteCidInfoRequest message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        DeleteCidInfoRequest.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.cid != null && Object.hasOwnProperty.call(message, "cid"))
+                writer.uint32(/* id 1, wireType 2 =*/10).string(message.cid);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified DeleteCidInfoRequest message, length delimited. Does not implicitly {@link pb.DeleteCidInfoRequest.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof pb.DeleteCidInfoRequest
+         * @static
+         * @param {pb.IDeleteCidInfoRequest} message DeleteCidInfoRequest message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        DeleteCidInfoRequest.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a DeleteCidInfoRequest message from the specified reader or buffer.
+         * @function decode
+         * @memberof pb.DeleteCidInfoRequest
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {pb.DeleteCidInfoRequest} DeleteCidInfoRequest
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        DeleteCidInfoRequest.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.pb.DeleteCidInfoRequest();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.cid = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a DeleteCidInfoRequest message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof pb.DeleteCidInfoRequest
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {pb.DeleteCidInfoRequest} DeleteCidInfoRequest
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        DeleteCidInfoRequest.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a DeleteCidInfoRequest message.
+         * @function verify
+         * @memberof pb.DeleteCidInfoRequest
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        DeleteCidInfoRequest.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.cid != null && message.hasOwnProperty("cid"))
+                if (!$util.isString(message.cid))
+                    return "cid: string expected";
+            return null;
+        };
+
+        /**
+         * Creates a DeleteCidInfoRequest message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof pb.DeleteCidInfoRequest
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {pb.DeleteCidInfoRequest} DeleteCidInfoRequest
+         */
+        DeleteCidInfoRequest.fromObject = function fromObject(object) {
+            if (object instanceof $root.pb.DeleteCidInfoRequest)
+                return object;
+            let message = new $root.pb.DeleteCidInfoRequest();
+            if (object.cid != null)
+                message.cid = String(object.cid);
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a DeleteCidInfoRequest message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof pb.DeleteCidInfoRequest
+         * @static
+         * @param {pb.DeleteCidInfoRequest} message DeleteCidInfoRequest
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        DeleteCidInfoRequest.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.defaults)
+                object.cid = "";
+            if (message.cid != null && message.hasOwnProperty("cid"))
+                object.cid = message.cid;
+            return object;
+        };
+
+        /**
+         * Converts this DeleteCidInfoRequest to JSON.
+         * @function toJSON
+         * @memberof pb.DeleteCidInfoRequest
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        DeleteCidInfoRequest.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return DeleteCidInfoRequest;
+    })();
+
+    pb.DeleteCidInfoResponse = (function() {
+
+        /**
+         * Properties of a DeleteCidInfoResponse.
+         * @memberof pb
+         * @interface IDeleteCidInfoResponse
+         * @property {number|null} [code] DeleteCidInfoResponse code
+         * @property {string|null} [message] DeleteCidInfoResponse message
+         */
+
+        /**
+         * Constructs a new DeleteCidInfoResponse.
+         * @memberof pb
+         * @classdesc Represents a DeleteCidInfoResponse.
+         * @implements IDeleteCidInfoResponse
+         * @constructor
+         * @param {pb.IDeleteCidInfoResponse=} [properties] Properties to set
+         */
+        function DeleteCidInfoResponse(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * DeleteCidInfoResponse code.
+         * @member {number} code
+         * @memberof pb.DeleteCidInfoResponse
+         * @instance
+         */
+        DeleteCidInfoResponse.prototype.code = 0;
+
+        /**
+         * DeleteCidInfoResponse message.
+         * @member {string} message
+         * @memberof pb.DeleteCidInfoResponse
+         * @instance
+         */
+        DeleteCidInfoResponse.prototype.message = "";
+
+        /**
+         * Creates a new DeleteCidInfoResponse instance using the specified properties.
+         * @function create
+         * @memberof pb.DeleteCidInfoResponse
+         * @static
+         * @param {pb.IDeleteCidInfoResponse=} [properties] Properties to set
+         * @returns {pb.DeleteCidInfoResponse} DeleteCidInfoResponse instance
+         */
+        DeleteCidInfoResponse.create = function create(properties) {
+            return new DeleteCidInfoResponse(properties);
+        };
+
+        /**
+         * Encodes the specified DeleteCidInfoResponse message. Does not implicitly {@link pb.DeleteCidInfoResponse.verify|verify} messages.
+         * @function encode
+         * @memberof pb.DeleteCidInfoResponse
+         * @static
+         * @param {pb.IDeleteCidInfoResponse} message DeleteCidInfoResponse message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        DeleteCidInfoResponse.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.code != null && Object.hasOwnProperty.call(message, "code"))
+                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.code);
+            if (message.message != null && Object.hasOwnProperty.call(message, "message"))
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.message);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified DeleteCidInfoResponse message, length delimited. Does not implicitly {@link pb.DeleteCidInfoResponse.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof pb.DeleteCidInfoResponse
+         * @static
+         * @param {pb.IDeleteCidInfoResponse} message DeleteCidInfoResponse message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        DeleteCidInfoResponse.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a DeleteCidInfoResponse message from the specified reader or buffer.
+         * @function decode
+         * @memberof pb.DeleteCidInfoResponse
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {pb.DeleteCidInfoResponse} DeleteCidInfoResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        DeleteCidInfoResponse.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.pb.DeleteCidInfoResponse();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.code = reader.int32();
+                    break;
+                case 2:
+                    message.message = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a DeleteCidInfoResponse message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof pb.DeleteCidInfoResponse
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {pb.DeleteCidInfoResponse} DeleteCidInfoResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        DeleteCidInfoResponse.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a DeleteCidInfoResponse message.
+         * @function verify
+         * @memberof pb.DeleteCidInfoResponse
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        DeleteCidInfoResponse.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.code != null && message.hasOwnProperty("code"))
+                if (!$util.isInteger(message.code))
+                    return "code: integer expected";
+            if (message.message != null && message.hasOwnProperty("message"))
+                if (!$util.isString(message.message))
+                    return "message: string expected";
+            return null;
+        };
+
+        /**
+         * Creates a DeleteCidInfoResponse message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof pb.DeleteCidInfoResponse
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {pb.DeleteCidInfoResponse} DeleteCidInfoResponse
+         */
+        DeleteCidInfoResponse.fromObject = function fromObject(object) {
+            if (object instanceof $root.pb.DeleteCidInfoResponse)
+                return object;
+            let message = new $root.pb.DeleteCidInfoResponse();
+            if (object.code != null)
+                message.code = object.code | 0;
+            if (object.message != null)
+                message.message = String(object.message);
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a DeleteCidInfoResponse message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof pb.DeleteCidInfoResponse
+         * @static
+         * @param {pb.DeleteCidInfoResponse} message DeleteCidInfoResponse
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        DeleteCidInfoResponse.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.defaults) {
+                object.code = 0;
+                object.message = "";
+            }
+            if (message.code != null && message.hasOwnProperty("code"))
+                object.code = message.code;
+            if (message.message != null && message.hasOwnProperty("message"))
+                object.message = message.message;
+            return object;
+        };
+
+        /**
+         * Converts this DeleteCidInfoResponse to JSON.
+         * @function toJSON
+         * @memberof pb.DeleteCidInfoResponse
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        DeleteCidInfoResponse.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return DeleteCidInfoResponse;
     })();
 
     return pb;

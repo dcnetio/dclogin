@@ -6,14 +6,14 @@ const initialState = {
 
 // 创建一个名为 app 的 slice，包含初始状态和 reducers。
 export const appSlice = createSlice({
-    name: "app",
-    initialState,
-    reducers: {
-        saveInitState: (state, action) => {
-            state.initState = action.payload;
-        },
+  name: "app",
+  initialState,
+  reducers: {
+    saveInitState: (state, action) => {
+      state.initState = action.payload;
     },
-})
+  },
+});
 
 export const { saveInitState } = appSlice.actions;
 // 提取并导出 slice 的 reducer 函数，用于在 store 中注册这个 slice

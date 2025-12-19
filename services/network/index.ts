@@ -4,6 +4,7 @@ import { DEFAULT_NETWORKS, NetworkStauts } from "@/config/constant";
 import { ChainInfo } from "@/types/walletTypes";
 // 数据库
 import DBHelper from "@/helpers/DBHelper";
+import { DefChainId } from "@/config/define";
 
 // 定义一个变量，用于存储BroadcastChannel对象
 let currentChain: ChainInfo | null = null; //当前网络
@@ -23,9 +24,9 @@ async function initNetworks() {
   }
   if (currentChain == null) {
     //从数据库中获取第一个网络信息
-    const chains = await DBHelper.getAllData(DBHelper.store_chain);
-    if (chains.length > 0) {
-      currentChain = chains[0];
+    const chainInfo = await DBHelper.getData(DBHelper.store_chain, DefChainId);
+    if (chainInfo != null) {
+      currentChain = chainInfo;
       if (currentChain) {
         //连接网络
         const flag = await ethersHelper.connectWithHttps(currentChain.rpcUrl);

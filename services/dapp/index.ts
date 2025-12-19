@@ -3,7 +3,11 @@ import utilHelper from "@/helpers/utilHelper";
 import ethersHelper from "@/helpers/ethersHelper";
 import { MsgStatus } from "@/config/constant";
 import { store } from "@/lib/store";
-import { updateAppInfo, updateAuthStep } from "@/lib/slices/authSlice";
+import {
+  setShouldReturnUserInfo,
+  updateAppInfo,
+  updateAuthStep,
+} from "@/lib/slices/authSlice";
 import { getCurrentChain } from "@/services/network";
 import { applyFreeSpace } from "@/app/tools/subSpace";
 
@@ -17,6 +21,7 @@ import {
   chooseStoredAccount,
   createAccount,
   generateWalletAccount,
+  getToken,
   resPonseWallet,
   setCurrentAccount,
   unlockWallet,
@@ -29,8 +34,11 @@ import {
   EIP712SignReqMessage,
   isEIP712SignReqMessage,
   SignReqMessage,
+  AccountInfo,
 } from "@/types/walletTypes";
 import { checkDCInitialized, getDC } from "@/components/auth/login/dc";
+import { initUserDB } from "../threadDB";
+import { dcConfig } from "@/config/define";
 
 // 获取查询字符串
 let queryString = "";
@@ -130,8 +138,6 @@ async function onDAPPMessage(event: MessageEvent) {
     case "channelPort2":
       iframeChannel = event.ports[0];
       iframeChannel.onmessage = onDAPPMessage;
-      // 循环判断dc是否存在，并设置超时，超过3s则直接返回
-      await checkDCInitialized();
       const loadedMessage = {
         type: "loaded",
         origin: openerOrigin,
@@ -155,9 +161,11 @@ async function onDAPPMessage(event: MessageEvent) {
               appVersion: connectingApp?.appVersion || "",
             };
             dc.setAppInfo(dappInfo);
-            // 保存shouldReturnUserInfo
-            dc.setShouldReturnUserInfo(connectingApp?.shouldReturnUserInfo);
           }
+
+          store.dispatch(
+            setShouldReturnUserInfo(connectingApp?.shouldReturnUserInfo)
+          );
 
           //显示提示页面
           store.dispatch(
@@ -209,30 +217,35 @@ async function onDAPPMessage(event: MessageEvent) {
   }
 }
 
+// 已有账号解密调用登录
 // 收到连接钱包请求处理,message格式为{type: 'connect',data: {appName:'test',appIcon:'',appUrl: 'http://localhost:8080',appVersion: '1.0.0'}}
 async function connectCmdHandler(
   message: ConnectReqMessage,
   bool: boolean,
   port: MessagePort | null = null
-) {
-  const connectingApp = message.data;
-  // 获取当前网络
-  const chain = await getCurrentChain();
-  if (!chain) {
-    //待测试 跳出提示框,提示用户获取网络信息失败
-    store.dispatch(
-      updateAuthStep({
-        type: MsgStatus.failed,
-        content: i18n.t("network.get_failed"),
-        needLogin: false,
-      })
-    );
-    return;
-  }
+): Promise<{
+  success: boolean;
+  data: AccountInfo | null;
+  error?: Error | null;
+}> {
+  // // 获取当前网络
+  // const chain = await getCurrentChain();
+  // if (!chain) {
+  //   //待测试 跳出提示框,提示用户获取网络信息失败
+  //   store.dispatch(
+  //     updateAuthStep({
+  //       type: MsgStatus.failed,
+  //       content: i18n.t("network.get_failed"),
+  //       needLogin: false,
+  //     })
+  //   );
+  //   return;
+  // }
 
   messageData = message;
   portData = port;
   let chooseAccount = await chooseStoredAccount();
+  console.log("---------chooseAccount", Date.now());
   if (!chooseAccount) {
     // 如果用户没有登录账号，判断是否有账号信息传过来，有的话直接用
     if (
@@ -259,13 +272,39 @@ async function connectCmdHandler(
   if (!mnemonic) {
     return;
   }
-  const dc = getDC();
-  if (dc) {
-    if (connectingApp && connectingApp.appId) {
-      await dc.auth.generateAppAccount(connectingApp.appId, mnemonic);
+  const connectingApp = message.data;
+  const appInfo = connectingApp || null;
+  // 不是来自默认Dapp的
+  if (!appInfo || !appInfo.appId) {
+    const appId = dcConfig.appInfo?.appId || "";
+    const dc = getDC();
+    if (dc) {
+      const nAppInfo = store.getState().auth.appInfo || null;
+      nAppInfo && dc.setAppInfo(nAppInfo);
+      const keymanager = new KeyManager();
+      const privKey: Ed25519PrivKey =
+        await keymanager.getEd25519KeyFromMnemonic(mnemonic, appId || "");
+      await dc.auth.generateAppAccount(appId, mnemonic);
+      const parentPrivKey: Ed25519PrivKey =
+        await keymanager.getEd25519KeyFromMnemonic(mnemonic, "");
+      dc.setParentPublicKey(parentPrivKey.publicKey);
+      dc.setPublicKey(privKey.publicKey);
+      window.showToast({
+        content: i18n.t("account.init_user_db_ing"), // "初始化用户数据库中"
+        position: "center",
+        duration: 0,
+      });
+      dc.setPrivateKey(privKey);
+      // 获取token
+      const [res, err] = await getToken(privKey.publicKey.string());
+      if (res) {
+        // 设置threadDB
+        await initUserDB();
+        window.clearToast();
+      }
     }
   }
-  return await resPonseWallet(mnemonic, message, bool, port);
+  return await resPonseWallet(mnemonic, chooseAccount, message, bool, port);
 }
 
 /** 收到签名请求处理,message格式为
@@ -300,7 +339,7 @@ async function signMessageHandler(
       //待测试 跳出提示框,提示用户签名失败
       window.showToast({
         content: i18n.t("account.auth_failed"),
-        position: "bottom",
+        position: "center",
       });
       return;
     }
@@ -311,7 +350,7 @@ async function signMessageHandler(
       //待测试 跳出提示框,提示用户签名失败
       window.showToast({
         content: i18n.t("sign.sign_failed"),
-        position: "bottom",
+        position: "center",
       });
       return;
     }
@@ -402,7 +441,7 @@ async function signEIP712MessageHandler(
     //待测试 跳出提示框,提示用户签名失败
     window.showToast({
       content: i18n.t("sign.sign_failed"),
-      position: "bottom",
+      position: "center",
     });
     return;
   }
@@ -441,13 +480,16 @@ async function createAccountWithRegister(
   if (!dc) {
     return;
   }
+  const appInfo = store.getState().auth.appInfo || null;
+  if (!dc.appInfo || !dc.appInfo.appId || dc.appInfo.appId !== appInfo?.appId) {
+    dc.setAppInfo(appInfo);
+  }
   // 判断account是否已经存在
   const [nftBinded, error] = await dc.auth.isNftAccountBinded(account);
   if (error || nftBinded) {
-    //todo 跳出提示框,提示用户该账号已经绑定了NFT
     window.showToast({
       content: i18n.t("account.nft_account_binded"),
-      position: "bottom",
+      position: "center",
     });
     return;
   }
@@ -467,7 +509,7 @@ async function createAccountWithRegister(
   // 赠送套餐
   window.showToast({
     content: i18n.t("account.give_space_ing"), // 赠送中
-    position: "bottom",
+    position: "center",
     duration: 0,
   });
   const giveFlag = await applyFreeSpace(privKey.publicKey);
@@ -479,13 +521,13 @@ async function createAccountWithRegister(
     //待测试 跳出提示框,提示用户赠送套餐失败
     window.showToast({
       content: giveFlag[1].message || i18n.t("account.give_space_failed"),
-      position: "bottom",
+      position: "center",
     });
     return;
   }
   window.showToast({
     content: i18n.t("account.bind_nft_account_ing"), // 绑定中
-    position: "bottom",
+    position: "center",
     duration: 0,
   });
   // bind nft
@@ -502,7 +544,7 @@ async function createAccountWithRegister(
     const errMsg = errInfo && errInfo.message;
     window.showToast({
       content: errMsg || i18n.t("account.bind_nft_account_failed"),
-      position: "bottom",
+      position: "center",
     });
     if (
       bindRes[1] &&
@@ -513,10 +555,39 @@ async function createAccountWithRegister(
     }
     return;
   }
+  try {
+    const appInfo = store.getState().auth.appInfo || null;
+    const appId = appInfo?.appId;
+    await dc.auth.generateAppAccount(appId, mnemonic);
+    // 获取用户信息，重新设置公钥
+    const keymanager = new KeyManager();
+    const privKey: Ed25519PrivKey = await keymanager.getEd25519KeyFromMnemonic(
+      mnemonic,
+      appId || ""
+    );
+    // 保存公钥到上下文中
+    dc.setPublicKey(privKey.publicKey);
+    if (appId == dcConfig.appInfo.appId) {
+      window.showToast({
+        content: i18n.t("account.init_user_db_ing"), // 初始化用户数据库中
+        position: "center",
+        duration: 0,
+      });
+      dc.setPrivateKey(privKey);
+      // 获取token
+      const [res, err] = await getToken(privKey.publicKey.string());
+      if (res) {
+        // 设置threadDB
+        await initUserDB();
+      }
+    }
+  } catch (error) {
+    console.log("=================initUserDB error", error);
+  }
   walletAccount = null; // 清除钱包账号
   window.showToast({
     content: i18n.t("register.success"), // todo
-    position: "bottom",
+    position: "center",
   });
   return {
     success: true,
@@ -528,11 +599,23 @@ async function createAccountWithLogin(
   password: string,
   safecode: string,
   origin?: string
-) {
+): Promise<{
+  success: boolean;
+  data: AccountInfo | null;
+  error?: Error | null;
+}> {
   try {
     const dc = getDC();
     if (!dc) {
       return;
+    }
+    const appInfo = store.getState().auth.appInfo || null;
+    if (
+      !dc.appInfo ||
+      !dc.appInfo.appId ||
+      dc.appInfo.appId !== appInfo?.appId
+    ) {
+      dc.setAppInfo(appInfo);
     }
     const [mnemonic, err] = await dc.auth.accountLogin(
       account,
@@ -554,19 +637,40 @@ async function createAccountWithLogin(
     if (!accountInfo) {
       return;
     }
+    if (dc) {
+      const appInfo = store.getState().auth.appInfo || null;
+      const appId = appInfo?.appId;
+      // 获取用户信息，重新设置公钥
+      const keymanager = new KeyManager();
+      const privKey: Ed25519PrivKey =
+        await keymanager.getEd25519KeyFromMnemonic(mnemonic, appId);
+      if (appId === dcConfig.appInfo.appId) {
+        window.showToast({
+          key: "initUserDB",
+          content: i18n.t("account.init_user_db_ing"), // "初始化用户数据库中"
+          position: "center",
+          duration: 0,
+        });
+        dc.setPrivateKey(privKey);
+        // 设置threadDB
+        await initUserDB();
+        window.clearToast();
+      }
+    }
     if (origin) {
       const message: ConnectReqMessage = {
         origin: origin || "",
       };
       const res = await resPonseWallet(
         mnemonic,
+        accountInfo,
         origin ? messageData : message,
         true,
         portData
       );
       return res;
     } else {
-      return await resPonseWallet(mnemonic);
+      return await resPonseWallet(mnemonic, accountInfo);
     }
   } catch (error) {
     console.log("createAccountWithLogin error", error);

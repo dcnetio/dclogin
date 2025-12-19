@@ -11,9 +11,11 @@ import {
   CloseOutline,
 } from "antd-mobile-icons";
 import { APPInfo } from "web-dc-api";
+import { dcConfig } from "@/config/define";
 
 interface EncodePasswordProps {
   type: number; // 类型，1设置，2验证
+  nftAccount: string;
   appInfo: APPInfo;
   cancalFun?: () => void;
   confirmFun: (password: string) => void;
@@ -24,6 +26,7 @@ interface EncodePasswordProps {
 export default function EncodePassword(props: EncodePasswordProps) {
   const {
     type,
+    nftAccount,
     appInfo,
     cancalFun,
     confirmFun,
@@ -37,7 +40,7 @@ export default function EncodePassword(props: EncodePasswordProps) {
     if (!password) {
       window.showToast({
         content: t("encode.password_empty"),
-        position: "bottom",
+        position: "center",
       });
       return;
     }
@@ -86,44 +89,55 @@ export default function EncodePassword(props: EncodePasswordProps) {
           </div>
         )}
         {/* 应用信息区域 */}
-        {!!appInfo && !!appInfo.appName && (
-          <div className={styles.appInfoSection}>
+        {!!appInfo &&
+          !!appInfo.appName &&
+          appInfo.appId !== dcConfig.appInfo.appId && (
+            <div className={styles.appInfoSection}>
+              <div className={styles.appInfoHeader}>
+                <LinkOutline className={styles.appInfoIcon} />
+                <span>{t("DAPP.info")}</span>
+              </div>
+              <div className={styles.appInfoContent}>
+                <div className={styles.appInfoItem}>
+                  <span className={styles.appInfoLabel}>{t("DAPP.app")}</span>
+                  <span className={styles.appInfoValue}>{appInfo.appName}</span>
+                </div>
+                <div className={styles.appInfoItem}>
+                  <span className={styles.appInfoLabel}>
+                    {t("DAPP.appUrl")}
+                  </span>
+                  <span className={styles.appInfoValue}>{appInfo.appUrl}</span>
+                </div>
+                <div className={styles.appInfoItem}>
+                  <span className={styles.appInfoLabel}>
+                    {t("DAPP.appVersion")}
+                  </span>
+                  <span className={styles.appInfoValue}>
+                    {appInfo.appVersion}
+                  </span>
+                </div>
+
+                <div className={styles.appInfoWarning}>
+                  <ExclamationCircleOutline className={styles.warningIcon} />
+                  {t("DAPP.warning")}
+                </div>
+              </div>
+            </div>
+          )}
+        {!!appInfo &&
+          !!appInfo.appName &&
+          appInfo.appId === dcConfig.appInfo.appId && (
             <div className={styles.appInfoHeader}>
               <LinkOutline className={styles.appInfoIcon} />
-              <span>{t("DAPP.info")}</span>
+              <span>解密密码</span>
             </div>
-            <div className={styles.appInfoContent}>
-              <div className={styles.appInfoItem}>
-                <span className={styles.appInfoLabel}>{t("DAPP.app")}</span>
-                <span className={styles.appInfoValue}>{appInfo.appName}</span>
-              </div>
-              <div className={styles.appInfoItem}>
-                <span className={styles.appInfoLabel}>{t("DAPP.appUrl")}</span>
-                <span className={styles.appInfoValue}>{appInfo.appUrl}</span>
-              </div>
-              <div className={styles.appInfoItem}>
-                <span className={styles.appInfoLabel}>
-                  {t("DAPP.appVersion")}
-                </span>
-                <span className={styles.appInfoValue}>
-                  {appInfo.appVersion}
-                </span>
-              </div>
-
-              <div className={styles.appInfoWarning}>
-                <ExclamationCircleOutline className={styles.warningIcon} />
-                {t("DAPP.warning")}
-              </div>
-            </div>
-          </div>
-        )}
-
+          )}
         {/* 密码输入区域 */}
         <div className={styles.passwordContainer}>
           {/* 明确设置输入框样式防止不可见 */}
           <div className={styles.inputWrapper}>
             <Input
-              placeholder="请输入密码"
+              placeholder={`请输入${nftAccount}账号的解密密码`}
               value={password}
               onChange={setPassword}
               onEnterPress={gotoConfirm}

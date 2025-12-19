@@ -12,6 +12,11 @@ import { getCurrentNetwork } from "../network";
 import { getDC } from "@/components/auth/login/dc";
 import { getCurrentAccount } from "./state";
 import { getEncodePwd, setEncodePwd } from "./security";
+import { saveAccountInfo } from "@/lib/slices/walletSlice";
+import { addAuthRecordIndex } from "../threadDB/auths";
+import { initUserDB } from "../threadDB";
+import { dcConfig } from "@/config/define";
+import { getToken } from "./auth";
 
 // 根据账号,生成签名的钱包账号对象
 async function generateWalletAccount(seedAccount: string) {
@@ -23,7 +28,7 @@ async function generateWalletAccount(seedAccount: string) {
       //待测试 跳出提示框,提示钱包里的用户账号不存在
       window.showToast({
         content: i18n.t("account.wallet_no_account"),
-        position: "bottom",
+        position: "center",
       });
       return null;
     }
@@ -32,7 +37,7 @@ async function generateWalletAccount(seedAccount: string) {
     //待测试 跳出提示框,提示用户获取账号信息失败
     window.showToast({
       content: i18n.t("account.get_info_failed"),
-      position: "bottom",
+      position: "center",
     });
     return null;
   }
@@ -41,6 +46,7 @@ async function generateWalletAccount(seedAccount: string) {
   let userHandleHash = null;
   try {
     userHandleHash = await getEncodePwd({
+      nftAccount: account.nftAccount,
       iv: account.iv,
       encodeMnimonic: account.mnemonic,
       credentialId: account.credentialId || "",
@@ -48,7 +54,7 @@ async function generateWalletAccount(seedAccount: string) {
     if (!userHandleHash) {
       window.showToast({
         content: i18n.t("account.unlock_wallet_cancel"),
-        position: "bottom",
+        position: "center",
       });
       return;
     }
@@ -56,7 +62,7 @@ async function generateWalletAccount(seedAccount: string) {
     //待测试 跳出提示框,提示用户解锁钱包失败
     window.showToast({
       content: i18n.t("account.unlock_wallet_failed"),
-      position: "bottom",
+      position: "center",
     });
     return;
   }
@@ -70,14 +76,15 @@ async function generateWalletAccount(seedAccount: string) {
     //待测试 跳出提示框,提示用户导入钱包失败
     window.showToast({
       content: i18n.t("account.unlock_wallet_failed"),
-      position: "bottom",
+      position: "center",
     });
   }
-  const dc = getDC();
-  if (dc) {
-    const connectingApp = dc.appInfo;
-    if (connectingApp && connectingApp.appId) {
-      await dc.auth.generateAppAccount(connectingApp.appId, mnemonic);
+  const connectingApp = store.getState().auth.appInfo || null;
+  const appId = connectingApp?.appId;
+  if (appId) {
+    const dc = getDC();
+    if (dc) {
+      await dc.auth.generateAppAccount(appId, mnemonic);
     }
   }
   // 通过助记词导入钱包,生成带私钥钱包账号
@@ -86,12 +93,113 @@ async function generateWalletAccount(seedAccount: string) {
     //待测试 跳出提示框,提示用户导入钱包失败
     window.showToast({
       content: i18n.t("account.unlock_wallet_failed"),
-      position: "bottom",
+      position: "center",
     });
   }
   return wallet;
 }
 
+// 根据账号,生成签名的钱包账号对象（切换账号）
+async function generateWalletAccountWithChange(seedAccount: string) {
+  const dc = getDC();
+  if (!dc) {
+    return;
+  }
+  const appInfo = store.getState().auth.appInfo || null;
+  if (!dc.appInfo || !dc.appInfo.appId || dc.appInfo.appId !== appInfo?.appId) {
+    dc.setAppInfo(appInfo);
+  }
+  let account = null;
+  // 数据库里获取账号信息
+  try {
+    account = await DBHelper.getData(DBHelper.store_account, seedAccount);
+    if (account == null) {
+      //待测试 跳出提示框,提示钱包里的用户账号不存在
+      window.showToast({
+        content: i18n.t("account.wallet_no_account"),
+        position: "center",
+      });
+      return null;
+    }
+  } catch (e) {
+    console.error("获取账号信息失败:", e);
+    //待测试 跳出提示框,提示用户获取账号信息失败
+    window.showToast({
+      content: i18n.t("account.get_info_failed"),
+      position: "center",
+    });
+    return null;
+  }
+
+  //跳出密码设置框,提示用户输入密码加密
+  let userHandleHash = null;
+  try {
+    userHandleHash = await getEncodePwd({
+      nftAccount: account.nftAccount,
+      iv: account.iv,
+      encodeMnimonic: account.mnemonic,
+      credentialId: account.credentialId || "",
+    });
+    if (!userHandleHash) {
+      window.showToast({
+        content: i18n.t("account.unlock_wallet_cancel"),
+        position: "center",
+      });
+      return;
+    }
+  } catch {
+    //待测试 跳出提示框,提示用户解锁钱包失败
+    window.showToast({
+      content: i18n.t("account.unlock_wallet_failed"),
+      position: "center",
+    });
+    return;
+  }
+  //解密出助记词
+  const mnemonic = await utilHelper.decryptMnemonic(
+    account.iv,
+    account.mnemonic,
+    userHandleHash
+  );
+  if (!mnemonic) {
+    //待测试 跳出提示框,提示用户导入钱包失败
+    window.showToast({
+      content: i18n.t("account.unlock_wallet_failed"),
+      position: "center",
+    });
+  }
+  const appId = dcConfig.appInfo.appId;
+  await dc.auth.generateAppAccount(appId, mnemonic);
+  // 获取用户信息，重新设置公钥
+  const keymanager = new KeyManager();
+  const privKey: Ed25519PrivKey = await keymanager.getEd25519KeyFromMnemonic(
+    mnemonic,
+    appId || ""
+  );
+  const parentPrivKey: Ed25519PrivKey =
+    await keymanager.getEd25519KeyFromMnemonic(mnemonic, "");
+  dc.setParentPublicKey(parentPrivKey.publicKey);
+  // 保存公钥到上下文中
+  dc.setPublicKey(privKey.publicKey);
+  dc.setPrivateKey(privKey);
+  // 获取token
+  const [res, err] = await getToken(privKey.publicKey.string());
+  if (res) {
+    // 设置threadDB
+    await initUserDB();
+    window.clearToast();
+  }
+  // 通过助记词导入钱包,生成带私钥钱包账号
+  const wallet = await ethersHelper.createWalletAccountWithMnemonic(mnemonic);
+  if (!wallet) {
+    //待测试 跳出提示框,提示用户导入钱包失败
+    window.showToast({
+      content: i18n.t("account.unlock_wallet_failed"),
+      position: "center",
+    });
+  }
+  return wallet;
+}
 // 创建钱包账号
 async function createWalletAccount(
   mnemonic: string | null = null,
@@ -101,7 +209,7 @@ async function createWalletAccount(
   let resAccount: AccountInfo | null = null;
   if (mnemonic) {
     try {
-      const [userHandle, credentialId] = await setEncodePwd();
+      const [userHandle, credentialId] = await setEncodePwd(nftAccount);
       if (!userHandle) {
         return null;
       }
@@ -121,7 +229,7 @@ async function createWalletAccount(
       const account = {
         nftAccount,
         account: address,
-        type: "eth", // todo 账号类型
+        type: "DCT", // todo 账号类型
         credentialId: credentialId || "",
         mnemonic: encryptedMnemonic,
         iv: iv,
@@ -130,11 +238,12 @@ async function createWalletAccount(
       };
       resAccount = account as AccountInfo;
       // 清空其他账号信息
-      await DBHelper.clearData(DBHelper.store_account);
+      // await DBHelper.clearData(DBHelper.store_account);
       const res = await DBHelper.updateData(DBHelper.store_account, account);
       console.log("账号信息存储成功", res);
+      const shouldReturnUserInfo = store.getState().auth.shouldReturnUserInfo;
       const dc = getDC();
-      if (dc && dc.shouldReturnUserInfo) {
+      if (dc && shouldReturnUserInfo) {
         // 存储到dc
         dc.setAccountInfo(resAccount);
       }
@@ -167,6 +276,7 @@ async function unlockWallet(chooseAccount: AccountInfo) {
   let userHandleHash = null;
   try {
     userHandleHash = await getEncodePwd({
+      nftAccount: chooseAccount.nftAccount,
       iv: chooseAccount.iv,
       encodeMnimonic: chooseAccount.mnemonic,
       credentialId: chooseAccount.credentialId || "",
@@ -205,10 +315,15 @@ async function unlockWallet(chooseAccount: AccountInfo) {
 
 async function resPonseWallet(
   mnemonic: string,
+  accountInfo: AccountInfo,
   message: ConnectReqMessage = {} as ConnectReqMessage,
   bool: boolean = false,
   port: MessagePort | null = null
-) {
+): Promise<{
+  success: boolean;
+  data: AccountInfo | null;
+  error?: Error | null;
+}> {
   const currentChain = getCurrentNetwork();
   if (!currentChain) {
     //待测试 跳出提示框,提示用户获取网络信息失败
@@ -222,9 +337,9 @@ async function resPonseWallet(
   }
   let connectingApp = message.data;
   if (!connectingApp) {
-    const dc = getDC();
-    if (dc && dc.appInfo) {
-      connectingApp = dc.appInfo;
+    const appInfo = store.getState().auth.appInfo || null;
+    if (appInfo) {
+      connectingApp = appInfo;
     }
   }
   // 通过助记词导入钱包,生成带私钥钱包账号
@@ -238,30 +353,6 @@ async function resPonseWallet(
       })
     );
     return;
-  }
-  const dc = getDC();
-  if (!dc) {
-    //待测试 跳出提示框,提示用户签名失败
-    store.dispatch(
-      updateAuthStep({
-        type: MsgStatus.failed,
-        content: i18n.t("sign.sign_failed"),
-      })
-    );
-    return;
-  }
-  // 获取用户信息，判断是否有空间
-  let publicKey = dc.publicKey;
-  if (publicKey == null) {
-    // DCAPP进入
-    const keymanager = new KeyManager();
-    const privKey: Ed25519PrivKey = await keymanager.getEd25519KeyFromMnemonic(
-      mnemonic,
-      connectingApp?.appId || ""
-    );
-    publicKey = privKey.publicKey;
-    // todo保存公钥到上下文中
-    dc.setPublicKey(publicKey);
   }
   // 执行签名
   const signature = await ethersHelper.signMessage(
@@ -297,7 +388,7 @@ async function resPonseWallet(
         chainName: currentChain.name,
         signature: signature,
         privateKey: privKey.raw,
-        accountInfo: dc.accountInfo || {},
+        accountInfo: accountInfo || {},
       },
     };
     if (!port) {
@@ -315,6 +406,19 @@ async function resPonseWallet(
     setTimeout(() => {
       port.close();
     }, 1000);
+    // 存储授权记录
+    const recordId = window.crypto.randomUUID();
+    console.log("recordId:", recordId);
+    await addAuthRecordIndex({
+      recordId: recordId,
+      appId: connectingApp.appId,
+      appName: connectingApp.appName,
+      appIcon: connectingApp.appIcon,
+      appUrl: connectingApp.appUrl,
+      nftAccount: currentAccount?.nftAccount,
+      account: currentAccount?.account,
+      timestamp: new Date().getTime(),
+    });
     // 连接记录存储到数据库
     const app = {
       appId: connectingApp?.appId,
@@ -341,21 +445,27 @@ async function resPonseWallet(
       });
   } else {
     // 钱包本身访问
+    // 保存用户信息
+    const toSaveAccountInfo: AccountInfo = {
+      url: currentAccount.url,
+      name: currentAccount.name,
+      nftAccount: currentAccount.nftAccount,
+      account: currentAccount.account,
+      credentialId: currentAccount.credentialId,
+      timeStamp: currentAccount.timeStamp,
+      type: currentAccount.type,
+    };
+    store.dispatch(saveAccountInfo(toSaveAccountInfo));
     return {
       success: true,
-      data: {
-        nftAccount: currentAccount?.nftAccount,
-        ethAccount: wallet.address,
-        chainId: currentChain.chainId,
-        chainName: currentChain.name,
-        signature: signature,
-      },
+      data: currentAccount,
     };
   }
 }
 
 export {
   generateWalletAccount,
+  generateWalletAccountWithChange,
   createWalletAccount,
   unlockWallet,
   resPonseWallet,

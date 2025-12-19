@@ -2,7 +2,7 @@
 import { readFile } from "fs/promises";
 
 const versionJson = JSON.parse(
-  await readFile(new URL("./version.json", import.meta.url), "utf8")
+  await readFile(new URL("./config.json", import.meta.url), "utf8")
 );
 
 const versionPath =
@@ -81,7 +81,7 @@ const nextConfig = {
     // 添加别名
     config.resolve.alias = {
       ...config.resolve.alias,
-      // '@/*': './*',
+      "@/*": "./*",
     };
 
     // 优化包大小

@@ -34,8 +34,7 @@ export async function applyFreeSpace(
 
     // Make request to storage service
     // Use a fallback for browsers that don't support navigator.language
-    const lang =
-      i18n.language || (navigator.language ? navigator.language : "en");
+    const lang = i18n.language || "en";
 
     // Use native fetch with proper error handling
     try {

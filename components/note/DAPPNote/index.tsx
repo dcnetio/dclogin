@@ -37,22 +37,25 @@ export default function DAPPNote() {
         <div className="w-full max-w-xs sm:max-w-2xl md:max-w-4xl lg:max-w-6xl mx-auto">
           {/* 主要内容区域 */}
           <div className={`${styles["mobile-stack"]} flex flex-col `}>
-            {/* DCWallet介绍区域 */}
+            {/* 登录中心介绍区域 */}
             <div className="text-center mobile-order-1">
               {/* Logo和标题 */}
               <div className="mb-4 sm:mb-6 lg:mb-8">
                 <h1 className="text-2xl sm:text-3xl lg:text-5xl font-bold text-purple-600 mb-2 sm:mb-3 lg:mb-4">
-                  DCWallet
+                  统一登录中心
                 </h1>
                 <p className="text-gray-600 text-sm sm:text-base lg:text-xl leading-relaxed">
-                  {t("wallet.tagline", "您通往新一代互联网的安全入口")}
+                  {t("login.tagline", "一个账户，畅行所有应用")}
                 </p>
               </div>
 
-              {/* DCWallet描述 */}
+              {/* 登录中心描述 */}
               <div className="mb-4 sm:mb-6 lg:mb-8">
                 <p className="text-gray-700 leading-relaxed text-sm sm:text-base lg:text-lg">
-                  {t("wallet.description", "DCWallet 是基于去中心化云服务开发的统一登录工具，不存储任何用户隐私信息。")}
+                  {t(
+                    "login.description",
+                    "统一登录中心提供安全便捷的身份认证服务，让您使用一个账户即可访问所有授权应用，无需重复注册和登录。"
+                  )}
                 </p>
               </div>
             </div>
@@ -94,9 +97,9 @@ export default function DAPPNote() {
                                 src={appInfo.appIcon}
                                 alt="App Icon"
                                 className="w-5 h-5 ml-2 rounded"
-                                width={40} // 必需
-                                height={40} // 必需
-                                priority={true} // 如果是 LCP 图像
+                                width={40}
+                                height={40}
+                                priority={true}
                               />
                             )}
                           </div>
@@ -127,7 +130,8 @@ export default function DAPPNote() {
                     <div className="mt-3 pt-3 border-t border-gray-200">
                       <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
                         <p className="text-amber-800 text-xs sm:text-sm font-medium">
-                          ⚠️ {t("DAPP.warning")}
+                          ⚠️{" "}
+                          {t("DAPP.warning", "请确认应用信息后再进行授权登录")}
                         </p>
                       </div>
                     </div>
@@ -163,7 +167,7 @@ export default function DAPPNote() {
                   <div className="inline-flex items-center px-4 py-2 bg-green-50 rounded-full border border-green-200">
                     <Shield className="w-4 h-4 text-green-600 mr-2" />
                     <span className="text-sm text-green-700 font-medium">
-                      您的隐私信息受到完全保护
+                      您的账户安全由统一登录中心保护
                     </span>
                   </div>
                 </div>
@@ -171,10 +175,10 @@ export default function DAPPNote() {
             </div>
           </div>
 
-          {/* DCWallet开源地址 */}
+          {/* 底部信息 */}
           <div className="text-center mt-6 sm:mt-8 lg:mt-10">
             <p className="text-sm text-gray-400">
-              DCWallet 开源地址 • Powered by Decentralized Cloud Services
+              统一登录中心 • 安全便捷的身份认证服务
             </p>
           </div>
         </div>

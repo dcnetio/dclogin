@@ -55,7 +55,7 @@ const getBlockNumber = async () => {
 };
 
 // 获取用户的余额
-const getUserBalance = async (address: string) => {
+const getUserBalance = async (address: string): Promise<string> => {
   if (jsonRpcProvider) {
     const balance = await jsonRpcProvider.getBalance(address);
     console.log("===============getUserBalance balance", balance);
@@ -65,6 +65,7 @@ const getUserBalance = async (address: string) => {
         : "0";
     return nb;
   }
+  return "0";
 };
 
 // 转账

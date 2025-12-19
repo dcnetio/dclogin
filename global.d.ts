@@ -1,11 +1,12 @@
 export {};
 
-import type{ DC } from "web-dc-api";
+import type { DC } from "web-dc-api";
 
 declare global {
   interface Window {
-    dc: DC,
+    dc: DC;
     showToast: (options: {
+      key?: string;
       content: string;
       type?: "success" | "error" | "info";
       duration?: number;

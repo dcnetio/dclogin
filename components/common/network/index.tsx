@@ -43,7 +43,7 @@ export default function Network(props: NetworkProps) {
     }
     window.showToast({
       content: t("network.connect_failed"),
-      position: "bottom",
+      position: "center",
     });
   };
   return (

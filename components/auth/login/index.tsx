@@ -1,12 +1,7 @@
 "use client";
 import { useEffect } from "react";
 import { initializeDatabase } from "@/helpers/DBHelper";
-import {
-  connectCmdHandler,
-  initBaseinfo,
-  initNetworks,
-  initCommChannel,
-} from "@/app/index";
+import { initBaseinfo, initNetworks, initCommChannel } from "@/app/index";
 import { store } from "@/lib/store";
 import { saveInitState } from "@/lib/slices/appSlice";
 import { appState, MsgStatus } from "@/config/constant";
@@ -17,6 +12,7 @@ import { useTranslation } from "next-i18next";
 import { dcConfig } from "@/config/define";
 import { ConnectReqMessage } from "@/types/walletTypes";
 import { checkDCInitialized, initDC } from "./dc";
+import { container } from "@/server/dc-contianer";
 
 // 获取查询字符串
 let queryString = "";
@@ -36,6 +32,16 @@ export default function Login() {
         // dapp打开钱包，立刻回复钱包已经加载
         initCommChannel();
       }
+      // 保存app信息
+      store.dispatch(
+        updateAppInfo({
+          appId: dcConfig.appInfo?.appId,
+          appName: dcConfig.appInfo?.appName,
+          appIcon: "",
+          appUrl: "",
+          appVersion: "",
+        })
+      );
 
       store.dispatch(saveInitState(appState.initing));
       // 授权开始
@@ -58,15 +64,6 @@ export default function Login() {
         );
         return;
       }
-      store.dispatch(
-        updateAppInfo({
-          appId: "",
-          appName: "",
-          appIcon: "",
-          appUrl: "",
-          appVersion: "",
-        })
-      );
       console.log("debug===========initBaseinfo start", new Date());
       // 调用初始化函数(默认信息)
       await initBaseinfo(); //初始化网络和账号信息
@@ -74,11 +71,8 @@ export default function Login() {
       // 初始化网络数据
       await initNetworks();
       console.log("debug===========initNetworks end", new Date());
-      //连接网络，并把用户信息保存下来
-      const message: ConnectReqMessage = {
-        origin: window.location.origin,
-      };
       if (!openerOrigin) {
+        initServer();
         // 循环判断dc是否存在，并设置超时，超过3s则直接返回
         const dc = await checkDCInitialized();
         if (!dc) {
@@ -90,40 +84,25 @@ export default function Login() {
           );
           return;
         }
-        // 判断如果是login，register，则跳过
-        if (
-          window.location.pathname.indexOf("login") > -1 ||
-          window.location.pathname.indexOf("register") > -1
-        ) {
-          return;
-        }
-        //改为判断是否有origin参数,如果有则表示是从DAPP打开的
-        const accountInfo = await connectCmdHandler(message, false);
-        console.log("accountInfo====", accountInfo);
-        if (!accountInfo) {
-          return;
-        }
-        // 提示成功，并跳转到首页
-        store.dispatch(
-          updateAuthStep({
-            type: MsgStatus.failed,
-            content: t("auth.success"),
-          })
-        );
-        // 初始化成功，
-        store.dispatch(saveInitState(appState.init_success));
-        if (
-          window.location.pathname.indexOf("login") > -1 ||
-          window.location.pathname.indexOf("register") > -1
-        ) {
-          router.replace(`/${window.location.search}`);
-          return;
-        }
-        router.refresh();
       }
     } catch (error) {
       console.error("login error", error);
     } finally {
+    }
+  };
+
+  const initServer = async () => {
+    try {
+      // 初始化服务
+      const { initializeServices } = await import("../../../server/dc-init");
+      const bool = await initializeServices(container);
+      if (bool) {
+        console.log("✅ 所有服务初始化完成");
+      } else {
+        console.error("❌ 服务初始化失败");
+      }
+    } catch (error) {
+      console.error("初始化过程出错:", error);
     }
   };
 

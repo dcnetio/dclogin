@@ -5,15 +5,13 @@ import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { Button, Input } from "antd-mobile";
 import { getDC } from "@/components/auth/login/dc";
-import { changePassword, getCurrentAccount } from "@/services/account";
+import { changePassword } from "@/services/account";
 import { AccountInfo } from "@/types/walletTypes";
-import { appState } from "@/config/constant";
 import { useAppSelector } from "@/lib/hooks";
 
 export default function ChangePassword() {
   const router = useRouter();
   const { t } = useTranslation();
-  const initState = useAppSelector((state) => state.app.initState);
   const [accountInfo, setAccountInfo] = useState<AccountInfo | null>(null);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -22,6 +20,7 @@ export default function ChangePassword() {
   const [safecode, setSafecode] = useState("000000");
   const [showSafecode, setShowSafecode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const account: AccountInfo = useAppSelector((state) => state.wallet.account);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -34,13 +33,10 @@ export default function ChangePassword() {
   }, []);
 
   useEffect(() => {
-    if (initState == appState.init_success) {
-      const accountInfo = getCurrentAccount();
-      if (accountInfo && accountInfo.nftAccount) {
-        setAccountInfo(accountInfo);
-      }
+    if (account && account.nftAccount) {
+      setAccountInfo(account);
     }
-  }, [initState]);
+  }, [account?.nftAccount]);
 
   const handleChangePassword = async () => {
     // 设置加载状态
@@ -51,7 +47,7 @@ export default function ChangePassword() {
       if (!newPassword) {
         window.showToast({
           content: t("changePassword.new_password_empty", "请输入新密码"),
-          position: "bottom",
+          position: "center",
         });
         setIsLoading(false);
         return;
@@ -61,7 +57,7 @@ export default function ChangePassword() {
       if (newPassword.length < 2) {
         window.showToast({
           content: t("changePassword.password_length", "密码长度至少2位"),
-          position: "bottom",
+          position: "center",
         });
         setIsLoading(false);
         return;
@@ -74,7 +70,7 @@ export default function ChangePassword() {
             "changePassword.confirm_password_empty",
             "请确认您的新密码"
           ),
-          position: "bottom",
+          position: "center",
         });
         setIsLoading(false);
         return;
@@ -87,7 +83,7 @@ export default function ChangePassword() {
             "changePassword.passwords_not_match",
             "两次输入的新密码不一致"
           ),
-          position: "bottom",
+          position: "center",
         });
         setPasswordsMatch(false);
         setIsLoading(false);
@@ -99,7 +95,7 @@ export default function ChangePassword() {
       if (!dc || !dc.auth) {
         window.showToast({
           content: t("changePassword.failed", "修改密码失败"),
-          position: "bottom",
+          position: "center",
         });
         setIsLoading(false);
         return;
@@ -116,21 +112,21 @@ export default function ChangePassword() {
         console.log("Change password error", error);
         window.showToast({
           content: error.message || t("changePassword.failed", "密码修改失败"),
-          position: "bottom",
+          position: "center",
         });
         return;
       }
 
       window.showToast({
         content: t("changePassword.success", "密码修改成功"),
-        position: "bottom",
+        position: "center",
       });
       // 返回上一页或者跳转到登录页
       router.push("/");
     } catch {
       window.showToast({
         content: t("changePassword.failed", "密码修改失败"),
-        position: "bottom",
+        position: "center",
       });
     } finally {
       // 无论成功与否，都重置加载状态

@@ -748,7 +748,7 @@ export const pb = $root.pb = (() => {
          * @property {number|null} [amount] PackageInfo amount
          * @property {string|null} [currency] PackageInfo currency
          * @property {number|null} [validDays] PackageInfo validDays
-         * @property {number|null} [pkgRights] PackageInfo pkgRights
+         * @property {string|null} [pkgRights] PackageInfo pkgRights
          * @property {number|null} [chainPkgId] PackageInfo chainPkgId
          * @property {number|null} [spaceSize] PackageInfo spaceSize
          * @property {string|null} [createTime] PackageInfo createTime
@@ -827,11 +827,11 @@ export const pb = $root.pb = (() => {
 
         /**
          * PackageInfo pkgRights.
-         * @member {number} pkgRights
+         * @member {string} pkgRights
          * @memberof pb.PackageInfo
          * @instance
          */
-        PackageInfo.prototype.pkgRights = 0;
+        PackageInfo.prototype.pkgRights = "";
 
         /**
          * PackageInfo chainPkgId.
@@ -896,7 +896,7 @@ export const pb = $root.pb = (() => {
             if (message.validDays != null && Object.hasOwnProperty.call(message, "validDays"))
                 writer.uint32(/* id 7, wireType 0 =*/56).int32(message.validDays);
             if (message.pkgRights != null && Object.hasOwnProperty.call(message, "pkgRights"))
-                writer.uint32(/* id 8, wireType 0 =*/64).int32(message.pkgRights);
+                writer.uint32(/* id 8, wireType 2 =*/66).string(message.pkgRights);
             if (message.chainPkgId != null && Object.hasOwnProperty.call(message, "chainPkgId"))
                 writer.uint32(/* id 9, wireType 0 =*/72).int32(message.chainPkgId);
             if (message.spaceSize != null && Object.hasOwnProperty.call(message, "spaceSize"))
@@ -959,7 +959,7 @@ export const pb = $root.pb = (() => {
                     message.validDays = reader.int32();
                     break;
                 case 8:
-                    message.pkgRights = reader.int32();
+                    message.pkgRights = reader.string();
                     break;
                 case 9:
                     message.chainPkgId = reader.int32();
@@ -1027,8 +1027,8 @@ export const pb = $root.pb = (() => {
                 if (!$util.isInteger(message.validDays))
                     return "validDays: integer expected";
             if (message.pkgRights != null && message.hasOwnProperty("pkgRights"))
-                if (!$util.isInteger(message.pkgRights))
-                    return "pkgRights: integer expected";
+                if (!$util.isString(message.pkgRights))
+                    return "pkgRights: string expected";
             if (message.chainPkgId != null && message.hasOwnProperty("chainPkgId"))
                 if (!$util.isInteger(message.chainPkgId))
                     return "chainPkgId: integer expected";
@@ -1068,7 +1068,7 @@ export const pb = $root.pb = (() => {
             if (object.validDays != null)
                 message.validDays = object.validDays | 0;
             if (object.pkgRights != null)
-                message.pkgRights = object.pkgRights | 0;
+                message.pkgRights = String(object.pkgRights);
             if (object.chainPkgId != null)
                 message.chainPkgId = object.chainPkgId | 0;
             if (object.spaceSize != null)
@@ -1099,7 +1099,7 @@ export const pb = $root.pb = (() => {
                 object.amount = 0;
                 object.currency = "";
                 object.validDays = 0;
-                object.pkgRights = 0;
+                object.pkgRights = "";
                 object.chainPkgId = 0;
                 object.spaceSize = 0;
                 object.createTime = "";
@@ -3904,7 +3904,7 @@ export const pb = $root.pb = (() => {
          * @memberof pb
          * @interface ICreateCidInfoResponse
          * @property {number|null} [code] CreateCidInfoResponse code
-         * @property {string|null} [message] CreateCidInfoResponse message
+         * @property {string|null} [msg] CreateCidInfoResponse msg
          */
 
         /**
@@ -3931,12 +3931,12 @@ export const pb = $root.pb = (() => {
         CreateCidInfoResponse.prototype.code = 0;
 
         /**
-         * CreateCidInfoResponse message.
-         * @member {string} message
+         * CreateCidInfoResponse msg.
+         * @member {string} msg
          * @memberof pb.CreateCidInfoResponse
          * @instance
          */
-        CreateCidInfoResponse.prototype.message = "";
+        CreateCidInfoResponse.prototype.msg = "";
 
         /**
          * Creates a new CreateCidInfoResponse instance using the specified properties.
@@ -3964,8 +3964,8 @@ export const pb = $root.pb = (() => {
                 writer = $Writer.create();
             if (message.code != null && Object.hasOwnProperty.call(message, "code"))
                 writer.uint32(/* id 1, wireType 0 =*/8).int32(message.code);
-            if (message.message != null && Object.hasOwnProperty.call(message, "message"))
-                writer.uint32(/* id 2, wireType 2 =*/18).string(message.message);
+            if (message.msg != null && Object.hasOwnProperty.call(message, "msg"))
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.msg);
             return writer;
         };
 
@@ -4004,7 +4004,7 @@ export const pb = $root.pb = (() => {
                     message.code = reader.int32();
                     break;
                 case 2:
-                    message.message = reader.string();
+                    message.msg = reader.string();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -4044,9 +4044,9 @@ export const pb = $root.pb = (() => {
             if (message.code != null && message.hasOwnProperty("code"))
                 if (!$util.isInteger(message.code))
                     return "code: integer expected";
-            if (message.message != null && message.hasOwnProperty("message"))
-                if (!$util.isString(message.message))
-                    return "message: string expected";
+            if (message.msg != null && message.hasOwnProperty("msg"))
+                if (!$util.isString(message.msg))
+                    return "msg: string expected";
             return null;
         };
 
@@ -4064,8 +4064,8 @@ export const pb = $root.pb = (() => {
             let message = new $root.pb.CreateCidInfoResponse();
             if (object.code != null)
                 message.code = object.code | 0;
-            if (object.message != null)
-                message.message = String(object.message);
+            if (object.msg != null)
+                message.msg = String(object.msg);
             return message;
         };
 
@@ -4084,12 +4084,12 @@ export const pb = $root.pb = (() => {
             let object = {};
             if (options.defaults) {
                 object.code = 0;
-                object.message = "";
+                object.msg = "";
             }
             if (message.code != null && message.hasOwnProperty("code"))
                 object.code = message.code;
-            if (message.message != null && message.hasOwnProperty("message"))
-                object.message = message.message;
+            if (message.msg != null && message.hasOwnProperty("msg"))
+                object.msg = message.msg;
             return object;
         };
 
@@ -4301,7 +4301,7 @@ export const pb = $root.pb = (() => {
          * @memberof pb
          * @interface IGetCidInfoResponse
          * @property {number|null} [code] GetCidInfoResponse code
-         * @property {string|null} [message] GetCidInfoResponse message
+         * @property {string|null} [msg] GetCidInfoResponse msg
          * @property {pb.ICidInfo|null} [data] GetCidInfoResponse data
          */
 
@@ -4329,12 +4329,12 @@ export const pb = $root.pb = (() => {
         GetCidInfoResponse.prototype.code = 0;
 
         /**
-         * GetCidInfoResponse message.
-         * @member {string} message
+         * GetCidInfoResponse msg.
+         * @member {string} msg
          * @memberof pb.GetCidInfoResponse
          * @instance
          */
-        GetCidInfoResponse.prototype.message = "";
+        GetCidInfoResponse.prototype.msg = "";
 
         /**
          * GetCidInfoResponse data.
@@ -4370,8 +4370,8 @@ export const pb = $root.pb = (() => {
                 writer = $Writer.create();
             if (message.code != null && Object.hasOwnProperty.call(message, "code"))
                 writer.uint32(/* id 1, wireType 0 =*/8).int32(message.code);
-            if (message.message != null && Object.hasOwnProperty.call(message, "message"))
-                writer.uint32(/* id 2, wireType 2 =*/18).string(message.message);
+            if (message.msg != null && Object.hasOwnProperty.call(message, "msg"))
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.msg);
             if (message.data != null && Object.hasOwnProperty.call(message, "data"))
                 $root.pb.CidInfo.encode(message.data, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
             return writer;
@@ -4412,7 +4412,7 @@ export const pb = $root.pb = (() => {
                     message.code = reader.int32();
                     break;
                 case 2:
-                    message.message = reader.string();
+                    message.msg = reader.string();
                     break;
                 case 3:
                     message.data = $root.pb.CidInfo.decode(reader, reader.uint32());
@@ -4455,9 +4455,9 @@ export const pb = $root.pb = (() => {
             if (message.code != null && message.hasOwnProperty("code"))
                 if (!$util.isInteger(message.code))
                     return "code: integer expected";
-            if (message.message != null && message.hasOwnProperty("message"))
-                if (!$util.isString(message.message))
-                    return "message: string expected";
+            if (message.msg != null && message.hasOwnProperty("msg"))
+                if (!$util.isString(message.msg))
+                    return "msg: string expected";
             if (message.data != null && message.hasOwnProperty("data")) {
                 let error = $root.pb.CidInfo.verify(message.data);
                 if (error)
@@ -4480,8 +4480,8 @@ export const pb = $root.pb = (() => {
             let message = new $root.pb.GetCidInfoResponse();
             if (object.code != null)
                 message.code = object.code | 0;
-            if (object.message != null)
-                message.message = String(object.message);
+            if (object.msg != null)
+                message.msg = String(object.msg);
             if (object.data != null) {
                 if (typeof object.data !== "object")
                     throw TypeError(".pb.GetCidInfoResponse.data: object expected");
@@ -4505,13 +4505,13 @@ export const pb = $root.pb = (() => {
             let object = {};
             if (options.defaults) {
                 object.code = 0;
-                object.message = "";
+                object.msg = "";
                 object.data = null;
             }
             if (message.code != null && message.hasOwnProperty("code"))
                 object.code = message.code;
-            if (message.message != null && message.hasOwnProperty("message"))
-                object.message = message.message;
+            if (message.msg != null && message.hasOwnProperty("msg"))
+                object.msg = message.msg;
             if (message.data != null && message.hasOwnProperty("data"))
                 object.data = $root.pb.CidInfo.toObject(message.data, options);
             return object;
@@ -4880,7 +4880,7 @@ export const pb = $root.pb = (() => {
          * @memberof pb
          * @interface IPageQueryResponse
          * @property {number|null} [code] PageQueryResponse code
-         * @property {string|null} [message] PageQueryResponse message
+         * @property {string|null} [msg] PageQueryResponse msg
          * @property {pb.ICIDPageResult|null} [data] PageQueryResponse data
          */
 
@@ -4908,12 +4908,12 @@ export const pb = $root.pb = (() => {
         PageQueryResponse.prototype.code = 0;
 
         /**
-         * PageQueryResponse message.
-         * @member {string} message
+         * PageQueryResponse msg.
+         * @member {string} msg
          * @memberof pb.PageQueryResponse
          * @instance
          */
-        PageQueryResponse.prototype.message = "";
+        PageQueryResponse.prototype.msg = "";
 
         /**
          * PageQueryResponse data.
@@ -4949,8 +4949,8 @@ export const pb = $root.pb = (() => {
                 writer = $Writer.create();
             if (message.code != null && Object.hasOwnProperty.call(message, "code"))
                 writer.uint32(/* id 1, wireType 0 =*/8).int32(message.code);
-            if (message.message != null && Object.hasOwnProperty.call(message, "message"))
-                writer.uint32(/* id 2, wireType 2 =*/18).string(message.message);
+            if (message.msg != null && Object.hasOwnProperty.call(message, "msg"))
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.msg);
             if (message.data != null && Object.hasOwnProperty.call(message, "data"))
                 $root.pb.CIDPageResult.encode(message.data, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
             return writer;
@@ -4991,7 +4991,7 @@ export const pb = $root.pb = (() => {
                     message.code = reader.int32();
                     break;
                 case 2:
-                    message.message = reader.string();
+                    message.msg = reader.string();
                     break;
                 case 3:
                     message.data = $root.pb.CIDPageResult.decode(reader, reader.uint32());
@@ -5034,9 +5034,9 @@ export const pb = $root.pb = (() => {
             if (message.code != null && message.hasOwnProperty("code"))
                 if (!$util.isInteger(message.code))
                     return "code: integer expected";
-            if (message.message != null && message.hasOwnProperty("message"))
-                if (!$util.isString(message.message))
-                    return "message: string expected";
+            if (message.msg != null && message.hasOwnProperty("msg"))
+                if (!$util.isString(message.msg))
+                    return "msg: string expected";
             if (message.data != null && message.hasOwnProperty("data")) {
                 let error = $root.pb.CIDPageResult.verify(message.data);
                 if (error)
@@ -5059,8 +5059,8 @@ export const pb = $root.pb = (() => {
             let message = new $root.pb.PageQueryResponse();
             if (object.code != null)
                 message.code = object.code | 0;
-            if (object.message != null)
-                message.message = String(object.message);
+            if (object.msg != null)
+                message.msg = String(object.msg);
             if (object.data != null) {
                 if (typeof object.data !== "object")
                     throw TypeError(".pb.PageQueryResponse.data: object expected");
@@ -5084,13 +5084,13 @@ export const pb = $root.pb = (() => {
             let object = {};
             if (options.defaults) {
                 object.code = 0;
-                object.message = "";
+                object.msg = "";
                 object.data = null;
             }
             if (message.code != null && message.hasOwnProperty("code"))
                 object.code = message.code;
-            if (message.message != null && message.hasOwnProperty("message"))
-                object.message = message.message;
+            if (message.msg != null && message.hasOwnProperty("msg"))
+                object.msg = message.msg;
             if (message.data != null && message.hasOwnProperty("data"))
                 object.data = $root.pb.CIDPageResult.toObject(message.data, options);
             return object;
@@ -5683,7 +5683,7 @@ export const pb = $root.pb = (() => {
          * @memberof pb
          * @interface IUpdateCheckStatusResponse
          * @property {number|null} [code] UpdateCheckStatusResponse code
-         * @property {string|null} [message] UpdateCheckStatusResponse message
+         * @property {string|null} [msg] UpdateCheckStatusResponse msg
          */
 
         /**
@@ -5710,12 +5710,12 @@ export const pb = $root.pb = (() => {
         UpdateCheckStatusResponse.prototype.code = 0;
 
         /**
-         * UpdateCheckStatusResponse message.
-         * @member {string} message
+         * UpdateCheckStatusResponse msg.
+         * @member {string} msg
          * @memberof pb.UpdateCheckStatusResponse
          * @instance
          */
-        UpdateCheckStatusResponse.prototype.message = "";
+        UpdateCheckStatusResponse.prototype.msg = "";
 
         /**
          * Creates a new UpdateCheckStatusResponse instance using the specified properties.
@@ -5743,8 +5743,8 @@ export const pb = $root.pb = (() => {
                 writer = $Writer.create();
             if (message.code != null && Object.hasOwnProperty.call(message, "code"))
                 writer.uint32(/* id 1, wireType 0 =*/8).int32(message.code);
-            if (message.message != null && Object.hasOwnProperty.call(message, "message"))
-                writer.uint32(/* id 2, wireType 2 =*/18).string(message.message);
+            if (message.msg != null && Object.hasOwnProperty.call(message, "msg"))
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.msg);
             return writer;
         };
 
@@ -5783,7 +5783,7 @@ export const pb = $root.pb = (() => {
                     message.code = reader.int32();
                     break;
                 case 2:
-                    message.message = reader.string();
+                    message.msg = reader.string();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -5823,9 +5823,9 @@ export const pb = $root.pb = (() => {
             if (message.code != null && message.hasOwnProperty("code"))
                 if (!$util.isInteger(message.code))
                     return "code: integer expected";
-            if (message.message != null && message.hasOwnProperty("message"))
-                if (!$util.isString(message.message))
-                    return "message: string expected";
+            if (message.msg != null && message.hasOwnProperty("msg"))
+                if (!$util.isString(message.msg))
+                    return "msg: string expected";
             return null;
         };
 
@@ -5843,8 +5843,8 @@ export const pb = $root.pb = (() => {
             let message = new $root.pb.UpdateCheckStatusResponse();
             if (object.code != null)
                 message.code = object.code | 0;
-            if (object.message != null)
-                message.message = String(object.message);
+            if (object.msg != null)
+                message.msg = String(object.msg);
             return message;
         };
 
@@ -5863,12 +5863,12 @@ export const pb = $root.pb = (() => {
             let object = {};
             if (options.defaults) {
                 object.code = 0;
-                object.message = "";
+                object.msg = "";
             }
             if (message.code != null && message.hasOwnProperty("code"))
                 object.code = message.code;
-            if (message.message != null && message.hasOwnProperty("message"))
-                object.message = message.message;
+            if (message.msg != null && message.hasOwnProperty("msg"))
+                object.msg = message.msg;
             return object;
         };
 
@@ -6080,7 +6080,7 @@ export const pb = $root.pb = (() => {
          * @memberof pb
          * @interface IDeleteCidInfoResponse
          * @property {number|null} [code] DeleteCidInfoResponse code
-         * @property {string|null} [message] DeleteCidInfoResponse message
+         * @property {string|null} [msg] DeleteCidInfoResponse msg
          */
 
         /**
@@ -6107,12 +6107,12 @@ export const pb = $root.pb = (() => {
         DeleteCidInfoResponse.prototype.code = 0;
 
         /**
-         * DeleteCidInfoResponse message.
-         * @member {string} message
+         * DeleteCidInfoResponse msg.
+         * @member {string} msg
          * @memberof pb.DeleteCidInfoResponse
          * @instance
          */
-        DeleteCidInfoResponse.prototype.message = "";
+        DeleteCidInfoResponse.prototype.msg = "";
 
         /**
          * Creates a new DeleteCidInfoResponse instance using the specified properties.
@@ -6140,8 +6140,8 @@ export const pb = $root.pb = (() => {
                 writer = $Writer.create();
             if (message.code != null && Object.hasOwnProperty.call(message, "code"))
                 writer.uint32(/* id 1, wireType 0 =*/8).int32(message.code);
-            if (message.message != null && Object.hasOwnProperty.call(message, "message"))
-                writer.uint32(/* id 2, wireType 2 =*/18).string(message.message);
+            if (message.msg != null && Object.hasOwnProperty.call(message, "msg"))
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.msg);
             return writer;
         };
 
@@ -6180,7 +6180,7 @@ export const pb = $root.pb = (() => {
                     message.code = reader.int32();
                     break;
                 case 2:
-                    message.message = reader.string();
+                    message.msg = reader.string();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -6220,9 +6220,9 @@ export const pb = $root.pb = (() => {
             if (message.code != null && message.hasOwnProperty("code"))
                 if (!$util.isInteger(message.code))
                     return "code: integer expected";
-            if (message.message != null && message.hasOwnProperty("message"))
-                if (!$util.isString(message.message))
-                    return "message: string expected";
+            if (message.msg != null && message.hasOwnProperty("msg"))
+                if (!$util.isString(message.msg))
+                    return "msg: string expected";
             return null;
         };
 
@@ -6240,8 +6240,8 @@ export const pb = $root.pb = (() => {
             let message = new $root.pb.DeleteCidInfoResponse();
             if (object.code != null)
                 message.code = object.code | 0;
-            if (object.message != null)
-                message.message = String(object.message);
+            if (object.msg != null)
+                message.msg = String(object.msg);
             return message;
         };
 
@@ -6260,12 +6260,12 @@ export const pb = $root.pb = (() => {
             let object = {};
             if (options.defaults) {
                 object.code = 0;
-                object.message = "";
+                object.msg = "";
             }
             if (message.code != null && message.hasOwnProperty("code"))
                 object.code = message.code;
-            if (message.message != null && message.hasOwnProperty("message"))
-                object.message = message.message;
+            if (message.msg != null && message.hasOwnProperty("msg"))
+                object.msg = message.msg;
             return object;
         };
 

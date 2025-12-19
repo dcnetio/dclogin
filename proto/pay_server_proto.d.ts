@@ -381,7 +381,7 @@ export namespace pb {
         validDays?: (number|null);
 
         /** PackageInfo pkgRights */
-        pkgRights?: (number|null);
+        pkgRights?: (string|null);
 
         /** PackageInfo chainPkgId */
         chainPkgId?: (number|null);
@@ -424,7 +424,7 @@ export namespace pb {
         public validDays: number;
 
         /** PackageInfo pkgRights. */
-        public pkgRights: number;
+        public pkgRights: string;
 
         /** PackageInfo chainPkgId. */
         public chainPkgId: number;
@@ -1724,8 +1724,8 @@ export namespace pb {
         /** CreateCidInfoResponse code */
         code?: (number|null);
 
-        /** CreateCidInfoResponse message */
-        message?: (string|null);
+        /** CreateCidInfoResponse msg */
+        msg?: (string|null);
     }
 
     /** Represents a CreateCidInfoResponse. */
@@ -1740,8 +1740,8 @@ export namespace pb {
         /** CreateCidInfoResponse code. */
         public code: number;
 
-        /** CreateCidInfoResponse message. */
-        public message: string;
+        /** CreateCidInfoResponse msg. */
+        public msg: string;
 
         /**
          * Creates a new CreateCidInfoResponse instance using the specified properties.
@@ -1910,8 +1910,8 @@ export namespace pb {
         /** GetCidInfoResponse code */
         code?: (number|null);
 
-        /** GetCidInfoResponse message */
-        message?: (string|null);
+        /** GetCidInfoResponse msg */
+        msg?: (string|null);
 
         /** GetCidInfoResponse data */
         data?: (pb.ICidInfo|null);
@@ -1929,8 +1929,8 @@ export namespace pb {
         /** GetCidInfoResponse code. */
         public code: number;
 
-        /** GetCidInfoResponse message. */
-        public message: string;
+        /** GetCidInfoResponse msg. */
+        public msg: string;
 
         /** GetCidInfoResponse data. */
         public data?: (pb.ICidInfo|null);
@@ -2144,8 +2144,8 @@ export namespace pb {
         /** PageQueryResponse code */
         code?: (number|null);
 
-        /** PageQueryResponse message */
-        message?: (string|null);
+        /** PageQueryResponse msg */
+        msg?: (string|null);
 
         /** PageQueryResponse data */
         data?: (pb.ICIDPageResult|null);
@@ -2163,8 +2163,8 @@ export namespace pb {
         /** PageQueryResponse code. */
         public code: number;
 
-        /** PageQueryResponse message. */
-        public message: string;
+        /** PageQueryResponse msg. */
+        public msg: string;
 
         /** PageQueryResponse data. */
         public data?: (pb.ICIDPageResult|null);
@@ -2468,8 +2468,8 @@ export namespace pb {
         /** UpdateCheckStatusResponse code */
         code?: (number|null);
 
-        /** UpdateCheckStatusResponse message */
-        message?: (string|null);
+        /** UpdateCheckStatusResponse msg */
+        msg?: (string|null);
     }
 
     /** Represents an UpdateCheckStatusResponse. */
@@ -2484,8 +2484,8 @@ export namespace pb {
         /** UpdateCheckStatusResponse code. */
         public code: number;
 
-        /** UpdateCheckStatusResponse message. */
-        public message: string;
+        /** UpdateCheckStatusResponse msg. */
+        public msg: string;
 
         /**
          * Creates a new UpdateCheckStatusResponse instance using the specified properties.
@@ -2654,8 +2654,8 @@ export namespace pb {
         /** DeleteCidInfoResponse code */
         code?: (number|null);
 
-        /** DeleteCidInfoResponse message */
-        message?: (string|null);
+        /** DeleteCidInfoResponse msg */
+        msg?: (string|null);
     }
 
     /** Represents a DeleteCidInfoResponse. */
@@ -2670,8 +2670,8 @@ export namespace pb {
         /** DeleteCidInfoResponse code. */
         public code: number;
 
-        /** DeleteCidInfoResponse message. */
-        public message: string;
+        /** DeleteCidInfoResponse msg. */
+        public msg: string;
 
         /**
          * Creates a new DeleteCidInfoResponse instance using the specified properties.

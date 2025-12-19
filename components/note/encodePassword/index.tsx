@@ -124,7 +124,14 @@ export default function EncodePassword(props: EncodePasswordProps) {
               </div>
             </div>
           )}
-
+        {!!appInfo &&
+          !!appInfo.appName &&
+          appInfo.appId === dcConfig.appInfo.appId && (
+            <div className={styles.appInfoHeader}>
+              <LinkOutline className={styles.appInfoIcon} />
+              <span>解密密码</span>
+            </div>
+          )}
         {/* 密码输入区域 */}
         <div className={styles.passwordContainer}>
           {/* 明确设置输入框样式防止不可见 */}

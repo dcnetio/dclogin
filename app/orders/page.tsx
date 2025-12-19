@@ -105,7 +105,7 @@ export default function OrderListPage() {
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  订单号
+                  套餐名称
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   订单时间
@@ -129,7 +129,7 @@ export default function OrderListPage() {
                 >
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900">
-                      {order.orderId}
+                      {order.pkgName}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -176,7 +176,7 @@ export default function OrderListPage() {
               <div className="flex flex-1  justify-between items-start mb-3">
                 <div>
                   <div className="text-sm font-medium text-gray-900 text-ellipsis overflow-hidden">
-                    {order.orderId}
+                    {order.pkgName}
                   </div>
                   <div className="text-xs text-gray-500 mt-1">
                     {new Date(order.createTime)?.toLocaleString()}

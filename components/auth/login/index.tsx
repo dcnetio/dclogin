@@ -12,6 +12,7 @@ import { useTranslation } from "next-i18next";
 import { dcConfig } from "@/config/define";
 import { ConnectReqMessage } from "@/types/walletTypes";
 import { checkDCInitialized, initDC } from "./dc";
+import { container } from "@/server/dc-contianer";
 
 // 获取查询字符串
 let queryString = "";
@@ -71,6 +72,7 @@ export default function Login() {
       await initNetworks();
       console.log("debug===========initNetworks end", new Date());
       if (!openerOrigin) {
+        initServer();
         // 循环判断dc是否存在，并设置超时，超过3s则直接返回
         const dc = await checkDCInitialized();
         if (!dc) {
@@ -82,19 +84,25 @@ export default function Login() {
           );
           return;
         }
-        // 判断如果是login，register，则跳过
-        if (
-          window.location.pathname.indexOf("login") > -1 ||
-          window.location.pathname.indexOf("register") > -1 ||
-          window.location.pathname === "/" ||
-          window.location.pathname === ""
-        ) {
-          return;
-        }
       }
     } catch (error) {
       console.error("login error", error);
     } finally {
+    }
+  };
+
+  const initServer = async () => {
+    try {
+      // 初始化服务
+      const { initializeServices } = await import("../../../server/dc-init");
+      const bool = await initializeServices(container);
+      if (bool) {
+        console.log("✅ 所有服务初始化完成");
+      } else {
+        console.error("❌ 服务初始化失败");
+      }
+    } catch (error) {
+      console.error("初始化过程出错:", error);
     }
   };
 

@@ -27,15 +27,13 @@ import QRCode from "qrcode";
 interface StorageSubscriptionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelectPlan: (plan: PackageInfo) => void;
-  userPoints: number;
+  // userPoints: number;
 }
 
 const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
   isOpen,
   onClose,
-  onSelectPlan,
-  userPoints,
+  // userPoints,
 }) => {
   const { t } = useTranslation();
   const router = useRouter();

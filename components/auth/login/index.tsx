@@ -10,7 +10,6 @@ import NavigationService from "@/lib/navigation";
 import { updateAppInfo, updateAuthStep } from "@/lib/slices/authSlice";
 import { useTranslation } from "next-i18next";
 import { dcConfig } from "@/config/define";
-import { ConnectReqMessage } from "@/types/walletTypes";
 import { checkDCInitialized, initDC } from "./dc";
 import { container } from "@/server/dc-contianer";
 

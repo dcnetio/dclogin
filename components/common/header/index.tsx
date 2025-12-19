@@ -15,7 +15,6 @@ const Header = () => {
   const { t } = useTranslation();
   const router = useRouter();
   const [accountInfo, setAccountInfo] = useState<AccountInfo | null>(null);
-  const [showUserMenu, setShowUserMenu] = useState(false);
   const [showAccountSwitchModal, setShowAccountSwitchModal] = useState(false);
   const account: AccountInfo = useAppSelector((state) => state.wallet.account);
 
@@ -57,18 +56,14 @@ const Header = () => {
     }
   }, [authInfo]);
 
-  const handleLogout = async () => {
-    try {
-      // 清除本地状态
-      setShowAccountSwitchModal(false);
-    } catch (err) {
-      console.error("登出失败:", err);
-    }
-  };
-
-  const handleLoginNewAccount = () => {
-    // 触发登录新账号的逻辑
-  };
+  // const handleLogout = async () => {
+  //   try {
+  //     // 清除本地状态
+  //     setShowAccountSwitchModal(false);
+  //   } catch (err) {
+  //     console.error("登出失败:", err);
+  //   }
+  // };
 
   useEffect(() => {
     if (account && account.nftAccount) {

@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Search, Filter, ChevronDown } from "lucide-react";
-import OrderDetail from "./components/page";
+import { Search } from "lucide-react";
+import OrderDetail from "./components/OrderDetail";
 import {
   getOrderRecordsWithNFT,
   updateOrderRecord,
@@ -10,13 +10,11 @@ import { AccountInfo } from "@/types/walletTypes";
 import { useAppSelector } from "@/lib/hooks";
 import { OrderRecord } from "@/types/pageType";
 import { CurrencyType, StoragePurchaseStatus } from "@/config/constant";
-import { Toast } from "antd-mobile";
 import { container } from "@/server/dc-contianer";
 
 // 订单列表主组件
 export default function OrderListPage() {
   const [orders, setOrders] = useState<OrderRecord[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
   const [selectedOrder, setSelectedOrder] = useState(null);
 
   const account: AccountInfo = useAppSelector((state) => state.wallet.account);

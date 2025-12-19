@@ -1,6 +1,6 @@
 {
   "peerAddr": "/ip4/192.168.31.31/tcp/3002/ws/p2p/12D3KooWQEyWpYrKzfppidqqUoFQ4mrGzfPj9pakfrs821nEuHWR",
-  "versionName": "v0_0_20",
-  "version": "0.0.20",
-  "versionCode": 20
+  "versionName": "v0_1_1",
+  "version": "0.1.1",
+  "versionCode": 21
 }

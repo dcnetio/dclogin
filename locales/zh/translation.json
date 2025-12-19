@@ -158,7 +158,7 @@
   "wallet": {
     "wallet": "钱包",
     "tagline": "您通往新一代互联网的安全入口",
-    "description": "DCWallet 是基于去中心化云服务开发的统一登录工具，不存储任何用户隐私信息。"
+    "description": "DCLogin 是基于去中心化云服务开发的统一登录工具，不存储任何用户隐私信息。"
   },
   "dc": {
     "failed": "获取Dc信息失败",

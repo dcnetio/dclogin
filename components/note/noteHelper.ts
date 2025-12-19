@@ -245,7 +245,7 @@ async function registerPasskey() {
   const createCredentialOptions = {
     challenge: challenge,
     rp: {
-      name: "DCWallet",
+      name: "DCLogin",
       id: window.location.hostname,
     },
     user: {

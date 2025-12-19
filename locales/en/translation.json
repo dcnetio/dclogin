@@ -160,7 +160,7 @@
     "wallet": "Wallet",
     "initialization_failed": "Initialization Failed",
     "tagline": "Your secure gateway to the next generation internet",
-    "description": "DCWallet is a unified login tool based on decentralized cloud services, storing no user privacy information."
+    "description": "DCLogin is a unified login tool based on decentralized cloud services, storing no user privacy information."
   },
   "dc": {
     "failed": "Failed to get DC info",

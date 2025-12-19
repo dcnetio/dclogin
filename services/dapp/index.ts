@@ -182,16 +182,6 @@ async function onDAPPMessage(event: MessageEvent) {
           connectCmdHandler(message, true, event.ports[0]);
           return;
         } else {
-          //显示提示页面
-          store.dispatch(
-            updateAppInfo({
-              appId: dcConfig.appInfo?.appId,
-              appName: dcConfig.appInfo?.appName,
-              appIcon: "",
-              appUrl: "",
-              appVersion: "",
-            })
-          );
           connectCmdHandler(message, true, event.ports[0]);
         }
       }
@@ -291,15 +281,8 @@ async function connectCmdHandler(
     const appId = dcConfig.appInfo?.appId || "";
     const dc = getDC();
     if (dc) {
-      const nAppInfo = {
-        appId: dcConfig.appInfo?.appId,
-        appName: dcConfig.appInfo?.appName,
-        appIcon: "",
-        appUrl: "",
-        appVersion: "",
-      };
-      store.dispatch(updateAppInfo(nAppInfo));
-      dc.setAppInfo(nAppInfo);
+      const nAppInfo = store.getState().auth.appInfo || null;
+      nAppInfo && dc.setAppInfo(nAppInfo);
       const keymanager = new KeyManager();
       const privKey: Ed25519PrivKey =
         await keymanager.getEd25519KeyFromMnemonic(mnemonic, appId || "");
@@ -665,6 +648,7 @@ async function createAccountWithLogin(
         await keymanager.getEd25519KeyFromMnemonic(mnemonic, appId);
       if (appId === dcConfig.appInfo.appId) {
         window.showToast({
+          key: "initUserDB",
           content: i18n.t("account.init_user_db_ing"), // "初始化用户数据库中"
           position: "center",
           duration: 0,

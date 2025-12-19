@@ -7,7 +7,7 @@ import { saveInitState } from "@/lib/slices/appSlice";
 import { appState, MsgStatus } from "@/config/constant";
 import { useRouter } from "next/navigation";
 import NavigationService from "@/lib/navigation";
-import { updateAuthStep } from "@/lib/slices/authSlice";
+import { updateAppInfo, updateAuthStep } from "@/lib/slices/authSlice";
 import { useTranslation } from "next-i18next";
 import { dcConfig } from "@/config/define";
 import { ConnectReqMessage } from "@/types/walletTypes";
@@ -31,6 +31,16 @@ export default function Login() {
         // dapp打开钱包，立刻回复钱包已经加载
         initCommChannel();
       }
+      // 保存app信息
+      store.dispatch(
+        updateAppInfo({
+          appId: dcConfig.appInfo?.appId,
+          appName: dcConfig.appInfo?.appName,
+          appIcon: "",
+          appUrl: "",
+          appVersion: "",
+        })
+      );
 
       store.dispatch(saveInitState(appState.initing));
       // 授权开始

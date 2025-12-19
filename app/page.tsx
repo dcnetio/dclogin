@@ -1,10 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Header from "@/components/common/header";
-import PointsExchangeModal from "@/components/modals/PointsExchangeModal";
 import StorageSubscriptionModal from "@/components/modals/StorageSubscriptionModal";
-import { getDC } from "@/components/auth/login/dc";
-import { APPThemeConfig } from "@/config/define";
 import { useAppSelector } from "@/lib/hooks";
 import { getUserInfoWithNft } from "@/services/account";
 import { User } from "web-dc-api";
@@ -18,9 +15,6 @@ import { AuthRecord } from "@/types/pageType";
 import { AccountInfo } from "@/types/walletTypes";
 import { useRouter, useSearchParams } from "next/navigation";
 import DAPPNote from "@/components/note/DAPPNote";
-import { container } from "@/server/dc-contianer";
-import i18n from "@/locales/i18n";
-import { CurrencyType, PackageType } from "@/config/constant";
 interface UserInfo extends User {
   points: number;
 }
@@ -30,15 +24,14 @@ const Dashboard = () => {
   const searchParams = useSearchParams();
   const origin = searchParams.get("origin");
   const [userInfo, setUserInfo] = useState<UserInfo>(null);
-  const [apps, setApps] = useState<any[]>([]);
+  const [apps] = useState<any[]>([]);
   const [loginHistory, setLoginHistory] = useState<AuthRecord[]>([]);
   const [displayedLoginHistory, setDisplayedLoginHistory] = useState<
     AuthRecord[]
   >([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error] = useState<string | null>(null);
   const [historyPage, setHistoryPage] = useState(1);
-  const [showExchangeModal, setShowExchangeModal] = useState(false);
+  // const [setShowExchangeModal] = useState(false);
   const [showStorageModal, setShowStorageModal] = useState(false);
 
   const account: AccountInfo = useAppSelector((state) => state.wallet.account);
@@ -91,10 +84,6 @@ const Dashboard = () => {
 
   const handleSubscribeStorage = () => {
     setShowStorageModal(true);
-  };
-
-  const handleSelectStoragePlan = (plan: any) => {
-    setShowStorageModal(false);
   };
 
   // const handleExchangePoints = async (points: number) => {
@@ -160,7 +149,7 @@ const Dashboard = () => {
       });
       return;
     }
-    setShowExchangeModal(true);
+    // setShowExchangeModal(true);
   };
 
   useEffect(() => {
@@ -393,8 +382,7 @@ const Dashboard = () => {
       <StorageSubscriptionModal
         isOpen={showStorageModal}
         onClose={() => setShowStorageModal(false)}
-        onSelectPlan={handleSelectStoragePlan}
-        userPoints={userInfo?.points || 0}
+        // userPoints={userInfo?.points || 0}
       />
 
       {/* 积分兑换模态框 */}

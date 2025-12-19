@@ -1,13 +1,5 @@
 import React from "react";
-import {
-  X,
-  Package,
-  MapPin,
-  CreditCard,
-  Truck,
-  Clock,
-  CheckCircle,
-} from "lucide-react";
+import { X, CreditCard } from "lucide-react";
 import { CurrencyType, StoragePurchaseStatus } from "@/config/constant";
 import { OrderRecord } from "@/types/pageType";
 

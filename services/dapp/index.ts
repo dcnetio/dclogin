@@ -138,8 +138,6 @@ async function onDAPPMessage(event: MessageEvent) {
     case "channelPort2":
       iframeChannel = event.ports[0];
       iframeChannel.onmessage = onDAPPMessage;
-      // 循环判断dc是否存在，并设置超时，超过60s则直接返回
-      await checkDCInitialized();
       const loadedMessage = {
         type: "loaded",
         origin: openerOrigin,
@@ -230,19 +228,19 @@ async function connectCmdHandler(
   data: AccountInfo | null;
   error?: Error | null;
 }> {
-  // 获取当前网络
-  const chain = await getCurrentChain();
-  if (!chain) {
-    //待测试 跳出提示框,提示用户获取网络信息失败
-    store.dispatch(
-      updateAuthStep({
-        type: MsgStatus.failed,
-        content: i18n.t("network.get_failed"),
-        needLogin: false,
-      })
-    );
-    return;
-  }
+  // // 获取当前网络
+  // const chain = await getCurrentChain();
+  // if (!chain) {
+  //   //待测试 跳出提示框,提示用户获取网络信息失败
+  //   store.dispatch(
+  //     updateAuthStep({
+  //       type: MsgStatus.failed,
+  //       content: i18n.t("network.get_failed"),
+  //       needLogin: false,
+  //     })
+  //   );
+  //   return;
+  // }
 
   messageData = message;
   portData = port;

@@ -86,7 +86,7 @@ export default function Register() {
       const dc = getDC();
       if (!dc || !dc.auth) {
         window.showToast({
-          content: t("register.failed", "注册失败"),
+          content: "dc模块未加载完成，请稍后再注册",
           position: "center",
         });
         setIsLoading(false); // Reset loading state

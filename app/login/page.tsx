@@ -48,55 +48,51 @@ export default function Login() {
       return;
     }
     const dc = getDC();
-    if (dc) {
-      if (!dc.auth) {
+    if (!dc || !dc.auth) {
+      window.showToast({
+        content: "dc模块未加载完成，请稍后再登录",
+        position: "center",
+      });
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const res = await createAccountWithLogin(
+        account,
+        password,
+        safecode,
+        origin
+      );
+      console.log("accountLogin res", res);
+
+      // Reset loading state after login completes
+      setIsLoading(false);
+
+      if (res && res.success) {
         window.showToast({
-          content: t("login.failed"),
+          content: t("login.success"),
           position: "center",
         });
-        setIsLoading(false); // Reset loading state
+
+        store.dispatch(saveInitState(appState.init_success));
+        router.push("/");
         return;
       }
 
-      try {
-        const res = await createAccountWithLogin(
-          account,
-          password,
-          safecode,
-          origin
-        );
-        console.log("accountLogin res", res);
+      window.showToast({
+        content: t("login.failed"),
+        position: "center",
+      });
+    } catch (error) {
+      // Reset loading state if there's an error
+      setIsLoading(false);
 
-        // Reset loading state after login completes
-        setIsLoading(false);
-
-        if (res && res.success) {
-          window.showToast({
-            content: t("login.success"),
-            position: "center",
-          });
-
-          store.dispatch(saveInitState(appState.init_success));
-          router.push("/");
-          return;
-        }
-
-        window.showToast({
-          content: t("login.failed"),
-          position: "center",
-        });
-      } catch (error) {
-        // Reset loading state if there's an error
-        setIsLoading(false);
-
-        console.log("accountLogin error", error);
-        window.showToast({
-          content: t("login.failed"),
-          position: "center",
-        });
-      }
-    } else {
-      setIsLoading(false); // Reset loading if dc is not available
+      console.log("accountLogin error", error);
+      window.showToast({
+        content: t("login.failed"),
+        position: "center",
+      });
     }
   };
 

@@ -129,7 +129,7 @@ export default function EncodePassword(props: EncodePasswordProps) {
           appInfo.appId === dcConfig.appInfo.appId && (
             <div className={styles.appInfoHeader}>
               <LinkOutline className={styles.appInfoIcon} />
-              <span>解密密码</span>
+              <span>{t("encode.password")}</span>
             </div>
           )}
         {/* 密码输入区域 */}

@@ -181,39 +181,6 @@ export const pb = $root.pb = (() => {
          */
 
         /**
-         * Callback as used by {@link pb.PayService#createCidInfo}.
-         * @memberof pb.PayService
-         * @typedef CreateCidInfoCallback
-         * @type {function}
-         * @param {Error|null} error Error, if any
-         * @param {pb.CreateCidInfoResponse} [response] CreateCidInfoResponse
-         */
-
-        /**
-         * Calls CreateCidInfo.
-         * @function createCidInfo
-         * @memberof pb.PayService
-         * @instance
-         * @param {pb.ICreateCidInfoRequest} request CreateCidInfoRequest message or plain object
-         * @param {pb.PayService.CreateCidInfoCallback} callback Node-style callback called with the error, if any, and CreateCidInfoResponse
-         * @returns {undefined}
-         * @variation 1
-         */
-        Object.defineProperty(PayService.prototype.createCidInfo = function createCidInfo(request, callback) {
-            return this.rpcCall(createCidInfo, $root.pb.CreateCidInfoRequest, $root.pb.CreateCidInfoResponse, request, callback);
-        }, "name", { value: "CreateCidInfo" });
-
-        /**
-         * Calls CreateCidInfo.
-         * @function createCidInfo
-         * @memberof pb.PayService
-         * @instance
-         * @param {pb.ICreateCidInfoRequest} request CreateCidInfoRequest message or plain object
-         * @returns {Promise<pb.CreateCidInfoResponse>} Promise
-         * @variation 2
-         */
-
-        /**
          * Callback as used by {@link pb.PayService#getCidInfo}.
          * @memberof pb.PayService
          * @typedef GetCidInfoCallback

@@ -29,6 +29,7 @@ export default function OrderListPage() {
 
   const getAllOrders = async () => {
     const records = await getOrderRecordsWithNFT(account.nftAccount);
+    console.log("=========records", records);
     setOrders(records);
     const _orders: OrderRecord[] = [];
     let updateFlag = false;

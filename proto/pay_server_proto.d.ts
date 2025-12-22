@@ -79,20 +79,6 @@ export namespace pb {
         public getStoragePurchaseStatus(request: pb.IGetStoragePurchaseStatusRequest): Promise<pb.GetStoragePurchaseStatusResponse>;
 
         /**
-         * Calls CreateCidInfo.
-         * @param request CreateCidInfoRequest message or plain object
-         * @param callback Node-style callback called with the error, if any, and CreateCidInfoResponse
-         */
-        public createCidInfo(request: pb.ICreateCidInfoRequest, callback: pb.PayService.CreateCidInfoCallback): void;
-
-        /**
-         * Calls CreateCidInfo.
-         * @param request CreateCidInfoRequest message or plain object
-         * @returns Promise
-         */
-        public createCidInfo(request: pb.ICreateCidInfoRequest): Promise<pb.CreateCidInfoResponse>;
-
-        /**
          * Calls GetCidInfo.
          * @param request GetCidInfoRequest message or plain object
          * @param callback Node-style callback called with the error, if any, and GetCidInfoResponse
@@ -136,13 +122,6 @@ export namespace pb {
          * @param [response] GetStoragePurchaseStatusResponse
          */
         type GetStoragePurchaseStatusCallback = (error: (Error|null), response?: pb.GetStoragePurchaseStatusResponse) => void;
-
-        /**
-         * Callback as used by {@link pb.PayService#createCidInfo}.
-         * @param error Error, if any
-         * @param [response] CreateCidInfoResponse
-         */
-        type CreateCidInfoCallback = (error: (Error|null), response?: pb.CreateCidInfoResponse) => void;
 
         /**
          * Callback as used by {@link pb.PayService#getCidInfo}.

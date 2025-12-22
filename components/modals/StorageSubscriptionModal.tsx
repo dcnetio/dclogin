@@ -23,6 +23,7 @@ import { saveInitState } from "@/lib/slices/appSlice";
 import { addOrderRecord, updateOrderRecord } from "@/services/threadDB/orders";
 import { OrderRecord } from "@/types/pageType";
 import QRCode from "qrcode";
+import dayjs from "dayjs";
 
 interface StorageSubscriptionModalProps {
   isOpen: boolean;
@@ -182,6 +183,10 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
         });
         return [];
       }
+      const timeExpire = dayjs()
+        .add(5, "minute")
+        .format("YYYY-MM-DDTHH:mm:ssZ");
+
       const [tradeNo, error] = await wxPayManager.createOrder({
         account: account.nftAccount || "",
         pkgId: selectedPlan?.pkgId || 0,
@@ -190,6 +195,7 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
           total: selectedPlan?.amount || 0,
         },
         dappid: dcConfig.appInfo.appId,
+        timeExpire: timeExpire,
       });
       if (error) {
         Toast.show({
@@ -558,7 +564,7 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
               <img
                 src={qrCodeUrl}
                 alt="QR Code"
-                className="m-4 w-64 h-64 bg-gray-200"
+                className="mx-4 mb-8 w-64 h-64 bg-gray-200"
               />
               <button
                 onClick={finishPayment}

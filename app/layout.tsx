@@ -16,18 +16,27 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { NavBar } from "antd-mobile";
 import { useTranslation } from "react-i18next";
-// import { unstableSetRender } from "antd-mobile"; // Support since version ^5.40.0
-// import { createRoot } from "react-dom/client";
+import { unstableSetRender } from "antd-mobile";
+import { createRoot, Root } from "react-dom/client";
 
-// unstableSetRender((node, container) => {
-//   container._reactRoot ||= createRoot(container);
-//   const root = container._reactRoot;
-//   root.render(node);
-//   return async () => {
-//     await new Promise((resolve) => setTimeout(resolve, 0));
-//     root.unmount();
-//   };
-// });
+// 使用 WeakMap 替代在 DOM 元素上添加属性（更干净）
+const rootMap = new WeakMap<Element | DocumentFragment, Root>();
+
+unstableSetRender((node, container) => {
+  let root = rootMap.get(container);
+  if (!root) {
+    root = createRoot(container);
+    rootMap.set(container, root);
+  }
+
+  root.render(node);
+
+  return async () => {
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    root!.unmount();
+    rootMap.delete(container);
+  };
+});
 const geistSans = localFont({
   src: "../fonts/GeistVF.woff",
   variable: "--font-geist-sans",

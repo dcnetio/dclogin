@@ -61,6 +61,8 @@ export interface CreateOrderRequest {
   /** CreateOrderRequest dappid */
   dappid?: string | null;
 
+  timeExpire?: string | null; // 支付超时时间，yyyy-MM-DDTHH:mm:ss+TIMEZONE。yyyy-MM-DD 表示年月日；T 字符用于分隔日期和时间部分；HH:mm:ss 表示具体的时分秒；TIMEZONE 表示时区，示例：2015-05-20T13:29:35+08:00 表示北京时间2015年5月20日13点29分35秒。
+
   attach?: string | null; // 使用应用CID 应用发布的时候使用
 }
 export interface IWxPayManager {

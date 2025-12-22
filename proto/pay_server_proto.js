@@ -1153,6 +1153,7 @@ export const pb = $root.pb = (() => {
          * @property {number|null} [pkgId] CreateOrderRequest pkgId
          * @property {string|null} [description] CreateOrderRequest description
          * @property {pb.IAmountInfo|null} [amount] CreateOrderRequest amount
+         * @property {string|null} [timeExpire] CreateOrderRequest timeExpire
          * @property {string|null} [dappid] CreateOrderRequest dappid
          * @property {string|null} [attach] CreateOrderRequest attach
          */
@@ -1205,6 +1206,14 @@ export const pb = $root.pb = (() => {
         CreateOrderRequest.prototype.amount = null;
 
         /**
+         * CreateOrderRequest timeExpire.
+         * @member {string} timeExpire
+         * @memberof pb.CreateOrderRequest
+         * @instance
+         */
+        CreateOrderRequest.prototype.timeExpire = "";
+
+        /**
          * CreateOrderRequest dappid.
          * @member {string} dappid
          * @memberof pb.CreateOrderRequest
@@ -1252,10 +1261,12 @@ export const pb = $root.pb = (() => {
                 writer.uint32(/* id 3, wireType 2 =*/26).string(message.description);
             if (message.amount != null && Object.hasOwnProperty.call(message, "amount"))
                 $root.pb.AmountInfo.encode(message.amount, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+            if (message.timeExpire != null && Object.hasOwnProperty.call(message, "timeExpire"))
+                writer.uint32(/* id 5, wireType 2 =*/42).string(message.timeExpire);
             if (message.dappid != null && Object.hasOwnProperty.call(message, "dappid"))
-                writer.uint32(/* id 5, wireType 2 =*/42).string(message.dappid);
+                writer.uint32(/* id 6, wireType 2 =*/50).string(message.dappid);
             if (message.attach != null && Object.hasOwnProperty.call(message, "attach"))
-                writer.uint32(/* id 6, wireType 2 =*/50).string(message.attach);
+                writer.uint32(/* id 7, wireType 2 =*/58).string(message.attach);
             return writer;
         };
 
@@ -1303,9 +1314,12 @@ export const pb = $root.pb = (() => {
                     message.amount = $root.pb.AmountInfo.decode(reader, reader.uint32());
                     break;
                 case 5:
-                    message.dappid = reader.string();
+                    message.timeExpire = reader.string();
                     break;
                 case 6:
+                    message.dappid = reader.string();
+                    break;
+                case 7:
                     message.attach = reader.string();
                     break;
                 default:
@@ -1357,6 +1371,9 @@ export const pb = $root.pb = (() => {
                 if (error)
                     return "amount." + error;
             }
+            if (message.timeExpire != null && message.hasOwnProperty("timeExpire"))
+                if (!$util.isString(message.timeExpire))
+                    return "timeExpire: string expected";
             if (message.dappid != null && message.hasOwnProperty("dappid"))
                 if (!$util.isString(message.dappid))
                     return "dappid: string expected";
@@ -1389,6 +1406,8 @@ export const pb = $root.pb = (() => {
                     throw TypeError(".pb.CreateOrderRequest.amount: object expected");
                 message.amount = $root.pb.AmountInfo.fromObject(object.amount);
             }
+            if (object.timeExpire != null)
+                message.timeExpire = String(object.timeExpire);
             if (object.dappid != null)
                 message.dappid = String(object.dappid);
             if (object.attach != null)
@@ -1414,6 +1433,7 @@ export const pb = $root.pb = (() => {
                 object.pkgId = 0;
                 object.description = "";
                 object.amount = null;
+                object.timeExpire = "";
                 object.dappid = "";
                 object.attach = "";
             }
@@ -1425,6 +1445,8 @@ export const pb = $root.pb = (() => {
                 object.description = message.description;
             if (message.amount != null && message.hasOwnProperty("amount"))
                 object.amount = $root.pb.AmountInfo.toObject(message.amount, options);
+            if (message.timeExpire != null && message.hasOwnProperty("timeExpire"))
+                object.timeExpire = message.timeExpire;
             if (message.dappid != null && message.hasOwnProperty("dappid"))
                 object.dappid = message.dappid;
             if (message.attach != null && message.hasOwnProperty("attach"))

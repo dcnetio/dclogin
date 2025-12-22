@@ -521,6 +521,9 @@ export namespace pb {
         /** CreateOrderRequest amount */
         amount?: (pb.IAmountInfo|null);
 
+        /** CreateOrderRequest timeExpire */
+        timeExpire?: (string|null);
+
         /** CreateOrderRequest dappid */
         dappid?: (string|null);
 
@@ -548,6 +551,9 @@ export namespace pb {
 
         /** CreateOrderRequest amount. */
         public amount?: (pb.IAmountInfo|null);
+
+        /** CreateOrderRequest timeExpire. */
+        public timeExpire: string;
 
         /** CreateOrderRequest dappid. */
         public dappid: string;

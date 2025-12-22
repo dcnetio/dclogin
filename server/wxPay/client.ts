@@ -52,15 +52,17 @@ export class WxPayClient {
         throw Errors.ErrP2pClientIsNull;
       }
       const createOrderRequest = new pb.CreateOrderRequest();
-      createOrderRequest.account = params.account;
-      createOrderRequest.pkgId = params.pkgId;
-      createOrderRequest.description = params.description;
+      createOrderRequest.account = params.account || "";
+      createOrderRequest.pkgId = params.pkgId || 0;
+      createOrderRequest.description = params.description || "";
       if (params.amount) {
         const amountInfo = new pb.AmountInfo();
         amountInfo.total = params.amount.total;
         createOrderRequest.amount = amountInfo;
       }
-      createOrderRequest.dappid = params.dappid;
+      createOrderRequest.dappid = params.dappid || "";
+      createOrderRequest.timeExpire = params.timeExpire || "";
+      createOrderRequest.attach = params.attach || "";
 
       const messageBytes =
         pb.CreateOrderRequest.encode(createOrderRequest).finish();

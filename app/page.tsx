@@ -58,8 +58,9 @@ const Dashboard = () => {
     const spaceInGB = userInfo.subscribeSpace / (1024 * 1024 * 1024);
     if (spaceInGB === 0) return "-";
     const dailyCost = spaceInGB * 15;
-    const days = userInfo.cloudServiceToken / dailyCost;
-    return dayjs().add(days, "day").format("YYYY-MM-DD");
+    const days = Math.floor(userInfo.cloudServiceToken / dailyCost);
+    const expireDate = dayjs().add(days, "day").format("YYYY-MM-DD");
+    return expireDate;
   };
 
   const gotoTokenUsage = () => {

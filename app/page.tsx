@@ -1,9 +1,10 @@
 "use client";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import Header from "@/components/common/header";
 import StorageSubscriptionModal from "@/components/modals/StorageSubscriptionModal";
+import AccountSwitchModal from "@/components/modals/AccountSwitchModal";
 import { useAppSelector } from "@/lib/hooks";
-import { getUserInfoWithNft } from "@/services/account";
+import { getUserInfoWithNft, getAllAccounts, chooseStoredAccount } from "@/services/account";
 import { User } from "web-dc-api";
 import { Toast } from "antd-mobile";
 import ethers from "@/helpers/ethersHelper";
@@ -16,6 +17,13 @@ import { AccountInfo } from "@/types/walletTypes";
 import { useRouter, useSearchParams } from "next/navigation";
 import DAPPNote from "@/components/note/DAPPNote";
 import dayjs from "dayjs";
+import { store } from "@/lib/store";
+import { updateAuthStep } from "@/lib/slices/authSlice";
+import { saveInitState } from "@/lib/slices/appSlice";
+import { saveAccountInfo } from "@/lib/slices/walletSlice";
+import { MsgStatus, appState } from "@/config/constant";
+import { useTranslation } from "react-i18next";
+import { showEncodePassword } from "@/components/note/noteHelper";
 
 interface UserInfo extends User {
   points: number;
@@ -23,6 +31,8 @@ interface UserInfo extends User {
 }
 
 const Dashboard = () => {
+  const { t } = useTranslation();
+  const authInfo = useAppSelector((state) => state.auth.authInfo);
   const router = useRouter();
   const searchParams = useSearchParams();
   const origin = searchParams.get("origin");
@@ -36,6 +46,7 @@ const Dashboard = () => {
   const [historyPage, setHistoryPage] = useState(1);
   // const [setShowExchangeModal] = useState(false);
   const [showStorageModal, setShowStorageModal] = useState(false);
+  const [showAccountModal, setShowAccountModal] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const account: AccountInfo = useAppSelector((state) => state.wallet.account);
@@ -243,6 +254,78 @@ const Dashboard = () => {
     return () => clearInterval(interval);
   }, []);
 
+  const handleLogin = useCallback(async () => {
+    const login = async () => {
+      try {
+        const account = await chooseStoredAccount();
+        return [account, null];
+      } catch (e) {
+        return [null, e];
+      }
+    };
+
+    try {
+      // 登录逻辑
+      const [user, error] = await login();
+      if (error) {
+        // 提示失败
+        Toast.show({
+          content: t("login.failed"),
+          position: "center",
+        });
+        store.dispatch(saveAccountInfo({} as AccountInfo));
+        return;
+      }
+      if (!user) {
+        // if (authInfo.needLogin) {
+          // 未登录过，前往登录页
+          router.replace(`/login${window.location.search}`);
+        // }
+        return;
+      }
+      
+      const appInfo = store.getState().auth.appInfo || {
+        appId: "",
+        appName: "",
+        appIcon: "",
+        appUrl: "",
+        appVersion: "",
+      };
+
+      showEncodePassword(
+        {
+          nftAccount: user.nftAccount,
+          iv: user.iv!,
+          encodeMnimonic: user.mnemonic!,
+          credentialId: user.credentialId,
+        },
+        appInfo,
+        (userHandleHash) => {
+          if (userHandleHash) {
+            store.dispatch(saveAccountInfo(user));
+            // 提示成功，并跳转到首页
+            store.dispatch(
+              updateAuthStep({
+                type: MsgStatus.success,
+                content: t("auth.success"),
+              })
+            );
+            // 初始化成功，
+            store.dispatch(saveInitState(appState.init_success));
+            router.replace(
+              `${window.location.pathname}${window.location.search}`
+            );
+          }
+        },
+        () => {
+          console.log("cancel");
+        }
+      );
+    } catch (err) {
+      console.error("登录失败:", err);
+    }
+  }, [authInfo, router, t]);
+
   const renderAppsSection = () => (
     <div className="glass-panel p-6 rounded-2xl text-left">
       <h3 className="text-lg font-medium text-white mb-6 flex items-center gap-2">
@@ -379,7 +462,7 @@ const Dashboard = () => {
             {/* 登录按钮 */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-8">
               <button
-                onClick={() => router.push('/login')}
+                onClick={handleLogin}
                 className="group relative px-8 py-4 bg-gradient-to-r from-primary to-secondary rounded-xl text-white font-semibold text-lg shadow-lg hover:shadow-primary/50 transition-all hover:scale-105 min-w-[200px]"
               >
                 <span className="flex items-center justify-center gap-2">
@@ -408,6 +491,10 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
+        <AccountSwitchModal
+          isOpen={showAccountModal}
+          onClose={() => setShowAccountModal(false)}
+        />
       </div>
     );
   }
@@ -579,7 +666,7 @@ const Dashboard = () => {
                     : "bg-slate-800 text-slate-500 cursor-not-allowed border border-white/5"
                 }`}
               >
-                兑换积分
+                积分兑换
               </button>
             </div>
           </div>
@@ -651,6 +738,11 @@ const Dashboard = () => {
         isOpen={showStorageModal}
         onClose={() => setShowStorageModal(false)}
         // userPoints={userInfo?.points || 0}
+      />
+
+      <AccountSwitchModal
+        isOpen={showAccountModal}
+        onClose={() => setShowAccountModal(false)}
       />
 
       {/* 积分兑换模态框 */}

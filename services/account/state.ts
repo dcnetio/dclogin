@@ -6,6 +6,6 @@ export const getCurrentAccount = (): AccountInfo | null => {
   return currentAccount;
 };
 
-export const setCurrentAccount = (account: AccountInfo) => {
+export const setCurrentAccount = (account: AccountInfo | null) => {
   currentAccount = account;
 };

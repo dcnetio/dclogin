@@ -93,10 +93,10 @@ export const showEncodePassword = (
       appInfo,
       cancalFun: () => {
         document.body.removeChild(container);
-        window.showToast({
-          content: i18n.t("account.unlock_wallet_cancel"),
-          position: "center",
-        });
+        // window.showToast({
+        //   content: i18n.t("account.unlock_wallet_cancel"),
+        //   position: "center",
+        // });
         failBack();
       },
       confirmFun: async (password: string) => {

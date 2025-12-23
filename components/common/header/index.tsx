@@ -56,14 +56,14 @@ const Header = () => {
     }
   }, [authInfo]);
 
-  // const handleLogout = async () => {
-  //   try {
-  //     // 清除本地状态
-  //     setShowAccountSwitchModal(false);
-  //   } catch (err) {
-  //     console.error("登出失败:", err);
-  //   }
-  // };
+  const handleLogout = async () => {
+    try {
+      // 清除本地状态
+      setShowAccountSwitchModal(false);
+    } catch (err) {
+      console.error("登出失败:", err);
+    }
+  };
 
   useEffect(() => {
     if (account && account.nftAccount) {

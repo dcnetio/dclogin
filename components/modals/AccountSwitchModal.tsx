@@ -7,12 +7,16 @@ import {
   deleteAccount,
   getAllAccounts,
 } from "@/services/account";
-import { UserCircleIcon } from "lucide-react";
+import { UserCircleIcon, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/lib/hooks";
 import { saveAccountInfo } from "@/lib/slices/walletSlice";
 import { store } from "@/lib/store";
 import { useTranslation } from "react-i18next";
+import { setCurrentAccount } from "@/services/account/state";
+import { appState } from "@/config/constant";
+import { updateAuthStep } from "@/lib/slices/authSlice";
+import { saveInitState } from "@/lib/slices/appSlice";
 interface UserInfo extends AccountInfo {
   isCurrent: boolean;
 }
@@ -90,6 +94,21 @@ const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
   const handleLoginNewAccount = () => {
     // 进入登录页面
     router.push(`/login${window.location.search}`);
+    onClose();
+  };
+
+  // 退出登录
+  const handleLogout = () => {
+    // Clear Redux
+    store.dispatch(saveAccountInfo({} as AccountInfo));
+    store.dispatch(updateAuthStep({ type: '', content: '' }));
+    store.dispatch(saveInitState(appState.not_init));
+
+    // Clear global variable
+    setCurrentAccount(null);
+
+    // Redirect
+    router.replace('/home');
     onClose();
   };
 
@@ -262,6 +281,16 @@ const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
               <p>暂无账号</p>
             </div>
           )}
+
+          <div className="mt-6 pt-4 border-t border-white/10">
+            <button
+              onClick={handleLogout}
+              className="w-full py-3 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 rounded-xl flex items-center justify-center text-red-400 transition-all hover:scale-[1.02] active:scale-95"
+            >
+              <LogOut className="mr-2" size={18} />
+              退出登录并清除数据
+            </button>
+          </div>
         </div>
 
         <div className="p-4 border-t border-white/10 text-center text-sm text-slate-400 shrink-0 bg-slate-900" style={{ backgroundColor: '#0f172a' }}>

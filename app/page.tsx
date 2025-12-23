@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Header from "@/components/common/header";
 import StorageSubscriptionModal from "@/components/modals/StorageSubscriptionModal";
 import { useAppSelector } from "@/lib/hooks";
@@ -36,6 +36,7 @@ const Dashboard = () => {
   const [historyPage, setHistoryPage] = useState(1);
   // const [setShowExchangeModal] = useState(false);
   const [showStorageModal, setShowStorageModal] = useState(false);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const account: AccountInfo = useAppSelector((state) => state.wallet.account);
 
@@ -196,12 +197,91 @@ const Dashboard = () => {
     }
   }, [account?.nftAccount]);
 
+  const [activeCardIndex, setActiveCardIndex] = useState(0);
+
   useEffect(() => {
     // 当历史记录或页码变化时，更新显示的记录
     const startIndex = 0;
     const endIndex = historyPage * HISTORY_PAGE_SIZE;
     setDisplayedLoginHistory(loginHistory.slice(startIndex, endIndex) || []);
   }, [loginHistory, historyPage]);
+
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      if (container.scrollWidth <= container.clientWidth) return;
+      const width = container.clientWidth;
+      const newIndex = Math.round(container.scrollLeft / width);
+      setActiveCardIndex(newIndex);
+    };
+
+    container.addEventListener('scroll', handleScroll);
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const interval = setInterval(() => {
+      // Only scroll if overflow exists (mobile)
+      if (container.scrollWidth <= container.clientWidth) return;
+
+      const width = container.clientWidth;
+      const currentScroll = container.scrollLeft;
+      const currentIndex = Math.round(currentScroll / width);
+      const nextIndex = (currentIndex + 1) % 3;
+
+      container.scrollTo({
+        left: nextIndex * width,
+        behavior: 'smooth'
+      });
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const renderAppsSection = () => (
+    <div className="glass-panel p-6 rounded-2xl text-left">
+      <h3 className="text-lg font-medium text-white mb-6 flex items-center gap-2">
+        <span className="w-1 h-6 bg-green-500 rounded-full"></span>
+        已接入应用推荐
+      </h3>
+      {apps.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {apps.map((app) => (
+            <div
+              key={app.id}
+              className="bg-white/5 hover:bg-white/10 border border-white/5 rounded-xl p-4 flex items-center transition-all hover:scale-[1.02] cursor-pointer"
+            >
+              <img
+                src={
+                  app.iconUrl ||
+                  "https://images.unsplash.com/photo-1637593992672-ed85a851fdc3?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80"
+                }
+                alt={app.name}
+                className="w-12 h-12 rounded-xl mr-4 object-cover shadow-lg"
+                onError={(e) => {
+                  e.currentTarget.src =
+                    "https://images.unsplash.com/photo-1637593992672-ed85a851fdc3?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80";
+                }}
+              />
+              <div>
+                <h4 className="font-medium text-white">{app.name}</h4>
+                <p className="text-xs text-slate-400 line-clamp-1">{app.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-10 text-slate-500">
+          <p>加速审核中...</p>
+        </div>
+      )}
+    </div>
+  );
 
   if (!!origin) {
     return (
@@ -235,7 +315,7 @@ const Dashboard = () => {
               </div>
               
               <div className="space-y-3">
-                <h1 className="text-5xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-white/70 tracking-tight">
+                <h1 className="text-5xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-white/70 tracking-tight pb-2">
                   DCLogin
                 </h1>
                 <p className="text-xl md:text-2xl text-blue-100/80 font-light">
@@ -245,35 +325,52 @@ const Dashboard = () => {
             </div>
 
             {/* 功能卡片 */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-12 mb-12">
-              <div className="glass-panel p-6 rounded-2xl border border-white/10 hover:border-primary/30 transition-all hover:scale-105">
-                <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mb-4 mx-auto">
-                  <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                  </svg>
+            <div className="relative">
+              <div 
+                ref={scrollContainerRef}
+                className="flex md:grid md:grid-cols-3 gap-0 md:gap-4 mt-12 mb-8 md:mb-12 overflow-x-auto md:overflow-visible pb-0 md:pb-0 snap-x snap-mandatory scroll-smooth no-scrollbar"
+              >
+                <div className="min-w-full md:min-w-0 flex-shrink-0 snap-center glass-panel p-6 rounded-2xl border border-white/10 hover:border-primary/30 transition-all hover:scale-105">
+                  <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mb-4 mx-auto">
+                    <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-semibold text-white mb-2">安全私密</h3>
+                  <p className="text-sm text-slate-400">去中心化身份验证，保护您的隐私</p>
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-2">安全登录</h3>
-                <p className="text-sm text-slate-400">去中心化身份验证，保护您的隐私</p>
+
+                <div className="min-w-full md:min-w-0 flex-shrink-0 snap-center glass-panel p-6 rounded-2xl border border-white/10 hover:border-secondary/30 transition-all hover:scale-105">
+                  <div className="w-12 h-12 bg-secondary/20 rounded-xl flex items-center justify-center mb-4 mx-auto">
+                    <svg className="w-6 h-6 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-semibold text-white mb-2">统一登录</h3>
+                  <p className="text-sm text-slate-400">一个账号，畅游多个应用</p>
+                </div>
+
+                <div className="min-w-full md:min-w-0 flex-shrink-0 snap-center glass-panel p-6 rounded-2xl border border-white/10 hover:border-accent/30 transition-all hover:scale-105">
+                  <div className="w-12 h-12 bg-accent/20 rounded-xl flex items-center justify-center mb-4 mx-auto">
+                    <svg className="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-semibold text-white mb-2">去中心化</h3>
+                  <p className="text-sm text-slate-400">去中心化云存储，数据自主掌控</p>
+                </div>
               </div>
 
-              <div className="glass-panel p-6 rounded-2xl border border-white/10 hover:border-secondary/30 transition-all hover:scale-105">
-                <div className="w-12 h-12 bg-secondary/20 rounded-xl flex items-center justify-center mb-4 mx-auto">
-                  <svg className="w-6 h-6 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                  </svg>
-                </div>
-                <h3 className="text-lg font-semibold text-white mb-2">跨应用统一</h3>
-                <p className="text-sm text-slate-400">一个账号，畅游多个应用</p>
-              </div>
-
-              <div className="glass-panel p-6 rounded-2xl border border-white/10 hover:border-accent/30 transition-all hover:scale-105">
-                <div className="w-12 h-12 bg-accent/20 rounded-xl flex items-center justify-center mb-4 mx-auto">
-                  <svg className="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
-                  </svg>
-                </div>
-                <h3 className="text-lg font-semibold text-white mb-2">云服务</h3>
-                <p className="text-sm text-slate-400">去中心化云存储，数据自主掌控</p>
+              {/* Dots - Mobile only */}
+              <div className="flex justify-center gap-2 md:hidden mb-12">
+                {[0, 1, 2].map((i) => (
+                  <div 
+                    key={i}
+                    className={`h-2 rounded-full transition-all duration-300 ${
+                      i === activeCardIndex ? 'bg-white w-6' : 'bg-white/20 w-2'
+                    }`}
+                  />
+                ))}
               </div>
             </div>
 
@@ -298,6 +395,8 @@ const Dashboard = () => {
                 注册账号
               </button>
             </div>
+
+            {renderAppsSection()}
 
             {/* 底部说明 */}
             <div className="mt-12 text-center">
@@ -542,43 +641,7 @@ const Dashboard = () => {
         </div>
 
         {/* 应用列表 */}
-        <div className="glass-panel p-6 rounded-2xl">
-          <h3 className="text-lg font-medium text-white mb-6 flex items-center gap-2">
-            <span className="w-1 h-6 bg-green-500 rounded-full"></span>
-            已接入应用推荐
-          </h3>
-          {apps.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {apps.map((app) => (
-                <div
-                  key={app.id}
-                  className="bg-white/5 hover:bg-white/10 border border-white/5 rounded-xl p-4 flex items-center transition-all hover:scale-[1.02] cursor-pointer"
-                >
-                  <img
-                    src={
-                      app.iconUrl ||
-                      "https://images.unsplash.com/photo-1637593992672-ed85a851fdc3?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80"
-                    }
-                    alt={app.name}
-                    className="w-12 h-12 rounded-xl mr-4 object-cover shadow-lg"
-                    onError={(e) => {
-                      e.currentTarget.src =
-                        "https://images.unsplash.com/photo-1637593992672-ed85a851fdc3?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80";
-                    }}
-                  />
-                  <div>
-                    <h4 className="font-medium text-white">{app.name}</h4>
-                    <p className="text-xs text-slate-400 line-clamp-1">{app.description}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-10 text-slate-500">
-              <p>暂无应用</p>
-            </div>
-          )}
-        </div>
+        {renderAppsSection()}
       </div>
 
       {/* 存储订阅模态框 */}

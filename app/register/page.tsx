@@ -88,7 +88,7 @@ export default function Register() {
       const dc = getDC();
       if (!dc || !dc.auth) {
         window.showToast({
-          content: "dc模块未加载完成，请稍后再注册",
+          content: t("register.dc_not_ready"),
           position: "center",
         });
         setIsLoading(false); // Reset loading state

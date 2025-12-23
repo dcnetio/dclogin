@@ -52,7 +52,7 @@ export default function Login() {
     const dc = getDC();
     if (!dc || !dc.auth) {
       window.showToast({
-        content: "dc模块未加载完成，请稍后再登录",
+        content: t("login.dc_not_ready"),
         position: "center",
       });
       setIsLoading(false);

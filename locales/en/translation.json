@@ -8,7 +8,12 @@
     "to": "To",
     "set": "Set",
     "security_protected": "Security Protected",
-    "copied": "Copied"
+    "copied": "Copied",
+    "success": "Success",
+    "failed": "Failed",
+    "waiting": "Waiting",
+    "pending": "Pending",
+    "confirmed": "Confirmed"
   },
   "transfer": {
     "transfer": "Transfer",
@@ -98,12 +103,70 @@
     "sign_msg": "Sign Message: ",
     "sign_failed": "Sign Failed"
   },
-  "status": {
-    "success": "Success",
-    "failed": "Failed",
-    "waiting": "Waiting",
-    "pending": "Pending",
-    "confirmed": "Confirmed"
+  "home": {
+    "slogan_title": "Master Your <1>Digital Identity</1>",
+    "slogan_desc": "A unified platform for secure, decentralized identity management and cloud service provisioning.",
+    "feature_login_title": "Decentralized Login",
+    "feature_login_desc": "Secure authentication for all DC-based Web3 applications. Your identity, your control.",
+    "feature_cloud_title": "Cloud Services",
+    "feature_cloud_desc": "Purchase and maintain decentralized cloud resources directly within the app. Seamless and efficient.",
+    "feature_decentralized_title": "Fully Decentralized",
+    "feature_decentralized_desc": "All operations are decentralized. No central authority controls your data or your assets.",
+    "feature_security_title": "Security & Privacy",
+    "feature_security_desc": "Your private keys never leave your device. End-to-end encryption ensures your data remains private.",
+    "stat_decentralized": "Decentralized",
+    "stat_zkp": "Knowledge Proof",
+    "stat_availability": "Availability",
+    "experience_now": "Experience It Now",
+    "recommended_apps": "Recommended Apps",
+    "under_review": "Under Review...",
+    "back_to_home": "Back to Home",
+    "subtitle": "Decentralized Identity Management",
+    "secure_private": "Secure & Private",
+    "secure_private_desc": "Decentralized authentication protecting your privacy",
+    "unified_login": "Unified Login",
+    "unified_login_desc": "One account for all applications",
+    "decentralized": "Decentralized",
+    "decentralized_desc": "Decentralized cloud storage, own your data",
+    "login": "Login",
+    "register": "Register Account",
+    "footer_desc": "Next Generation Decentralized Identity Management System",
+    "error": "Error",
+    "retry": "Retry",
+    "my_space": "My Space",
+    "used": "Used",
+    "total": "Total",
+    "available_token": "Available Cloud Service Token",
+    "details": "Details",
+    "connected": "Connected",
+    "buy": "Buy",
+    "swap": "Swap",
+    "send": "Send",
+    "receive": "Receive",
+    "tokens": "Tokens",
+    "collections": "Collections",
+    "activities": "Activities",
+    "ethereum_earn": "Ethereum · Earn",
+    "empty_activity": "Nothing to see yet. Swap your first token today."
+  },
+  "account_modal": {
+    "title": "Account Management",
+    "login_new": "Login New Account",
+    "current": "Current",
+    "no_accounts": "No Accounts",
+    "footer_tip": "Keep at least one account, current account cannot be deleted",
+    "logout": "Logout and Clear Data",
+    "delete_current_error": "Cannot delete current account",
+    "min_account_error": "At least one account is required",
+    "logout_title": "Logout & Clear Data",
+    "logout_desc": "This will clear all local data and log you out. You will need to re-login.",
+    "logout_confirm": "Logout",
+    "no_accounts_found": "No accounts found",
+    "switch_failed": "Switch Account Failed",
+    "cannot_delete_current": "Cannot delete current account",
+    "keep_at_least_one": "Must keep at least one account",
+    "confirm_delete": "Confirm Delete",
+    "delete_desc": "Are you sure you want to delete this account? This action cannot be undone."
   },
   "activity": {
     "copy_success": "Copied successfully",
@@ -124,7 +187,14 @@
     "safecode_empty": "Please enter security code",
     "success": "Login Successful",
     "failed": "Login Failed",
-    "go_register": "Go to Register"
+    "go_register": "Go to Register",
+    "title": "DCLogin",
+    "subtitle": "You are using decentralized unified login",
+    "input_safecode": "Enter Security Code",
+    "logging_in": "Logging in...",
+    "no_account": "No account?",
+    "register_now": "Register Now",
+    "dc_not_ready": "DC module not ready, please try again later"
   },
   "register": {
     "register": "Register",
@@ -135,7 +205,10 @@
     "password_length": "Password length at least 2",
     "success": "Register Successful",
     "failed": "Register Failed",
-    "go_login": "Go to Login"
+    "go_login": "Go to Login",
+    "confirm_password_empty": "Please confirm your password",
+    "passwords_not_match": "Passwords do not match",
+    "dc_not_ready": "DC module not ready, please try again later"
   },
   "encode": {
     "password": "Quick Access Password",
@@ -173,16 +246,5 @@
     "failed": "Failed to grant storage",
     "time_out": "Grant storage timeout",
     "has_space": "User already has storage"
-  },
-  "home": {
-    "buy": "Buy",
-    "swap": "Swap",
-    "send": "Send",
-    "receive": "Receive",
-    "tokens": "Tokens",
-    "collections": "Collections",
-    "activities": "Activities",
-    "ethereum_earn": "Ethereum · Earn",
-    "empty_activity": "Nothing to see yet. Swap your first token today."
   }
 }

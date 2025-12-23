@@ -117,13 +117,13 @@ const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
     // 不能删除当前账号
     const accountToDelete = accounts.find((acc) => acc.account === account);
     if (accountToDelete?.isCurrent) {
-      alert("不能删除当前账号");
+      alert(t("account_modal.cannot_delete_current"));
       return;
     }
 
     // 至少保留一个账号
     if (accounts.length <= 1) {
-      alert("至少需要保留一个账号");
+      alert(t("account_modal.keep_at_least_one"));
       return;
     }
 
@@ -153,7 +153,7 @@ const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
         style={{ backgroundColor: '#0f172a' }}
       >
         <div className="p-4 border-b border-white/10 flex justify-between items-center shrink-0 bg-slate-900" style={{ backgroundColor: '#0f172a' }}>
-          <h3 className="text-xl font-bold text-white">账号管理</h3>
+          <h3 className="text-xl font-bold text-white">{t("account_modal.title")}</h3>
           <button
             onClick={onClose}
             className="text-slate-400 hover:text-white"
@@ -173,7 +173,7 @@ const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
               className="w-full py-2 bg-blue-600 hover:bg-blue-700 rounded-lg flex items-center justify-center text-white shadow-lg shadow-blue-500/20"
             >
               <AddOutline className="mr-2" fontSize={18} />
-              登录新账号
+              {t("account_modal.login_new")}
             </button>
           </div>
 
@@ -278,7 +278,7 @@ const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
                   d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
                 />
               </svg>
-              <p>暂无账号</p>
+              <p>{t("account_modal.no_accounts_found")}</p>
             </div>
           )}
 
@@ -288,13 +288,13 @@ const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
               className="w-full py-3 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 rounded-xl flex items-center justify-center text-red-400 transition-all hover:scale-[1.02] active:scale-95"
             >
               <LogOut className="mr-2" size={18} />
-              退出登录并清除数据
+              {t("account_modal.logout_title")}
             </button>
           </div>
         </div>
 
         <div className="p-4 border-t border-white/10 text-center text-sm text-slate-400 shrink-0 bg-slate-900" style={{ backgroundColor: '#0f172a' }}>
-          <p>至少保留一个账号，当前账号无法删除</p>
+          <p>{t("account_modal.keep_at_least_one")}, {t("account_modal.cannot_delete_current")}</p>
         </div>
       </div>
     </div>

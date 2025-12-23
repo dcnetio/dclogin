@@ -378,149 +378,149 @@ const Dashboard = () => {
   
   // 未登录状态显示欢迎页面
   if (!account || !account.nftAccount) {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
-        <div className="absolute top-4 left-4 z-50">
-          <button
-            onClick={() => router.push('/')}
-            className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 backdrop-blur-md transition-all text-white"
-          >
-            <ArrowLeft size={20} />
-            <span>返回首页</span>
-          </button>
-        </div>
-        {/* 背景装饰 */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full bg-primary/10 blur-[120px] animate-pulse" />
-          <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] rounded-full bg-secondary/10 blur-[120px] animate-pulse" style={{ animationDelay: '1s' }} />
-        </div>
-
-        <div className="max-w-4xl w-full relative z-10">
-          <div className="text-center space-y-8">
-            {/* Logo 和标题 */}
-            <div className="space-y-6">
-              <div className="flex justify-center">
-                <div className="relative group">
-                  <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-3xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity" />
-                  <img 
-                    src="/logo.svg" 
-                    alt="DCLogin Logo" 
-                    className="relative w-24 h-24 rounded-3xl shadow-2xl transform group-hover:scale-105 transition-transform"
-                  />
-                </div>
-              </div>
-              
-              <div className="space-y-3">
-                <h1 className="text-5xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-white/70 tracking-tight pb-2">
-                  DCLogin
-                </h1>
-                <p className="text-xl md:text-2xl text-blue-100/80 font-light">
-                  去中心化身份管理
-                </p>
-              </div>
-            </div>
-
-            {/* 功能卡片 */}
-            <div className="relative">
-              <div 
-                ref={scrollContainerRef}
-                className="flex md:grid md:grid-cols-3 gap-0 md:gap-4 mt-12 mb-8 md:mb-12 overflow-x-auto md:overflow-visible pb-0 md:pb-0 snap-x snap-mandatory scroll-smooth no-scrollbar"
-              >
-                <div className="min-w-full md:min-w-0 flex-shrink-0 snap-center glass-panel p-6 rounded-2xl border border-white/10 hover:border-primary/30 transition-all hover:scale-105">
-                  <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mb-4 mx-auto">
-                    <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-lg font-semibold text-white mb-2">安全私密</h3>
-                  <p className="text-sm text-slate-400">去中心化身份验证，保护您的隐私</p>
-                </div>
-
-                <div className="min-w-full md:min-w-0 flex-shrink-0 snap-center glass-panel p-6 rounded-2xl border border-white/10 hover:border-secondary/30 transition-all hover:scale-105">
-                  <div className="w-12 h-12 bg-secondary/20 rounded-xl flex items-center justify-center mb-4 mx-auto">
-                    <svg className="w-6 h-6 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                    </svg>
-                  </div>
-                  <h3 className="text-lg font-semibold text-white mb-2">统一登录</h3>
-                  <p className="text-sm text-slate-400">一个账号，畅游多个应用</p>
-                </div>
-
-                <div className="min-w-full md:min-w-0 flex-shrink-0 snap-center glass-panel p-6 rounded-2xl border border-white/10 hover:border-accent/30 transition-all hover:scale-105">
-                  <div className="w-12 h-12 bg-accent/20 rounded-xl flex items-center justify-center mb-4 mx-auto">
-                    <svg className="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-lg font-semibold text-white mb-2">去中心化</h3>
-                  <p className="text-sm text-slate-400">去中心化云存储，数据自主掌控</p>
-                </div>
-              </div>
-
-              {/* Dots - Mobile only */}
-              <div className="flex justify-center gap-2 md:hidden mb-12">
-                {[0, 1, 2].map((i) => (
-                  <div 
-                    key={i}
-                    className={`h-2 rounded-full transition-all duration-300 ${
-                      i === activeCardIndex ? 'bg-white w-6' : 'bg-white/20 w-2'
-                    }`}
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* 登录按钮 */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-8">
-              <button
-                onClick={handleLogin}
-                className="group relative px-8 py-4 bg-gradient-to-r from-primary to-secondary rounded-xl text-white font-semibold text-lg shadow-lg hover:shadow-primary/50 transition-all hover:scale-105 min-w-[200px]"
-              >
-                <span className="flex items-center justify-center gap-2">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                  </svg>
-                  登录
-                </span>
-              </button>
-              
-              <button
-                onClick={() => router.push('/register')}
-                className="px-8 py-4 glass-panel rounded-xl text-white font-semibold text-lg border border-white/20 hover:border-white/40 transition-all hover:scale-105 min-w-[200px]"
-              >
-                注册账号
-              </button>
-            </div>
-
-            {renderAppsSection()}
-
-            {/* 底部说明 */}
-            <div className="mt-12 text-center">
-              <p className="text-sm text-slate-400">
-                新一代去中心化身份管理系统
-              </p>
-            </div>
-          </div>
-        </div>
-        <AccountSwitchModal
-          isOpen={showAccountModal}
-          onClose={() => setShowAccountModal(false)}
-        />
-      </div>
-    );
+    if (typeof window !== 'undefined') router.replace('/');
+    return null;
   }
+  // /*
+  //       <div className="absolute top-4 left-4 z-50">
+  //         <button
+  //           onClick={() => router.push('/')}
+  //           className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 backdrop-blur-md transition-all text-white"
+  //         >
+  //           <ArrowLeft size={20} />
+  //           <span>{t("home.back_to_home")}</span>
+  //         </button>
+  //       </div>
+  //       {/* 背景装饰 */}
+  //       <div className="absolute inset-0 overflow-hidden pointer-events-none">
+  //         <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full bg-primary/10 blur-[120px] animate-pulse" />
+  //         <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] rounded-full bg-secondary/10 blur-[120px] animate-pulse" style={{ animationDelay: '1s' }} />
+  //       </div>
+
+  //       <div className="max-w-4xl w-full relative z-10">
+  //         <div className="text-center space-y-8">
+  //           {/* Logo 和标题 */}
+  //           <div className="space-y-6">
+  //             <div className="flex justify-center">
+  //               <div className="relative group">
+  //                 <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-3xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity" />
+  //                 <img 
+  //                   src="/logo.svg" 
+  //                   alt="DCLogin Logo" 
+  //                   className="relative w-24 h-24 rounded-3xl shadow-2xl transform group-hover:scale-105 transition-transform"
+  //                 />
+  //               </div>
+  //             </div>
+              
+  //             <div className="space-y-3">
+  //               <h1 className="text-5xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-white/70 tracking-tight pb-2">
+  //                 DCLogin
+  //               </h1>
+  //               <p className="text-xl md:text-2xl text-blue-100/80 font-light">
+  //                 {t("home.subtitle")}
+  //               </p>
+  //             </div>
+  //           </div>
+
+  //           {/* 功能卡片 */}
+  //           <div className="relative">
+  //             <div 
+  //               ref={scrollContainerRef}
+  //               className="flex md:grid md:grid-cols-3 gap-0 md:gap-4 mt-12 mb-8 md:mb-12 overflow-x-auto md:overflow-visible pb-0 md:pb-0 snap-x snap-mandatory scroll-smooth no-scrollbar"
+  //             >
+  //               <div className="min-w-full md:min-w-0 flex-shrink-0 snap-center glass-panel p-6 rounded-2xl border border-white/10 hover:border-primary/30 transition-all hover:scale-105">
+  //                 <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mb-4 mx-auto">
+  //                   <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+  //                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+  //                   </svg>
+  //                 </div>
+  //                 <h3 className="text-lg font-semibold text-white mb-2">{t("home.secure_private")}</h3>
+  //                 <p className="text-sm text-slate-400">{t("home.secure_private_desc")}</p>
+  //               </div>
+
+  //               <div className="min-w-full md:min-w-0 flex-shrink-0 snap-center glass-panel p-6 rounded-2xl border border-white/10 hover:border-secondary/30 transition-all hover:scale-105">
+  //                 <div className="w-12 h-12 bg-secondary/20 rounded-xl flex items-center justify-center mb-4 mx-auto">
+  //                   <svg className="w-6 h-6 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+  //                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+  //                   </svg>
+  //                 </div>
+  //                 <h3 className="text-lg font-semibold text-white mb-2">{t("home.unified_login")}</h3>
+  //                 <p className="text-sm text-slate-400">{t("home.unified_login_desc")}</p>
+  //               </div>
+
+  //               <div className="min-w-full md:min-w-0 flex-shrink-0 snap-center glass-panel p-6 rounded-2xl border border-white/10 hover:border-accent/30 transition-all hover:scale-105">
+  //                 <div className="w-12 h-12 bg-accent/20 rounded-xl flex items-center justify-center mb-4 mx-auto">
+  //                   <svg className="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+  //                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+  //                   </svg>
+  //                 </div>
+  //                 <h3 className="text-lg font-semibold text-white mb-2">{t("home.decentralized")}</h3>
+  //                 <p className="text-sm text-slate-400">{t("home.decentralized_desc")}</p>
+  //               </div>
+  //             </div>
+
+  //             {/* Dots - Mobile only */}
+  //             <div className="flex justify-center gap-2 md:hidden mb-12">
+  //               {[0, 1, 2].map((i) => (
+  //                 <div 
+  //                   key={i}
+  //                   className={`h-2 rounded-full transition-all duration-300 ${
+  //                     i === activeCardIndex ? 'bg-white w-6' : 'bg-white/20 w-2'
+  //                   }`}
+  //                 />
+  //               ))}
+  //             </div>
+  //           </div>
+
+  //           {/* 登录按钮 */}
+  //           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-8">
+  //             <button
+  //               onClick={handleLogin}
+  //               className="group relative px-8 py-4 bg-gradient-to-r from-primary to-secondary rounded-xl text-white font-semibold text-lg shadow-lg hover:shadow-primary/50 transition-all hover:scale-105 min-w-[200px]"
+  //             >
+  //               <span className="flex items-center justify-center gap-2">
+  //                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+  //                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+  //                 </svg>
+  //                 {t("home.login")}
+  //               </span>
+  //             </button>
+              
+  //             <button
+  //               onClick={() => router.push('/register')}
+  //               className="px-8 py-4 glass-panel rounded-xl text-white font-semibold text-lg border border-white/20 hover:border-white/40 transition-all hover:scale-105 min-w-[200px]"
+  //             >
+  //               {t("home.register")}
+  //             </button>
+  //           </div>
+
+  //           {/* 底部说明 */}
+  //           <div className="mt-12 text-center">
+  //             <p className="text-sm text-slate-400">
+  //               {t("home.footer_desc")}
+  //             </p>
+  //           </div>
+  //         </div>
+  //       </div>
+  //       <AccountSwitchModal
+  //         isOpen={showAccountModal}
+  //         onClose={() => setShowAccountModal(false)}
+  //       />
+  //     </div>
+  //   );
+  // } */
   
   if (error && !userInfo) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
         <div className="glass-panel p-6 max-w-md w-full rounded-2xl border-red-500/30">
-          <h2 className="text-xl font-bold text-red-400 mb-4">错误</h2>
+          <h2 className="text-xl font-bold text-red-400 mb-4">{t("home.error")}</h2>
           <p className="text-slate-300 mb-4">{error}</p>
           <button
             className="btn-primary w-full"
             onClick={() => window.location.reload()}
           >
-            重试
+            {t("home.retry")}
           </button>
         </div>
       </div>
@@ -542,7 +542,7 @@ const Dashboard = () => {
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-lg font-medium text-white flex items-center gap-2">
                 <span className="w-1 h-6 bg-primary rounded-full"></span>
-                我的空间
+                {t("home.my_space")}
               </h3>
               <div className="bg-primary/20 p-2 rounded-xl text-primary">
                 <svg
@@ -562,8 +562,8 @@ const Dashboard = () => {
             
             <div className="space-y-4">
               <div className="flex justify-between text-sm text-slate-400">
-                <span>已使用: <span className="text-white font-mono">{formatBytes(userInfo?.usedSpace || 0)}</span></span>
-                <span>总共: <span className="text-white font-mono">{formatBytes(userInfo?.subscribeSpace || 0)}</span></span>
+                <span>{t("home.used")}: <span className="text-white font-mono">{formatBytes(userInfo?.usedSpace || 0)}</span></span>
+                <span>{t("home.total")}: <span className="text-white font-mono">{formatBytes(userInfo?.subscribeSpace || 0)}</span></span>
               </div>
               
               <div className="w-full bg-slate-800 rounded-full h-3 overflow-hidden border border-white/5">
@@ -584,12 +584,12 @@ const Dashboard = () => {
                   className="flex items-center gap-2 mb-2 relative cursor-pointer group/token"
                   onClick={gotoTokenUsage}
                 >
-                  <span className="text-slate-400 text-sm group-hover/token:text-white transition-colors">可用云服务Token:</span>
+                  <span className="text-slate-400 text-sm group-hover/token:text-white transition-colors">{t("home.available_token")}:</span>
                   <span className="text-white font-mono font-bold group-hover/token:text-primary transition-colors text-lg">
                     {formatTokenCount(userInfo?.cloudServiceToken || 0)}
                   </span>
                   <div className="flex items-center gap-0.5 bg-primary/10 px-2 py-0.5 rounded-full border border-primary/30 hover:bg-primary/20 transition-colors">
-                    <span className="text-xs text-primary font-bold">详情</span>
+                    <span className="text-xs text-primary font-bold">{t("home.details")}</span>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       className="h-3.5 w-3.5 text-primary"

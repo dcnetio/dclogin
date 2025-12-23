@@ -188,5 +188,5 @@ body::before {
 }
 
 .tech-navbar .adm-nav-bar-back-arrow {
-  color: var(--color-primary);
+  color: white;
 }

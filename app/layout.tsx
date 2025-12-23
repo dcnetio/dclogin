@@ -69,6 +69,8 @@ export default function RootLayout({
         return t("register.register");
       case "/changePassword":
         return t("changePassword.title");
+      case "/orders":
+        return t("orders.title", "订单列表");
       default:
         return ""; // 默认标题
     }
@@ -109,7 +111,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
       >
-        <div className="app-container flex-1 relative z-10">
+        <div className="flex-1 relative z-10">
           <StoreProvider>
             <Locales>
               {showHeader && isMobile && (

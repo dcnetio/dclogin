@@ -70,18 +70,16 @@ export default function EncodePassword(props: EncodePasswordProps) {
 
   return (
     <div className={styles.simplePage}>
-      <div className={styles.simpleCard}>
+      <div className={styles.simpleCard} style={{ backgroundColor: 'white', opacity: 1, visibility: 'visible' }}>
         {/**右侧关闭按钮 */}
-        {type === EncodePasswordType.VERIFY && (
-          <div className="flex justify-end ">
-            <CloseOutline
-              fontSize={24}
-              onClick={close}
-              className="p-1 rounded-sm transition-transform duration-200 
-            hover:bg-gray-200 active:scale-95 cursor-pointer"
-            />
-          </div>
-        )}
+        <div className="flex justify-end ">
+          <CloseOutline
+            fontSize={24}
+            onClick={close}
+            className="p-1 rounded-sm transition-transform duration-200 
+          hover:bg-gray-200 active:scale-95 cursor-pointer"
+          />
+        </div>
         {/* title 快捷访问密码 */}
         {(!appInfo || !appInfo.appName) && (
           <div className={styles.appInfoHeader}>
@@ -145,14 +143,8 @@ export default function EncodePassword(props: EncodePasswordProps) {
               clearable
               type="password"
               className={styles.passwordInput}
+              style={{ visibility: 'visible', opacity: 1 }}
               // autoFocus={true}
-              style={{
-                border: "1px solid #ddd",
-                borderRadius: "8px",
-                padding: "12px",
-                width: "100%",
-                marginBottom: "10px",
-              }}
             />
           </div>
 

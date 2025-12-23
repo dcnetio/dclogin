@@ -38,17 +38,17 @@ export default function DAPPNote() {
             <div className="text-center mobile-order-1">
               {/* Logo和标题 */}
               <div className="mb-4 sm:mb-6 lg:mb-8">
-                <h1 className="text-2xl sm:text-3xl lg:text-5xl font-bold text-purple-600 mb-2 sm:mb-3 lg:mb-4">
+                <h1 className="text-2xl sm:text-3xl lg:text-5xl font-bold text-purple-400 mb-2 sm:mb-3 lg:mb-4">
                   统一登录中心
                 </h1>
-                <p className="text-gray-600 text-sm sm:text-base lg:text-xl leading-relaxed">
+                <p className="text-gray-300 text-sm sm:text-base lg:text-xl leading-relaxed">
                   {t("login.tagline", "一个账户，畅行所有应用")}
                 </p>
               </div>
 
               {/* 登录中心描述 */}
               <div className="mb-4 sm:mb-6 lg:mb-8">
-                <p className="text-gray-700 leading-relaxed text-sm sm:text-base lg:text-lg">
+                <p className="text-gray-300 leading-relaxed text-sm sm:text-base lg:text-lg">
                   {t(
                     "login.description",
                     "统一登录中心提供安全便捷的身份认证服务，让您使用一个账户即可访问所有授权应用，无需重复注册和登录。"

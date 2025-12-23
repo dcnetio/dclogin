@@ -191,6 +191,9 @@ export const showSetEncodePassword = (
         appUrl: "",
         appVersion: "",
       },
+      cancalFun: () => {
+        document.body.removeChild(container);
+      },
       confirmFun: async (password: string) => {
         // 确认结束
         console.log("确认EncodePassword=====");

@@ -15,6 +15,8 @@ import { AuthRecord } from "@/types/pageType";
 import { AccountInfo } from "@/types/walletTypes";
 import { useRouter, useSearchParams } from "next/navigation";
 import DAPPNote from "@/components/note/DAPPNote";
+import dayjs from "dayjs";
+
 interface UserInfo extends User {
   points: number;
 }
@@ -37,6 +39,20 @@ const Dashboard = () => {
   const account: AccountInfo = useAppSelector((state) => state.wallet.account);
 
   const HISTORY_PAGE_SIZE = 3;
+
+  const calculateMaintainableDate = () => {
+    if (!userInfo?.points || !userInfo?.subscribeSpace) return "-";
+    const spaceInGB = userInfo.subscribeSpace / (1024 * 1024 * 1024);
+    if (spaceInGB === 0) return "-";
+    const dailyCost = spaceInGB * 15;
+    const days = userInfo.points / dailyCost;
+    return dayjs().add(days, "day").format("YYYY-MM-DD");
+  };
+
+  const gotoTokenUsage = () => {
+    router.push("/token-usage");
+  };
+
   // 获取用户信息的逻辑
   const getUserInfo = async () => {
     // setIsLoading(true);
@@ -299,13 +315,13 @@ const Dashboard = () => {
         {/* 账户概览卡片 */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* 存储使用情况 */}
-          <div className="glass-panel p-6 rounded-2xl relative overflow-hidden group hover:border-primary/30 transition-colors">
+          <div className="glass-panel p-6 rounded-2xl relative overflow-visible group hover:border-primary/30 transition-colors">
             <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
             
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-lg font-medium text-white flex items-center gap-2">
                 <span className="w-1 h-6 bg-primary rounded-full"></span>
-                存储使用
+                我的空间
               </h3>
               <div className="bg-primary/20 p-2 rounded-xl text-primary">
                 <svg
@@ -341,11 +357,35 @@ const Dashboard = () => {
                   }}
                 ></div>
               </div>
-              
-              <p className="text-xs text-slate-500 text-right">
-                到期区块高度:{" "}
-                <span className="font-mono text-slate-300">{userInfo?.expireNumber ? userInfo.expireNumber : "-"}</span>
-              </p>
+
+              <div className="mt-4 pt-4 border-t border-white/5">
+                <div 
+                  className="flex items-center gap-2 mb-2 relative cursor-pointer group/token"
+                  onClick={gotoTokenUsage}
+                >
+                  <span className="text-slate-400 text-sm group-hover/token:text-white transition-colors">剩余云服务Token:</span>
+                  <span className="text-white font-mono font-bold group-hover/token:text-primary transition-colors">{userInfo?.points || 0}</span>
+                  <div className="relative inline-block">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4 text-slate-400 group-hover/token:text-primary transition-colors"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                  </div>
+                </div>
+                <div className="text-sm text-slate-400">
+                  可维持至: <span className="text-white font-mono">{calculateMaintainableDate()}</span>
+                </div>
+              </div>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                 <button

@@ -90,102 +90,103 @@ export default function OrderListPage() {
   }, [account?.nftAccount]);
 
   return (
-    <div className="h-full bg-gray-50">
-      <div className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <h1 className="text-xl font-bold text-gray-900">订单列表</h1>
-          <p className="mt-2 text-sm text-gray-600">管理和查看您的所有订单</p>
-        </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-4 lg:px-4 py-4">
-        <div className="hidden md:block bg-white rounded-lg shadow-sm overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  套餐名称
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  订单时间
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  金额
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  订单状态
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  操作
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {orders.map((order) => (
-                <tr
-                  key={order._id}
-                  className="hover:bg-gray-50 transition-colors"
-                >
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">
-                      {order.pkgName}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-600">
-                      {new Date(order.createTime)?.toLocaleString()}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-semibold text-gray-900">
-                      {order.currency === CurrencyType.CNY ? "¥" : "$"}
-                      {order.amount ? (order.amount * 0.01).toFixed(2) : 0}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${
-                        StoragePurchaseStatus.SUCCESS == order.status
-                          ? "bg-green-100 text-green-800"
-                          : "bg-yellow-100 text-yellow-800"
-                      }`}
-                    >
-                      {StoragePurchaseStatus.SUCCESS == order.status
-                        ? "已完成"
-                        : "待支付"}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    <button
-                      onClick={() => handleViewDetail(order)}
-                      className="text-blue-600 hover:text-blue-800 font-medium"
-                    >
-                      查看详情
-                    </button>
-                  </td>
+    <div className="min-h-screen p-4 md:p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Desktop View */}
+        <div className="hidden md:block glass-panel rounded-2xl p-6">
+          <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+            <span className="w-1 h-6 bg-primary rounded-full shadow-[0_0_10px_rgba(59,130,246,0.5)]"></span>
+            订单列表
+          </h2>
+          <div className="overflow-hidden rounded-xl border border-white/5">
+            <table className="min-w-full divide-y divide-white/10">
+              <thead className="bg-white/5">
+                <tr>
+                  <th className="px-6 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
+                    套餐名称
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
+                    订单时间
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
+                    金额
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
+                    订单状态
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
+                    操作
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-white/10 bg-transparent">
+                {orders.map((order) => (
+                  <tr
+                    key={order._id}
+                    className="hover:bg-white/5 transition-colors duration-200"
+                  >
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-white">
+                        {order.pkgName}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-slate-400">
+                        {new Date(order.createTime)?.toLocaleString()}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-semibold text-white">
+                        {order.currency === CurrencyType.CNY ? "¥" : "$"}
+                        {order.amount ? (order.amount * 0.01).toFixed(2) : 0}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span
+                        className={`inline-flex px-3 py-1 text-xs font-medium rounded-full border ${
+                          StoragePurchaseStatus.SUCCESS == order.status
+                            ? "bg-green-500/10 text-green-400 border-green-500/20"
+                            : "bg-yellow-500/10 text-yellow-400 border-yellow-500/20"
+                        }`}
+                      >
+                        {StoragePurchaseStatus.SUCCESS == order.status
+                          ? "已完成"
+                          : "待支付"}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      <button
+                        onClick={() => handleViewDetail(order)}
+                        className="text-primary hover:text-blue-400 font-medium transition-colors"
+                      >
+                        查看详情
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
 
+        {/* Mobile View */}
         <div className="md:hidden space-y-4">
           {orders.map((order) => (
-            <div key={order._id} className="bg-white rounded-lg shadow-sm p-4">
-              <div className="flex flex-1  justify-between items-start mb-3">
+            <div key={order._id} className="glass-panel rounded-2xl p-5 active:scale-[0.98] transition-transform duration-200">
+              <div className="flex flex-1 justify-between items-start mb-4">
                 <div>
-                  <div className="text-sm font-medium text-gray-900 text-ellipsis overflow-hidden">
+                  <div className="text-base font-bold text-white text-ellipsis overflow-hidden mb-1">
                     {order.pkgName}
                   </div>
-                  <div className="text-xs text-gray-500 mt-1">
+                  <div className="text-xs text-slate-400">
                     {new Date(order.createTime)?.toLocaleString()}
                   </div>
                 </div>
                 <span
-                  className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                  className={`inline-flex px-2.5 py-1 text-xs font-medium rounded-full border ${
                     StoragePurchaseStatus.SUCCESS == order.status
-                      ? "bg-green-100 text-green-800"
-                      : "bg-yellow-100 text-yellow-800"
+                      ? "bg-green-500/10 text-green-400 border-green-500/20"
+                      : "bg-yellow-500/10 text-yellow-400 border-yellow-500/20"
                   }`}
                 >
                   {StoragePurchaseStatus.SUCCESS == order.status
@@ -193,14 +194,14 @@ export default function OrderListPage() {
                     : "待支付"}
                 </span>
               </div>
-              <div className="flex justify-between items-center pt-3 border-t border-gray-100">
-                <div className="text-lg font-semibold text-gray-900">
+              <div className="flex justify-between items-center pt-4 border-t border-white/10">
+                <div className="text-xl font-bold text-white tracking-tight">
                   {order.currency === CurrencyType.CNY ? "¥" : "$"}
                   {order.amount ? (order.amount * 0.01).toFixed(2) : 0}
                 </div>
                 <button
                   onClick={() => handleViewDetail(order)}
-                  className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                  className="text-primary hover:text-blue-400 text-sm font-medium flex items-center gap-1"
                 >
                   查看详情
                 </button>
@@ -208,17 +209,18 @@ export default function OrderListPage() {
             </div>
           ))}
         </div>
-      </div>
-      {orders.length === 0 && (
-        <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-          <div className="text-gray-400 mb-4">
-            <Search size={48} className="mx-auto" />
+
+        {orders.length === 0 && (
+          <div className="glass-panel rounded-2xl p-12 text-center mt-4">
+            <div className="text-slate-600 mb-4">
+              <Search size={48} className="mx-auto opacity-50" />
+            </div>
+            <h3 className="text-lg font-medium text-slate-300 mb-2">
+              暂无订单信息
+            </h3>
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
-            暂无订单信息
-          </h3>
-        </div>
-      )}
+        )}
+      </div>
 
       {selectedOrder && (
         <OrderDetail order={selectedOrder} onClose={handleCloseDetail} />

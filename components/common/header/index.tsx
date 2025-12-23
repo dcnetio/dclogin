@@ -71,8 +71,8 @@ const Header = () => {
     }
   }, [account?.nftAccount]);
   return (
-    <div className="sticky top-0 z-50 backdrop-blur-md border-b border-white/5 bg-slate-900/50">
-      <div className="app-container flex justify-between items-center py-4">
+    <div className="sticky top-0 z-50 w-full backdrop-blur-md border-b border-white/5 bg-slate-900/50 h-[72px]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-row justify-between items-center">
         <div className="flex items-center space-x-3">
           <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
             <div className="w-5 h-5 border-2 border-white rounded-full" />

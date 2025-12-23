@@ -25,19 +25,27 @@ export default function TokenUsagePage() {
         <div className="flex items-center mb-6">
           <button
             onClick={() => router.back()}
-            className="mr-4 p-2 rounded-full hover:bg-white/10 transition-colors"
+            className="hidden min-[769px]:block mr-4 p-2 rounded-full hover:bg-white/10 transition-colors"
           >
             <ChevronLeft className="w-6 h-6 text-white" />
           </button>
-          <h1 className="text-2xl font-bold">云服务Token说明</h1>
+          <h1 className="text-2xl font-bold">云服务Token介绍</h1>
         </div>
 
         <div className="glass-panel p-6 rounded-2xl space-y-8">
           <div>
             <h2 className="text-xl font-bold text-primary mb-4">什么是云服务Token?</h2>
-            <p className="text-slate-300 leading-relaxed text-lg">
-              云服务token: 是DC云服务中维持数据存储的一种资源单位,会被存储套餐以及一些操作逐渐消耗掉,当完全消耗掉时,就需要及时购买补充,否则存储在DC平台的数据会被释放,当前购买方式和存储套餐进行绑定,购买对应的的存储套餐时,会自动赠送维持该存储套餐1年量对应的云服务token
-            </p>
+            <div className="text-slate-200 leading-relaxed text-base md:text-lg space-y-4">
+              <p>
+                <span className="font-bold text-white">云服务Token</span> 是DC云服务中维持数据存储的资源单位。它会被存储套餐以及一些日常操作逐渐消耗掉。
+              </p>
+              <p>
+                当Token完全消耗掉时，就需要及时购买补充，否则存储在DC平台的数据可能会被释放。
+              </p>
+              <p className="bg-white/5 p-4 rounded-lg border-l-4 border-primary">
+                当前购买方式和存储套餐进行绑定：购买对应的存储套餐时，会自动赠送维持该存储套餐 <span className="text-white font-bold">1年量</span> 对应的云服务Token。
+              </p>
+            </div>
           </div>
 
           <div>

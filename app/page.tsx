@@ -19,6 +19,7 @@ import dayjs from "dayjs";
 
 interface UserInfo extends User {
   points: number;
+  cloudServiceToken: number;
 }
 
 const Dashboard = () => {
@@ -41,11 +42,11 @@ const Dashboard = () => {
   const HISTORY_PAGE_SIZE = 3;
 
   const calculateMaintainableDate = () => {
-    if (!userInfo?.points || !userInfo?.subscribeSpace) return "-";
+    if (!userInfo?.cloudServiceToken || !userInfo?.subscribeSpace) return "-";
     const spaceInGB = userInfo.subscribeSpace / (1024 * 1024 * 1024);
     if (spaceInGB === 0) return "-";
     const dailyCost = spaceInGB * 15;
-    const days = userInfo.points / dailyCost;
+    const days = userInfo.cloudServiceToken / dailyCost;
     return dayjs().add(days, "day").format("YYYY-MM-DD");
   };
 
@@ -68,6 +69,19 @@ const Dashboard = () => {
     // 获取用户余额
     const balance = await ethers.getUserBalance(account.account);
     userInfo.points = balance;
+
+    // 获取当前区块高度
+    const blockHeight = await ethers.getBlockNumber();
+    // 计算云服务Token
+    // 算法: (过期区块高度 - 缓冲区块数 - 当前区块高度) * 订阅空间(GB) / 1000
+    // 缓冲区块数 = 10 * 60 * 24 * 30 = 432000
+    const expireDeleteNumber = userInfo.expireNumber || 0;
+    const subscribeSpace = userInfo.subscribeSpace || 0;
+    const height = expireDeleteNumber - 432000 - blockHeight;
+    const token = height ? (Number(height) * Number(subscribeSpace)) / 1024 / 1024 / 1024 / 1000 : 0;
+    
+    userInfo.cloudServiceToken = token > 0 ? Math.floor(token) : 0;
+    
     setUserInfo(userInfo);
     // 获取授权记录
     getAuthHistorys(account.account);
@@ -131,6 +145,14 @@ const Dashboard = () => {
     const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
+  };
+
+  const formatTokenCount = (count: number) => {
+    if (!count) return "0";
+    if (count < 10000) return count.toString();
+    if (count < 100000000) return (count / 10000).toFixed(2) + "万";
+    if (count < 1000000000000) return (count / 100000000).toFixed(2) + "亿";
+    return (count / 1000000000000).toFixed(2) + "兆";
   };
 
   const handleRefreshLoginHistory = async () => {
@@ -363,12 +385,15 @@ const Dashboard = () => {
                   className="flex items-center gap-2 mb-2 relative cursor-pointer group/token"
                   onClick={gotoTokenUsage}
                 >
-                  <span className="text-slate-400 text-sm group-hover/token:text-white transition-colors">剩余云服务Token:</span>
-                  <span className="text-white font-mono font-bold group-hover/token:text-primary transition-colors">{userInfo?.points || 0}</span>
-                  <div className="relative inline-block">
+                  <span className="text-slate-400 text-sm group-hover/token:text-white transition-colors">可用云服务Token:</span>
+                  <span className="text-white font-mono font-bold group-hover/token:text-primary transition-colors text-lg">
+                    {formatTokenCount(userInfo?.cloudServiceToken || 0)}
+                  </span>
+                  <div className="flex items-center gap-0.5 bg-primary/10 px-2 py-0.5 rounded-full border border-primary/30 hover:bg-primary/20 transition-colors">
+                    <span className="text-xs text-primary font-bold">详情</span>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4 text-slate-400 group-hover/token:text-primary transition-colors"
+                      className="h-3.5 w-3.5 text-primary"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -376,14 +401,14 @@ const Dashboard = () => {
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        strokeWidth={2}
+                        strokeWidth={2.5}
                         d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                       />
                     </svg>
                   </div>
                 </div>
                 <div className="text-sm text-slate-400">
-                  可维持至: <span className="text-white font-mono">{calculateMaintainableDate()}</span>
+                  可维持存储套餐至: <span className="text-white font-mono">{calculateMaintainableDate()}</span>
                 </div>
               </div>
               

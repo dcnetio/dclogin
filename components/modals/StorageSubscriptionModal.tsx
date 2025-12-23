@@ -351,44 +351,46 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
                       // allow clicking card to select
                       onClick={() => handleSelectPlan(plan) as any}
                     >
-                      {plan.pkgId === selectedPlan?.pkgId && (
+                      {/* {plan.pkgId === selectedPlan?.pkgId && (
                         <div className="absolute top-0 right-0 bg-blue-500 text-white text-xs font-bold px-4 py-1 rounded-bl-lg rounded-tr-xl">
                           热门推荐
                         </div>
-                      )}
+                      )} */}
                       <div className="text-center">
-                        <h3 className={`text-lg lg:text-xl font-bold ${plan.pkgId === selectedPlan?.pkgId ? "text-blue-300" : "text-white"}`}>
-                          {plan.pkgName}
-                        </h3>
-
+                        
+                         {/* <div className={`text-sm mt-1 ${plan.pkgId === selectedPlan?.pkgId ? "text-gray-100" : "text-gray-400"}`}>
+                            每年
+                          </div> */}
                         <div className="my-4 lg:my-6">
-                          <div className="text-3xl lg:text-4xl font-extrabold">
+                          {/* <div className="text-3xl lg:text-4xl font-extrabold">
                             <span className={`${plan.pkgId === selectedPlan?.pkgId ? "text-blue-300" : "text-gray-300"}`}>
                               {plan.spaceSize}
                             </span>
                             <span className={`ml-2 text-base lg:text-lg ${plan.pkgId === selectedPlan?.pkgId ? "text-gray-100" : "text-gray-400"}`}>
                               {plan.currency === CurrencyType.CNY ? "元" : "美元"}
                             </span>
-                          </div>
-                          <div className={`text-sm mt-1 ${plan.pkgId === selectedPlan?.pkgId ? "text-gray-100" : "text-gray-400"}`}>
-                            /{plan.validDays}天
-                          </div>
+                          </div> */}
+                         <h3 className={`text-lg lg:text-xl font-bold ${plan.pkgId === selectedPlan?.pkgId ? "text-blue-300" : "text-white"}`}>
+                          {plan.pkgName}
+                        </h3>
                         </div>
 
                         <div className="my-4 lg:my-6">
                           <div className="text-2xl lg:text-3xl font-bold text-green-400">
                             {plan.currency === CurrencyType.CNY ? "¥" : "$"}
-                            {plan.amount ? (plan.amount * 0.01).toFixed(2) : 0}
+                            {plan.amount ? (plan.amount * 0.01).toFixed(2) : 0}<span className={`text-sm mt-1 ${plan.pkgId === selectedPlan?.pkgId ? "text-gray-100" : "text-gray-400"}`}>
+                            /12月
+                          </span>
                           </div>
                         </div>
 
-                        <Button
+                        {/* <Button
                           variant={plan.pkgId === selectedPlan?.pkgId ? "primary" : "neutral"}
                           className="w-full py-2 lg:py-3 rounded-lg font-bold transition text-sm lg:text-base"
                           onClick={() => handleSelectPlan(plan)}
                         >
                           选择此套餐
-                        </Button>
+                        </Button> */}
                       </div>
                     </Card>
                   ))}

@@ -1,3 +1,5 @@
+import { StoragePurchaseStatus } from "@/config/constant";
+
 export interface ActivityItem {
   hash: string;
   status: number;

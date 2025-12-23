@@ -107,4 +107,49 @@ const getOrderRecordsWithNFT = async (
   }
 };
 
-export { addOrderRecord, updateOrderRecord, getOrderRecordsWithNFT };
+const getOrderInfoWithOrderId = async (
+  orderId: string = ""
+): Promise<OrderRecord | null> => {
+  try {
+    // 添加到threadDB
+    const dc = await getDC();
+    if (!dc) {
+      return null;
+    }
+    const query = {
+      condition: "",
+      sort: {
+        fieldPath: "createTime",
+        desc: true,
+      },
+    };
+    const conditions: string[] = [];
+    if (orderId) {
+      conditions.push(` orderId = '${orderId}' `);
+    }
+    const theadId = dc.dbThreadId;
+    if (!theadId) {
+      console.error("dbThreadId is missing");
+      return null;
+    }
+    const [res, error] = await dc.db.find(
+      theadId,
+      tableNames.order_records,
+      JSON.stringify(query)
+    );
+    if (error) {
+      throw new Error(error.message);
+    }
+    const records = JSON.parse(res);
+    return records[0] || null;
+  } catch (error) {
+    return null;
+  }
+};
+
+export {
+  addOrderRecord,
+  updateOrderRecord,
+  getOrderRecordsWithNFT,
+  getOrderInfoWithOrderId,
+};

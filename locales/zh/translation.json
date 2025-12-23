@@ -137,11 +137,11 @@
     "go_login": "前往登录"
   },
   "encode": {
-    "password": "快捷访问密码",
+    "password": "便捷访问设置",
     "password_empty": "请输入加密密码",
     "set_success": "加密密码设置成功",
     "set_failed": "加密密码设置失败",
-    "set_tip": "设置快捷访问密码",
+    "set_tip": "请输入快捷访问密码,以便快速登录",
     "verify_tip": "请输入快捷密码完成授权"
   },
   "bind": {

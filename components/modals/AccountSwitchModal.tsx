@@ -47,7 +47,10 @@ const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
   }, [account?.account]);
   // 切换账号
   const handleSwitchAccount = async (account: UserInfo) => {
-    if (account.isCurrent) return;
+    if (account.isCurrent) {
+      onClose();
+      return;
+    }
     const info: AccountInfo = accounts.find(
       (acc) => acc.account === account.account
     );
@@ -86,7 +89,7 @@ const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
   // 登录新账号
   const handleLoginNewAccount = () => {
     // 进入登录页面
-    router.push("/login");
+    router.push(`/login${window.location.search}`);
     onClose();
   };
 
@@ -125,28 +128,30 @@ const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
-        <div className="p-4 border-b border-gray-200 flex justify-between items-center">
-          <h3 className="text-xl font-bold">账号管理</h3>
+    <div className="fixed inset-0 bg-black/80 flex items-start justify-center z-50 p-4 pt-24 backdrop-blur-sm">
+      <div 
+        className="bg-slate-900 border border-white/10 rounded-xl shadow-2xl w-full max-w-md max-h-[80vh] flex flex-col"
+        style={{ backgroundColor: '#0f172a' }}
+      >
+        <div className="p-4 border-b border-white/10 flex justify-between items-center shrink-0 bg-slate-900" style={{ backgroundColor: '#0f172a' }}>
+          <h3 className="text-xl font-bold text-white">账号管理</h3>
           <button
             onClick={onClose}
-            className="text-gray-800 hover:text-gray-300"
+            className="text-slate-400 hover:text-white"
           >
             <CloseOutline
               fontSize={24}
-              onClick={close}
               className="p-1 rounded-sm transition-transform duration-200 
-            hover:bg-gray-200 active:scale-95 cursor-pointer"
+            hover:bg-white/10 active:scale-95 cursor-pointer"
             />
           </button>
         </div>
 
-        <div className="p-4">
-          <div className="mb-4">
+        <div className="p-4 overflow-y-auto flex-1 bg-slate-900" style={{ backgroundColor: '#0f172a' }}>
+          <div className="mb-4 pb-4 border-b border-white/10">
             <button
               onClick={handleLoginNewAccount}
-              className="w-full py-2 bg-blue-600 hover:bg-blue-700 rounded-lg flex items-center justify-center text-white"
+              className="w-full py-2 bg-blue-600 hover:bg-blue-700 rounded-lg flex items-center justify-center text-white shadow-lg shadow-blue-500/20"
             >
               <AddOutline className="mr-2" fontSize={18} />
               登录新账号
@@ -157,17 +162,17 @@ const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
             {accounts.map((item) => (
               <div
                 key={item.account}
-                className={`flex items-center justify-between p-3 rounded-lg ${
+                className={`flex items-center justify-between p-3 rounded-lg transition-colors ${
                   item.isCurrent
-                    ? "bg-blue-800/50 border border-blue-200 text-white"
-                    : "bg-gray-100 hover:bg-gray-200"
+                    ? "bg-blue-600/20 border border-blue-500/50 text-white"
+                    : "bg-white/5 hover:bg-white/10 border border-transparent text-slate-200"
                 }`}
               >
                 <div
                   className="flex items-center cursor-pointer flex-1"
                   onClick={() => handleSwitchAccount(item)}
                 >
-                  <UserCircleIcon className="w-6 h-6 mr-3" size={30} />
+                  <UserCircleIcon className="w-6 h-6 mr-3 text-slate-300" size={30} />
                   <div className="flex-1 min-w-0">
                     <p className="font-medium truncate">
                       {item.account
@@ -177,15 +182,15 @@ const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
                         : "未知"}
                     </p>
                     <p
-                      className={`text-xs  truncate ${
-                        item.isCurrent ? "text-white" : "text-gray-800"
+                      className={`text-xs truncate ${
+                        item.isCurrent ? "text-blue-200" : "text-slate-400"
                       }`}
                     >
                       {item.nftAccount ? item.nftAccount : "未知"}
                     </p>
                   </div>
                   {item.isCurrent && (
-                    <span className="ml-2 bg-green-600/90 text-white text-xs px-2 py-1 rounded">
+                    <span className="ml-2 bg-blue-500 text-white text-xs px-2 py-1 rounded font-medium">
                       当前
                     </span>
                   )}
@@ -195,7 +200,7 @@ const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
                   <button
                     onClick={() => handleDeleteAccount(item.account)}
                     disabled={isDeleting === item.account}
-                    className="ml-2 p-2 text-red-400 hover:text-red-300 hover:bg-red-900/30 rounded-full"
+                    className="ml-2 p-2 text-red-400 hover:text-red-300 hover:bg-red-500/20 rounded-full transition-colors"
                   >
                     {isDeleting === item.account ? (
                       <svg
@@ -239,10 +244,10 @@ const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
           </div>
 
           {accounts.length === 0 && (
-            <div className="text-center py-8 text-gray-600">
+            <div className="text-center py-8 text-slate-500">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-12 w-12 mx-auto mb-3"
+                className="h-12 w-12 mx-auto mb-3 opacity-50"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -259,7 +264,7 @@ const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
           )}
         </div>
 
-        <div className="p-4 border-t border-gray-200 text-center text-sm text-gray-800">
+        <div className="p-4 border-t border-white/10 text-center text-sm text-slate-400 shrink-0 bg-slate-900" style={{ backgroundColor: '#0f172a' }}>
           <p>至少保留一个账号，当前账号无法删除</p>
         </div>
       </div>

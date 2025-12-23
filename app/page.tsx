@@ -203,7 +203,7 @@ const Dashboard = () => {
     setDisplayedLoginHistory(loginHistory.slice(startIndex, endIndex) || []);
   }, [loginHistory, historyPage]);
 
-  if (!!origin && (!account || !account.nftAccount)) {
+  if (!!origin) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <DAPPNote />
@@ -511,7 +511,10 @@ const Dashboard = () => {
                       <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center text-white font-bold text-lg">
                         {item.appName ? item.appName.charAt(0).toUpperCase() : 'A'}
                       </div>
-                      <div>
+                      <div 
+                        onClick={() => window.open(item.appUrl, '_blank')}
+                        className="cursor-pointer" // 必须添加 cursor-pointer 让用户知道这里可以点击
+                      >
                         <h4 className="font-medium text-white">{item.appName}</h4>
                         <p className="text-xs text-slate-400">{item.appUrl}</p>
                       </div>
@@ -542,7 +545,7 @@ const Dashboard = () => {
         <div className="glass-panel p-6 rounded-2xl">
           <h3 className="text-lg font-medium text-white mb-6 flex items-center gap-2">
             <span className="w-1 h-6 bg-green-500 rounded-full"></span>
-            应用列表
+            已接入应用推荐
           </h3>
           {apps.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

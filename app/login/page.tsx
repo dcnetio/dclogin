@@ -72,10 +72,10 @@ export default function Login() {
       setIsLoading(false);
 
       if (res && res.success) {
-        window.showToast({
-          content: t("login.success"),
-          position: "center",
-        });
+        // window.showToast({
+        //   content: t("login.success"),
+        //   position: "center",
+        // });
 
         store.dispatch(saveInitState(appState.init_success));
         router.push("/");

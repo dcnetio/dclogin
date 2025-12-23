@@ -37,17 +37,26 @@ export default function FeaturesPage() {
   return (
     <div className="min-h-screen p-6 pb-20">
       {/* Header */}
-      <header className="flex items-center mb-8">
-        <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-violet-400">
-          Platform Features
-        </h1>
+      <header className="flex items-center justify-between mb-8">
+        <div className="flex items-center gap-3">
+          <img src="/logo.svg" alt="DCLogin" className="w-10 h-10 rounded-xl shadow-lg" />
+          <h1 className="text-2xl font-bold text-white tracking-tight">
+            DCLogin
+          </h1>
+        </div>
+        <button 
+          onClick={() => router.push('/home')}
+          className="px-6 py-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 backdrop-blur-md text-sm font-semibold text-white transition-all hover:scale-105"
+        >
+          Experience It Now
+        </button>
       </header>
 
       {/* Hero Section */}
       <div className="mb-12 text-center relative">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-blue-500/20 rounded-full blur-3xl -z-10"></div>
         <h2 className="text-4xl font-bold mb-4 text-white">
-          The Future of <span className="text-blue-400">Web3</span> Interaction
+          Master Your <span className="text-blue-400">Digital Identity</span>
         </h2>
         <p className="text-gray-400 max-w-lg mx-auto text-lg">
           A unified platform for secure, decentralized identity management and cloud service provisioning.

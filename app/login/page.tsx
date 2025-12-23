@@ -119,7 +119,7 @@ export default function Login() {
         <div className="hidden md:flex flex-col text-white space-y-8 p-8">
           <div className="space-y-4">
             <div className="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center shadow-lg shadow-primary/30">
-              <div className="w-8 h-8 border-2 border-white rounded-full" />
+              <img src="/logo.svg" alt="DCLogin Logo" className="w-16 h-16 rounded-2xl" />
             </div>
             <h1 className="text-5xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white to-white/70 pb-2">
               {t("wallet.name", "DCLogin")}
@@ -169,7 +169,7 @@ export default function Login() {
         <div className="glass-panel p-8 md:p-10 rounded-3xl w-full max-w-md mx-auto">
           <div className="text-center mb-8">
             <div className="md:hidden w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center shadow-lg shadow-primary/30 mx-auto mb-4">
-              <div className="w-6 h-6 border-2 border-white rounded-full" />
+              <img src="/logo.svg" alt="DCLogin Logo" className="w-12 h-12 rounded-xl" />
             </div>
             <h2 className="text-2xl font-bold text-white mb-2">{t("login.title", "DCLogin")}</h2>
             <p className="text-slate-400 text-sm">

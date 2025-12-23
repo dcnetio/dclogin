@@ -308,9 +308,11 @@ const Dashboard = () => {
               <div className="flex justify-center">
                 <div className="relative group">
                   <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-3xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity" />
-                  <div className="relative w-24 h-24 bg-gradient-to-br from-primary to-secondary rounded-3xl flex items-center justify-center shadow-2xl transform group-hover:scale-105 transition-transform">
-                    <div className="w-12 h-12 border-4 border-white rounded-full" />
-                  </div>
+                  <img 
+                    src="/logo.svg" 
+                    alt="DCLogin Logo" 
+                    className="relative w-24 h-24 rounded-3xl shadow-2xl transform group-hover:scale-105 transition-transform"
+                  />
                 </div>
               </div>
               

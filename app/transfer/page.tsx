@@ -1,6 +1,6 @@
 "use client";
 import { Button, Input } from "antd-mobile";
-import styles from "./page.module.css";
+// import styles from "./page.module.css";
 import { useEffect, useState } from "react";
 import { AccountInfo, ChainInfo } from "@/types/walletTypes";
 import ethers from "@/helpers/ethersHelper";
@@ -9,6 +9,8 @@ import { useRouter } from "next/navigation";
 import TransAccount from "@/components/transfer/transAccount";
 import { useAppSelector } from "@/lib/hooks";
 import { useTranslation } from "react-i18next";
+import { ArrowRight } from "lucide-react";
+
 export default function Transfer() {
   const router = useRouter();
   const { t } = useTranslation();
@@ -52,37 +54,66 @@ export default function Transfer() {
     }
   }, [account?.nftAccount]);
   return (
-    <div className={styles.content}>
-      <p>{t("common.from")}</p>
-      <TransAccount
-        accountInfo={accountInfo}
-        balance={balance}
-        currencySymbol={currencySymbol}
-      />
-      <p>{t("common.to")}</p>
-      <div className={styles.input}>
-        <Input
-          placeholder={t("transfer.enter_address")}
-          value={address}
-          onChange={setAddress}
-          onEnterPress={gotoConfirm}
-          clearable
-        />
-      </div>
-      <div className={styles.input}>
-        <Input
-          placeholder={t("transfer.enter_number") + currencySymbol}
-          value={amount}
-          onChange={setAmount}
-          onEnterPress={gotoConfirm}
-          clearable
-        />
-      </div>
-      <div className={styles.btnD}>
-        <div className={styles.btn}>
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="glass-panel w-full max-w-lg p-6 rounded-2xl space-y-6">
+        <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+          <span className="w-1 h-6 bg-primary rounded-full"></span>
+          {t("transfer.title", "转账")}
+        </h2>
+
+        <div className="space-y-2">
+          <p className="text-sm text-slate-400 ml-1">{t("common.from")}</p>
+          <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+            <TransAccount
+              accountInfo={accountInfo}
+              balance={balance}
+              currencySymbol={currencySymbol}
+            />
+          </div>
+        </div>
+
+        <div className="flex justify-center -my-2 relative z-10">
+          <div className="bg-slate-800 border border-white/10 rounded-full p-2 text-slate-400">
+            <ArrowRight size={20} className="rotate-90" />
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <p className="text-sm text-slate-400 ml-1">{t("common.to")}</p>
+            <Input
+              placeholder={t("transfer.enter_address")}
+              value={address}
+              onChange={setAddress}
+              onEnterPress={gotoConfirm}
+              clearable
+              className="input-tech !bg-slate-800/50 !border-slate-700 focus:!border-primary"
+              style={{ '--font-size': '16px' }}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <p className="text-sm text-slate-400 ml-1">{t("transfer.amount", "金额")}</p>
+            <div className="relative">
+              <Input
+                placeholder={t("transfer.enter_number")}
+                value={amount}
+                onChange={setAmount}
+                onEnterPress={gotoConfirm}
+                clearable
+                className="input-tech !bg-slate-800/50 !border-slate-700 focus:!border-primary pr-16"
+                style={{ '--font-size': '16px' }}
+              />
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 font-medium">
+                {currencySymbol}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4 pt-4">
           <Button
-            color="primary"
-            fill="outline"
+            className="btn-secondary !rounded-xl !h-12 !text-base !font-medium"
             onClick={() => {
               router?.back();
             }}
@@ -90,9 +121,11 @@ export default function Transfer() {
           >
             {t("common.cancel")}
           </Button>
-        </div>
-        <div className={styles.btn}>
-          <Button color="primary" fill="solid" onClick={gotoConfirm} block>
+          <Button 
+            className="btn-primary !rounded-xl !h-12 !text-base !font-semibold"
+            onClick={gotoConfirm} 
+            block
+          >
             {t("common.continue")}
           </Button>
         </div>

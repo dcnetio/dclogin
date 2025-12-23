@@ -15,6 +15,8 @@ import { AccountInfo } from "@/types/walletTypes";
 import { Toast } from "antd-mobile";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import Button from "@/components/ui/Button";
+import Card from "@/components/ui/Card";
 import { login } from "@/services/account";
 import { useTranslation } from "react-i18next";
 import { store } from "@/lib/store";
@@ -308,32 +310,27 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto border border-gray-200">
-        <div className="p-6 border-b border-gray-200">
-          <div className="flex justify-between items-center">
-            <div>
-              <h2 className="text-2xl font-bold">存储套餐订阅</h2>
-            </div>
-            <button
-              onClick={onClose}
-              className="text-gray-600 hover:text-white bg-gray-100 hover:bg-gray-200 rounded-full p-2 transition"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
+      <div className="w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-slate-900 border border-white/10 rounded-2xl shadow-2xl">
+        <div className="p-6 border-b border-white/10 flex justify-between items-center">
+          <div>
+            <h2 className="text-2xl font-bold">存储套餐订阅</h2>
           </div>
+          <Button fill="none" onClick={onClose} className="p-2 rounded-full text-white hover:bg-white/10">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </Button>
         </div>
 
         <div className="p-6">
@@ -342,14 +339,16 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
               <p className="text-gray-900 mb-4">选择适合您的存储方案</p>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {storagePlans.map((plan) => (
-                  <div
+                  <Card
                     key={plan.pkgId}
                     className={`relative rounded-xl p-6 transition-all duration-300 transform hover:scale-105 cursor-pointer ${
                       plan.pkgId === selectedPlan?.pkgId
-                        ? "bg-gradient-to-br from-blue-900 to-indigo-800 border-2 border-blue-500 shadow-lg shadow-blue-500/20"
-                        : "bg-white border border-gray-300 hover:border-blue-500 shadow-lg shadow-gray-300/20"
+                        ? "border-2 border-blue-500 shadow-lg"
+                        : "border border-white/8"
                     }`}
-                    onClick={() => handleSelectPlan(plan)}
+                    
+                    // allow clicking card to select
+                    onClick={() => handleSelectPlan(plan) as any}
                   >
                     {plan.pkgId === selectedPlan?.pkgId && (
                       <div className="absolute top-0 right-0 bg-blue-500 text-white text-xs font-bold px-4 py-1 rounded-bl-lg rounded-tr-xl">
@@ -357,44 +356,20 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
                       </div>
                     )}
                     <div className="text-center">
-                      <h3
-                        className={`text-xl font-bold ${
-                          plan.pkgId === selectedPlan?.pkgId
-                            ? "text-blue-300"
-                            : "text-white"
-                        }`}
-                      >
+                      <h3 className={`text-xl font-bold ${plan.pkgId === selectedPlan?.pkgId ? "text-blue-300" : "text-white"}`}>
                         {plan.pkgName}
                       </h3>
 
                       <div className="my-6">
                         <div className="text-4xl font-extrabold">
-                          <span
-                            className={`${
-                              plan.pkgId === selectedPlan?.pkgId
-                                ? "text-blue-300"
-                                : "text-gray-600"
-                            }`}
-                          >
+                          <span className={`${plan.pkgId === selectedPlan?.pkgId ? "text-blue-300" : "text-gray-300"}`}>
                             {plan.spaceSize}
                           </span>
-                          <span
-                            className={`ml-2 text-lg  ${
-                              plan.pkgId === selectedPlan?.pkgId
-                                ? "text-gray-100"
-                                : "text-gray-500"
-                            }`}
-                          >
+                          <span className={`ml-2 text-lg ${plan.pkgId === selectedPlan?.pkgId ? "text-gray-100" : "text-gray-400"}`}>
                             {plan.currency === CurrencyType.CNY ? "元" : "美元"}
                           </span>
                         </div>
-                        <div
-                          className={`text-sm mt-1 ${
-                            plan.pkgId === selectedPlan?.pkgId
-                              ? "text-gray-100"
-                              : "text-gray-600"
-                          }`}
-                        >
+                        <div className={`text-sm mt-1 ${plan.pkgId === selectedPlan?.pkgId ? "text-gray-100" : "text-gray-400"}`}>
                           /{plan.validDays}天
                         </div>
                       </div>
@@ -406,33 +381,25 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
                         </div>
                       </div>
 
-                      <button
-                        className={`w-full py-3 rounded-lg font-bold transition ${
-                          plan.pkgId === selectedPlan?.pkgId
-                            ? "bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white shadow-lg"
-                            : "bg-gray-100 hover:bg-gray-200 text-gray-900 "
-                        }`}
+                      <Button
+                        variant={plan.pkgId === selectedPlan?.pkgId ? "primary" : "neutral"}
+                        className="w-full py-3 rounded-lg font-bold transition"
+                        onClick={() => handleSelectPlan(plan)}
                       >
                         选择此套餐
-                      </button>
+                      </Button>
                     </div>
-                  </div>
+                  </Card>
                 ))}
               </div>
               <div className="flex m-8">
-                <button
-                  onClick={nextStep}
-                  className="flex-1 m-4 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg font-bold text-white"
-                >
+                <Button onClick={nextStep} className="flex-1 m-4 py-3" variant="primary">
                   下一步
-                </button>
+                </Button>
                 {(!account || !account.nftAccount) && (
-                  <button
-                    onClick={gotoLogin}
-                    className="flex-1 m-4 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg font-bold text-white"
-                  >
+                  <Button onClick={gotoLogin} className="flex-1 m-4 py-3" variant="neutral">
                     登录
-                  </button>
+                  </Button>
                 )}
               </div>
             </div>
@@ -509,17 +476,10 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
               </div> */}
 
               <div className="flex space-x-4">
-                <button
-                  onClick={backStep}
-                  className="flex-1 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg font-bold text-white"
-                >
+                <Button onClick={backStep} variant="neutral" className="flex-1 py-3">
                   返回
-                </button>
-                <button
-                  onClick={handlePayment}
-                  disabled={isProcessing}
-                  className="flex-1 py-3 bg-green-600 hover:bg-green-700 rounded-lg font-bold flex items-center justify-center text-white"
-                >
+                </Button>
+                <Button onClick={handlePayment} disabled={isProcessing} variant="primary" className="flex-1 py-3 flex items-center justify-center">
                   {isProcessing ? (
                     <>
                       <svg
@@ -545,15 +505,9 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
                       处理中...
                     </>
                   ) : (
-                    `确认支付 ${
-                      selectedPlan?.currency === CurrencyType.CNY ? "¥" : "$"
-                    }${
-                      selectedPlan.amount
-                        ? (selectedPlan.amount * 0.01).toFixed(2)
-                        : 0
-                    }`
+                    `确认支付 ${selectedPlan?.currency === CurrencyType.CNY ? "¥" : "$"}${selectedPlan.amount ? (selectedPlan.amount * 0.01).toFixed(2) : 0}`
                   )}
-                </button>
+                </Button>
               </div>
             </div>
           ) : (

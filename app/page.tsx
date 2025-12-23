@@ -167,19 +167,120 @@ const Dashboard = () => {
 
   if (!!origin && (!account || !account.nftAccount)) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="min-h-screen flex items-center justify-center">
         <DAPPNote />
       </div>
     );
   }
+  
+  // 未登录状态显示欢迎页面
+  if (!account || !account.nftAccount) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+        {/* 背景装饰 */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full bg-primary/10 blur-[120px] animate-pulse" />
+          <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] rounded-full bg-secondary/10 blur-[120px] animate-pulse" style={{ animationDelay: '1s' }} />
+        </div>
+
+        <div className="max-w-4xl w-full relative z-10">
+          <div className="text-center space-y-8">
+            {/* Logo 和标题 */}
+            <div className="space-y-6">
+              <div className="flex justify-center">
+                <div className="relative group">
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-3xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity" />
+                  <div className="relative w-24 h-24 bg-gradient-to-br from-primary to-secondary rounded-3xl flex items-center justify-center shadow-2xl transform group-hover:scale-105 transition-transform">
+                    <div className="w-12 h-12 border-4 border-white rounded-full" />
+                  </div>
+                </div>
+              </div>
+              
+              <div className="space-y-3">
+                <h1 className="text-5xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-white/70 tracking-tight">
+                  DCLogin
+                </h1>
+                <p className="text-xl md:text-2xl text-blue-100/80 font-light">
+                  去中心化身份管理
+                </p>
+              </div>
+            </div>
+
+            {/* 功能卡片 */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-12 mb-12">
+              <div className="glass-panel p-6 rounded-2xl border border-white/10 hover:border-primary/30 transition-all hover:scale-105">
+                <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mb-4 mx-auto">
+                  <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-2">安全登录</h3>
+                <p className="text-sm text-slate-400">去中心化身份验证，保护您的隐私</p>
+              </div>
+
+              <div className="glass-panel p-6 rounded-2xl border border-white/10 hover:border-secondary/30 transition-all hover:scale-105">
+                <div className="w-12 h-12 bg-secondary/20 rounded-xl flex items-center justify-center mb-4 mx-auto">
+                  <svg className="w-6 h-6 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-2">跨应用统一</h3>
+                <p className="text-sm text-slate-400">一个账号，畅游多个应用</p>
+              </div>
+
+              <div className="glass-panel p-6 rounded-2xl border border-white/10 hover:border-accent/30 transition-all hover:scale-105">
+                <div className="w-12 h-12 bg-accent/20 rounded-xl flex items-center justify-center mb-4 mx-auto">
+                  <svg className="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-2">云服务</h3>
+                <p className="text-sm text-slate-400">去中心化云存储，数据自主掌控</p>
+              </div>
+            </div>
+
+            {/* 登录按钮 */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-8">
+              <button
+                onClick={() => router.push('/login')}
+                className="group relative px-8 py-4 bg-gradient-to-r from-primary to-secondary rounded-xl text-white font-semibold text-lg shadow-lg hover:shadow-primary/50 transition-all hover:scale-105 min-w-[200px]"
+              >
+                <span className="flex items-center justify-center gap-2">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                  登录
+                </span>
+              </button>
+              
+              <button
+                onClick={() => router.push('/register')}
+                className="px-8 py-4 glass-panel rounded-xl text-white font-semibold text-lg border border-white/20 hover:border-white/40 transition-all hover:scale-105 min-w-[200px]"
+              >
+                注册账号
+              </button>
+            </div>
+
+            {/* 底部说明 */}
+            <div className="mt-12 text-center">
+              <p className="text-sm text-slate-400">
+                新一代去中心化身份管理系统
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
   if (error && !userInfo) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-        <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full">
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="glass-panel p-6 max-w-md w-full rounded-2xl border-red-500/30">
           <h2 className="text-xl font-bold text-red-400 mb-4">错误</h2>
-          <p className="text-gray-900 mb-4">{error}</p>
+          <p className="text-slate-300 mb-4">{error}</p>
           <button
-            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            className="btn-primary w-full"
             onClick={() => window.location.reload()}
           >
             重试
@@ -190,21 +291,26 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 text-gray-900">
+    <div className="min-h-screen text-white pb-20">
       {/* 顶部用户信息栏 */}
       <Header />
 
-      <div className="container mx-auto p-4">
+      <div className="app-container py-8 space-y-8">
         {/* 账户概览卡片 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* 存储使用情况 */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-medium text-gray-900">存储使用</h3>
-              <div className="bg-green-500 rounded-full p-2">
+          <div className="glass-panel p-6 rounded-2xl relative overflow-hidden group hover:border-primary/30 transition-colors">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
+            
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-medium text-white flex items-center gap-2">
+                <span className="w-1 h-6 bg-primary rounded-full"></span>
+                存储使用
+              </h3>
+              <div className="bg-primary/20 p-2 rounded-xl text-primary">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
+                  className="h-6 w-6"
                   viewBox="0 0 20 20"
                   fill="currentColor"
                 >
@@ -216,14 +322,16 @@ const Dashboard = () => {
                 </svg>
               </div>
             </div>
-            <div className="mt-4">
-              <div className="flex justify-between text-sm mb-1">
-                <span>已使用: {formatBytes(userInfo?.usedSpace || 0)}</span>
-                <span>总共: {formatBytes(userInfo?.subscribeSpace || 0)}</span>
+            
+            <div className="space-y-4">
+              <div className="flex justify-between text-sm text-slate-400">
+                <span>已使用: <span className="text-white font-mono">{formatBytes(userInfo?.usedSpace || 0)}</span></span>
+                <span>总共: <span className="text-white font-mono">{formatBytes(userInfo?.subscribeSpace || 0)}</span></span>
               </div>
-              <div className="w-full bg-gray-700 rounded-full h-2">
+              
+              <div className="w-full bg-slate-800 rounded-full h-3 overflow-hidden border border-white/5">
                 <div
-                  className="bg-green-500 h-2 rounded-full"
+                  className="bg-gradient-to-r from-primary to-cyan-400 h-full rounded-full shadow-[0_0_10px_rgba(59,130,246,0.5)] transition-all duration-500"
                   style={{
                     width: `${
                       ((userInfo?.usedSpace ? userInfo?.usedSpace : 0) /
@@ -233,30 +341,32 @@ const Dashboard = () => {
                   }}
                 ></div>
               </div>
-              <p className="mt-2 text-sm text-gray-800">
+              
+              <p className="text-xs text-slate-500 text-right">
                 到期区块高度:{" "}
-                {userInfo?.expireNumber ? userInfo.expireNumber : "-"}
+                <span className="font-mono text-slate-300">{userInfo?.expireNumber ? userInfo.expireNumber : "-"}</span>
               </p>
-              <div className="flex flex-col md:flex-row gap-2 mt-4">
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                 <button
                   onClick={handleSubscribeStorage}
-                  className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded flex items-center justify-center"
+                  className="btn-primary flex items-center justify-center text-sm"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 mr-2"
+                    className="h-4 w-4 mr-2"
                     viewBox="0 0 20 20"
                     fill="currentColor"
                   >
                     <path d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z" />
                   </svg>
-                  订阅更多存储
+                  订阅更多
                 </button>
 
                 {account && account.account && (
                   <button
                     onClick={gotoOrderRecords}
-                    className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded flex items-center justify-center"
+                    className="btn-secondary flex items-center justify-center text-sm"
                   >
                     订阅记录
                   </button>
@@ -266,13 +376,18 @@ const Dashboard = () => {
           </div>
 
           {/* 积分余额 */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-medium text-gray-900">积分余额</h3>
-              <div className="bg-yellow-500 rounded-full p-2">
+          <div className="glass-panel p-6 rounded-2xl relative overflow-hidden group hover:border-yellow-500/30 transition-colors">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-500/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
+            
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-medium text-white flex items-center gap-2">
+                <span className="w-1 h-6 bg-yellow-500 rounded-full"></span>
+                积分余额
+              </h3>
+              <div className="bg-yellow-500/20 p-2 rounded-xl text-yellow-500">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
+                  className="h-6 w-6"
                   viewBox="0 0 20 20"
                   fill="currentColor"
                 >
@@ -285,16 +400,17 @@ const Dashboard = () => {
                 </svg>
               </div>
             </div>
-            <div className="mt-4">
-              <div className="text-3xl font-bold">
-                {userInfo?.points || 0} 积分
+            
+            <div className="flex flex-col justify-between h-40">
+              <div className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500 font-mono">
+                {userInfo?.points || 0} <span className="text-lg text-slate-400 font-sans font-normal">积分</span>
               </div>
               <button
                 onClick={exchangePoints}
-                className={`mt-4 w-full  text-white py-2 px-4 rounded ${
+                className={`w-full py-3 px-4 rounded-xl font-medium transition-all ${
                   userInfo?.points && userInfo?.points > 0
-                    ? "bg-yellow-600 hover:bg-yellow-700"
-                    : "bg-gray-400 cursor-not-allowed"
+                    ? "bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-500 hover:to-orange-500 text-white shadow-lg shadow-orange-500/20"
+                    : "bg-slate-800 text-slate-500 cursor-not-allowed border border-white/5"
                 }`}
               >
                 兑换积分
@@ -304,26 +420,38 @@ const Dashboard = () => {
         </div>
 
         {/* 登录历史 */}
-        <div className="bg-white rounded-lg shadow p-6 mb-8">
-          <h3 className="text-lg font-medium text-gray-900 mb-4 flex justify-between">
-            <span>登录历史</span>
+        <div className="glass-panel p-6 rounded-2xl">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-lg font-medium text-white flex items-center gap-2">
+              <span className="w-1 h-6 bg-secondary rounded-full"></span>
+              登录历史
+            </h3>
             <button
               onClick={handleRefreshLoginHistory}
-              className="ml-4 text-sm text-blue-500 hover:text-blue-700"
+              className="text-sm text-primary hover:text-primary-glow transition-colors flex items-center gap-1"
             >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
               刷新
             </button>
-          </h3>
+          </div>
+          
           {displayedLoginHistory.length > 0 ? (
             <div className="space-y-3">
               {displayedLoginHistory.map((item: AuthRecord) => (
-                <div key={item.recordId} className="bg-white rounded-lg p-4">
+                <div key={item.recordId} className="bg-white/5 hover:bg-white/10 border border-white/5 rounded-xl p-4 transition-colors">
                   <div className="flex justify-between items-center">
-                    <div>
-                      <h4 className="font-medium">{item.appName}</h4>
-                      <p className="text-sm text-gray-900">{item.appUrl}</p>
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center text-white font-bold text-lg">
+                        {item.appName ? item.appName.charAt(0).toUpperCase() : 'A'}
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-white">{item.appName}</h4>
+                        <p className="text-xs text-slate-400">{item.appUrl}</p>
+                      </div>
                     </div>
-                    <div className="text-sm text-gray-900">
+                    <div className="text-xs text-slate-500 font-mono">
                       {new Date(item.timestamp).toLocaleString()}
                     </div>
                   </div>
@@ -332,26 +460,31 @@ const Dashboard = () => {
               {displayedLoginHistory.length < loginHistory.length && (
                 <button
                   onClick={handleLoadMoreHistory}
-                  className="w-full py-2 bg-white hover:bg-gray-200 rounded-lg text-center"
+                  className="w-full py-3 mt-2 bg-white/5 hover:bg-white/10 text-slate-300 rounded-xl text-center text-sm transition-colors border border-white/5"
                 >
                   加载更多
                 </button>
               )}
             </div>
           ) : (
-            <p className="text-gray-600">暂无登录历史</p>
+            <div className="text-center py-10 text-slate-500">
+              <p>暂无登录历史</p>
+            </div>
           )}
         </div>
 
         {/* 应用列表 */}
-        <div className="bg-white rounded-lg shadow p-6 mb-8">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">应用列表</h3>
+        <div className="glass-panel p-6 rounded-2xl">
+          <h3 className="text-lg font-medium text-white mb-6 flex items-center gap-2">
+            <span className="w-1 h-6 bg-green-500 rounded-full"></span>
+            应用列表
+          </h3>
           {apps.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {apps.map((app) => (
                 <div
                   key={app.id}
-                  className="bg-gray-100 rounded-lg p-4 flex items-center"
+                  className="bg-white/5 hover:bg-white/10 border border-white/5 rounded-xl p-4 flex items-center transition-all hover:scale-[1.02] cursor-pointer"
                 >
                   <img
                     src={
@@ -359,21 +492,23 @@ const Dashboard = () => {
                       "https://images.unsplash.com/photo-1637593992672-ed85a851fdc3?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80"
                     }
                     alt={app.name}
-                    className="w-12 h-12 rounded-lg mr-4"
+                    className="w-12 h-12 rounded-xl mr-4 object-cover shadow-lg"
                     onError={(e) => {
                       e.currentTarget.src =
                         "https://images.unsplash.com/photo-1637593992672-ed85a851fdc3?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80";
                     }}
                   />
                   <div>
-                    <h4 className="font-medium">{app.name}</h4>
-                    <p className="text-sm text-gray-900">{app.description}</p>
+                    <h4 className="font-medium text-white">{app.name}</h4>
+                    <p className="text-xs text-slate-400 line-clamp-1">{app.description}</p>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-gray-600">暂无应用</p>
+            <div className="text-center py-10 text-slate-500">
+              <p>暂无应用</p>
+            </div>
           )}
         </div>
       </div>

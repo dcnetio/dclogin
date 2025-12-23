@@ -1,11 +1,13 @@
 "use client";
-import styles from "./page.module.css";
+// import styles from "./page.module.css";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { Button, Input } from "antd-mobile";
 import { createAccountWithRegister } from "@/app/index";
 import { getDC } from "@/components/auth/login/dc";
+import { UserOutline, LockOutline } from "antd-mobile-icons";
+import { CheckShieldOutline } from "@/components/icons/CheckShieldOutline";
 
 export default function Register() {
   const router = useRouter();
@@ -122,243 +124,179 @@ export default function Register() {
   };
 
   return (
-    <div className={styles.content}>
-      {/* 背景区域 - 只在PC端显示 */}
-      <div className={styles.backgroundPattern}>
-        {!isMobile && (
-          <>
-            {/* 装饰元素 */}
-            <div className={styles.geoDecor1}></div>
-            <div className={styles.geoDecor2}></div>
-            <div className={styles.geoDecor3}></div>
-            <div className={styles.circleDecor}></div>
-
-            {/* 品牌信息 */}
-            <div className={styles.brandInfo}>
-              <div className={styles.brandLogo}>
-                <div className={styles.logoIcon}></div>
-              </div>
-              <h1 className={styles.brandTitle}>
-                {t("wallet.name", "DCLogin")}
-              </h1>
-              <p className={styles.brandTagline}>
-                {t("wallet.tagline", "您通往新一代互联网的安全入口")}
-              </p>
-
-              <div className={styles.brandDescription}>
-                <p className={styles.descriptionIntro}>
-                  {t(
-                    "wallet.intro",
-                    "DCLogin 是一款基于去中心化云服务（DC）开发的统一登录工具，为用户提供安全的入口，便捷地进入新一代互联网。DCWallet 不存储任何用户隐私信息。"
-                  )}
-                </p>
-
-                <div className={styles.serviceSection}>
-                  <h3 className={styles.sectionTitle}>
-                    {t("wallet.services_title", "DCLogin 提供的服务")}
-                  </h3>
-                  <ul className={styles.serviceList}>
-                    <li>
-                      <span className={styles.checkIcon}>✓</span>{" "}
-                      {t("wallet.service1", "跨应用统一登录服务")}
-                    </li>
-                    <li>
-                      <span className={styles.checkIcon}>✓</span>{" "}
-                      {t("wallet.service2", "跨终端登录服务")}
-                    </li>
-                    <li>
-                      <span className={styles.checkIcon}>✓</span>{" "}
-                      {t("wallet.service3", "去中心化云服务购买")}
-                    </li>
-                  </ul>
-                </div>
-
-                <div className={styles.limitationSection}>
-                  <h3 className={styles.sectionTitle}>
-                    {t(
-                      "wallet.limitations_title",
-                      "由于去中心化特性，DCWallet 无法提供"
-                    )}
-                  </h3>
-                  <ul className={styles.limitationList}>
-                    <li>
-                      <span className={styles.xIcon}>×</span>{" "}
-                      {t("wallet.limitation1", "用户账号和密码找回服务")}
-                    </li>
-                    <li>
-                      <span className={styles.xIcon}>×</span>{" "}
-                      {t("wallet.limitation2", "用户密码重置服务")}
-                    </li>
-                  </ul>
-                </div>
-
-                <div className={styles.openSourceSection}>
-                  <a
-                    href="https://github.com/dcnetio"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={styles.githubLink}
-                  >
-                    <svg
-                      className={styles.githubIcon}
-                      viewBox="0 0 24 24"
-                      width="16"
-                      height="16"
-                    >
-                      <path
-                        fill="currentColor"
-                        d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"
-                      />
-                    </svg>
-                    {t("wallet.github_link", "DCLogin 开源地址")}
-                  </a>
-                </div>
-              </div>
-
-              <div className={styles.brandFeatures}>
-                <div className={styles.featureItem}>
-                  <span className={styles.featureIcon}>✓</span>
-                  <span>{t("wallet.feature1", "统一登录")}</span>
-                </div>
-                <div className={styles.featureItem}>
-                  <span className={styles.featureIcon}>✓</span>
-                  <span>{t("wallet.feature2", "数据安全")}</span>
-                </div>
-                <div className={styles.featureItem}>
-                  <span className={styles.featureIcon}>✓</span>
-                  <span>{t("wallet.feature3", "无缝体验")}</span>
-                </div>
-              </div>
-            </div>
-          </>
-        )}
+    <div className="min-h-screen flex items-center justify-center p-4 md:p-8 relative overflow-hidden">
+      {/* Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-primary/20 blur-[100px]" />
+        <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-secondary/20 blur-[100px]" />
       </div>
 
-      {/* 注册表单容器 - 只保留一个 */}
-      <div className={styles.registerContainer}>
-        {/* Logo区域 - 移除重复 */}
-        <div className={styles.logoSection}>
-          <div className={styles.logo}>
-            <div className={styles.logoIcon}></div>
-          </div>
-          <h2 className={styles.title}>{t("register.register", "DCLogin")}</h2>
-          <p className={styles.subtitle}>
-            {t("register.subtitle", "创建私人账户，开启您的智能互联网之旅")}
-          </p>
-
-          {/* 移动端描述 - 仅保留一个 */}
-          {isMobile && (
-            <div className={styles.mobileDescription}>
-              <p className={styles.mobileIntro}>
-                {t(
-                  "wallet.mobile_intro_short",
-                  "DCLogin: 安全、私密的去中心化统一登录工具"
-                )}
-              </p>
-
-              <div className={styles.mobileFeatures}>
-                <div className={styles.mobileFeatureItem}>
-                  <span className={styles.mobileFeatureIcon}>✓</span>
-                  <span>{t("wallet.feature1", "统一登录")}</span>
-                </div>
-                <div className={styles.mobileFeatureItem}>
-                  <span className={styles.mobileFeatureIcon}>✓</span>
-                  <span>{t("wallet.feature2", "数据安全")}</span>
-                </div>
-              </div>
+      <div className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 gap-8 items-center relative z-10">
+        {/* Branding Section - Desktop Only */}
+        <div className="hidden md:flex flex-col text-white space-y-8 p-8 order-2 md:order-1">
+          <div className="space-y-4">
+            <div className="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center shadow-lg shadow-primary/30">
+              <div className="w-8 h-8 border-2 border-white rounded-full" />
             </div>
-          )}
+            <h1 className="text-5xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white to-white/70 pb-2">
+              {t("wallet.name", "DCLogin")}
+            </h1>
+            <p className="text-xl text-blue-100/80 max-w-md">
+              {t("wallet.tagline", "您通往新一代互联网的安全入口")}
+            </p>
+          </div>
+
+          <div className="space-y-6 bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
+            <h3 className="text-lg font-semibold text-primary">
+              {t("wallet.services_title", "DCLogin 提供的服务")}
+            </h3>
+            <ul className="space-y-3">
+              {[
+                t("wallet.service1", "跨应用统一登录"),
+                t("wallet.service2", "跨终端无缝衔接"),
+                t("wallet.service3", "去中心化云服务"),
+                t("wallet.service4", "极致的安全保障"),
+              ].map((item, index) => (
+                <li key={index} className="flex items-center space-x-3 text-sm text-slate-300">
+                  <span className="flex-shrink-0 w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center text-primary text-xs">✓</span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
 
-        {/* 表单区域 */}
-        <div className={styles.formWrapper}>
-          <div className={styles.formSection}>
-            <div className={`${styles.inputGroup} ${styles.accountInput}`}>
-              <Input
-                placeholder={t("register.account")}
-                value={account}
-                onChange={setAccount}
-                onEnterPress={gotoConfirm}
-                clearable
-              />
+        {/* Register Form Section */}
+        <div className="glass-panel p-8 md:p-10 rounded-3xl w-full max-w-md mx-auto order-1 md:order-2">
+          <div className="text-center mb-8">
+            <div className="md:hidden w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center shadow-lg shadow-primary/30 mx-auto mb-4">
+              <div className="w-6 h-6 border-2 border-white rounded-full" />
             </div>
-            <div className={`${styles.inputGroup} ${styles.passwordInput}`}>
-              <Input
-                placeholder={t("register.password")}
-                value={password}
-                onChange={(val) => {
-                  setPassword(val);
-                  // 当密码更改时，重置密码匹配状态
-                  if (confirmPassword && val !== confirmPassword) {
-                    setPasswordsMatch(false);
-                  } else {
-                    setPasswordsMatch(true);
-                  }
-                }}
-                onEnterPress={() =>
-                  document.getElementById("confirmPasswordInput")?.focus()
-                }
-                clearable
-                type="password"
-              />
-            </div>
+            <h2 className="text-2xl font-bold text-white mb-2">{t("register.register", "DCLogin")}</h2>
+            <p className="text-slate-400 text-sm">
+              {t("register.subtitle", "创建私人账户，开启您的智能互联网之旅")}
+            </p>
+          </div>
 
-            {/* 密码确认输入框 - 当用户输入了初始密码后显示 */}
-            {password.length > 0 && (
-              <div
-                className={`${styles.inputGroup} ${styles.passwordConfirmInput}`}
-              >
+          <div className="space-y-5">
+            <div className="space-y-1">
+              <div className="relative group">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">
+                  <UserOutline fontSize={20} />
+                </div>
                 <Input
-                  id="confirmPasswordInput"
-                  placeholder={t(
-                    "register.confirm_password_placeholder",
-                    "请再次输入密码"
-                  )}
-                  value={confirmPassword}
-                  onChange={(val) => {
-                    setConfirmPassword(val);
-                    setPasswordsMatch(val === password);
-                  }}
+                  placeholder={t("register.account")}
+                  value={account}
+                  onChange={setAccount}
                   onEnterPress={gotoConfirm}
                   clearable
-                  type="password"
+                  className="input-tech pl-10 !bg-slate-800/50 !border-slate-700 focus:!border-primary"
+                  style={{ '--font-size': '16px', paddingLeft: '2.5rem' }}
                 />
+              </div>
+            </div>
 
-                {/* 密码不匹配时显示错误提示 */}
+            <div className="space-y-1">
+              <div className="relative group">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">
+                  <LockOutline fontSize={20} />
+                </div>
+                <Input
+                  placeholder={t("register.password")}
+                  value={password}
+                  onChange={(val) => {
+                    setPassword(val);
+                    if (confirmPassword && val !== confirmPassword) {
+                      setPasswordsMatch(false);
+                    } else {
+                      setPasswordsMatch(true);
+                    }
+                  }}
+                  onEnterPress={() =>
+                    document.getElementById("confirmPasswordInput")?.focus()
+                  }
+                  clearable
+                  type="password"
+                  className="input-tech pl-10 !bg-slate-800/50 !border-slate-700 focus:!border-primary"
+                  style={{ '--font-size': '16px', paddingLeft: '2.5rem' }}
+                />
+              </div>
+            </div>
+
+            {password.length > 0 && (
+              <div className="space-y-1">
+                <div className="relative group">
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">
+                    <CheckShieldOutline fontSize={20} />
+                  </div>
+                  <Input
+                    id="confirmPasswordInput"
+                    placeholder={t("register.confirm_password_placeholder", "请再次输入密码")}
+                    value={confirmPassword}
+                    onChange={(val) => {
+                      setConfirmPassword(val);
+                      setPasswordsMatch(val === password);
+                    }}
+                    onEnterPress={gotoConfirm}
+                    clearable
+                    type="password"
+                    className={`input-tech pl-10 !bg-slate-800/50 !border-slate-700 focus:!border-primary ${
+                      confirmPassword.length > 0 && !passwordsMatch ? '!border-red-500 focus:!border-red-500' : ''
+                    }`}
+                    style={{ '--font-size': '16px', paddingLeft: '2.5rem' }}
+                  />
+                </div>
                 {confirmPassword.length > 0 && !passwordsMatch && (
-                  <div className={styles.passwordError}>
+                  <div className="text-red-400 text-xs pl-1">
                     {t("register.passwords_not_match", "两次输入的密码不一致")}
                   </div>
                 )}
               </div>
             )}
+
+            <Button
+              block
+              className="btn-primary !rounded-xl !h-12 !text-base !font-semibold mt-6"
+              onClick={() => gotoConfirm()}
+              loading={isLoading}
+              loadingText={t("register.registering", "注册中...")}
+            >
+              {t("register.register", "注册")}
+            </Button>
+
+            <div className="text-center mt-6">
+              <span className="text-slate-400 text-sm">{t("register.have_account", "已有账户?")} </span>
+              <span 
+                className="text-primary font-medium cursor-pointer hover:underline ml-1"
+                onClick={gotoLogin}
+              >
+                {t("register.go_login", "前往登录")}
+              </span>
+            </div>
           </div>
         </div>
 
-        {/* 按钮组 */}
-        <div className={styles.buttonGroup}>
-          <Button
-            color="primary"
-            fill="solid"
-            onClick={() => gotoConfirm()}
-            block
-            loading={isLoading}
-            loadingText={t("register.registering", "注册中...")}
-          >
-            {t("register.register", "注册")}
-          </Button>
+        {/* Mobile Services List */}
+        <div className="md:hidden w-full max-w-md mx-auto mt-8 px-4 pb-8 order-3">
+          <div className="space-y-4 bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
+            <h3 className="text-lg font-semibold text-primary text-center">
+              {t("wallet.services_title", "DCLogin 提供的服务")}
+            </h3>
+            <ul className="space-y-3">
+              {[
+                t("wallet.service1", "跨应用统一登录"),
+                t("wallet.service2", "跨终端无缝衔接"),
+                t("wallet.service3", "去中心化云服务"),
+                t("wallet.service4", "极致的安全保障"),
+              ].map((item, index) => (
+                <li key={index} className="flex items-center space-x-3 text-sm text-slate-300">
+                  <span className="flex-shrink-0 w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center text-primary text-xs">✓</span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
-
-        {/* 登录链接 */}
-        <div className={styles.loginPrompt} onClick={gotoLogin}>
-          {t("register.have_account", "已有账户?")}
-          <span className={styles.loginLink}>
-            {t("register.go_login", "前往登录")}
-          </span>
-        </div>
-
-        {/* 底部区域 */}
-        <div className={styles.bottomSection}></div>
       </div>
     </div>
   );

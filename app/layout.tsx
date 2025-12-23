@@ -76,7 +76,9 @@ export default function RootLayout({
 
   useEffect(() => {
     // 路由变化时更新 showHeader
-    setShowHeader(pathname !== "/");
+    // 首页、登录页、注册页不显示头部
+    const name = pathname.endsWith("/") ? pathname.slice(0, -1) : pathname;
+    setShowHeader(name !== "" && name !== "/login" && name !== "/register");
   }, [pathname]);
 
   useEffect(() => {
@@ -105,18 +107,19 @@ export default function RootLayout({
         </Script>
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
       >
-        <div className={styles.container}>
+        <div className="app-container flex-1 relative z-10">
           <StoreProvider>
             <Locales>
               {showHeader && isMobile && (
                 <NavBar
+                  className="tech-navbar"
                   onBack={
                     isFirstVisit ? undefined : () => window.history.back()
                   } // 根据首次访问状态决定是否显示返回功能
                 >
-                  <div style={{ fontWeight: "bold", fontSize: "16px" }}>
+                  <div className="text-lg font-bold text-white text-glow">
                     {getTitle(pathname)} {/* 动态标题 */}
                   </div>
                 </NavBar>
@@ -124,7 +127,9 @@ export default function RootLayout({
               <RefreshProtectionProvider paramName="origin">
                 <ToastProvider>
                   <Login />
-                  {children}
+                  <main className="flex-1 w-full">
+                    {children}
+                  </main>
                 </ToastProvider>
                 <ProtectionStatus />
                 <StrictRefreshBlocker />

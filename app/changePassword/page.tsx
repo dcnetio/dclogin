@@ -180,15 +180,19 @@ export default function ChangePassword() {
                   <ul className={styles.serviceList}>
                     <li>
                       <span className={styles.checkIcon}>✓</span>{" "}
-                      {t("wallet.service1", "跨应用统一登录服务")}
+                      {t("wallet.service1", "跨应用统一登录")}
                     </li>
                     <li>
                       <span className={styles.checkIcon}>✓</span>{" "}
-                      {t("wallet.service2", "跨终端登录服务")}
+                      {t("wallet.service2", "跨终端无缝衔接")}
                     </li>
                     <li>
                       <span className={styles.checkIcon}>✓</span>{" "}
-                      {t("wallet.service3", "去中心化云服务购买")}
+                      {t("wallet.service3", "去中心化云服务")}
+                    </li>
+                    <li>
+                      <span className={styles.checkIcon}>✓</span>{" "}
+                      {t("wallet.service4", "极致的安全保障")}
                     </li>
                   </ul>
                 </div>

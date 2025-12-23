@@ -1,6 +1,6 @@
 "use client";
-import { Ellipsis } from 'antd-mobile';
-import styles from './index.module.css'
+import { Ellipsis } from "antd-mobile";
+import Card from "@/components/ui/Card";
 import { AccountInfo } from '@/types/walletTypes';
 import { useTranslation} from 'react-i18next';
 interface TransAccountProps {
@@ -13,14 +13,14 @@ export default function TransAccount(props: TransAccountProps) {
   const {t} = useTranslation();
  
   return (
-    <div className={styles.account}>
-      <div className={styles.title}>{accountInfo?.name}</div>
+    <Card className="p-4">
+      <div className="text-lg font-semibold text-white">{accountInfo?.name}</div>
       <Ellipsis
         direction="middle"
         content={accountInfo?.nftAccount || ""}
-        className={styles.txt}
+        className="text-sm text-gray-300 break-words mt-2"
       />
-      <div className={styles.balance}>{t('transfer.current_amount')}：{balance} {currencySymbol}</div>
-    </div>
+      <div className="mt-3 text-sm text-gray-400">{t("transfer.current_amount")}：{balance} {currencySymbol}</div>
+    </Card>
   );
 }

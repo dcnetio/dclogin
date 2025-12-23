@@ -1,6 +1,5 @@
 "use client";
 import React, { useEffect } from "react";
-import styles from "./index.module.css";
 import { useAppSelector } from "@/lib/hooks";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "next/navigation";
@@ -29,14 +28,12 @@ export default function DAPPNote() {
     );
   }, [enabled]);
   return (
-    <div className={styles["min-h-screen"]}>
+    <div className="min-h-screen">
       {/* 响应式容器 */}
-      <div
-        className={`${styles["min-h-screen"]} ${styles.flex} ${styles["items-center"]} ${styles["justify-center"]} px-3 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-8`}
-      >
+      <div className="min-h-screen flex items-center justify-center px-3 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-8">
         <div className="w-full max-w-xs sm:max-w-2xl md:max-w-4xl lg:max-w-6xl mx-auto">
           {/* 主要内容区域 */}
-          <div className={`${styles["mobile-stack"]} flex flex-col `}>
+          <div className="mt-8 md:mt-8 lg:mt-16 flex flex-col">
             {/* 登录中心介绍区域 */}
             <div className="text-center mobile-order-1">
               {/* Logo和标题 */}

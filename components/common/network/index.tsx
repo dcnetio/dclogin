@@ -1,5 +1,4 @@
 import { Button, List, Popup } from "antd-mobile";
-import styles from "./index.module.css";
 import { useEffect, useState } from "react";
 import { getAllData, store_chain } from "@/helpers/DBHelper";
 import { getCurrentNetwork, switchChain } from "@/app/index";
@@ -64,13 +63,13 @@ export default function Network(props: NetworkProps) {
             clickable
             onClick={() => connect(item)}
           >
-            <span className={item.chainId === chainId ? styles.now : ""}>
+            <span className={item.chainId === chainId ? "text-blue-400 font-medium" : ""}>
               {item.name}{" "}
             </span>
           </List.Item>
         ))}
       </List>
-      <div className={styles.btn}>
+      <div className="m-5">
         <Button color="primary" size="large" block>
           {t("network.add")}
         </Button>

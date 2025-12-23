@@ -10,7 +10,7 @@ import { getDC } from "@/components/auth/login/dc";
 import { store } from "@/lib/store";
 import { saveInitState } from "@/lib/slices/appSlice";
 import { appState } from "@/config/constant";
-import { UserOutline, LockOutline } from "antd-mobile-icons";
+import { UserOutline, LockOutline, AppOutline, LinkOutline, GlobalOutline } from "antd-mobile-icons";
 import { CheckShieldOutline } from "@/components/icons/CheckShieldOutline";
 
 export default function Login() {
@@ -133,16 +133,18 @@ export default function Login() {
             <h3 className="text-lg font-semibold text-primary">
               {t("wallet.services_title", "DCLogin 提供的服务")}
             </h3>
-            <ul className="space-y-3">
+            <ul className="space-y-4">
               {[
-                t("wallet.service1", "跨应用统一登录"),
-                t("wallet.service2", "跨终端无缝衔接"),
-                t("wallet.service3", "去中心化云服务"),
-                t("wallet.service4", "极致的安全保障"),
+                { icon: <AppOutline fontSize={18} />, text: t("wallet.service1", "跨应用统一登录") },
+                { icon: <LinkOutline fontSize={18} />, text: t("wallet.service2", "跨终端无缝衔接") },
+                { icon: <GlobalOutline fontSize={18} />, text: t("wallet.service3", "去中心化云服务") },
+                { icon: <CheckShieldOutline fontSize={18} />, text: t("wallet.service4", "极致的安全保障") },
               ].map((item, index) => (
                 <li key={index} className="flex items-center space-x-3 text-sm text-slate-300">
-                  <span className="flex-shrink-0 w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center text-primary text-xs">✓</span>
-                  <span>{item}</span>
+                  <span className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+                    {item.icon}
+                  </span>
+                  <span>{item.text}</span>
                 </li>
               ))}
             </ul>
@@ -265,16 +267,18 @@ export default function Login() {
             <h3 className="text-lg font-semibold text-primary text-center">
               {t("wallet.services_title", "DCLogin 提供的服务")}
             </h3>
-            <ul className="space-y-3">
+            <ul className="space-y-4">
               {[
-                t("wallet.service1", "跨应用统一登录"),
-                t("wallet.service2", "跨终端无缝衔接"),
-                t("wallet.service3", "去中心化云服务"),
-                t("wallet.service4", "极致的安全保障"),
+                { icon: <AppOutline fontSize={18} />, text: t("wallet.service1", "跨应用统一登录") },
+                { icon: <LinkOutline fontSize={18} />, text: t("wallet.service2", "跨终端无缝衔接") },
+                { icon: <GlobalOutline fontSize={18} />, text: t("wallet.service3", "去中心化云服务") },
+                { icon: <CheckShieldOutline fontSize={18} />, text: t("wallet.service4", "极致的安全保障") },
               ].map((item, index) => (
                 <li key={index} className="flex items-center space-x-3 text-sm text-slate-300">
-                  <span className="flex-shrink-0 w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center text-primary text-xs">✓</span>
-                  <span>{item}</span>
+                  <span className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+                    {item.icon}
+                  </span>
+                  <span>{item.text}</span>
                 </li>
               ))}
             </ul>

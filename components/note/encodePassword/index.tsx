@@ -5,11 +5,11 @@ import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { EncodePasswordType } from "@/config/constant";
 import {
-  CheckShieldOutline,
   LinkOutline,
   ExclamationCircleOutline,
   CloseOutline,
 } from "antd-mobile-icons";
+import { CheckShieldOutline } from "@/components/icons/CheckShieldOutline";
 import { APPInfo } from "web-dc-api";
 import { dcConfig } from "@/config/define";
 
@@ -24,6 +24,7 @@ interface EncodePasswordProps {
 }
 
 export default function EncodePassword(props: EncodePasswordProps) {
+  console.log("EncodePassword rendering");
   const {
     type,
     nftAccount,

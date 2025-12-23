@@ -1,6 +1,7 @@
 import * as React from "react";
 
 export function CheckShieldOutline(props: React.SVGProps<SVGSVGElement> & { fontSize?: number }) {
+  console.log("CheckShieldOutline rendering");
   return (
     <svg
       width="1em"

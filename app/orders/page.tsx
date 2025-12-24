@@ -12,13 +12,21 @@ import { useAppSelector } from "@/lib/hooks";
 import { OrderRecord } from "@/types/pageType";
 import { CurrencyType, StoragePurchaseStatus } from "@/config/constant";
 import { container } from "@/server/dc-contianer";
+import { useTranslation } from "react-i18next";
 
 // 订单列表主组件
 export default function OrderListPage() {
+  const { t } = useTranslation();
   const [orders, setOrders] = useState<OrderRecord[]>([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
 
   const account: AccountInfo = useAppSelector((state) => state.wallet.account);
+
+  const getStatusDesc = (status: number) => {
+    if (status === StoragePurchaseStatus.SUCCESS) return t("order.status_success");
+    if (status === StoragePurchaseStatus.CANCEL) return t("order.status_cancelled");
+    return t("order.status_pending");
+  };
 
   const handleViewDetail = (order) => {
     setSelectedOrder(order);
@@ -116,26 +124,26 @@ export default function OrderListPage() {
         <div className="hidden md:block glass-panel rounded-2xl p-6">
           <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
             <span className="w-1 h-6 bg-primary rounded-full shadow-[0_0_10px_rgba(59,130,246,0.5)]"></span>
-            订单列表
+            {t("order.list_title")}
           </h2>
           <div className="overflow-hidden rounded-xl border border-white/5">
             <table className="min-w-full divide-y divide-white/10">
               <thead className="bg-white/5">
                 <tr>
                   <th className="px-6 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
-                    套餐名称
+                    {t("order.package_name")}
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
-                    订单时间
+                    {t("order.order_time")}
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
-                    金额
+                    {t("transfer.amount")}
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
-                    订单状态
+                    {t("order.status")}
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
-                    操作
+                    {t("order.action")}
                   </th>
                 </tr>
               </thead>
@@ -171,11 +179,7 @@ export default function OrderListPage() {
                             : "bg-yellow-500/10 text-yellow-400 border-yellow-500/20"
                         }`}
                       >
-                        {StoragePurchaseStatus.SUCCESS == order.status
-                          ? StoragePurchaseStatus.SUCCESS_DESC
-                          : StoragePurchaseStatus.CANCEL == order.status
-                          ? StoragePurchaseStatus.CANCEL_DESC
-                          : StoragePurchaseStatus.WAITING_CONFIRM_DESC}
+                        {getStatusDesc(order.status)}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
@@ -183,7 +187,7 @@ export default function OrderListPage() {
                         onClick={() => handleViewDetail(order)}
                         className="text-primary hover:text-blue-400 font-medium transition-colors"
                       >
-                        查看详情
+                        {t("order.view_detail")}
                       </button>
                     </td>
                   </tr>
@@ -222,7 +226,7 @@ export default function OrderListPage() {
                     ? StoragePurchaseStatus.SUCCESS_DESC
                     : StoragePurchaseStatus.CANCEL == order.status
                     ? StoragePurchaseStatus.CANCEL_DESC
-                    : StoragePurchaseStatus.WAITING_CONFIRM_DESC}
+                   getStatusDesc(order.status)}
                 </span>
               </div>
               <div className="flex justify-between items-center pt-4 border-t border-white/10">
@@ -234,7 +238,7 @@ export default function OrderListPage() {
                   onClick={() => handleViewDetail(order)}
                   className="text-primary hover:text-blue-400 text-sm font-medium flex items-center gap-1"
                 >
-                  查看详情
+                  {t("order.view_detail")}
                 </button>
               </div>
             </div>
@@ -247,11 +251,7 @@ export default function OrderListPage() {
               <Search size={48} className="mx-auto opacity-50" />
             </div>
             <h3 className="text-lg font-medium text-slate-300 mb-2">
-              暂无订单信息
-            </h3>
-          </div>
-        )}
-      </div>
+              {t("order.no_order_info")}
 
       {selectedOrder && (
         <OrderDetail order={selectedOrder} onClose={handleCloseDetail} />

@@ -346,6 +346,13 @@
     "processing": "Processing...",
     "confirm_pay": "Confirm Payment",
     "month_12": "/12 Months",
-    "day": "Days"
+    "day": "Days",
+    "list_title": "Order List",
+    "status": "Status",
+    "action": "Action",
+    "view_detail": "View Details",
+    "status_pending": "Pending",
+    "status_success": "Completed",
+    "status_cancelled": "Cancelled"
   }
 }

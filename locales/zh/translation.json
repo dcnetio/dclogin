@@ -338,6 +338,13 @@
     "processing": "处理中...",
     "confirm_pay": "确认支付",
     "month_12": "/12月",
-    "day": "天"
+    "day": "天",
+    "list_title": "订单列表",
+    "status": "订单状态",
+    "action": "操作",
+    "view_detail": "查看详情",
+    "status_pending": "待支付",
+    "status_success": "已完成",
+    "status_cancelled": "已取消"
   }
 }

@@ -54,7 +54,7 @@ export default function OrderDetail({ order, onClose }: OrderDetailProps) {
       if (!wxPayManager) {
         Toast.show({
           icon: "fail",
-          content: "微信支付管理器未初始化",
+          content: t("order.wxpay_not_init"),
           position: "center",
         });
         return [];
@@ -65,7 +65,7 @@ export default function OrderDetail({ order, onClose }: OrderDetailProps) {
       if (error) {
         Toast.show({
           icon: "fail",
-          content: error.message || "获取支付二维码失败",
+          content: error.message || t("order.get_qrcode_failed"),
           position: "center",
         });
         return [];
@@ -83,7 +83,7 @@ export default function OrderDetail({ order, onClose }: OrderDetailProps) {
       if (!orderInfo || !orderInfo.orderId) {
         Toast.show({
           icon: "fail",
-          content: "暂无订单信息",
+          content: t("order.no_order_info"),
           position: "center",
         });
         return;

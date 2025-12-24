@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Shield, Cloud, Globe, Key, Languages } from "lucide-react";
 import { useTranslation, Trans } from "react-i18next";
 import { I18N_LANGUAGES } from "@/config/constant";
+import { basePath } from "@/config/define";
 
 export default function FeaturesPage() {
   const router = useRouter();
@@ -52,7 +53,7 @@ export default function FeaturesPage() {
       <header className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-3">
           <img
-            src="/logo.svg"
+            src={`${basePath}/logo.svg`}
             alt="DCLogin"
             className="w-10 h-10 rounded-xl shadow-lg"
           />

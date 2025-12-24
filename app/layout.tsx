@@ -17,6 +17,7 @@ import { NavBar } from "antd-mobile";
 import { useTranslation } from "react-i18next";
 import { unstableSetRender } from "antd-mobile";
 import { createRoot, Root } from "react-dom/client";
+import { basePath } from "@/config/define";
 
 // 使用 WeakMap 替代在 DOM 元素上添加属性（更干净）
 const rootMap = new WeakMap<Element | DocumentFragment, Root>();
@@ -103,7 +104,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href="/logo.svg" type="image/svg+xml" />
+        <link rel="icon" href={`${basePath}/logo.svg`} type="image/svg+xml" />
         <Script id="wallet-origin" strategy="beforeInteractive">
           {`globalThis.walletOpenOrigin = window.location.origin;`}
         </Script>

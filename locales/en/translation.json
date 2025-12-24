@@ -14,7 +14,7 @@
     "waiting": "Waiting",
     "pending": "Pending",
     "confirmed": "Confirmed",
-    "agreement_text": "I have read and agree to the User Agreement. I understand that the account password is decentralized and cannot be recovered if lost, and the platform is not responsible.",
+    "agreement_text": "I have read and agree to the User Agreement. I understand that the account password is decentralized and cannot be recovered if lost.",
     "agreement_unchecked": "Please agree to the User Agreement first"
   },
   "agreement": {
@@ -89,7 +89,7 @@
     "bind_nft_account_failed": "Failed to bind account",
     "nft_account_binded": "Current account is already bound",
     "bind_nft_account_timeout": "Bind account timeout",
-    "init_user_db_ing": "初始化用户数据库中..."
+    "init_user_db_ing": "Initializing user database..."
   },
   "changePassword": {
     "title": "Change Password",
@@ -253,7 +253,11 @@
     "go_login": "Go to Login",
     "confirm_password_empty": "Please confirm your password",
     "passwords_not_match": "Passwords do not match",
-    "dc_not_ready": "DC module not ready, please try again later"
+    "dc_not_ready": "DC module not ready, please try again later",
+    "registering": "Registering...",
+    "have_account": "Already have an account?",
+    "subtitle": "Create a private account and start your intelligent internet journey",
+    "confirm_password_placeholder": "Please enter password again"
   },
   "encode": {
     "password": "Quick Access Password",

@@ -246,7 +246,11 @@
     "go_login": "去登录",
     "confirm_password_empty": "请确认您的密码",
     "passwords_not_match": "两次输入的密码不一致",
-    "dc_not_ready": "dc模块未加载完成，请稍后再注册"
+    "dc_not_ready": "dc模块未加载完成，请稍后再注册",
+    "registering": "注册中...",
+    "have_account": "已有账户?",
+    "subtitle": "创建私人账户，开启您的智能互联网之旅",
+    "confirm_password_placeholder": "请再次输入密码"
   },
   "encode": {
     "password": "便捷访问设置",

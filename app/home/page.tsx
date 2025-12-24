@@ -380,7 +380,7 @@ const Dashboard = () => {
   if (!account || !account.nftAccount) {
     return (
       <div className="min-h-screen relative bg-[#0B0E14] overflow-hidden flex flex-col items-center justify-center">
-        <div className="absolute top-4 left-4 z-50">
+        <div className="absolute top-4 left-4 z-50 hidden md:block">
           <button
             onClick={() => router.push('/')}
             className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 backdrop-blur-md transition-all text-white"

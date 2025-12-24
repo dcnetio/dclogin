@@ -16,7 +16,7 @@ const UserAgreementModal: React.FC<UserAgreementModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[999] flex items-center justify-center px-4 pb-safe-area-inset-bottom pt-20 md:pt-4">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
@@ -24,15 +24,15 @@ const UserAgreementModal: React.FC<UserAgreementModalProps> = ({
       />
 
       {/* Modal Content */}
-      <div className="relative w-full max-w-lg bg-slate-900 rounded-2xl shadow-2xl border border-white/10 flex flex-col max-h-[80vh] animate-in fade-in zoom-in duration-200">
+      <div className="relative w-full max-w-lg bg-slate-900 rounded-2xl shadow-2xl border border-white/10 flex flex-col max-h-[75vh] animate-in fade-in zoom-in duration-200 overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-white/10 shrink-0">
+        <div className="flex items-center justify-between p-4 border-b border-white/10 shrink-0 bg-slate-900/50 backdrop-blur-md">
           <h3 className="text-lg font-semibold text-white">
             {t("agreement.title")}
           </h3>
           <button
             onClick={onClose}
-            className="p-2 text-slate-400 hover:text-white hover:bg-white/10 rounded-full transition-colors"
+            className="p-2 -mr-2 text-slate-400 hover:text-white hover:bg-white/10 rounded-full transition-colors"
           >
             <CloseOutline fontSize={24} />
           </button>

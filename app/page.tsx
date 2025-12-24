@@ -133,7 +133,7 @@ export default function FeaturesPage() {
           <div className="text-xs text-gray-400 uppercase tracking-wider">{t("home.stat_decentralized")}</div>
         </div>
         <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-          <div className="text-2xl font-bold text-violet-400 mb-1">Zero+TEE</div>
+          <div className="text-2xl font-bold text-violet-400 mb-1">Zero + TEE</div>
           <div className="text-xs text-gray-400 uppercase tracking-wider">{t("home.stat_zkp")}</div>
         </div>
         <div className="p-4 rounded-xl bg-white/5 border border-white/10">

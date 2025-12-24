@@ -337,7 +337,7 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
           {step === 1 ? (
             <>
               <div className="flex-1 overflow-y-auto p-6">
-                <p className="text-gray-900 mb-4">选择适合您的存储方案</p>
+                <p className="text-gray-300 mb-4">选择适合您的存储方案</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
                   {storagePlans.map((plan) => (
                     <Card
@@ -411,16 +411,16 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
             <>
               <div className="flex-1 overflow-y-auto p-6">
                 <div className="max-w-2xl mx-auto">
-                  <div className="bg-gray-100 rounded-xl p-4 lg:p-6 mb-4 lg:mb-6">
-                    <h3 className="text-lg lg:text-xl font-bold mb-3 lg:mb-4 text-gray-900">确认购买</h3>
-                    <div className="flex items-center justify-between p-3 lg:p-4 bg-white rounded-lg">
+                  <div className="bg-white/5 rounded-xl p-4 lg:p-6 mb-4 lg:mb-6 border border-white/10">
+                    <h3 className="text-lg lg:text-xl font-bold mb-3 lg:mb-4 text-white">确认购买</h3>
+                    <div className="flex items-center justify-between p-3 lg:p-4 bg-white/5 rounded-lg border border-white/10">
                       <div>
-                        <h4 className="font-bold text-gray-900">{selectedPlan.pkgName}</h4>
-                        <p className="text-gray-600 text-sm lg:text-base">
+                        <h4 className="font-bold text-white">{selectedPlan.pkgName}</h4>
+                        <p className="text-gray-400 text-sm lg:text-base">
                           {selectedPlan.spaceSize}GB /{selectedPlan.validDays}天
                         </p>
                       </div>
-                      <div className="text-lg lg:text-xl font-bold text-gray-900">
+                      <div className="text-lg lg:text-xl font-bold text-white">
                         {selectedPlan.currency === CurrencyType.CNY ? "¥" : "$"}
                         {selectedPlan.amount
                           ? (selectedPlan.amount * 0.01).toFixed(2)
@@ -429,14 +429,14 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
                     </div>
                   </div>
 
-                  <div className="bg-gray-100 rounded-xl p-4 lg:p-6 mb-4 lg:mb-6">
-                    <h3 className="text-lg lg:text-xl font-bold mb-3 lg:mb-4 text-gray-900">支付方式</h3>
+                  <div className="bg-white/5 rounded-xl p-4 lg:p-6 mb-4 lg:mb-6 border border-white/10">
+                    <h3 className="text-lg lg:text-xl font-bold mb-3 lg:mb-4 text-white">支付方式</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
                       <div
                         className={`border-2 rounded-lg p-3 lg:p-4 cursor-pointer transition ${
                           paymentMethod === "wechat"
                             ? "border-green-500 bg-green-500/10"
-                            : "border-gray-300 hover:border-gray-400"
+                            : "border-white/10 hover:border-white/30"
                         }`}
                         onClick={() => setPaymentMethod("wechat")}
                       >
@@ -450,7 +450,7 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
                               <path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-1.952 16.544c-.007-.007-.015-.014-.029-.014-.015 0-.022.007-.029.014-.651.651-1.697.651-2.348 0-.651-.651-.651-1.697 0-2.348.651-.651 1.697-.651 2.348 0 .651.651.651 1.697 0 2.348zm5.904 0c-.007-.007-.015-.014-.029-.014-.015 0-.022.007-.029.014-.651.651-1.697.651-2.348 0-.651-.651-.651-1.697 0-2.348.651-.651 1.697-.651 2.348 0 .651.651.651 1.697 0 2.348z" />
                             </svg>
                           </div>
-                          <span className="font-medium text-gray-900">微信支付</span>
+                          <span className="font-medium text-white">微信支付</span>
                         </div>
                       </div>
                     </div>

@@ -17,6 +17,30 @@
     "agreement_text": "我已阅读并同意用户协议。知晓账户密码由去中心化管理，一旦丢失无法找回，平台概不负责。",
     "agreement_unchecked": "请先勾选同意用户协议"
   },
+  "token_usage": {
+    "title": "云服务Token介绍",
+    "what_is_title": "什么是云服务Token?",
+    "what_is_desc_1": "<0>云服务Token</0> 是DC云服务中维持数据存储的资源单位。它会被存储套餐以及一些日常操作逐渐消耗掉。",
+    "what_is_desc_2": "当Token完全消耗掉时，就需要及时购买补充，否则存储在DC平台的数据可能会被释放。",
+    "what_is_desc_3": "当前购买方式和存储套餐进行绑定：购买对应的存储套餐时，会自动赠送维持该存储套餐 <0>1年量</0> 对应的云服务Token。",
+    "consumption_rules_title": "消耗规则列表",
+    "table_header_action": "操作",
+    "table_header_cost": "消耗Token",
+    "rules": {
+      "storage_rate": "存储空间费率",
+      "switch_node": "切换可访问节点",
+      "db_cleanup": "个人数据库整理",
+      "add_account_link": "新增应用账号关联",
+      "remove_account_link": "移除应用账号关联",
+      "transfer_account": "转让账号",
+      "upload_file": "上传文件",
+      "delete_file": "删除文件",
+      "report_spam": "垃圾信息举报",
+      "create_group": "创建群组",
+      "cost_gb_day": "约15/GB/天",
+      "cost_approx_2": "约2"
+    }
+  },
   "agreement": {
     "title": "用户协议",
     "intro": "欢迎使用 DCLogin。在使用我们的服务之前，请仔细阅读以下条款。继续使用即表示您同意这些条款。",
@@ -180,8 +204,7 @@
     "hundred_million": "亿",
     "trillion": "兆",
     "reviewing": "加速审核中...",
-    "maintainable_date": "可维持存储套餐至:",
-    "subscribe_more": "订阅更多",
+    "maintainable_date": "可维持存储套餐至:",    "token_insufficient_warning": "云服务Token不足,数据随时丢失",    "subscribe_more": "订阅更多",
     "subscription_records": "订阅记录",
     "points_balance": "积分余额",
     "points": "积分",
@@ -338,6 +361,13 @@
     "processing": "处理中...",
     "confirm_pay": "确认支付",
     "month_12": "/12月",
-    "day": "天"
+    "day": "天",
+    "list_title": "订单列表",
+    "status": "订单状态",
+    "action": "操作",
+    "view_detail": "查看详情",
+    "status_pending": "待支付",
+    "status_success": "已完成",
+    "status_cancelled": "已取消"
   }
 }

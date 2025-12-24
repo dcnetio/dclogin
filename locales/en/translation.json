@@ -17,6 +17,30 @@
     "agreement_text": "I have read and agree to the User Agreement. I understand that the account password is decentralized and cannot be recovered if lost.",
     "agreement_unchecked": "Please agree to the User Agreement first"
   },
+  "token_usage": {
+    "title": "Cloud Service Token Introduction",
+    "what_is_title": "What is Cloud Service Token?",
+    "what_is_desc_1": "<0>Cloud Service Token</0> is the resource unit for maintaining data storage in DC Cloud Service. It will be gradually consumed by storage plans and some daily operations.",
+    "what_is_desc_2": "When Tokens are completely consumed, you need to purchase more in time, otherwise data stored on the DC platform may be released.",
+    "what_is_desc_3": "Current purchase method is bundled with storage plans: when purchasing a corresponding storage plan, <0>1 year's worth</0> of Cloud Service Tokens for that plan will be automatically gifted.",
+    "consumption_rules_title": "Consumption Rules List",
+    "table_header_action": "Action",
+    "table_header_cost": "Token Cost",
+    "rules": {
+      "storage_rate": "Storage Space Rate",
+      "switch_node": "Switch Accessible Node",
+      "db_cleanup": "Personal Database Cleanup",
+      "add_account_link": "Add App Account Link",
+      "remove_account_link": "Remove App Account Link",
+      "transfer_account": "Transfer Account",
+      "upload_file": "Upload File",
+      "delete_file": "Delete File",
+      "report_spam": "Report Spam",
+      "create_group": "Create Group",
+      "cost_gb_day": "Approx 15/GB/Day",
+      "cost_approx_2": "Approx 2"
+    }
+  },
   "agreement": {
     "title": "User Agreement",
     "intro": "Welcome to DCLogin. Please read the following terms carefully before using our services. By continuing to use, you agree to these terms.",
@@ -182,6 +206,7 @@
     "trillion": "000B",
     "reviewing": "Reviewing...",
     "maintainable_date": "Storage plan maintainable until:",
+    "token_insufficient_warning": "Insufficient Cloud Service Token, data at risk",
     "subscribe_more": "Subscribe More",
     "subscription_records": "Subscription Records",
     "points_balance": "Points Balance",
@@ -346,6 +371,13 @@
     "processing": "Processing...",
     "confirm_pay": "Confirm Payment",
     "month_12": "/12 Months",
-    "day": "Days"
+    "day": "Days",
+    "list_title": "Order List",
+    "status": "Status",
+    "action": "Action",
+    "view_detail": "View Details",
+    "status_pending": "Pending",
+    "status_success": "Completed",
+    "status_cancelled": "Cancelled"
   }
 }

@@ -11,6 +11,7 @@ import { Toast } from "antd-mobile";
 import { User2 } from "lucide-react";
 import { useAppSelector } from "@/lib/hooks";
 import { AccountInfo } from "@/types/walletTypes";
+import LanguageSwitcher from "@/components/common/LanguageSwitcher";
 const Header = () => {
   const { t } = useTranslation();
   const router = useRouter();
@@ -90,7 +91,8 @@ const Header = () => {
             <p className="text-xs text-slate-400">{t("home.subtitle")}</p>
           </div>
         </div>
-        <div className="relative">
+        <div className="relative flex items-center gap-4">
+          <LanguageSwitcher />
           {accountInfo ? (
             <div className="flex items-center space-x-4">
               <button

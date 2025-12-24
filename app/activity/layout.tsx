@@ -2,6 +2,7 @@
 import { NavBar, SafeArea } from "antd-mobile";
 import { useRouter } from "next/navigation";
 import { useTranslation} from 'react-i18next';
+import LanguageSwitcher from "@/components/common/LanguageSwitcher";
 
 export default function ActivityLayout({
   children, // will be a page or nested layout
@@ -19,7 +20,7 @@ export default function ActivityLayout({
       <div>
         <SafeArea position="top" />
       </div>
-      <NavBar onBack={back}>{t('transfer.activity')}</NavBar>
+      <NavBar onBack={back} right={<LanguageSwitcher />}>{t('transfer.activity')}</NavBar>
       {children}
       <div>
         <SafeArea position="bottom" />

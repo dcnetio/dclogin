@@ -30,6 +30,7 @@ import { MsgStatus, appState } from "@/config/constant";
 import { useTranslation } from "react-i18next";
 import { showEncodePassword } from "@/components/note/noteHelper";
 import { ArrowLeft } from "lucide-react";
+import LanguageSwitcher from "@/components/common/LanguageSwitcher";
 
 interface UserInfo extends User {
   points: number;
@@ -359,6 +360,9 @@ const Dashboard = () => {
   if (!account || !account.nftAccount) {
     return (
       <div className="min-h-screen relative bg-[#0B0E14] overflow-hidden flex flex-col items-center justify-center">
+        <div className="absolute top-4 right-4 z-50">
+          <LanguageSwitcher />
+        </div>
         <div className="absolute top-4 left-4 z-50 hidden md:block">
           <button
             onClick={() => router.push("/")}
@@ -653,10 +657,16 @@ const Dashboard = () => {
                   </div>
                 </div>
                 <div className="text-sm text-slate-400">
-                  {t("home.maintainable_date")}{" "}
-                  <span className="text-white font-mono">
-                    {calculateMaintainableDate()}
-                  </span>
+                  {calculateMaintainableDate() === "-" ? (
+                    <span className="text-red-500 font-bold">
+                      {t("home.token_insufficient_warning")}
+                    </span>
+                  ) : (
+                    <span className="text-white font-mono">
+                      {t("home.maintainable_date")}
+                      {calculateMaintainableDate()}
+                    </span>
+                  )}
                 </div>
               </div>
 

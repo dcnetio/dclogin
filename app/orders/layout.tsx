@@ -3,6 +3,7 @@ import { NavBar } from "antd-mobile";
 import { useRouter } from "next/navigation";
 import { useTranslation } from 'react-i18next';
 import { ChevronLeft } from "lucide-react";
+import LanguageSwitcher from "@/components/common/LanguageSwitcher";
 
 export default function OrdersLayout({
   children,
@@ -22,6 +23,7 @@ export default function OrdersLayout({
         <NavBar 
           onBack={back} 
           backArrow={<ChevronLeft className="text-white" size={24} />}
+          right={<LanguageSwitcher />}
           style={{
             '--adm-color-text': '#ffffff',
             backgroundColor: 'transparent',

@@ -8,6 +8,7 @@ import { getDC } from "@/components/auth/login/dc";
 import { changePassword } from "@/services/account";
 import { AccountInfo } from "@/types/walletTypes";
 import { useAppSelector } from "@/lib/hooks";
+import LanguageSwitcher from "@/components/common/LanguageSwitcher";
 
 export default function ChangePassword() {
   const router = useRouter();
@@ -141,6 +142,9 @@ export default function ChangePassword() {
   };
   return (
     <div className={styles.content}>
+      <div className="absolute top-4 right-4 z-50">
+        <LanguageSwitcher />
+      </div>
       {/* 背景区域 - 只在PC端显示 */}
       <div className={styles.backgroundPattern}>
         {!isMobile && (

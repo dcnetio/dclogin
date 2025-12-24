@@ -389,7 +389,8 @@ export default function ChangePassword() {
 
         {/* 返回链接 */}
         <div className={styles.backPrompt} onClick={goBack}>
-          {t("changePassword.back
+          {t("changePassword.back")}
+        </div>
         {/* 底部区域 */}
         <div className={styles.bottomSection}></div>
       </div>

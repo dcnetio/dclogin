@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Search } from "lucide-react";
 import OrderDetail from "./components/OrderDetail";
 import {
+  getOrderInfoWithOrderId,
   getOrderRecordsWithNFT,
   updateOrderRecord,
 } from "@/services/threadDB/orders";
@@ -36,11 +37,11 @@ export default function OrderListPage() {
     // 获取未完成订单状态，并更新
     for (const order of records) {
       if (order.status !== StoragePurchaseStatus.SUCCESS) {
-        const flag = await getStoragePurchaseStatus(order.orderId, order);
-        if (flag) {
+        const nOrderInfo = await getStoragePurchaseStatus(order.orderId, order);
+        if (nOrderInfo && nOrderInfo.status !== order.status) {
           _orders.push({
             ...order,
-            status: StoragePurchaseStatus.SUCCESS,
+            status: nOrderInfo.status,
           });
           updateFlag = true;
           continue;
@@ -57,30 +58,49 @@ export default function OrderListPage() {
 
   const getStoragePurchaseStatus = async (
     tradeNo: string,
-    order: OrderRecord
-  ): Promise<boolean> => {
+    orderInfo: OrderRecord
+  ): Promise<OrderRecord> => {
+    const nOrderInfo = { ...orderInfo };
     try {
       const wxPayManager = container.get("wxPayManager");
       if (!wxPayManager) {
-        return false;
+        return nOrderInfo;
       }
       const [status, error] = await wxPayManager.getStoragePurchaseStatus(
         tradeNo
       );
-      if (!error && status === StoragePurchaseStatus.SUCCESS) {
+      if (error) {
+        return nOrderInfo;
+      }
+      // 根据状态处理
+      if (status === StoragePurchaseStatus.SUCCESS) {
         // 更新订单状态
-        const updateFlag = await updateOrderRecord({
-          ...order,
-          status: StoragePurchaseStatus.SUCCESS,
+        await updateOrderRecord({
+          ...orderInfo,
+          status: StoragePurchaseStatus.SUCCESS as number,
         });
-        if (updateFlag) {
-          return true;
+        nOrderInfo.status = StoragePurchaseStatus.SUCCESS;
+        return nOrderInfo;
+      } else if (status === StoragePurchaseStatus.WAITING_CONFIRM) {
+        const orderInfo = await getOrderInfoWithOrderId(tradeNo);
+        if (orderInfo && orderInfo.createTime) {
+          const diffTime = Date.now() - orderInfo.createTime;
+          if (diffTime > 6 * 60 * 1000) {
+            // 超过6分钟还是未确认
+            // 取消,更新订单状态
+            await updateOrderRecord({
+              ...orderInfo,
+              status: StoragePurchaseStatus.CANCEL as number,
+            });
+            nOrderInfo.status = StoragePurchaseStatus.CANCEL;
+            return nOrderInfo;
+          }
         }
       }
     } catch (error) {
       console.error("查询订单出错:", error);
     } finally {
-      return false;
+      return nOrderInfo;
     }
   };
   useEffect(() => {
@@ -146,12 +166,16 @@ export default function OrderListPage() {
                         className={`inline-flex px-3 py-1 text-xs font-medium rounded-full border ${
                           StoragePurchaseStatus.SUCCESS == order.status
                             ? "bg-green-500/10 text-green-400 border-green-500/20"
+                            : StoragePurchaseStatus.CANCEL == order.status
+                            ? "bg-red-500/10 text-red-400 border-red-500/20"
                             : "bg-yellow-500/10 text-yellow-400 border-yellow-500/20"
                         }`}
                       >
                         {StoragePurchaseStatus.SUCCESS == order.status
-                          ? "已完成"
-                          : "待支付"}
+                          ? StoragePurchaseStatus.SUCCESS_DESC
+                          : StoragePurchaseStatus.CANCEL == order.status
+                          ? StoragePurchaseStatus.CANCEL_DESC
+                          : StoragePurchaseStatus.WAITING_CONFIRM_DESC}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
@@ -172,7 +196,10 @@ export default function OrderListPage() {
         {/* Mobile View */}
         <div className="md:hidden space-y-4">
           {orders.map((order) => (
-            <div key={order._id} className="glass-panel rounded-2xl p-5 active:scale-[0.98] transition-transform duration-200">
+            <div
+              key={order._id}
+              className="glass-panel rounded-2xl p-5 active:scale-[0.98] transition-transform duration-200"
+            >
               <div className="flex flex-1 justify-between items-start mb-4">
                 <div>
                   <div className="text-base font-bold text-white text-ellipsis overflow-hidden mb-1">
@@ -186,12 +213,16 @@ export default function OrderListPage() {
                   className={`inline-flex px-2.5 py-1 text-xs font-medium rounded-full border ${
                     StoragePurchaseStatus.SUCCESS == order.status
                       ? "bg-green-500/10 text-green-400 border-green-500/20"
+                      : StoragePurchaseStatus.CANCEL == order.status
+                      ? "bg-red-500/10 text-red-400 border-red-500/20"
                       : "bg-yellow-500/10 text-yellow-400 border-yellow-500/20"
                   }`}
                 >
                   {StoragePurchaseStatus.SUCCESS == order.status
-                    ? "已完成"
-                    : "待支付"}
+                    ? StoragePurchaseStatus.SUCCESS_DESC
+                    : StoragePurchaseStatus.CANCEL == order.status
+                    ? StoragePurchaseStatus.CANCEL_DESC
+                    : StoragePurchaseStatus.WAITING_CONFIRM_DESC}
                 </span>
               </div>
               <div className="flex justify-between items-center pt-4 border-t border-white/10">

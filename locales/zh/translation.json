@@ -136,6 +136,8 @@
     "total": "总共",
     "available_token": "可用云服务Token",
     "details": "详情",
+    "user_default": "用户",
+    "connected": "已连接",
     "experience_now": "立即体验",
     "buy": "买入",
     "swap": "兑换",
@@ -145,7 +147,25 @@
     "collections": "收藏品",
     "activities": "活动",
     "ethereum_earn": "Ethereum · 赚取",
-    "empty_activity": "Nothing to see yet. Swap your first token today."
+    "empty_activity": "Nothing to see yet. Swap your first token today.",
+    "get_user_info_failed": "获取用户信息失败",
+    "get_auth_history_failed": "获取授权记录失败",
+    "not_logged_in": "未登录",
+    "insufficient_points": "积分不足",
+    "ten_thousand": "万",
+    "hundred_million": "亿",
+    "trillion": "兆",
+    "reviewing": "加速审核中...",
+    "maintainable_date": "可维持存储套餐至:",
+    "subscribe_more": "订阅更多",
+    "subscription_records": "订阅记录",
+    "points_balance": "积分余额",
+    "points": "积分",
+    "exchange_points": "积分兑换",
+    "login_history": "登录历史",
+    "refresh": "刷新",
+    "load_more": "加载更多",
+    "no_login_history": "暂无登录历史"
   },
   "account_modal": {
     "title": "账号管理",
@@ -158,7 +178,9 @@
     "logout_title": "退出并清除数据",
     "logout_desc": "这将清除所有本地数据并退出登录。您需要重新登录。",
     "logout_confirm": "退出登录",
-    "no_accounts_found": "暂无账号"
+    "no_accounts_found": "暂无账号",
+    "unknown": "未知",
+    "current_tag": "当前"
   },
   "activity": {
     "copy_success": "复制成功",
@@ -208,7 +230,11 @@
     "set_success": "加密密码设置成功",
     "set_failed": "加密密码设置失败",
     "set_tip": "请输入快捷访问密码,以便快速登录",
-    "verify_tip": "请输入快捷密码完成授权"
+    "verify_tip": "请输入快捷密码完成授权",
+    "placeholder": "请输入 {{account}} 的快捷密码",
+    "use_webauth": "使用WebAuth认证",
+    "forgot_password": "忘记快捷密码?",
+    "relogin": "重新登录"
   },
   "bind": {
     "success": "绑定成功",

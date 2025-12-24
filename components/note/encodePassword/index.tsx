@@ -131,7 +131,7 @@ export default function EncodePassword(props: EncodePasswordProps) {
           <div className="space-y-2">
             <div className="border border-white/20 rounded-xl px-4 py-3 focus-within:ring-2 focus-within:ring-blue-500/50 focus-within:border-blue-500 transition-all bg-black/20 shadow-inner">
               <Input
-                placeholder={`请输入 ${nftAccount} 的快捷密码`}
+                placeholder={t("encode.placeholder", { account: nftAccount })}
                 value={password}
                 onChange={setPassword}
                 onEnterPress={gotoConfirm}
@@ -159,7 +159,7 @@ export default function EncodePassword(props: EncodePasswordProps) {
                 onClick={hanldeWebAuth}
                 className="text-blue-400 text-sm font-medium hover:text-blue-300 transition-colors"
               >
-                使用WebAuth认证
+                {t("encode.use_webauth")}
               </button>
             </div>
           )}
@@ -182,12 +182,12 @@ export default function EncodePassword(props: EncodePasswordProps) {
 
           {/* Forgot Password */}
           <div className="text-center text-sm text-slate-400 pt-2">
-            忘记快捷密码?{" "}
+            {t("encode.forgot_password")}{" "}
             <button
               onClick={handleForgotPassword}
               className="text-blue-400 font-medium hover:underline ml-1"
             >
-              重新登录
+              {t("encode.relogin")}
             </button>
           </div>
 

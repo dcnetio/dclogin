@@ -75,7 +75,7 @@ const Dashboard = () => {
     const [userInfo, error] = await getUserInfoWithNft(account.nftAccount);
     if (error) {
       Toast.show({
-        content: error.message || "获取用户信息失败",
+        content: error.message || t("home.get_user_info_failed"),
         position: "center",
       });
       return;
@@ -115,7 +115,7 @@ const Dashboard = () => {
     } catch (error) {
       console.log("getAuthHistorys error", error);
       Toast.show({
-        content: error.message || "获取授权记录失败",
+        content: error.message || t("home.get_auth_history_failed"),
         position: "center",
       });
       return [];
@@ -164,9 +164,9 @@ const Dashboard = () => {
   const formatTokenCount = (count: number) => {
     if (!count) return "0";
     if (count < 10000) return count.toString();
-    if (count < 100000000) return (count / 10000).toFixed(2) + "万";
-    if (count < 1000000000000) return (count / 100000000).toFixed(2) + "亿";
-    return (count / 1000000000000).toFixed(2) + "兆";
+    if (count < 100000000) return (count / 10000).toFixed(2) + t("home.ten_thousand");
+    if (count < 1000000000000) return (count / 100000000).toFixed(2) + t("home.hundred_million");
+    return (count / 1000000000000).toFixed(2) + t("home.trillion");
   };
 
   const handleRefreshLoginHistory = async () => {
@@ -188,7 +188,7 @@ const Dashboard = () => {
   const exchangePoints = async () => {
     if (!userInfo) {
       Toast.show({
-        content: "未登录",
+        content: t("home.not_logged_in"),
         position: "center",
       });
       return;
@@ -196,7 +196,7 @@ const Dashboard = () => {
     if (!userInfo?.points || userInfo.points == 0) {
       // Optionally show a message or handle the case when points are insufficient
       Toast.show({
-        content: "积分不足",
+        content: t("home.insufficient_points"),
         position: "center",
       });
       return;
@@ -332,7 +332,7 @@ const Dashboard = () => {
     <div className="glass-panel p-6 rounded-2xl text-left">
       <h3 className="text-lg font-medium text-white mb-6 flex items-center gap-2">
         <span className="w-1 h-6 bg-green-500 rounded-full"></span>
-        已接入应用推荐
+        {t("home.recommended_apps")}
       </h3>
       {apps.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -362,7 +362,7 @@ const Dashboard = () => {
         </div>
       ) : (
         <div className="text-center py-10 text-slate-500">
-          <p>加速审核中...</p>
+          <p>{t("home.reviewing")}</p>
         </div>
       )}
     </div>
@@ -605,7 +605,7 @@ const Dashboard = () => {
                   </div>
                 </div>
                 <div className="text-sm text-slate-400">
-                  可维持存储套餐至: <span className="text-white font-mono">{calculateMaintainableDate()}</span>
+                  {t("home.maintainable_date")} <span className="text-white font-mono">{calculateMaintainableDate()}</span>
                 </div>
               </div>
               
@@ -622,7 +622,7 @@ const Dashboard = () => {
                   >
                     <path d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z" />
                   </svg>
-                  订阅更多
+                  {t("home.subscribe_more")}
                 </button>
 
                 {account && account.account && (
@@ -630,7 +630,7 @@ const Dashboard = () => {
                     onClick={gotoOrderRecords}
                     className="btn-secondary flex items-center justify-center text-sm"
                   >
-                    订阅记录
+                    {t("home.subscription_records")}
                   </button>
                 )}
               </div>
@@ -644,7 +644,7 @@ const Dashboard = () => {
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-lg font-medium text-white flex items-center gap-2">
                 <span className="w-1 h-6 bg-yellow-500 rounded-full"></span>
-                积分余额
+                {t("home.points_balance")}
               </h3>
               <div className="bg-yellow-500/20 p-2 rounded-xl text-yellow-500">
                 <svg
@@ -665,7 +665,7 @@ const Dashboard = () => {
             
             <div className="flex flex-col justify-between h-40">
               <div className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500 font-mono">
-                {userInfo?.points || 0} <span className="text-lg text-slate-400 font-sans font-normal">积分</span>
+                {userInfo?.points || 0} <span className="text-lg text-slate-400 font-sans font-normal">{t("home.points")}</span>
               </div>
               <button
                 onClick={exchangePoints}
@@ -675,7 +675,7 @@ const Dashboard = () => {
                     : "bg-slate-800 text-slate-500 cursor-not-allowed border border-white/5"
                 }`}
               >
-                积分兑换
+                {t("home.exchange_points")}
               </button>
             </div>
           </div>
@@ -686,7 +686,7 @@ const Dashboard = () => {
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-lg font-medium text-white flex items-center gap-2">
               <span className="w-1 h-6 bg-secondary rounded-full"></span>
-              登录历史
+              {t("home.login_history")}
             </h3>
             <button
               onClick={handleRefreshLoginHistory}
@@ -695,7 +695,7 @@ const Dashboard = () => {
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
               </svg>
-              刷新
+              {t("home.refresh")}
             </button>
           </div>
           
@@ -727,13 +727,13 @@ const Dashboard = () => {
                   onClick={handleLoadMoreHistory}
                   className="w-full py-3 mt-2 bg-white/5 hover:bg-white/10 text-slate-300 rounded-xl text-center text-sm transition-colors border border-white/5"
                 >
-                  加载更多
+                  {t("home.load_more")}
                 </button>
               )}
             </div>
           ) : (
             <div className="text-center py-10 text-slate-500">
-              <p>暂无登录历史</p>
+              <p>{t("home.no_login_history")}</p>
             </div>
           )}
         </div>

@@ -198,19 +198,19 @@ const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
                         ? `${item.account.slice(0, 10)}
                           ...
                           ${item.account.slice(-8)}`
-                        : "未知"}
+                        : t("account_modal.unknown")}
                     </p>
                     <p
                       className={`text-xs truncate ${
                         item.isCurrent ? "text-blue-200" : "text-slate-400"
                       }`}
                     >
-                      {item.nftAccount ? item.nftAccount : "未知"}
+                      {item.nftAccount ? item.nftAccount : t("account_modal.unknown")}
                     </p>
                   </div>
                   {item.isCurrent && (
                     <span className="ml-2 bg-blue-500 text-white text-xs px-2 py-1 rounded font-medium">
-                      当前
+                      {t("account_modal.current_tag")}
                     </span>
                   )}
                 </div>

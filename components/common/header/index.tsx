@@ -79,7 +79,7 @@ const Header = () => {
           </div>
           <div>
             <h1 className="text-xl font-bold text-white tracking-tight">DCLogin</h1>
-            <p className="text-xs text-slate-400">去中心化身份管理</p>
+            <p className="text-xs text-slate-400">{t("home.subtitle")}</p>
           </div>
         </div>
         <div className="relative">
@@ -91,9 +91,9 @@ const Header = () => {
               >
                 <div className="text-right hidden sm:block">
                   <p className="text-sm font-medium text-white group-hover:text-primary transition-colors">
-                    {accountInfo.nftAccount || "用户"}
+                    {accountInfo.nftAccount || t("home.user_default")}
                   </p>
-                  <p className="text-xs text-slate-400">已连接</p>
+                  <p className="text-xs text-slate-400">{t("home.connected")}</p>
                 </div>
                 <div className="w-10 h-10 rounded-full bg-white/10 border border-white/10 flex items-center justify-center group-hover:bg-primary/20 group-hover:border-primary/50 transition-all">
                   <User2 className="text-white group-hover:text-primary" size={20} />
@@ -114,7 +114,7 @@ const Header = () => {
                   clipRule="evenodd"
                 />
               </svg>
-              <span>登录</span>
+              <span>{t("home.login")}</span>
             </button>
           )}
         </div>

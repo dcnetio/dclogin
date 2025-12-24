@@ -138,6 +138,7 @@
     "total": "Total",
     "available_token": "Available Cloud Service Token",
     "details": "Details",
+    "user_default": "User",
     "connected": "Connected",
     "buy": "Buy",
     "swap": "Swap",
@@ -147,7 +148,25 @@
     "collections": "Collections",
     "activities": "Activities",
     "ethereum_earn": "Ethereum · Earn",
-    "empty_activity": "Nothing to see yet. Swap your first token today."
+    "empty_activity": "Nothing to see yet. Swap your first token today.",
+    "get_user_info_failed": "Failed to get user info",
+    "get_auth_history_failed": "Failed to get auth history",
+    "not_logged_in": "Not logged in",
+    "insufficient_points": "Insufficient points",
+    "ten_thousand": "0k",
+    "hundred_million": "00M",
+    "trillion": "000B",
+    "reviewing": "Reviewing...",
+    "maintainable_date": "Storage plan maintainable until:",
+    "subscribe_more": "Subscribe More",
+    "subscription_records": "Subscription Records",
+    "points_balance": "Points Balance",
+    "points": "Points",
+    "exchange_points": "Exchange Points",
+    "login_history": "Login History",
+    "refresh": "Refresh",
+    "load_more": "Load More",
+    "no_login_history": "No login history"
   },
   "account_modal": {
     "title": "Account Management",
@@ -164,6 +183,8 @@
     "no_accounts_found": "No accounts found",
     "switch_failed": "Switch Account Failed",
     "cannot_delete_current": "Cannot delete current account",
+    "unknown": "Unknown",
+    "current_tag": "Current",
     "keep_at_least_one": "Must keep at least one account",
     "confirm_delete": "Confirm Delete",
     "delete_desc": "Are you sure you want to delete this account? This action cannot be undone."
@@ -216,7 +237,11 @@
     "set_success": "Encrypted password set successfully",
     "set_failed": "Failed to set encrypted password",
     "set_tip": "Set Quick Access Password",
-    "verify_tip": "Please enter quick password to authorize"
+    "verify_tip": "Please enter quick password to authorize",
+    "placeholder": "Please enter quick password for {{account}}",
+    "use_webauth": "Use WebAuth",
+    "forgot_password": "Forgot Quick Password?",
+    "relogin": "Re-login"
   },
   "bind": {
     "success": "Bind Successful",

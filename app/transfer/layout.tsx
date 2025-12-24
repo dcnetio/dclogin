@@ -2,6 +2,7 @@
 import { NavBar } from "antd-mobile";
 import { useRouter } from "next/navigation";
 import { useTranslation} from 'react-i18next';
+import LanguageSwitcher from "@/components/common/LanguageSwitcher";
 
 export default function TransferLayout({
   children, // will be a page or nested layout
@@ -16,7 +17,7 @@ export default function TransferLayout({
   }
   return (
     <section>
-      <NavBar onBack={back}>{t('transfer.transfer')}</NavBar>
+      <NavBar onBack={back} right={<LanguageSwitcher />}>{t('transfer.transfer')}</NavBar>
       {children}
     </section>
   );

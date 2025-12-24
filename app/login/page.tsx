@@ -13,6 +13,7 @@ import { appState } from "@/config/constant";
 import { UserOutline, LockOutline, AppOutline, LinkOutline, GlobalOutline } from "antd-mobile-icons";
 import { CheckShieldOutline } from "@/components/icons/CheckShieldOutline";
 import UserAgreementModal from "@/components/modals/UserAgreementModal";
+import LanguageSwitcher from "@/components/common/LanguageSwitcher";
 
 export default function Login() {
   // 保持现有的 state 和 hooks
@@ -120,6 +121,9 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 md:p-8 relative overflow-hidden">
+      <div className="absolute top-4 right-4 z-50">
+        <LanguageSwitcher />
+      </div>
       {/* Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-primary/20 blur-[100px]" />

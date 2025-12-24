@@ -18,6 +18,7 @@ import { NavBar } from "antd-mobile";
 import { useTranslation } from "react-i18next";
 import { unstableSetRender } from "antd-mobile";
 import { createRoot, Root } from "react-dom/client";
+import LanguageSwitcher from "@/components/common/LanguageSwitcher";
 
 // 使用 WeakMap 替代在 DOM 元素上添加属性（更干净）
 const rootMap = new WeakMap<Element | DocumentFragment, Root>();
@@ -121,6 +122,7 @@ export default function RootLayout({
                   onBack={
                     isFirstVisit ? undefined : () => window.history.back()
                   } // 根据首次访问状态决定是否显示返回功能
+                  right={<LanguageSwitcher />}
                 >
                   <div className="text-lg font-bold text-white text-glow">
                     {getTitle(pathname)} {/* 动态标题 */}

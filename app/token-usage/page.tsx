@@ -2,6 +2,7 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
+import LanguageSwitcher from "@/components/common/LanguageSwitcher";
 
 const CONSUMPTION_RULES = [
   { action: "存储空间费率", cost: "约15/GB/天" },
@@ -22,14 +23,19 @@ export default function TokenUsagePage() {
   return (
     <div className="min-h-screen text-white pb-20 pt-4 px-4 md:px-8">
       <div className="max-w-4xl mx-auto">
-        <div className="flex items-center mb-6">
-          <button
-            onClick={() => router.back()}
-            className="hidden min-[769px]:block mr-4 p-2 rounded-full hover:bg-white/10 transition-colors"
-          >
-            <ChevronLeft className="w-6 h-6 text-white" />
-          </button>
-          <h1 className="text-2xl font-bold">云服务Token介绍</h1>
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center">
+            <button
+              onClick={() => router.back()}
+              className="hidden min-[769px]:block mr-4 p-2 rounded-full hover:bg-white/10 transition-colors"
+            >
+              <ChevronLeft className="w-6 h-6 text-white" />
+            </button>
+            <h1 className="text-2xl font-bold">云服务Token介绍</h1>
+          </div>
+          <div className="hidden min-[769px]:block">
+            <LanguageSwitcher />
+          </div>
         </div>
 
         <div className="glass-panel p-6 rounded-2xl space-y-8">

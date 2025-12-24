@@ -297,11 +297,14 @@ async function connectCmdHandler(
       dc.setPrivateKey(privKey);
       // 获取token
       const [res, err] = await getToken(privKey.publicKey.string());
-      if (res) {
+      console.log("=====1====getToken", res, err);
+      try {
         // 设置threadDB
         await initUserDB();
-        window.clearToast();
+      } catch (error) {
+        console.error("initUserDB", error);
       }
+      window.clearToast();
     }
   }
   return await resPonseWallet(mnemonic, chooseAccount, message, bool, port);
@@ -576,9 +579,11 @@ async function createAccountWithRegister(
       dc.setPrivateKey(privKey);
       // 获取token
       const [res, err] = await getToken(privKey.publicKey.string());
-      if (res) {
+      try {
         // 设置threadDB
         await initUserDB();
+      } catch (error) {
+        console.error("initUserDB", error);
       }
     }
   } catch (error) {

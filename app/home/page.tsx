@@ -4,7 +4,12 @@ import Header from "@/components/common/header";
 import StorageSubscriptionModal from "@/components/modals/StorageSubscriptionModal";
 import AccountSwitchModal from "@/components/modals/AccountSwitchModal";
 import { useAppSelector } from "@/lib/hooks";
-import { getUserInfoWithNft, getAllAccounts, chooseStoredAccount } from "@/services/account";
+import {
+  getUserInfoWithNft,
+  getAllAccounts,
+  chooseStoredAccount,
+  login,
+} from "@/services/account";
 import { User } from "web-dc-api";
 import { Toast } from "antd-mobile";
 import ethers from "@/helpers/ethersHelper";
@@ -92,10 +97,12 @@ const Dashboard = () => {
     const expireDeleteNumber = userInfo.expireNumber || 0;
     const subscribeSpace = userInfo.subscribeSpace || 0;
     const height = expireDeleteNumber - 432000 - blockHeight;
-    const token = height ? (Number(height) * Number(subscribeSpace)) / 1024 / 1024 / 1024 / 1000 : 0;
-    
+    const token = height
+      ? (Number(height) * Number(subscribeSpace)) / 1024 / 1024 / 1024 / 1000
+      : 0;
+
     userInfo.cloudServiceToken = token > 0 ? Math.floor(token) : 0;
-    
+
     setUserInfo(userInfo);
     // 获取授权记录
     getAuthHistorys(account.account);
@@ -164,8 +171,10 @@ const Dashboard = () => {
   const formatTokenCount = (count: number) => {
     if (!count) return "0";
     if (count < 10000) return count.toString();
-    if (count < 100000000) return (count / 10000).toFixed(2) + t("home.ten_thousand");
-    if (count < 1000000000000) return (count / 100000000).toFixed(2) + t("home.hundred_million");
+    if (count < 100000000)
+      return (count / 10000).toFixed(2) + t("home.ten_thousand");
+    if (count < 1000000000000)
+      return (count / 100000000).toFixed(2) + t("home.hundred_million");
     return (count / 1000000000000).toFixed(2) + t("home.trillion");
   };
 
@@ -230,8 +239,8 @@ const Dashboard = () => {
       setActiveCardIndex(newIndex);
     };
 
-    container.addEventListener('scroll', handleScroll);
-    return () => container.removeEventListener('scroll', handleScroll);
+    container.addEventListener("scroll", handleScroll);
+    return () => container.removeEventListener("scroll", handleScroll);
   }, []);
 
   useEffect(() => {
@@ -249,7 +258,7 @@ const Dashboard = () => {
 
       container.scrollTo({
         left: nextIndex * width,
-        behavior: 'smooth'
+        behavior: "smooth",
       });
     }, 3000);
 
@@ -257,15 +266,6 @@ const Dashboard = () => {
   }, []);
 
   const handleLogin = useCallback(async () => {
-    const login = async () => {
-      try {
-        const account = await chooseStoredAccount();
-        return [account, null];
-      } catch (e) {
-        return [null, e];
-      }
-    };
-
     try {
       // 登录逻辑
       const [user, error] = await login();
@@ -275,53 +275,30 @@ const Dashboard = () => {
           content: t("login.failed"),
           position: "center",
         });
-        store.dispatch(saveAccountInfo({} as AccountInfo));
         return;
       }
       if (!user) {
-        // if (authInfo.needLogin) {
+        if (authInfo.needLogin) {
           // 未登录过，前往登录页
-          router.replace(`/login${window.location.search}`);
-        // }
+          router.replace(`/login`);
+        }
         return;
       }
-      
-      const appInfo = store.getState().auth.appInfo || {
-        appId: "",
-        appName: "",
-        appIcon: "",
-        appUrl: "",
-        appVersion: "",
-      };
-
-      showEncodePassword(
-        {
-          nftAccount: user.nftAccount,
-          iv: user.iv!,
-          encodeMnimonic: user.mnemonic!,
-          credentialId: user.credentialId,
-        },
-        appInfo,
-        (userHandleHash) => {
-          if (userHandleHash) {
-            store.dispatch(saveAccountInfo(user));
-            // 提示成功，并跳转到首页
-            store.dispatch(
-              updateAuthStep({
-                type: MsgStatus.success,
-                content: t("auth.success"),
-              })
-            );
-            // 初始化成功，
-            store.dispatch(saveInitState(appState.init_success));
-            router.replace(
-              `${window.location.pathname}${window.location.search}`
-            );
-          }
-        },
-        () => {
-          console.log("cancel");
-        }
+      // 提示成功，并跳转到首页
+      store.dispatch(
+        updateAuthStep({
+          type: MsgStatus.success,
+          content: t("auth.success"),
+        })
+      );
+      // 初始化成功，
+      store.dispatch(saveInitState(appState.init_success));
+      router.replace(
+        `/${
+          window.location.pathname && window.location.pathname.startsWith("/")
+            ? window.location.pathname.slice(1)
+            : window.location.pathname
+        }${window.location.search}`
       );
     } catch (err) {
       console.error("登录失败:", err);
@@ -355,7 +332,9 @@ const Dashboard = () => {
               />
               <div>
                 <h4 className="font-medium text-white">{app.name}</h4>
-                <p className="text-xs text-slate-400 line-clamp-1">{app.description}</p>
+                <p className="text-xs text-slate-400 line-clamp-1">
+                  {app.description}
+                </p>
               </div>
             </div>
           ))}
@@ -375,14 +354,14 @@ const Dashboard = () => {
       </div>
     );
   }
-  
+
   // 未登录状态显示欢迎页面
   if (!account || !account.nftAccount) {
     return (
       <div className="min-h-screen relative bg-[#0B0E14] overflow-hidden flex flex-col items-center justify-center">
         <div className="absolute top-4 left-4 z-50 hidden md:block">
           <button
-            onClick={() => router.push('/')}
+            onClick={() => router.push("/")}
             className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 backdrop-blur-md transition-all text-white"
           >
             <ArrowLeft size={20} />
@@ -392,7 +371,10 @@ const Dashboard = () => {
         {/* 背景装饰 */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full bg-primary/10 blur-[120px] animate-pulse" />
-          <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] rounded-full bg-secondary/10 blur-[120px] animate-pulse" style={{ animationDelay: '1s' }} />
+          <div
+            className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] rounded-full bg-secondary/10 blur-[120px] animate-pulse"
+            style={{ animationDelay: "1s" }}
+          />
         </div>
 
         <div className="max-w-4xl w-full relative z-10">
@@ -402,14 +384,14 @@ const Dashboard = () => {
               <div className="flex justify-center">
                 <div className="relative group">
                   <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-3xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity" />
-                  <img 
-                    src="/logo.svg" 
-                    alt="DCLogin Logo" 
+                  <img
+                    src="/logo.svg"
+                    alt="DCLogin Logo"
                     className="relative w-24 h-24 rounded-3xl shadow-2xl transform group-hover:scale-105 transition-transform"
                   />
                 </div>
               </div>
-              
+
               <div className="space-y-3">
                 <h1 className="text-5xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-white/70 tracking-tight pb-2">
                   DCLogin
@@ -422,48 +404,90 @@ const Dashboard = () => {
 
             {/* 功能卡片 */}
             <div className="relative">
-              <div 
+              <div
                 ref={scrollContainerRef}
                 className="flex md:grid md:grid-cols-3 gap-0 md:gap-4 mt-12 mb-8 md:mb-12 overflow-x-auto md:overflow-visible pb-0 md:pb-0 snap-x snap-mandatory scroll-smooth no-scrollbar"
               >
                 <div className="min-w-full md:min-w-0 flex-shrink-0 snap-center glass-panel p-6 rounded-2xl border border-white/10 hover:border-primary/30 transition-all hover:scale-105">
                   <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mb-4 mx-auto">
-                    <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    <svg
+                      className="w-6 h-6 text-primary"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                      />
                     </svg>
                   </div>
-                  <h3 className="text-lg font-semibold text-white mb-2">{t("home.secure_private")}</h3>
-                  <p className="text-sm text-slate-400">{t("home.secure_private_desc")}</p>
+                  <h3 className="text-lg font-semibold text-white mb-2">
+                    {t("home.secure_private")}
+                  </h3>
+                  <p className="text-sm text-slate-400">
+                    {t("home.secure_private_desc")}
+                  </p>
                 </div>
 
                 <div className="min-w-full md:min-w-0 flex-shrink-0 snap-center glass-panel p-6 rounded-2xl border border-white/10 hover:border-secondary/30 transition-all hover:scale-105">
                   <div className="w-12 h-12 bg-secondary/20 rounded-xl flex items-center justify-center mb-4 mx-auto">
-                    <svg className="w-6 h-6 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                    <svg
+                      className="w-6 h-6 text-secondary"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
+                      />
                     </svg>
                   </div>
-                  <h3 className="text-lg font-semibold text-white mb-2">{t("home.unified_login")}</h3>
-                  <p className="text-sm text-slate-400">{t("home.unified_login_desc")}</p>
+                  <h3 className="text-lg font-semibold text-white mb-2">
+                    {t("home.unified_login")}
+                  </h3>
+                  <p className="text-sm text-slate-400">
+                    {t("home.unified_login_desc")}
+                  </p>
                 </div>
 
                 <div className="min-w-full md:min-w-0 flex-shrink-0 snap-center glass-panel p-6 rounded-2xl border border-white/10 hover:border-accent/30 transition-all hover:scale-105">
                   <div className="w-12 h-12 bg-accent/20 rounded-xl flex items-center justify-center mb-4 mx-auto">
-                    <svg className="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+                    <svg
+                      className="w-6 h-6 text-accent"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"
+                      />
                     </svg>
                   </div>
-                  <h3 className="text-lg font-semibold text-white mb-2">{t("home.decentralized")}</h3>
-                  <p className="text-sm text-slate-400">{t("home.decentralized_desc")}</p>
+                  <h3 className="text-lg font-semibold text-white mb-2">
+                    {t("home.decentralized")}
+                  </h3>
+                  <p className="text-sm text-slate-400">
+                    {t("home.decentralized_desc")}
+                  </p>
                 </div>
               </div>
 
               {/* Dots - Mobile only */}
               <div className="flex justify-center gap-2 md:hidden mb-12">
                 {[0, 1, 2].map((i) => (
-                  <div 
+                  <div
                     key={i}
                     className={`h-2 rounded-full transition-all duration-300 ${
-                      i === activeCardIndex ? 'bg-white w-6' : 'bg-white/20 w-2'
+                      i === activeCardIndex ? "bg-white w-6" : "bg-white/20 w-2"
                     }`}
                   />
                 ))}
@@ -477,15 +501,25 @@ const Dashboard = () => {
                 className="group relative px-8 py-4 bg-gradient-to-r from-primary to-secondary rounded-xl text-white font-semibold text-lg shadow-lg hover:shadow-primary/50 transition-all hover:scale-105 min-w-[200px]"
               >
                 <span className="flex items-center justify-center gap-2">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                    />
                   </svg>
                   {t("home.login")}
                 </span>
               </button>
-              
+
               <button
-                onClick={() => router.push('/register')}
+                onClick={() => router.push("/register")}
                 className="px-8 py-4 glass-panel rounded-xl text-white font-semibold text-lg border border-white/20 hover:border-white/40 transition-all hover:scale-105 min-w-[200px]"
               >
                 {t("home.register")}
@@ -494,9 +528,7 @@ const Dashboard = () => {
 
             {/* 底部说明 */}
             <div className="mt-12 text-center">
-              <p className="text-sm text-slate-400">
-                {t("home.footer_desc")}
-              </p>
+              <p className="text-sm text-slate-400">{t("home.footer_desc")}</p>
             </div>
           </div>
         </div>
@@ -507,12 +539,14 @@ const Dashboard = () => {
       </div>
     );
   }
-  
+
   if (error && !userInfo) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
         <div className="glass-panel p-6 max-w-md w-full rounded-2xl border-red-500/30">
-          <h2 className="text-xl font-bold text-red-400 mb-4">{t("home.error")}</h2>
+          <h2 className="text-xl font-bold text-red-400 mb-4">
+            {t("home.error")}
+          </h2>
           <p className="text-slate-300 mb-4">{error}</p>
           <button
             className="btn-primary w-full"
@@ -536,7 +570,7 @@ const Dashboard = () => {
           {/* 存储使用情况 */}
           <div className="glass-panel p-6 rounded-2xl relative overflow-visible group hover:border-primary/30 transition-colors">
             <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
-            
+
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-lg font-medium text-white flex items-center gap-2">
                 <span className="w-1 h-6 bg-primary rounded-full"></span>
@@ -557,13 +591,23 @@ const Dashboard = () => {
                 </svg>
               </div>
             </div>
-            
+
             <div className="space-y-4">
               <div className="flex justify-between text-sm text-slate-400">
-                <span>{t("home.used")}: <span className="text-white font-mono">{formatBytes(userInfo?.usedSpace || 0)}</span></span>
-                <span>{t("home.total")}: <span className="text-white font-mono">{formatBytes(userInfo?.subscribeSpace || 0)}</span></span>
+                <span>
+                  {t("home.used")}:{" "}
+                  <span className="text-white font-mono">
+                    {formatBytes(userInfo?.usedSpace || 0)}
+                  </span>
+                </span>
+                <span>
+                  {t("home.total")}:{" "}
+                  <span className="text-white font-mono">
+                    {formatBytes(userInfo?.subscribeSpace || 0)}
+                  </span>
+                </span>
               </div>
-              
+
               <div className="w-full bg-slate-800 rounded-full h-3 overflow-hidden border border-white/5">
                 <div
                   className="bg-gradient-to-r from-primary to-cyan-400 h-full rounded-full shadow-[0_0_10px_rgba(59,130,246,0.5)] transition-all duration-500"
@@ -578,16 +622,20 @@ const Dashboard = () => {
               </div>
 
               <div className="mt-4 pt-4 border-t border-white/5">
-                <div 
+                <div
                   className="flex items-center gap-2 mb-2 relative cursor-pointer group/token"
                   onClick={gotoTokenUsage}
                 >
-                  <span className="text-slate-400 text-sm group-hover/token:text-white transition-colors">{t("home.available_token")}:</span>
+                  <span className="text-slate-400 text-sm group-hover/token:text-white transition-colors">
+                    {t("home.available_token")}:
+                  </span>
                   <span className="text-white font-mono font-bold group-hover/token:text-primary transition-colors text-lg">
                     {formatTokenCount(userInfo?.cloudServiceToken || 0)}
                   </span>
                   <div className="flex items-center gap-0.5 bg-primary/10 px-2 py-0.5 rounded-full border border-primary/30 hover:bg-primary/20 transition-colors">
-                    <span className="text-xs text-primary font-bold">{t("home.details")}</span>
+                    <span className="text-xs text-primary font-bold">
+                      {t("home.details")}
+                    </span>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       className="h-3.5 w-3.5 text-primary"
@@ -605,10 +653,13 @@ const Dashboard = () => {
                   </div>
                 </div>
                 <div className="text-sm text-slate-400">
-                  {t("home.maintainable_date")} <span className="text-white font-mono">{calculateMaintainableDate()}</span>
+                  {t("home.maintainable_date")}{" "}
+                  <span className="text-white font-mono">
+                    {calculateMaintainableDate()}
+                  </span>
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                 <button
                   onClick={handleSubscribeStorage}
@@ -640,7 +691,7 @@ const Dashboard = () => {
           {/* 积分余额 */}
           <div className="glass-panel p-6 rounded-2xl relative overflow-hidden group hover:border-yellow-500/30 transition-colors">
             <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-500/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
-            
+
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-lg font-medium text-white flex items-center gap-2">
                 <span className="w-1 h-6 bg-yellow-500 rounded-full"></span>
@@ -662,10 +713,13 @@ const Dashboard = () => {
                 </svg>
               </div>
             </div>
-            
+
             <div className="flex flex-col justify-between h-40">
               <div className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500 font-mono">
-                {userInfo?.points || 0} <span className="text-lg text-slate-400 font-sans font-normal">{t("home.points")}</span>
+                {userInfo?.points || 0}{" "}
+                <span className="text-lg text-slate-400 font-sans font-normal">
+                  {t("home.points")}
+                </span>
               </div>
               <button
                 onClick={exchangePoints}
@@ -692,27 +746,45 @@ const Dashboard = () => {
               onClick={handleRefreshLoginHistory}
               className="text-sm text-primary hover:text-primary-glow transition-colors flex items-center gap-1"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                />
               </svg>
               {t("home.refresh")}
             </button>
           </div>
-          
+
           {displayedLoginHistory.length > 0 ? (
             <div className="space-y-3">
               {displayedLoginHistory.map((item: AuthRecord) => (
-                <div key={item.recordId} className="bg-white/5 hover:bg-white/10 border border-white/5 rounded-xl p-4 transition-colors">
+                <div
+                  key={item.recordId}
+                  className="bg-white/5 hover:bg-white/10 border border-white/5 rounded-xl p-4 transition-colors"
+                >
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center text-white font-bold text-lg">
-                        {item.appName ? item.appName.charAt(0).toUpperCase() : 'A'}
+                        {item.appName
+                          ? item.appName.charAt(0).toUpperCase()
+                          : "A"}
                       </div>
-                      <div 
-                        onClick={() => window.open(item.appUrl, '_blank')}
+                      <div
+                        onClick={() => window.open(item.appUrl, "_blank")}
                         className="cursor-pointer" // 必须添加 cursor-pointer 让用户知道这里可以点击
                       >
-                        <h4 className="font-medium text-white">{item.appName}</h4>
+                        <h4 className="font-medium text-white">
+                          {item.appName}
+                        </h4>
                         <p className="text-xs text-slate-400">{item.appUrl}</p>
                       </div>
                     </div>

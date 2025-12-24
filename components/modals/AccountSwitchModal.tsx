@@ -17,6 +17,7 @@ import { setCurrentAccount } from "@/services/account/state";
 import { appState } from "@/config/constant";
 import { updateAuthStep } from "@/lib/slices/authSlice";
 import { saveInitState } from "@/lib/slices/appSlice";
+import { getDC } from "../auth/login/dc";
 interface UserInfo extends AccountInfo {
   isCurrent: boolean;
 }
@@ -99,17 +100,28 @@ const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
 
   // 退出登录
   const handleLogout = () => {
-    // Clear Redux
-    store.dispatch(saveAccountInfo({} as AccountInfo));
-    store.dispatch(updateAuthStep({ type: '', content: '' }));
-    store.dispatch(saveInitState(appState.not_init));
+    try {
+      // Clear Redux
+      store.dispatch(saveAccountInfo({} as AccountInfo));
+      store.dispatch(updateAuthStep({ type: "", content: "" }));
+      store.dispatch(saveInitState(appState.not_init));
 
-    // Clear global variable
-    setCurrentAccount(null);
-
-    // Redirect
-    router.replace('/home');
-    onClose();
+      // Clear global variable
+      setCurrentAccount(null);
+      // 调用auth.exitLogin
+      const dc = getDC();
+      if (!dc || !dc.auth) {
+        return;
+      }
+      if (dc) {
+        dc.auth?.exitLogin();
+      }
+    } catch (error) {
+    } finally {
+      // Redirect
+      router.replace("/home");
+      onClose();
+    }
   };
 
   // 删除账号
@@ -148,16 +160,18 @@ const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black/80 flex items-start justify-center z-50 p-4 pt-24 backdrop-blur-sm">
-      <div 
+      <div
         className="bg-slate-900 border border-white/10 rounded-xl shadow-2xl w-full max-w-md max-h-[80vh] flex flex-col"
-        style={{ backgroundColor: '#0f172a' }}
+        style={{ backgroundColor: "#0f172a" }}
       >
-        <div className="p-4 border-b border-white/10 flex justify-between items-center shrink-0 bg-slate-900" style={{ backgroundColor: '#0f172a' }}>
-          <h3 className="text-xl font-bold text-white">{t("account_modal.title")}</h3>
-          <button
-            onClick={onClose}
-            className="text-slate-400 hover:text-white"
-          >
+        <div
+          className="p-4 border-b border-white/10 flex justify-between items-center shrink-0 bg-slate-900"
+          style={{ backgroundColor: "#0f172a" }}
+        >
+          <h3 className="text-xl font-bold text-white">
+            {t("account_modal.title")}
+          </h3>
+          <button onClick={onClose} className="text-slate-400 hover:text-white">
             <CloseOutline
               fontSize={24}
               className="p-1 rounded-sm transition-transform duration-200 
@@ -166,7 +180,10 @@ const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
           </button>
         </div>
 
-        <div className="p-4 overflow-y-auto flex-1 bg-slate-900" style={{ backgroundColor: '#0f172a' }}>
+        <div
+          className="p-4 overflow-y-auto flex-1 bg-slate-900"
+          style={{ backgroundColor: "#0f172a" }}
+        >
           <div className="mb-4 pb-4 border-b border-white/10">
             <button
               onClick={handleLoginNewAccount}
@@ -191,7 +208,10 @@ const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
                   className="flex items-center cursor-pointer flex-1"
                   onClick={() => handleSwitchAccount(item)}
                 >
-                  <UserCircleIcon className="w-6 h-6 mr-3 text-slate-300" size={30} />
+                  <UserCircleIcon
+                    className="w-6 h-6 mr-3 text-slate-300"
+                    size={30}
+                  />
                   <div className="flex-1 min-w-0">
                     <p className="font-medium truncate">
                       {item.account
@@ -205,7 +225,9 @@ const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
                         item.isCurrent ? "text-blue-200" : "text-slate-400"
                       }`}
                     >
-                      {item.nftAccount ? item.nftAccount : t("account_modal.unknown")}
+                      {item.nftAccount
+                        ? item.nftAccount
+                        : t("account_modal.unknown")}
                     </p>
                   </div>
                   {item.isCurrent && (
@@ -293,8 +315,14 @@ const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
           </div>
         </div>
 
-        <div className="p-4 border-t border-white/10 text-center text-sm text-slate-400 shrink-0 bg-slate-900" style={{ backgroundColor: '#0f172a' }}>
-          <p>{t("account_modal.keep_at_least_one")}, {t("account_modal.cannot_delete_current")}</p>
+        <div
+          className="p-4 border-t border-white/10 text-center text-sm text-slate-400 shrink-0 bg-slate-900"
+          style={{ backgroundColor: "#0f172a" }}
+        >
+          <p>
+            {t("account_modal.keep_at_least_one")},{" "}
+            {t("account_modal.cannot_delete_current")}
+          </p>
         </div>
       </div>
     </div>

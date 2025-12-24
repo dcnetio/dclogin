@@ -113,13 +113,19 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
       // 提示成功，并跳转到首页
       store.dispatch(
         updateAuthStep({
-          type: MsgStatus.failed,
+          type: MsgStatus.success,
           content: t("auth.success"),
         })
       );
       // 初始化成功，
       store.dispatch(saveInitState(appState.init_success));
-      router.replace(`/${window.location.pathname}${window.location.search}`);
+      router.replace(
+        `/${
+          window.location.pathname && window.location.pathname.startsWith("/")
+            ? window.location.pathname.slice(1)
+            : window.location.pathname
+        }${window.location.search}`
+      );
     } catch (err) {
       console.error("登录失败:", err);
     }
@@ -336,7 +342,9 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
       <div className="w-full max-w-4xl max-h-[90vh] flex flex-col bg-slate-900 border border-white/10 rounded-2xl shadow-2xl">
         <div className="p-6 border-b border-white/10 flex justify-between items-center shrink-0">
           <div>
-            <h2 className="text-2xl font-bold">{t("order.subscription_title")}</h2>
+            <h2 className="text-2xl font-bold">
+              {t("order.subscription_title")}
+            </h2>
           </div>
           <Button
             fill="none"
@@ -458,12 +466,17 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
               <div className="flex-1 overflow-y-auto p-6">
                 <div className="max-w-2xl mx-auto">
                   <div className="bg-white/5 rounded-xl p-4 lg:p-6 mb-4 lg:mb-6 border border-white/10">
-                    <h3 className="text-lg lg:text-xl font-bold mb-3 lg:mb-4 text-white">{t("order.confirm_purchase")}</h3>
+                    <h3 className="text-lg lg:text-xl font-bold mb-3 lg:mb-4 text-white">
+                      {t("order.confirm_purchase")}
+                    </h3>
                     <div className="flex items-center justify-between p-3 lg:p-4 bg-white/5 rounded-lg border border-white/10">
                       <div>
-                        <h4 className="font-bold text-white">{selectedPlan.pkgName}</h4>
+                        <h4 className="font-bold text-white">
+                          {selectedPlan.pkgName}
+                        </h4>
                         <p className="text-gray-400 text-sm lg:text-base">
-                          {selectedPlan.spaceSize}GB /{selectedPlan.validDays}{t("order.day")}
+                          {selectedPlan.spaceSize}GB /{selectedPlan.validDays}
+                          {t("order.day")}
                         </p>
                       </div>
                       <div className="text-lg lg:text-xl font-bold text-white">
@@ -476,7 +489,9 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
                   </div>
 
                   <div className="bg-white/5 rounded-xl p-4 lg:p-6 mb-4 lg:mb-6 border border-white/10">
-                    <h3 className="text-lg lg:text-xl font-bold mb-3 lg:mb-4 text-white">{t("order.payment_method")}</h3>
+                    <h3 className="text-lg lg:text-xl font-bold mb-3 lg:mb-4 text-white">
+                      {t("order.payment_method")}
+                    </h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
                       <div
                         className={`border-2 rounded-lg p-3 lg:p-4 cursor-pointer transition ${
@@ -496,7 +511,9 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
                               <path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-1.952 16.544c-.007-.007-.015-.014-.029-.014-.015 0-.022.007-.029.014-.651.651-1.697.651-2.348 0-.651-.651-.651-1.697 0-2.348.651-.651 1.697-.651 2.348 0 .651.651.651 1.697 0 2.348zm5.904 0c-.007-.007-.015-.014-.029-.014-.015 0-.022.007-.029.014-.651.651-1.697.651-2.348 0-.651-.651-.651-1.697 0-2.348.651-.651 1.697-.651 2.348 0 .651.651.651 1.697 0 2.348z" />
                             </svg>
                           </div>
-                          <span className="font-medium text-white">{t("order.wechat_pay")}</span>
+                          <span className="font-medium text-white">
+                            {t("order.wechat_pay")}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -560,7 +577,9 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
               <p className="text-gray-300 mb-2">
                 {t("order.package_name")}：{selectedPlan?.pkgName}
               </p>
-              <h2 className="text-2xl font-bold mb-6 text-white">{t("order.scan_to_pay")}</h2>
+              <h2 className="text-2xl font-bold mb-6 text-white">
+                {t("order.scan_to_pay")}
+              </h2>
               <div className="bg-white p-4 rounded-xl mb-8">
                 <img
                   src={qrCodeUrl}

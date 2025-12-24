@@ -182,13 +182,20 @@ async function generateWalletAccountWithChange(seedAccount: string) {
   // 保存公钥到上下文中
   dc.setPublicKey(privKey.publicKey);
   dc.setPrivateKey(privKey);
+  window.showToast({
+    content: i18n.t("account.init_user_db_ing"), // "初始化用户数据库中"
+    position: "center",
+    duration: 0,
+  });
   // 获取token
   const [res, err] = await getToken(privKey.publicKey.string());
-  if (res) {
+  try {
     // 设置threadDB
     await initUserDB();
-    window.clearToast();
+  } catch (error) {
+    console.error("initUserDB", error);
   }
+  window.clearToast();
   // 通过助记词导入钱包,生成带私钥钱包账号
   const wallet = await ethersHelper.createWalletAccountWithMnemonic(mnemonic);
   if (!wallet) {

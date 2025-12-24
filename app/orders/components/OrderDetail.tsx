@@ -18,92 +18,103 @@ interface OrderDetailProps {
 export default function OrderDetail({ order, onClose }: OrderDetailProps) {
   const { t } = useTranslation();
   const [orderInfo, setOrderInfo] = useState<OrderRecord>(order);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
 
   const handlePay = useCallback(async () => {
-    // 先判断
-    const nOrderInfo = await getStoragePurchaseStatus(orderInfo.orderId);
-    if (nOrderInfo && nOrderInfo.status === StoragePurchaseStatus.SUCCESS) {
-      Toast.show({
-        icon: "success",
-        content: t("order.subscribe_success"),
-        position: "center",
-      });
-      return;
+    try {
+      setIsProcessing(true);
+      // 先判断
+      const nOrderInfo = await getStoragePurchaseStatus(orderInfo.orderId);
+      if (nOrderInfo && nOrderInfo.status === StoragePurchaseStatus.SUCCESS) {
+        Toast.show({
+          icon: "success",
+          content: t("order.order_cancelled"),
+          position: "center",
+        });
+        return;
+      }
+      if (nOrderInfo && nOrderInfo.status === StoragePurchaseStatus.CANCEL) {
+        Toast.show({
+          icon: "fail",
+          content: t("order.wxpay_not_init"),
+          position: "center",
+        });
+        return;
+      }
+      if (
+        nOrderInfo &&
+        nOrderInfo.status !== StoragePurchaseStatus.WAITING_CONFIRM
+      ) {
+        return;
+      }
+      // 支付
+      const wxPayManager = container.get("wxPayManager");
+      if (!wxPayManager) {
+        Toast.show({
+          icon: "fail",
+          content: t("order.wxpay_not_init"),
+          position: "center",
+        });
+        return [];
+      }
+      const [codeUrl, error] = await wxPayManager.getNativePrepay(
+        orderInfo.orderId
+      );
+      if (error) {
+        Toast.show({
+          icon: "fail",
+          content: error.message || t("order.get_qrcode_failed"),
+          position: "center",
+        });
+        return [];
+      }
+      const url = await QRCode.toDataURL(codeUrl);
+      setQrCodeUrl(url);
+    } catch (error) {
+    } finally {
+      setIsProcessing(false);
     }
-    if (nOrderInfo && nOrderInfo.status === StoragePurchaseStatus.CANCEL) {
-      Toast.show({
-        icon: "fail",
-        content: t("order.order_cancelled"),
-        position: "center",
-      });
-      return;
-    }
-    if (
-      nOrderInfo &&
-      nOrderInfo.status !== StoragePurchaseStatus.WAITING_CONFIRM
-    ) {
-      return;
-    }
-    // 支付
-    const wxPayManager = container.get("wxPayManager");
-    if (!wxPayManager) {
-      Toast.show({
-        icon: "fail",
-        content: t("order.wxpay_not_init"),
-        position: "center",
-      });
-      return [];
-    }
-    const [codeUrl, error] = await wxPayManager.getNativePrepay(
-      orderInfo.orderId
-    );
-    if (error) {
-      Toast.show({
-        icon: "fail",
-        content: error.message || t("order.get_qrcode_failed"),
-        position: "center",
-      });
-      return [];
-    }
-    const url = await QRCode.toDataURL(codeUrl);
-    setQrCodeUrl(url);
   }, [orderInfo]);
 
   const finishPayment = async () => {
-    if (!orderInfo || !orderInfo.orderId) {
-      Toast.show({
-        icon: "fail",
-        content: t("order.no_order_info"),
-        position: "center",
-      });
-      return;
-    }
-    const nOrderInfo = await getStoragePurchaseStatus(orderInfo.orderId);
+    try {
+      if (!orderInfo || !orderInfo.orderId) {
+        Toast.show({
+          icon: "fail",
+          content: t("order.no_order_info"),
+          position: "center",
+        });
+        return;
+      }
+      const nOrderInfo = await getStoragePurchaseStatus(orderInfo.orderId);
 
-    if (nOrderInfo && nOrderInfo.status === StoragePurchaseStatus.SUCCESS) {
+      if (nOrderInfo && nOrderInfo.status === StoragePurchaseStatus.SUCCESS) {
+        Toast.show({
+          icon: "success",
+          content: t("order.order_cancelled"),
+          position: "center",
+        });
+        return;
+      }
+      if (nOrderInfo && nOrderInfo.status === StoragePurchaseStatus.CANCEL) {
+        Toast.show({
+          icon: "fail",
+          content: t("order.wxpay_not_init"),
+          position: "center",
+        });
+
+        return;
+      }
       Toast.show({
-        icon: "success",
-        content: t("order.subscribe_success"),
+        content: t("order.order_pending"),
         position: "center",
       });
+    } catch (error) {
+    } finally {
       setQrCodeUrl("");
-      return;
     }
-    if (nOrderInfo && nOrderInfo.status === StoragePurchaseStatus.CANCEL) {
-      Toast.show({
-        icon: "fail",
-        content: t("order.order_cancelled"),
-        position: "center",
-      });
-      setQrCodeUrl("");
-      return;
-    }
-    Toast.show({
-      content: t("order.order_pending"),
-      position: "center",
-    });
   };
   const getStoragePurchaseStatus = async (
     tradeNo: string
@@ -215,13 +226,17 @@ export default function OrderDetail({ order, onClose }: OrderDetailProps) {
             </div>
             <div className="space-y-2 relative z-10">
               <div className="flex justify-between items-start">
-                <span className="text-slate-400 text-sm">{t("order.package_name")}</span>
+                <span className="text-slate-400 text-sm">
+                  {t("order.package_name")}
+                </span>
                 <span className="text-white font-medium text-right">
                   {orderInfo.pkgName}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-slate-400 text-sm">{t("order.order_time")}</span>
+                <span className="text-slate-400 text-sm">
+                  {t("order.order_time")}
+                </span>
                 <span className="text-white font-mono text-sm">
                   {new Date(orderInfo.createTime).toLocaleString()}
                 </span>
@@ -237,18 +252,26 @@ export default function OrderDetail({ order, onClose }: OrderDetailProps) {
             </h3>
             <div className="space-y-4">
               <div className="flex justify-between items-center pb-4 border-b border-white/5">
-                <span className="text-slate-400">{t("order.payment_method")}</span>
-                <span className="text-white font-medium">{t("order.wechat_pay")}</span>
+                <span className="text-slate-400">
+                  {t("order.payment_method")}
+                </span>
+                <span className="text-white font-medium">
+                  {t("order.wechat_pay")}
+                </span>
               </div>
               <div className="flex justify-between items-center pb-4 border-b border-white/5">
-                <span className="text-slate-400">{t("order.payment_amount")}</span>
+                <span className="text-slate-400">
+                  {t("order.payment_amount")}
+                </span>
                 <span className="text-xl font-bold text-white">
                   {orderInfo.currency === CurrencyType.CNY ? "¥" : "$"}
                   {orderInfo.amount ? (orderInfo.amount * 0.01).toFixed(2) : 0}
                 </span>
               </div>
               <div className="flex justify-between items-center pb-4 border-b border-white/5">
-                <span className="text-slate-400">{t("order.transaction_id")}</span>
+                <span className="text-slate-400">
+                  {t("order.transaction_id")}
+                </span>
                 <span
                   className="text-white font-mono text-sm text-right max-w-[200px] truncate"
                   title={orderInfo.orderId}
@@ -257,7 +280,9 @@ export default function OrderDetail({ order, onClose }: OrderDetailProps) {
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-slate-400">{t("order.payment_time")}</span>
+                <span className="text-slate-400">
+                  {t("order.payment_time")}
+                </span>
                 <span className="text-white font-mono text-sm">
                   {new Date(orderInfo.createTime).toLocaleString()}
                 </span>
@@ -269,10 +294,37 @@ export default function OrderDetail({ order, onClose }: OrderDetailProps) {
           {orderInfo.status === StoragePurchaseStatus.WAITING_CONFIRM && (
             <div className="flex justify-center">
               <button
+                disabled={isProcessing}
                 onClick={handlePay}
-                className="bg-primary text-white px-8 py-2 rounded-xl hover:bg-primary/90 transition-colors"
+                className="flex bg-primary text-white px-8 py-2 rounded-xl hover:bg-primary/90 transition-colors"
               >
-                {t("order.pay")}
+                {isProcessing ? (
+                  <>
+                    <svg
+                      className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                    {t("order.processing")}
+                  </>
+                ) : (
+                  t("order.pay")
+                )}
               </button>
             </div>
           )}
@@ -293,7 +345,9 @@ export default function OrderDetail({ order, onClose }: OrderDetailProps) {
               <p className="text-gray-300 mb-2">
                 {t("order.package_name")}：{orderInfo?.pkgName}
               </p>
-              <h2 className="text-2xl font-bold mb-6 text-white">{t("order.scan_to_pay")}</h2>
+              <h2 className="text-2xl font-bold mb-6 text-white">
+                {t("order.scan_to_pay")}
+              </h2>
               <div className="bg-white p-4 rounded-xl mb-8">
                 <img
                   src={qrCodeUrl}

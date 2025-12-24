@@ -44,7 +44,7 @@ export default function OrderListPage() {
     let updateFlag = false;
     // 获取未完成订单状态，并更新
     for (const order of records) {
-      if (order.status !== StoragePurchaseStatus.SUCCESS) {
+      if (order.status === StoragePurchaseStatus.WAITING_CONFIRM) {
         const nOrderInfo = await getStoragePurchaseStatus(order.orderId, order);
         if (nOrderInfo && nOrderInfo.status !== order.status) {
           _orders.push({

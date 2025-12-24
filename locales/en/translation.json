@@ -206,6 +206,7 @@
     "trillion": "000B",
     "reviewing": "Reviewing...",
     "maintainable_date": "Storage plan maintainable until:",
+    "token_insufficient_warning": "Insufficient Cloud Service Token, data at risk",
     "subscribe_more": "Subscribe More",
     "subscription_records": "Subscription Records",
     "points_balance": "Points Balance",

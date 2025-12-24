@@ -609,7 +609,11 @@ const Dashboard = () => {
                   </div>
                 </div>
                 <div className="text-sm text-slate-400">
-                  {t("home.maintainable_date")} <span className="text-white font-mono">{calculateMaintainableDate()}</span>
+                   {calculateMaintainableDate() === "-" ? (
+                    <span className="text-red-500 font-bold">{t("home.token_insufficient_warning")}</span>
+                  ) : (
+                    <span className="text-white font-mono">{t("home.maintainable_date")}{calculateMaintainableDate()}</span>
+                  )}
                 </div>
               </div>
               

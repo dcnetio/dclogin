@@ -103,9 +103,6 @@ const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
   const handleLogout = async () => {
     // 确认框
     Dialog.confirm({
-      style: {
-        "--adm-color-background": "#1e293b",
-      },
       bodyStyle: {
         background: "#1e293b",
       },
@@ -160,6 +157,7 @@ const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
         dc.auth?.exitLogin();
       }
     } catch (error) {
+      console.error(error);
     } finally {
       router.replace("/home");
       onClose();
@@ -191,6 +189,11 @@ const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
       setAccounts(updatedAccounts);
       setIsDeleting(null);
     }, 500);
+  };
+
+  const gotoChangePwdPage = () => {
+    router.push("/changePassword");
+    onClose();
   };
   // 初始化账号列表
   useEffect(() => {
@@ -272,8 +275,11 @@ const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
                     </p>
                   </div>
                   {item.isCurrent && (
-                    <span className="ml-2 bg-blue-500 text-white text-xs px-2 py-1 rounded font-medium">
-                      {t("account_modal.current_tag")}
+                    <span
+                      className="ml-2 bg-blue-500 text-white text-xs px-2 py-1 rounded font-medium"
+                      onClick={gotoChangePwdPage}
+                    >
+                      {t("changePassword.title")}
                     </span>
                   )}
                 </div>

@@ -67,9 +67,7 @@ export default function ChangePassword() {
       // 检查确认密码是否输入
       if (!confirmPassword) {
         window.showToast({
-          content: t(
-            "changePassword.confirm_password_empty"
-          ),
+          content: t("changePassword.confirm_password_empty"),
           position: "center",
         });
         setIsLoading(false);
@@ -79,9 +77,7 @@ export default function ChangePassword() {
       // 确认两次输入的新密码是否匹配
       if (newPassword !== confirmPassword) {
         window.showToast({
-          content: t(
-            "changePassword.passwords_not_match"
-          ),
+          content: t("changePassword.passwords_not_match"),
           position: "center",
         });
         setPasswordsMatch(false);
@@ -160,19 +156,11 @@ export default function ChangePassword() {
               <div className={styles.brandLogo}>
                 <div className={styles.logoIcon}></div>
               </div>
-              <h1 className={styles.brandTitle}>
-                {t("wallet.name")}
-              </h1>
-              <p className={styles.brandTagline}>
-                {t("wallet.tagline")}
-              </p>
+              <h1 className={styles.brandTitle}>{t("wallet.name")}</h1>
+              <p className={styles.brandTagline}>{t("wallet.tagline")}</p>
 
               <div className={styles.brandDescription}>
-                <p className={styles.descriptionIntro}>
-                  {t(
-                    "wallet.intro"
-                  )}
-                </p>
+                <p className={styles.descriptionIntro}>{t("wallet.intro")}</p>
 
                 <div className={styles.serviceSection}>
                   <h3 className={styles.sectionTitle}>
@@ -200,9 +188,7 @@ export default function ChangePassword() {
 
                 <div className={styles.limitationSection}>
                   <h3 className={styles.sectionTitle}>
-                    {t(
-                      "wallet.limitations_title"
-                    )}
+                    {t("wallet.limitations_title")}
                   </h3>
                   <ul className={styles.limitationList}>
                     <li>
@@ -268,19 +254,13 @@ export default function ChangePassword() {
           <h2 className={styles.title}>
             {t("changePassword.change_password", "修改密码")}
           </h2>
-          <p className={styles.subtitle}>)}
-          </h2>
-          <p className={styles.subtitle}>
-            {t("changePassword.subtitle")}
-          </p>
+          <p className={styles.subtitle}>{t("changePassword.subtitle")}</p>
 
           {/* 移动端描述 */}
           {isMobile && (
             <div className={styles.mobileDescription}>
               <p className={styles.mobileIntro}>
-                {t(
-                  "wallet.mobile_intro_short"
-                )}
+                {t("wallet.mobile_intro_short")}
               </p>
 
               <div className={styles.mobileFeatures}>
@@ -330,9 +310,7 @@ export default function ChangePassword() {
             <div className={`${styles.inputGroup} ${styles.passwordInput}`}>
               <Input
                 id="confirmPasswordInput"
-                placeholder={t(
-                  "changePassword.confirm_password_placeholder"
-                )}
+                placeholder={t("changePassword.confirm_password_placeholder")}
                 value={confirmPassword}
                 onChange={(val) => {
                   setConfirmPassword(val);
@@ -346,9 +324,7 @@ export default function ChangePassword() {
               {/* 密码不匹配时显示错误提示 */}
               {confirmPassword.length > 0 && !passwordsMatch && (
                 <div className={styles.passwordError}>
-                  {t(
-                    "changePassword.passwords_not_match"
-                  )}
+                  {t("changePassword.passwords_not_match")}
                 </div>
               )}
             </div>
@@ -389,7 +365,8 @@ export default function ChangePassword() {
 
         {/* 返回链接 */}
         <div className={styles.backPrompt} onClick={goBack}>
-          {t("changePassword.back
+          {t("changePassword.back")}
+        </div>
         {/* 底部区域 */}
         <div className={styles.bottomSection}></div>
       </div>

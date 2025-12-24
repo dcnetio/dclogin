@@ -73,6 +73,7 @@ export default function OrderDetail({ order, onClose }: OrderDetailProps) {
       const url = await QRCode.toDataURL(codeUrl);
       setQrCodeUrl(url);
     } catch (error) {
+      console.error("获取支付订单出错:", error);
     } finally {
       setIsProcessing(false);
     }
@@ -112,6 +113,7 @@ export default function OrderDetail({ order, onClose }: OrderDetailProps) {
         position: "center",
       });
     } catch (error) {
+      console.error("获取支付订单出错:", error);
     } finally {
       setQrCodeUrl("");
     }
@@ -358,7 +360,6 @@ export default function OrderDetail({ order, onClose }: OrderDetailProps) {
               <Button
                 onClick={finishPayment}
                 className="py-3 w-full max-w-xs font-bold"
-                variant="primary"
               >
                 {t("order.payment_completed")}
               </Button>

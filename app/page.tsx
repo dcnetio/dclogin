@@ -2,23 +2,21 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Shield, Cloud, Lock, Globe, ArrowLeft, Zap, Server, Key, Languages } from "lucide-react";
+import { Shield, Cloud, Globe, Key, Languages } from "lucide-react";
 import { useTranslation, Trans } from "react-i18next";
 import { I18N_LANGUAGES } from "@/config/constant";
-import { useAppSelector } from "@/lib/hooks";
 
 export default function FeaturesPage() {
   const router = useRouter();
   const { t, i18n } = useTranslation();
   const [apps] = useState<any[]>([]);
-  const account = useAppSelector((state) => state.wallet.account);
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
   };
 
   const handleExperience = () => {
-    router.push('/home');
+    router.push("/home");
   };
 
   const features = [
@@ -26,26 +24,26 @@ export default function FeaturesPage() {
       icon: <Key className="w-8 h-8 text-blue-400" />,
       title: t("home.feature_login_title"),
       description: t("home.feature_login_desc"),
-      gradient: "from-blue-500/20 to-blue-600/5"
+      gradient: "from-blue-500/20 to-blue-600/5",
     },
     {
       icon: <Cloud className="w-8 h-8 text-violet-400" />,
       title: t("home.feature_cloud_title"),
       description: t("home.feature_cloud_desc"),
-      gradient: "from-violet-500/20 to-violet-600/5"
+      gradient: "from-violet-500/20 to-violet-600/5",
     },
     {
       icon: <Globe className="w-8 h-8 text-cyan-400" />,
       title: t("home.feature_decentralized_title"),
       description: t("home.feature_decentralized_desc"),
-      gradient: "from-cyan-500/20 to-cyan-600/5"
+      gradient: "from-cyan-500/20 to-cyan-600/5",
     },
     {
       icon: <Shield className="w-8 h-8 text-emerald-400" />,
       title: t("home.feature_security_title"),
       description: t("home.feature_security_desc"),
-      gradient: "from-emerald-500/20 to-emerald-600/5"
-    }
+      gradient: "from-emerald-500/20 to-emerald-600/5",
+    },
   ];
 
   return (
@@ -53,7 +51,11 @@ export default function FeaturesPage() {
       {/* Header */}
       <header className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-3">
-          <img src="/logo.svg" alt="DCLogin" className="w-10 h-10 rounded-xl shadow-lg" />
+          <img
+            src="/logo.svg"
+            alt="DCLogin"
+            className="w-10 h-10 rounded-xl shadow-lg"
+          />
           <h1 className="text-2xl font-bold text-white tracking-tight">
             DCLogin
           </h1>
@@ -64,21 +66,29 @@ export default function FeaturesPage() {
               <Languages size={20} />
             </button>
             <div className="absolute right-0 top-full mt-2 w-32 py-2 bg-slate-900 border border-white/10 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
-              <button 
+              <button
                 onClick={() => changeLanguage(I18N_LANGUAGES.ZH)}
-                className={`w-full px-4 py-2 text-left text-sm hover:bg-white/5 transition-colors ${i18n.language === I18N_LANGUAGES.ZH ? 'text-blue-400' : 'text-slate-300'}`}
+                className={`w-full px-4 py-2 text-left text-sm hover:bg-white/5 transition-colors ${
+                  i18n.language === I18N_LANGUAGES.ZH
+                    ? "text-blue-400"
+                    : "text-slate-300"
+                }`}
               >
                 中文
               </button>
-              <button 
+              <button
                 onClick={() => changeLanguage(I18N_LANGUAGES.EN)}
-                className={`w-full px-4 py-2 text-left text-sm hover:bg-white/5 transition-colors ${i18n.language === I18N_LANGUAGES.EN ? 'text-blue-400' : 'text-slate-300'}`}
+                className={`w-full px-4 py-2 text-left text-sm hover:bg-white/5 transition-colors ${
+                  i18n.language === I18N_LANGUAGES.EN
+                    ? "text-blue-400"
+                    : "text-slate-300"
+                }`}
               >
                 English
               </button>
             </div>
           </div>
-          <button 
+          <button
             onClick={handleExperience}
             className="px-6 py-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 backdrop-blur-md text-sm font-semibold text-white transition-all hover:scale-105"
           >
@@ -91,7 +101,10 @@ export default function FeaturesPage() {
       <div className="mb-12 text-center relative">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-blue-500/20 rounded-full blur-3xl -z-10"></div>
         <h2 className="text-4xl font-bold mb-4 text-white">
-          <Trans i18nKey="home.slogan_title" components={{ 1: <span className="text-blue-400" /> }} />
+          <Trans
+            i18nKey="home.slogan_title"
+            components={{ 1: <span className="text-blue-400" /> }}
+          />
         </h2>
         <p className="text-gray-400 max-w-lg mx-auto text-lg">
           {t("home.slogan_desc")}
@@ -101,7 +114,7 @@ export default function FeaturesPage() {
       {/* Features Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
         {features.map((feature, index) => (
-          <div 
+          <div
             key={index}
             className={`
               relative overflow-hidden rounded-2xl p-6 border border-white/10 backdrop-blur-sm
@@ -112,12 +125,14 @@ export default function FeaturesPage() {
             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
               {feature.icon}
             </div>
-            
+
             <div className="relative z-10">
               <div className="mb-4 p-3 bg-white/5 rounded-xl w-fit backdrop-blur-md border border-white/10">
                 {feature.icon}
               </div>
-              <h3 className="text-xl font-bold mb-2 text-white">{feature.title}</h3>
+              <h3 className="text-xl font-bold mb-2 text-white">
+                {feature.title}
+              </h3>
               <p className="text-gray-300 leading-relaxed">
                 {feature.description}
               </p>
@@ -130,15 +145,23 @@ export default function FeaturesPage() {
       <div className="mt-16 grid grid-cols-3 gap-4 max-w-4xl mx-auto text-center">
         <div className="p-4 rounded-xl bg-white/5 border border-white/10">
           <div className="text-2xl font-bold text-blue-400 mb-1">100%</div>
-          <div className="text-xs text-gray-400 uppercase tracking-wider">{t("home.stat_decentralized")}</div>
+          <div className="text-xs text-gray-400 uppercase tracking-wider">
+            {t("home.stat_decentralized")}
+          </div>
         </div>
         <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-          <div className="text-2xl font-bold text-violet-400 mb-1">Zero + TEE</div>
-          <div className="text-xs text-gray-400 uppercase tracking-wider">{t("home.stat_zkp")}</div>
+          <div className="text-2xl font-bold text-violet-400 mb-1">
+            Zero + TEE
+          </div>
+          <div className="text-xs text-gray-400 uppercase tracking-wider">
+            {t("home.stat_zkp")}
+          </div>
         </div>
         <div className="p-4 rounded-xl bg-white/5 border border-white/10">
           <div className="text-2xl font-bold text-cyan-400 mb-1">24/7</div>
-          <div className="text-xs text-gray-400 uppercase tracking-wider">{t("home.stat_availability")}</div>
+          <div className="text-xs text-gray-400 uppercase tracking-wider">
+            {t("home.stat_availability")}
+          </div>
         </div>
       </div>
 
@@ -170,7 +193,9 @@ export default function FeaturesPage() {
                   />
                   <div>
                     <h4 className="font-medium text-white">{app.name}</h4>
-                    <p className="text-xs text-slate-400 line-clamp-1">{app.description}</p>
+                    <p className="text-xs text-slate-400 line-clamp-1">
+                      {app.description}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -185,7 +210,7 @@ export default function FeaturesPage() {
 
       {/* Bottom CTA */}
       <div className="mt-16 text-center">
-        <button 
+        <button
           onClick={handleExperience}
           className="px-8 py-3 rounded-full bg-gradient-to-r from-blue-600 to-violet-600 font-bold text-white shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transition-all hover:-translate-y-1"
         >

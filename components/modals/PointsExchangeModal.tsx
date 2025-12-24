@@ -64,7 +64,9 @@ const PointsExchangeModal: React.FC<PointsExchangeModalProps> = ({
         </div>
         <div className="mt-4">
           <div className="mb-4">
-            <label className="block text-muted mb-2">当前积分余额: {userPoints}</label>
+            <label className="block text-muted mb-2">
+              当前积分余额: {userPoints}
+            </label>
             <label className="block text-muted mb-2">兑换积分数量</label>
             <input
               type="number"
@@ -80,7 +82,13 @@ const PointsExchangeModal: React.FC<PointsExchangeModalProps> = ({
                   key={amount}
                   onClick={() => handleSetPoints(amount)}
                   disabled={amount > userPoints}
-                  variant={exchangePoints === amount ? "primary" : amount > userPoints ? "neutral" : "outline"}
+                  variant={
+                    exchangePoints === amount
+                      ? "primary"
+                      : amount > userPoints
+                      ? "neutral"
+                      : "outline"
+                  }
                   className="px-3 py-1 text-sm"
                 >
                   {amount}
@@ -105,10 +113,14 @@ const PointsExchangeModal: React.FC<PointsExchangeModalProps> = ({
             </div>
           </div>
           <div className="flex justify-end space-x-3">
-            <Button variant="neutral" onClick={onClose} className="px-4 py-2 rounded">
+            <Button
+              variant="neutral"
+              onClick={onClose}
+              className="px-4 py-2 rounded"
+            >
               取消
             </Button>
-            <Button variant="primary" onClick={handleExchange} className="px-4 py-2 rounded">
+            <Button onClick={handleExchange} className="px-4 py-2 rounded">
               确认兑换
             </Button>
           </div>

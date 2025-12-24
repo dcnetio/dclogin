@@ -3,7 +3,6 @@
 import "antd-mobile/es/global";
 import localFont from "next/font/local";
 import "./globals.css";
-import styles from "./layout.module.css";
 import StoreProvider from "@/contexts/storeProvider";
 import { ToastProvider } from "@/contexts/ToastProvider";
 import Login from "@/components/auth/login";
@@ -130,9 +129,7 @@ export default function RootLayout({
               <RefreshProtectionProvider paramName="origin">
                 <ToastProvider>
                   <Login />
-                  <main className="flex-1 w-full">
-                    {children}
-                  </main>
+                  <main className="flex-1 w-full">{children}</main>
                 </ToastProvider>
                 <ProtectionStatus />
                 <StrictRefreshBlocker />

@@ -347,7 +347,6 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
             </h2>
           </div>
           <Button
-            fill="none"
             onClick={onClose}
             className="p-2 rounded-full text-white hover:bg-white/10"
           >

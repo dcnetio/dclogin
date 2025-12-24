@@ -3,8 +3,7 @@ import { APPInfo } from "web-dc-api";
 import { Button } from "antd-mobile";
 import { CheckShieldFill } from "antd-mobile-icons";
 import Card from "@/components/ui/Card";
-import Container from "@/components/ui/Container";
-import { useTranslation} from 'react-i18next';
+import { useTranslation } from "react-i18next";
 
 interface AddDAPPNoteProps {
   info: APPInfo;
@@ -12,7 +11,7 @@ interface AddDAPPNoteProps {
 }
 export default function AddDAPPNote(props: AddDAPPNoteProps) {
   const { info, confirmFun } = props;
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   return (
     <div className="min-h-screen flex items-center justify-center p-6">
       <Card className="w-full max-w-md text-center">
@@ -21,11 +20,15 @@ export default function AddDAPPNote(props: AddDAPPNoteProps) {
             <CheckShieldFill fontSize={28} color="white" />
           </div>
         </div>
-        <div className="mb-2 text-sm text-blue-400 break-words">{info.appUrl}</div>
+        <div className="mb-2 text-sm text-blue-400 break-words">
+          {info.appUrl}
+        </div>
         <div className="font-semibold text-lg mb-2">
           {t("DAPP.app")} {info.appName} {info.appVersion}
         </div>
-        <div className="mt-4 text-sm font-bold text-amber-500">{t("DAPP.add_tip")}</div>
+        <div className="mt-4 text-sm font-bold text-amber-500">
+          {t("DAPP.add_tip")}
+        </div>
 
         <div className="flex gap-4 mt-6">
           <div className="flex-1">

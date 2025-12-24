@@ -80,7 +80,17 @@
   "changePassword": {
     "title": "Change Password",
     "failed": "Failed to change password",
-    "success": "Password changed successfully"
+    "success": "Password changed successfully",
+    "new_password_empty": "Please enter new password",
+    "password_length": "Password length at least 2",
+    "confirm_password_empty": "Please confirm your new password",
+    "passwords_not_match": "Passwords do not match",
+    "change_password": "Change Password",
+    "subtitle": "Set a new login password for your account",
+    "new_password": "New Password",
+    "confirm_password_placeholder": "Please enter new password again",
+    "changing": "Changing...",
+    "back": "Back"
   },
   "DAPP": {
     "info": "Authorized App Info",
@@ -257,8 +267,22 @@
   "wallet": {
     "wallet": "Wallet",
     "initialization_failed": "Initialization Failed",
+    "name": "DCLogin",
     "tagline": "Your secure gateway to the next generation internet",
-    "description": "DCLogin is a unified login tool based on decentralized cloud services, storing no user privacy information."
+    "intro": "DCLogin is a unified login tool based on decentralized cloud services (DC), providing users with a secure entry point to easily access the next generation internet. DCLogin does not store any user privacy information.",
+    "services_title": "Services provided by DCLogin",
+    "service1": "Cross-application unified login",
+    "service2": "Seamless cross-terminal connection",
+    "service3": "Decentralized cloud services",
+    "service4": "Ultimate security guarantee",
+    "limitations_title": "Due to decentralized nature, DCLogin cannot provide",
+    "limitation1": "User account and password recovery service",
+    "limitation2": "User password reset service",
+    "github_link": "DCLogin Open Source Address",
+    "feature1": "Unified Login",
+    "feature2": "Data Security",
+    "feature3": "Seamless Experience",
+    "mobile_intro_short": "DCLogin: Secure, private decentralized unified login tool"
   },
   "dc": {
     "failed": "Failed to get DC info",

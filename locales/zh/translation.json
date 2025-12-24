@@ -79,7 +79,17 @@
   "changePassword": {
     "title": "修改密码",
     "failed": "修改密码失败",
-    "success": "修改密码成功"
+    "success": "修改密码成功",
+    "new_password_empty": "请输入新密码",
+    "password_length": "密码长度至少2位",
+    "confirm_password_empty": "请确认您的新密码",
+    "passwords_not_match": "两次输入的新密码不一致",
+    "change_password": "修改密码",
+    "subtitle": "为您的账户设置新的登录密码",
+    "new_password": "新密码",
+    "confirm_password_placeholder": "请再次输入新密码",
+    "changing": "修改中...",
+    "back": "返回"
   },
   "DAPP": {
     "info": "授权应用信息",
@@ -249,8 +259,22 @@
   },
   "wallet": {
     "wallet": "钱包",
+    "name": "DCLogin",
     "tagline": "您通往新一代互联网的安全入口",
-    "description": "DCLogin 是基于去中心化云服务开发的统一登录工具，不存储任何用户隐私信息。"
+    "intro": "DCLogin 是一款基于去中心化云服务（DC）开发的统一登录工具，为用户提供安全的入口，便捷地进入新一代互联网。DCLogin 不存储任何用户隐私信息。",
+    "services_title": "DCLogin 提供的服务",
+    "service1": "跨应用统一登录",
+    "service2": "跨终端无缝衔接",
+    "service3": "去中心化云服务",
+    "service4": "极致的安全保障",
+    "limitations_title": "由于去中心化特性，DCLogin 无法提供",
+    "limitation1": "用户账号和密码找回服务",
+    "limitation2": "用户密码重置服务",
+    "github_link": "DCLogin 开源地址",
+    "feature1": "统一登录",
+    "feature2": "数据安全",
+    "feature3": "无缝体验",
+    "mobile_intro_short": "DCLogin: 安全、私密的去中心化统一登录工具"
   },
   "dc": {
     "failed": "获取Dc信息失败",

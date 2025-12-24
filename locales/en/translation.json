@@ -115,7 +115,7 @@
     "feature_security_title": "Security & Privacy",
     "feature_security_desc": "Your private keys never leave your device. End-to-end encryption ensures your data remains private.",
     "stat_decentralized": "Decentralized",
-    "stat_zkp": "Knowledge Proof",
+    "stat_zkp": "TEE + Zero-Knowledge Proof",
     "stat_availability": "Availability",
     "experience_now": "Experience It Now",
     "recommended_apps": "Recommended Apps",

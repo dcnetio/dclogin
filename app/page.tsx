@@ -5,14 +5,20 @@ import { useRouter } from "next/navigation";
 import { Shield, Cloud, Lock, Globe, ArrowLeft, Zap, Server, Key, Languages } from "lucide-react";
 import { useTranslation, Trans } from "react-i18next";
 import { I18N_LANGUAGES } from "@/config/constant";
+import { useAppSelector } from "@/lib/hooks";
 
 export default function FeaturesPage() {
   const router = useRouter();
   const { t, i18n } = useTranslation();
   const [apps] = useState<any[]>([]);
+  const account = useAppSelector((state) => state.wallet.account);
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
+  };
+
+  const handleExperience = () => {
+    router.push('/home');
   };
 
   const features = [
@@ -73,7 +79,7 @@ export default function FeaturesPage() {
             </div>
           </div>
           <button 
-            onClick={() => router.push('/home')}
+            onClick={handleExperience}
             className="px-6 py-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 backdrop-blur-md text-sm font-semibold text-white transition-all hover:scale-105"
           >
             {t("home.experience_now")}
@@ -127,7 +133,7 @@ export default function FeaturesPage() {
           <div className="text-xs text-gray-400 uppercase tracking-wider">{t("home.stat_decentralized")}</div>
         </div>
         <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-          <div className="text-2xl font-bold text-violet-400 mb-1">Zero</div>
+          <div className="text-2xl font-bold text-violet-400 mb-1">Zero+TEE</div>
           <div className="text-xs text-gray-400 uppercase tracking-wider">{t("home.stat_zkp")}</div>
         </div>
         <div className="p-4 rounded-xl bg-white/5 border border-white/10">
@@ -180,7 +186,7 @@ export default function FeaturesPage() {
       {/* Bottom CTA */}
       <div className="mt-16 text-center">
         <button 
-          onClick={() => router.push('/home')}
+          onClick={handleExperience}
           className="px-8 py-3 rounded-full bg-gradient-to-r from-blue-600 to-violet-600 font-bold text-white shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transition-all hover:-translate-y-1"
         >
           {t("home.experience_now")}

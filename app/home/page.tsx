@@ -378,137 +378,135 @@ const Dashboard = () => {
   
   // 未登录状态显示欢迎页面
   if (!account || !account.nftAccount) {
-    if (typeof window !== 'undefined') router.replace('/');
-    return null;
+    return (
+      <div className="min-h-screen relative bg-[#0B0E14] overflow-hidden flex flex-col items-center justify-center">
+        <div className="absolute top-4 left-4 z-50">
+          <button
+            onClick={() => router.push('/')}
+            className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 backdrop-blur-md transition-all text-white"
+          >
+            <ArrowLeft size={20} />
+            <span>{t("home.back_to_home")}</span>
+          </button>
+        </div>
+        {/* 背景装饰 */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full bg-primary/10 blur-[120px] animate-pulse" />
+          <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] rounded-full bg-secondary/10 blur-[120px] animate-pulse" style={{ animationDelay: '1s' }} />
+        </div>
+
+        <div className="max-w-4xl w-full relative z-10">
+          <div className="text-center space-y-8">
+            {/* Logo 和标题 */}
+            <div className="space-y-6">
+              <div className="flex justify-center">
+                <div className="relative group">
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-3xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity" />
+                  <img 
+                    src="/logo.svg" 
+                    alt="DCLogin Logo" 
+                    className="relative w-24 h-24 rounded-3xl shadow-2xl transform group-hover:scale-105 transition-transform"
+                  />
+                </div>
+              </div>
+              
+              <div className="space-y-3">
+                <h1 className="text-5xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-white/70 tracking-tight pb-2">
+                  DCLogin
+                </h1>
+                <p className="text-xl md:text-2xl text-blue-100/80 font-light">
+                  {t("home.subtitle")}
+                </p>
+              </div>
+            </div>
+
+            {/* 功能卡片 */}
+            <div className="relative">
+              <div 
+                ref={scrollContainerRef}
+                className="flex md:grid md:grid-cols-3 gap-0 md:gap-4 mt-12 mb-8 md:mb-12 overflow-x-auto md:overflow-visible pb-0 md:pb-0 snap-x snap-mandatory scroll-smooth no-scrollbar"
+              >
+                <div className="min-w-full md:min-w-0 flex-shrink-0 snap-center glass-panel p-6 rounded-2xl border border-white/10 hover:border-primary/30 transition-all hover:scale-105">
+                  <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mb-4 mx-auto">
+                    <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-semibold text-white mb-2">{t("home.secure_private")}</h3>
+                  <p className="text-sm text-slate-400">{t("home.secure_private_desc")}</p>
+                </div>
+
+                <div className="min-w-full md:min-w-0 flex-shrink-0 snap-center glass-panel p-6 rounded-2xl border border-white/10 hover:border-secondary/30 transition-all hover:scale-105">
+                  <div className="w-12 h-12 bg-secondary/20 rounded-xl flex items-center justify-center mb-4 mx-auto">
+                    <svg className="w-6 h-6 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-semibold text-white mb-2">{t("home.unified_login")}</h3>
+                  <p className="text-sm text-slate-400">{t("home.unified_login_desc")}</p>
+                </div>
+
+                <div className="min-w-full md:min-w-0 flex-shrink-0 snap-center glass-panel p-6 rounded-2xl border border-white/10 hover:border-accent/30 transition-all hover:scale-105">
+                  <div className="w-12 h-12 bg-accent/20 rounded-xl flex items-center justify-center mb-4 mx-auto">
+                    <svg className="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-semibold text-white mb-2">{t("home.decentralized")}</h3>
+                  <p className="text-sm text-slate-400">{t("home.decentralized_desc")}</p>
+                </div>
+              </div>
+
+              {/* Dots - Mobile only */}
+              <div className="flex justify-center gap-2 md:hidden mb-12">
+                {[0, 1, 2].map((i) => (
+                  <div 
+                    key={i}
+                    className={`h-2 rounded-full transition-all duration-300 ${
+                      i === activeCardIndex ? 'bg-white w-6' : 'bg-white/20 w-2'
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* 登录按钮 */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-8">
+              <button
+                onClick={handleLogin}
+                className="group relative px-8 py-4 bg-gradient-to-r from-primary to-secondary rounded-xl text-white font-semibold text-lg shadow-lg hover:shadow-primary/50 transition-all hover:scale-105 min-w-[200px]"
+              >
+                <span className="flex items-center justify-center gap-2">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                  {t("home.login")}
+                </span>
+              </button>
+              
+              <button
+                onClick={() => router.push('/register')}
+                className="px-8 py-4 glass-panel rounded-xl text-white font-semibold text-lg border border-white/20 hover:border-white/40 transition-all hover:scale-105 min-w-[200px]"
+              >
+                {t("home.register")}
+              </button>
+            </div>
+
+            {/* 底部说明 */}
+            <div className="mt-12 text-center">
+              <p className="text-sm text-slate-400">
+                {t("home.footer_desc")}
+              </p>
+            </div>
+          </div>
+        </div>
+        <AccountSwitchModal
+          isOpen={showAccountModal}
+          onClose={() => setShowAccountModal(false)}
+        />
+      </div>
+    );
   }
-  // /*
-  //       <div className="absolute top-4 left-4 z-50">
-  //         <button
-  //           onClick={() => router.push('/')}
-  //           className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 backdrop-blur-md transition-all text-white"
-  //         >
-  //           <ArrowLeft size={20} />
-  //           <span>{t("home.back_to_home")}</span>
-  //         </button>
-  //       </div>
-  //       {/* 背景装饰 */}
-  //       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-  //         <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full bg-primary/10 blur-[120px] animate-pulse" />
-  //         <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] rounded-full bg-secondary/10 blur-[120px] animate-pulse" style={{ animationDelay: '1s' }} />
-  //       </div>
-
-  //       <div className="max-w-4xl w-full relative z-10">
-  //         <div className="text-center space-y-8">
-  //           {/* Logo 和标题 */}
-  //           <div className="space-y-6">
-  //             <div className="flex justify-center">
-  //               <div className="relative group">
-  //                 <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-3xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity" />
-  //                 <img 
-  //                   src="/logo.svg" 
-  //                   alt="DCLogin Logo" 
-  //                   className="relative w-24 h-24 rounded-3xl shadow-2xl transform group-hover:scale-105 transition-transform"
-  //                 />
-  //               </div>
-  //             </div>
-              
-  //             <div className="space-y-3">
-  //               <h1 className="text-5xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-white/70 tracking-tight pb-2">
-  //                 DCLogin
-  //               </h1>
-  //               <p className="text-xl md:text-2xl text-blue-100/80 font-light">
-  //                 {t("home.subtitle")}
-  //               </p>
-  //             </div>
-  //           </div>
-
-  //           {/* 功能卡片 */}
-  //           <div className="relative">
-  //             <div 
-  //               ref={scrollContainerRef}
-  //               className="flex md:grid md:grid-cols-3 gap-0 md:gap-4 mt-12 mb-8 md:mb-12 overflow-x-auto md:overflow-visible pb-0 md:pb-0 snap-x snap-mandatory scroll-smooth no-scrollbar"
-  //             >
-  //               <div className="min-w-full md:min-w-0 flex-shrink-0 snap-center glass-panel p-6 rounded-2xl border border-white/10 hover:border-primary/30 transition-all hover:scale-105">
-  //                 <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mb-4 mx-auto">
-  //                   <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  //                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-  //                   </svg>
-  //                 </div>
-  //                 <h3 className="text-lg font-semibold text-white mb-2">{t("home.secure_private")}</h3>
-  //                 <p className="text-sm text-slate-400">{t("home.secure_private_desc")}</p>
-  //               </div>
-
-  //               <div className="min-w-full md:min-w-0 flex-shrink-0 snap-center glass-panel p-6 rounded-2xl border border-white/10 hover:border-secondary/30 transition-all hover:scale-105">
-  //                 <div className="w-12 h-12 bg-secondary/20 rounded-xl flex items-center justify-center mb-4 mx-auto">
-  //                   <svg className="w-6 h-6 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  //                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-  //                   </svg>
-  //                 </div>
-  //                 <h3 className="text-lg font-semibold text-white mb-2">{t("home.unified_login")}</h3>
-  //                 <p className="text-sm text-slate-400">{t("home.unified_login_desc")}</p>
-  //               </div>
-
-  //               <div className="min-w-full md:min-w-0 flex-shrink-0 snap-center glass-panel p-6 rounded-2xl border border-white/10 hover:border-accent/30 transition-all hover:scale-105">
-  //                 <div className="w-12 h-12 bg-accent/20 rounded-xl flex items-center justify-center mb-4 mx-auto">
-  //                   <svg className="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  //                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
-  //                   </svg>
-  //                 </div>
-  //                 <h3 className="text-lg font-semibold text-white mb-2">{t("home.decentralized")}</h3>
-  //                 <p className="text-sm text-slate-400">{t("home.decentralized_desc")}</p>
-  //               </div>
-  //             </div>
-
-  //             {/* Dots - Mobile only */}
-  //             <div className="flex justify-center gap-2 md:hidden mb-12">
-  //               {[0, 1, 2].map((i) => (
-  //                 <div 
-  //                   key={i}
-  //                   className={`h-2 rounded-full transition-all duration-300 ${
-  //                     i === activeCardIndex ? 'bg-white w-6' : 'bg-white/20 w-2'
-  //                   }`}
-  //                 />
-  //               ))}
-  //             </div>
-  //           </div>
-
-  //           {/* 登录按钮 */}
-  //           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-8">
-  //             <button
-  //               onClick={handleLogin}
-  //               className="group relative px-8 py-4 bg-gradient-to-r from-primary to-secondary rounded-xl text-white font-semibold text-lg shadow-lg hover:shadow-primary/50 transition-all hover:scale-105 min-w-[200px]"
-  //             >
-  //               <span className="flex items-center justify-center gap-2">
-  //                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  //                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-  //                 </svg>
-  //                 {t("home.login")}
-  //               </span>
-  //             </button>
-              
-  //             <button
-  //               onClick={() => router.push('/register')}
-  //               className="px-8 py-4 glass-panel rounded-xl text-white font-semibold text-lg border border-white/20 hover:border-white/40 transition-all hover:scale-105 min-w-[200px]"
-  //             >
-  //               {t("home.register")}
-  //             </button>
-  //           </div>
-
-  //           {/* 底部说明 */}
-  //           <div className="mt-12 text-center">
-  //             <p className="text-sm text-slate-400">
-  //               {t("home.footer_desc")}
-  //             </p>
-  //           </div>
-  //         </div>
-  //       </div>
-  //       <AccountSwitchModal
-  //         isOpen={showAccountModal}
-  //         onClose={() => setShowAccountModal(false)}
-  //       />
-  //     </div>
-  //   );
-  // } */
   
   if (error && !userInfo) {
     return (

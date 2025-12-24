@@ -240,13 +240,15 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
       }
       // 保存订单
       const record = {
+        dappid: dcConfig.appInfo.appId,
         orderId: tradeNo,
         nftAccount: account.nftAccount || "",
         pkgId: selectedPlan?.pkgId || 0,
         pkgName: selectedPlan?.pkgName || "",
         amount: selectedPlan?.amount || 0,
         currency: selectedPlan?.currency || CurrencyType.CNY,
-        status: StoragePurchaseStatus.WAITING_CONFIRM,
+        status: StoragePurchaseStatus.WAITING_CONFIRM as number,
+        description: "",
         createTime: Date.now(),
       };
       const id = await addOrderRecord(record);

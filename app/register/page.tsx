@@ -1,12 +1,18 @@
 "use client";
 // import styles from "./page.module.css";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { Button, Input, Checkbox } from "antd-mobile";
 import { createAccountWithRegister } from "@/app/index";
 import { getDC } from "@/components/auth/login/dc";
-import { UserOutline, LockOutline, AppOutline, LinkOutline, GlobalOutline } from "antd-mobile-icons";
+import {
+  UserOutline,
+  LockOutline,
+  AppOutline,
+  LinkOutline,
+  GlobalOutline,
+} from "antd-mobile-icons";
 import { CheckShieldOutline } from "@/components/icons/CheckShieldOutline";
 import UserAgreementModal from "@/components/modals/UserAgreementModal";
 import LanguageSwitcher from "@/components/common/LanguageSwitcher";
@@ -16,27 +22,27 @@ export default function Register() {
   const { t } = useTranslation();
   const [account, setAccount] = useState("");
   const [password, setPassword] = useState("");
-  const [isMobile, setIsMobile] = useState(true);
+  // const [isMobile, setIsMobile] = useState(true);
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordsMatch, setPasswordsMatch] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [isAgreed, setIsAgreed] = useState(false);
   const [showAgreement, setShowAgreement] = useState(false);
 
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
+  // useEffect(() => {
+  //   const checkMobile = () => {
+  //     setIsMobile(window.innerWidth <= 768);
+  //   };
 
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
+  //   checkMobile();
+  //   window.addEventListener("resize", checkMobile);
+  //   return () => window.removeEventListener("resize", checkMobile);
+  // }, []);
 
   const gotoConfirm = async () => {
     // Set loading state to true when registration starts
     setIsLoading(true);
-if (!isAgreed) {
+    if (!isAgreed) {
       window.showToast({
         content: t("common.agreement_unchecked"),
         position: "center",
@@ -45,7 +51,6 @@ if (!isAgreed) {
       return;
     }
 
-    
     try {
       // 检查账号是否为空
       if (!account) {
@@ -168,12 +173,27 @@ if (!isAgreed) {
             </h3>
             <ul className="space-y-4">
               {[
-                { icon: <AppOutline fontSize={18} />, text: t("wallet.service1", "跨应用统一登录") },
-                { icon: <LinkOutline fontSize={18} />, text: t("wallet.service2", "跨终端无缝衔接") },
-                { icon: <GlobalOutline fontSize={18} />, text: t("wallet.service3", "去中心化云服务") },
-                { icon: <CheckShieldOutline fontSize={18} />, text: t("wallet.service4", "极致的安全保障") },
+                {
+                  icon: <AppOutline fontSize={18} />,
+                  text: t("wallet.service1", "跨应用统一登录"),
+                },
+                {
+                  icon: <LinkOutline fontSize={18} />,
+                  text: t("wallet.service2", "跨终端无缝衔接"),
+                },
+                {
+                  icon: <GlobalOutline fontSize={18} />,
+                  text: t("wallet.service3", "去中心化云服务"),
+                },
+                {
+                  icon: <CheckShieldOutline fontSize={18} />,
+                  text: t("wallet.service4", "极致的安全保障"),
+                },
               ].map((item, index) => (
-                <li key={index} className="flex items-center space-x-3 text-sm text-slate-300">
+                <li
+                  key={index}
+                  className="flex items-center space-x-3 text-sm text-slate-300"
+                >
                   <span className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary">
                     {item.icon}
                   </span>
@@ -190,7 +210,9 @@ if (!isAgreed) {
             <div className="md:hidden w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center shadow-lg shadow-primary/30 mx-auto mb-4">
               <div className="w-6 h-6 border-2 border-white rounded-full" />
             </div>
-            <h2 className="text-2xl font-bold text-white mb-2">{t("register.register", "DCLogin")}</h2>
+            <h2 className="text-2xl font-bold text-white mb-2">
+              {t("register.register", "DCLogin")}
+            </h2>
             <p className="text-slate-400 text-sm">
               {t("register.subtitle", "创建私人账户，开启您的智能互联网之旅")}
             </p>
@@ -209,7 +231,7 @@ if (!isAgreed) {
                   onEnterPress={gotoConfirm}
                   clearable
                   className="input-tech pl-10 !bg-slate-800/50 !border-slate-700 focus:!border-primary"
-                  style={{ '--font-size': '16px', paddingLeft: '2.5rem' }}
+                  style={{ "--font-size": "16px", paddingLeft: "2.5rem" }}
                 />
               </div>
             </div>
@@ -236,7 +258,7 @@ if (!isAgreed) {
                   clearable
                   type="password"
                   className="input-tech pl-10 !bg-slate-800/50 !border-slate-700 focus:!border-primary"
-                  style={{ '--font-size': '16px', paddingLeft: '2.5rem' }}
+                  style={{ "--font-size": "16px", paddingLeft: "2.5rem" }}
                 />
               </div>
             </div>
@@ -249,7 +271,10 @@ if (!isAgreed) {
                   </div>
                   <Input
                     id="confirmPasswordInput"
-                    placeholder={t("register.confirm_password_placeholder", "请再次输入密码")}
+                    placeholder={t(
+                      "register.confirm_password_placeholder",
+                      "请再次输入密码"
+                    )}
                     value={confirmPassword}
                     onChange={(val) => {
                       setConfirmPassword(val);
@@ -259,9 +284,11 @@ if (!isAgreed) {
                     clearable
                     type="password"
                     className={`input-tech pl-10 !bg-slate-800/50 !border-slate-700 focus:!border-primary ${
-                      confirmPassword.length > 0 && !passwordsMatch ? '!border-red-500 focus:!border-red-500' : ''
+                      confirmPassword.length > 0 && !passwordsMatch
+                        ? "!border-red-500 focus:!border-red-500"
+                        : ""
                     }`}
-                    style={{ '--font-size': '16px', paddingLeft: '2.5rem' }}
+                    style={{ "--font-size": "16px", paddingLeft: "2.5rem" }}
                   />
                 </div>
                 {confirmPassword.length > 0 && !passwordsMatch && (
@@ -282,7 +309,7 @@ if (!isAgreed) {
                   "--gap": "6px",
                 }}
               >
-                <span 
+                <span
                   className="text-slate-400 text-xs leading-tight block text-left cursor-pointer hover:text-primary transition-colors"
                   onClick={(e) => {
                     e.preventDefault();
@@ -294,9 +321,9 @@ if (!isAgreed) {
               </Checkbox>
             </div>
 
-            <UserAgreementModal 
-              isOpen={showAgreement} 
-              onClose={() => setShowAgreement(false)} 
+            <UserAgreementModal
+              isOpen={showAgreement}
+              onClose={() => setShowAgreement(false)}
             />
 
             <Button
@@ -310,8 +337,10 @@ if (!isAgreed) {
             </Button>
 
             <div className="text-center mt-6">
-              <span className="text-slate-400 text-sm">{t("register.have_account", "已有账户?")} </span>
-              <span 
+              <span className="text-slate-400 text-sm">
+                {t("register.have_account", "已有账户?")}{" "}
+              </span>
+              <span
                 className="text-primary font-medium cursor-pointer hover:underline ml-1"
                 onClick={gotoLogin}
               >
@@ -329,12 +358,27 @@ if (!isAgreed) {
             </h3>
             <ul className="space-y-4">
               {[
-                { icon: <AppOutline fontSize={18} />, text: t("wallet.service1", "跨应用统一登录") },
-                { icon: <LinkOutline fontSize={18} />, text: t("wallet.service2", "跨终端无缝衔接") },
-                { icon: <GlobalOutline fontSize={18} />, text: t("wallet.service3", "去中心化云服务") },
-                { icon: <CheckShieldOutline fontSize={18} />, text: t("wallet.service4", "极致的安全保障") },
+                {
+                  icon: <AppOutline fontSize={18} />,
+                  text: t("wallet.service1", "跨应用统一登录"),
+                },
+                {
+                  icon: <LinkOutline fontSize={18} />,
+                  text: t("wallet.service2", "跨终端无缝衔接"),
+                },
+                {
+                  icon: <GlobalOutline fontSize={18} />,
+                  text: t("wallet.service3", "去中心化云服务"),
+                },
+                {
+                  icon: <CheckShieldOutline fontSize={18} />,
+                  text: t("wallet.service4", "极致的安全保障"),
+                },
               ].map((item, index) => (
-                <li key={index} className="flex items-center space-x-3 text-sm text-slate-300">
+                <li
+                  key={index}
+                  className="flex items-center space-x-3 text-sm text-slate-300"
+                >
                   <span className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary">
                     {item.icon}
                   </span>

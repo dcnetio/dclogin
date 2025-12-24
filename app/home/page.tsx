@@ -4,12 +4,7 @@ import Header from "@/components/common/header";
 import StorageSubscriptionModal from "@/components/modals/StorageSubscriptionModal";
 import AccountSwitchModal from "@/components/modals/AccountSwitchModal";
 import { useAppSelector } from "@/lib/hooks";
-import {
-  getUserInfoWithNft,
-  getAllAccounts,
-  chooseStoredAccount,
-  login,
-} from "@/services/account";
+import { getUserInfoWithNft, login } from "@/services/account";
 import { User } from "web-dc-api";
 import { Toast } from "antd-mobile";
 import ethers from "@/helpers/ethersHelper";
@@ -25,10 +20,8 @@ import dayjs from "dayjs";
 import { store } from "@/lib/store";
 import { updateAuthStep } from "@/lib/slices/authSlice";
 import { saveInitState } from "@/lib/slices/appSlice";
-import { saveAccountInfo } from "@/lib/slices/walletSlice";
 import { MsgStatus, appState } from "@/config/constant";
 import { useTranslation } from "react-i18next";
-import { showEncodePassword } from "@/components/note/noteHelper";
 import { ArrowLeft } from "lucide-react";
 import LanguageSwitcher from "@/components/common/LanguageSwitcher";
 

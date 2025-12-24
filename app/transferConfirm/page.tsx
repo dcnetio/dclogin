@@ -11,7 +11,6 @@ import { Button, Dialog } from "antd-mobile";
 import { appState } from "@/config/constant";
 import { useAppSelector } from "@/lib/hooks";
 import { useTranslation } from "react-i18next";
-import { CheckCircle2 } from "lucide-react";
 
 export default function TransferConfirm() {
   const router = useRouter();

@@ -103,9 +103,6 @@ const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
   const handleLogout = async () => {
     // 确认框
     Dialog.confirm({
-      style: {
-        "--adm-color-background": "#1e293b",
-      },
       bodyStyle: {
         background: "#1e293b",
       },

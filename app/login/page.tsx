@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 // import styles from "./page.module.css";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { Button, Input, Checkbox } from "antd-mobile";
@@ -10,7 +10,13 @@ import { getDC } from "@/components/auth/login/dc";
 import { store } from "@/lib/store";
 import { saveInitState } from "@/lib/slices/appSlice";
 import { appState } from "@/config/constant";
-import { UserOutline, LockOutline, AppOutline, LinkOutline, GlobalOutline } from "antd-mobile-icons";
+import {
+  UserOutline,
+  LockOutline,
+  AppOutline,
+  LinkOutline,
+  GlobalOutline,
+} from "antd-mobile-icons";
 import { CheckShieldOutline } from "@/components/icons/CheckShieldOutline";
 import UserAgreementModal from "@/components/modals/UserAgreementModal";
 import LanguageSwitcher from "@/components/common/LanguageSwitcher";
@@ -24,21 +30,21 @@ export default function Login() {
   const [account, setAccount] = useState("");
   const [password, setPassword] = useState("");
   const [safecode, setSafecode] = useState("000000");
-  const [isMobile, setIsMobile] = useState(true);
+  // const [isMobile, setIsMobile] = useState(true);
   const [showSafecode, setShowSafecode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isAgreed, setIsAgreed] = useState(false);
   const [showAgreement, setShowAgreement] = useState(false);
 
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
+  // useEffect(() => {
+  //   const checkMobile = () => {
+  //     setIsMobile(window.innerWidth <= 768);
+  //   };
 
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
+  //   checkMobile();
+  //   window.addEventListener("resize", checkMobile);
+  //   return () => window.removeEventListener("resize", checkMobile);
+  // }, []);
 
   const gotoConfirm = async () => {
     // Set loading state to true when login starts
@@ -135,7 +141,11 @@ export default function Login() {
         <div className="hidden md:flex flex-col text-white space-y-8 p-8">
           <div className="space-y-4">
             <div className="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center shadow-lg shadow-primary/30">
-              <img src="/logo.svg" alt="DCLogin Logo" className="w-16 h-16 rounded-2xl" />
+              <img
+                src="/logo.svg"
+                alt="DCLogin Logo"
+                className="w-16 h-16 rounded-2xl"
+              />
             </div>
             <h1 className="text-5xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white to-white/70 pb-2">
               {t("wallet.name", "DCLogin")}
@@ -151,12 +161,27 @@ export default function Login() {
             </h3>
             <ul className="space-y-4">
               {[
-                { icon: <AppOutline fontSize={18} />, text: t("wallet.service1", "跨应用统一登录") },
-                { icon: <LinkOutline fontSize={18} />, text: t("wallet.service2", "跨终端无缝衔接") },
-                { icon: <GlobalOutline fontSize={18} />, text: t("wallet.service3", "去中心化云服务") },
-                { icon: <CheckShieldOutline fontSize={18} />, text: t("wallet.service4", "极致的安全保障") },
+                {
+                  icon: <AppOutline fontSize={18} />,
+                  text: t("wallet.service1", "跨应用统一登录"),
+                },
+                {
+                  icon: <LinkOutline fontSize={18} />,
+                  text: t("wallet.service2", "跨终端无缝衔接"),
+                },
+                {
+                  icon: <GlobalOutline fontSize={18} />,
+                  text: t("wallet.service3", "去中心化云服务"),
+                },
+                {
+                  icon: <CheckShieldOutline fontSize={18} />,
+                  text: t("wallet.service4", "极致的安全保障"),
+                },
               ].map((item, index) => (
-                <li key={index} className="flex items-center space-x-3 text-sm text-slate-300">
+                <li
+                  key={index}
+                  className="flex items-center space-x-3 text-sm text-slate-300"
+                >
                   <span className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary">
                     {item.icon}
                   </span>
@@ -165,19 +190,24 @@ export default function Login() {
               ))}
             </ul>
           </div>
-          
+
           <div className="pt-4">
-             <a
-                href="https://github.com/dcnetio"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center space-x-2 text-slate-400 hover:text-white transition-colors"
+            <a
+              href="https://github.com/dcnetio"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center space-x-2 text-slate-400 hover:text-white transition-colors"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="20"
+                height="20"
+                fill="currentColor"
               >
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                  <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
-                </svg>
-                <span>{t("wallet.github_link", "DCLogin 开源地址")}</span>
-              </a>
+                <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
+              </svg>
+              <span>{t("wallet.github_link", "DCLogin 开源地址")}</span>
+            </a>
           </div>
         </div>
 
@@ -185,9 +215,15 @@ export default function Login() {
         <div className="glass-panel p-8 md:p-10 rounded-3xl w-full max-w-md mx-auto">
           <div className="text-center mb-8">
             <div className="md:hidden w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center shadow-lg shadow-primary/30 mx-auto mb-4">
-              <img src="/logo.svg" alt="DCLogin Logo" className="w-12 h-12 rounded-xl" />
+              <img
+                src="/logo.svg"
+                alt="DCLogin Logo"
+                className="w-12 h-12 rounded-xl"
+              />
             </div>
-            <h2 className="text-2xl font-bold text-white mb-2">{t("login.title", "DCLogin")}</h2>
+            <h2 className="text-2xl font-bold text-white mb-2">
+              {t("login.title", "DCLogin")}
+            </h2>
             <p className="text-slate-400 text-sm">
               {t("login.subtitle", "您正在使用去中心化统一登录")}
             </p>
@@ -206,7 +242,7 @@ export default function Login() {
                   onEnterPress={gotoConfirm}
                   clearable
                   className="input-tech pl-10 !bg-slate-800/50 !border-slate-700 focus:!border-primary"
-                  style={{ '--font-size': '16px', paddingLeft: '2.5rem' }}
+                  style={{ "--font-size": "16px", paddingLeft: "2.5rem" }}
                 />
               </div>
             </div>
@@ -224,7 +260,7 @@ export default function Login() {
                   clearable
                   type="password"
                   className="input-tech pl-10 !bg-slate-800/50 !border-slate-700 focus:!border-primary"
-                  style={{ '--font-size': '16px', paddingLeft: '2.5rem' }}
+                  style={{ "--font-size": "16px", paddingLeft: "2.5rem" }}
                 />
               </div>
             </div>
@@ -242,12 +278,12 @@ export default function Login() {
                     onEnterPress={gotoConfirm}
                     clearable
                     className="input-tech pl-10 !bg-slate-800/50 !border-slate-700 focus:!border-primary"
-                    style={{ '--font-size': '16px', paddingLeft: '2.5rem' }}
+                    style={{ "--font-size": "16px", paddingLeft: "2.5rem" }}
                   />
                 </div>
               ) : (
-                <div 
-                  className="text-sm text-primary hover:text-primary/80 cursor-pointer text-right transition-colors" 
+                <div
+                  className="text-sm text-primary hover:text-primary/80 cursor-pointer text-right transition-colors"
                   onClick={toggleSafecode}
                 >
                   {t("login.input_safecode", "输入安全码")}
@@ -265,7 +301,7 @@ export default function Login() {
                   "--gap": "6px",
                 }}
               >
-                <span 
+                <span
                   className="text-slate-400 text-xs leading-tight block text-left cursor-pointer hover:text-primary transition-colors"
                   onClick={(e) => {
                     e.preventDefault();
@@ -277,11 +313,10 @@ export default function Login() {
               </Checkbox>
             </div>
 
-            <UserAgreementModal 
-              isOpen={showAgreement} 
-              onClose={() => setShowAgreement(false)} 
+            <UserAgreementModal
+              isOpen={showAgreement}
+              onClose={() => setShowAgreement(false)}
             />
-
 
             <Button
               block
@@ -294,8 +329,10 @@ export default function Login() {
             </Button>
 
             <div className="text-center mt-6">
-              <span className="text-slate-400 text-sm">{t("login.no_account", "没有账户?")} </span>
-              <span 
+              <span className="text-slate-400 text-sm">
+                {t("login.no_account", "没有账户?")}{" "}
+              </span>
+              <span
                 className="text-primary font-medium cursor-pointer hover:underline ml-1"
                 onClick={gotoRegister}
               >
@@ -313,12 +350,27 @@ export default function Login() {
             </h3>
             <ul className="space-y-4">
               {[
-                { icon: <AppOutline fontSize={18} />, text: t("wallet.service1", "跨应用统一登录") },
-                { icon: <LinkOutline fontSize={18} />, text: t("wallet.service2", "跨终端无缝衔接") },
-                { icon: <GlobalOutline fontSize={18} />, text: t("wallet.service3", "去中心化云服务") },
-                { icon: <CheckShieldOutline fontSize={18} />, text: t("wallet.service4", "极致的安全保障") },
+                {
+                  icon: <AppOutline fontSize={18} />,
+                  text: t("wallet.service1", "跨应用统一登录"),
+                },
+                {
+                  icon: <LinkOutline fontSize={18} />,
+                  text: t("wallet.service2", "跨终端无缝衔接"),
+                },
+                {
+                  icon: <GlobalOutline fontSize={18} />,
+                  text: t("wallet.service3", "去中心化云服务"),
+                },
+                {
+                  icon: <CheckShieldOutline fontSize={18} />,
+                  text: t("wallet.service4", "极致的安全保障"),
+                },
               ].map((item, index) => (
-                <li key={index} className="flex items-center space-x-3 text-sm text-slate-300">
+                <li
+                  key={index}
+                  className="flex items-center space-x-3 text-sm text-slate-300"
+                >
                   <span className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary">
                     {item.icon}
                   </span>

@@ -14,6 +14,8 @@ export type AccountInfo = {
   nftAccount: string;
   account: string;
   credentialId: string;
+  iv?: Uint8Array;
+  mnemonic?: ArrayBuffer;
   timeStamp: number;
   type: string;
 };

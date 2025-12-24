@@ -20,6 +20,7 @@ import {
 import { CheckShieldOutline } from "@/components/icons/CheckShieldOutline";
 import UserAgreementModal from "@/components/modals/UserAgreementModal";
 import LanguageSwitcher from "@/components/common/LanguageSwitcher";
+import { basePath } from "@/config/define";
 
 export default function Login() {
   // 保持现有的 state 和 hooks
@@ -142,7 +143,7 @@ export default function Login() {
           <div className="space-y-4">
             <div className="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center shadow-lg shadow-primary/30">
               <img
-                src="/logo.svg"
+                src={`${basePath}/logo.svg`}
                 alt="DCLogin Logo"
                 className="w-16 h-16 rounded-2xl"
               />
@@ -216,7 +217,7 @@ export default function Login() {
           <div className="text-center mb-8">
             <div className="md:hidden w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center shadow-lg shadow-primary/30 mx-auto mb-4">
               <img
-                src="/logo.svg"
+                src={`${basePath}/logo.svg`}
                 alt="DCLogin Logo"
                 className="w-12 h-12 rounded-xl"
               />

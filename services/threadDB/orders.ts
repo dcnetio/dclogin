@@ -44,8 +44,9 @@ const updateOrderRecord = async (record: OrderRecord): Promise<boolean> => {
       console.error("dbThreadId is missing");
       return false;
     }
+    delete record._mod;
     // 每次发布都是新增一条数据
-    const [_id, error] = await dc.db.save(
+    const error = await dc.db.save(
       theadId,
       tableNames.order_records,
       JSON.stringify(record)
@@ -126,6 +127,9 @@ const getOrderInfoWithOrderId = async (
     const conditions: string[] = [];
     if (orderId) {
       conditions.push(` orderId = '${orderId}' `);
+    }
+    if (conditions.length > 0) {
+      query.condition = conditions.join(" && ");
     }
     const theadId = dc.dbThreadId;
     if (!theadId) {

@@ -50,7 +50,7 @@ const Header = () => {
       );
       // 初始化成功，
       store.dispatch(saveInitState(appState.init_success));
-      router.replace(`${window.location.pathname}${window.location.search}`);
+      router.replace(`/${window.location.pathname}${window.location.search}`);
     } catch (err) {
       console.error("登录失败:", err);
     }
@@ -78,7 +78,9 @@ const Header = () => {
             <div className="w-5 h-5 border-2 border-white rounded-full" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-white tracking-tight">DCLogin</h1>
+            <h1 className="text-xl font-bold text-white tracking-tight">
+              DCLogin
+            </h1>
             <p className="text-xs text-slate-400">{t("home.subtitle")}</p>
           </div>
         </div>
@@ -93,15 +95,23 @@ const Header = () => {
                   <p className="text-sm font-medium text-white group-hover:text-primary transition-colors">
                     {accountInfo.nftAccount || t("home.user_default")}
                   </p>
-                  <p className="text-xs text-slate-400">{t("home.connected")}</p>
+                  <p className="text-xs text-slate-400">
+                    {t("home.connected")}
+                  </p>
                 </div>
                 <div className="w-10 h-10 rounded-full bg-white/10 border border-white/10 flex items-center justify-center group-hover:bg-primary/20 group-hover:border-primary/50 transition-all">
-                  <User2 className="text-white group-hover:text-primary" size={20} />
+                  <User2
+                    className="text-white group-hover:text-primary"
+                    size={20}
+                  />
                 </div>
               </button>
             </div>
           ) : (
-            <button onClick={handleLogin} className="btn-primary flex items-center space-x-2">
+            <button
+              onClick={handleLogin}
+              className="btn-primary flex items-center space-x-2"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-5 w-5"

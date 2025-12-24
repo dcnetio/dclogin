@@ -13,7 +13,21 @@
     "failed": "Failed",
     "waiting": "Waiting",
     "pending": "Pending",
-    "confirmed": "Confirmed"
+    "confirmed": "Confirmed",
+    "agreement_text": "I have read and agree to the User Agreement. I understand that the account password is decentralized and cannot be recovered if lost, and the platform is not responsible.",
+    "agreement_unchecked": "Please agree to the User Agreement first"
+  },
+  "agreement": {
+    "title": "User Agreement",
+    "intro": "Welcome to DCLogin. Please read the following terms carefully before using our services. By continuing to use, you agree to these terms.",
+    "decentralization_title": "1. Decentralization",
+    "decentralization_desc": "DCLogin is an identity management system based on decentralized technology. This means there is no centralized server storing your private keys or passwords. Your identity is fully controlled by you.",
+    "custody_title": "2. Account & Password Custody",
+    "custody_desc": "You are the sole custodian of your account password and mnemonic phrase. Once lost, due to the decentralized nature, we cannot recover or reset the password for you. Please ensure you back up your password and mnemonic phrase in a secure place (such as physical paper) and never disclose them to others.",
+    "data_privacy_title": "3. Data Privacy & Platform Liability",
+    "data_privacy_desc": "The platform does not store, collect, or transmit any of your sensitive data (such as private keys, passwords) over the network. All encryption operations are performed locally on your device. The platform is not responsible for asset loss or data leakage caused by improper custody by the user.",
+    "security_title": "4. Security Environment Requirements",
+    "security_desc": "To ensure the safety of your assets, please ensure you use this platform in a secure environment. Please ensure that your browser does not have unknown or malicious extensions installed, as these extensions may steal your input information. It is recommended to regularly scan for viruses and keep your operating system updated."
   },
   "transfer": {
     "transfer": "Transfer",

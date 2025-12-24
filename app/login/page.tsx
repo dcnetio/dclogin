@@ -4,7 +4,7 @@ import React from "react";
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslation } from "react-i18next";
-import { Button, Input } from "antd-mobile";
+import { Button, Input, Checkbox } from "antd-mobile";
 import { createAccountWithLogin } from "@/app/index";
 import { getDC } from "@/components/auth/login/dc";
 import { store } from "@/lib/store";
@@ -12,6 +12,7 @@ import { saveInitState } from "@/lib/slices/appSlice";
 import { appState } from "@/config/constant";
 import { UserOutline, LockOutline, AppOutline, LinkOutline, GlobalOutline } from "antd-mobile-icons";
 import { CheckShieldOutline } from "@/components/icons/CheckShieldOutline";
+import UserAgreementModal from "@/components/modals/UserAgreementModal";
 
 export default function Login() {
   // 保持现有的 state 和 hooks
@@ -25,6 +26,8 @@ export default function Login() {
   const [isMobile, setIsMobile] = useState(true);
   const [showSafecode, setShowSafecode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isAgreed, setIsAgreed] = useState(false);
+  const [showAgreement, setShowAgreement] = useState(false);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -39,6 +42,15 @@ export default function Login() {
   const gotoConfirm = async () => {
     // Set loading state to true when login starts
     setIsLoading(true);
+
+    if (!isAgreed) {
+      window.showToast({
+        content: t("common.agreement_unchecked"),
+        position: "center",
+      });
+      setIsLoading(false);
+      return;
+    }
 
     // Validate input
     if (!account) {
@@ -238,6 +250,34 @@ export default function Login() {
                 </div>
               )}
             </div>
+
+            <div className="flex items-start mt-4">
+              <Checkbox
+                checked={isAgreed}
+                onChange={setIsAgreed}
+                style={{
+                  "--icon-size": "18px",
+                  "--font-size": "14px",
+                  "--gap": "6px",
+                }}
+              >
+                <span 
+                  className="text-slate-400 text-xs leading-tight block text-left cursor-pointer hover:text-primary transition-colors"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setShowAgreement(true);
+                  }}
+                >
+                  {t("common.agreement_text")}
+                </span>
+              </Checkbox>
+            </div>
+
+            <UserAgreementModal 
+              isOpen={showAgreement} 
+              onClose={() => setShowAgreement(false)} 
+            />
+
 
             <Button
               block

@@ -119,13 +119,7 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
       );
       // 初始化成功，
       store.dispatch(saveInitState(appState.init_success));
-      router.replace(
-        `/${
-          window.location.pathname && window.location.pathname.startsWith("/")
-            ? window.location.pathname.slice(1)
-            : window.location.pathname
-        }${window.location.search}`
-      );
+      router.replace(`/home${window.location.search}`);
     } catch (err) {
       console.error("登录失败:", err);
     }

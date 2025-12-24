@@ -70,7 +70,7 @@ export default function RootLayout({
       case "/changePassword":
         return t("changePassword.title");
       case "/orders":
-        return t("orders.title", "订单列表");
+        return t("orders.list_title", "订单列表");
       default:
         return ""; // 默认标题
     }

@@ -222,11 +222,7 @@ export default function OrderListPage() {
                       : "bg-yellow-500/10 text-yellow-400 border-yellow-500/20"
                   }`}
                 >
-                  {StoragePurchaseStatus.SUCCESS == order.status
-                    ? StoragePurchaseStatus.SUCCESS_DESC
-                    : StoragePurchaseStatus.CANCEL == order.status
-                    ? StoragePurchaseStatus.CANCEL_DESC
-                   getStatusDesc(order.status)}
+                  {getStatusDesc(order.status)}
                 </span>
               </div>
               <div className="flex justify-between items-center pt-4 border-t border-white/10">
@@ -252,6 +248,10 @@ export default function OrderListPage() {
             </div>
             <h3 className="text-lg font-medium text-slate-300 mb-2">
               {t("order.no_order_info")}
+            </h3>
+          </div>
+        )}
+      </div>
 
       {selectedOrder && (
         <OrderDetail order={selectedOrder} onClose={handleCloseDetail} />

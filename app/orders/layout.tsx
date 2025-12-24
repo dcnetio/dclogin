@@ -30,7 +30,7 @@ export default function OrdersLayout({
           } as any}
         >
           <span className="text-white font-bold text-lg">
-            {t('orders.title', '订单列表')}
+            {t('orders.list_title', '订单列表')}
           </span>
         </NavBar>
       </div>

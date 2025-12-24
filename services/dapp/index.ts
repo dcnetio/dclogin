@@ -273,11 +273,10 @@ async function connectCmdHandler(
     return;
   }
   const connectingApp = message.data;
-  const appInfo = connectingApp || null;
   // 不是来自默认Dapp的
-  if (!appInfo || !appInfo.appId) {
+  if (!bool) {
+    const dc = await checkDCInitialized();
     const appId = dcConfig.appInfo?.appId || "";
-    const dc = getDC();
     if (dc) {
       const nAppInfo = store.getState().auth.appInfo || null;
       nAppInfo && dc.setAppInfo(nAppInfo);

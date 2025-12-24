@@ -5,6 +5,7 @@ import { OrderRecord } from "@/types/pageType";
 import { container } from "@/server/dc-contianer";
 import { Button, Toast } from "antd-mobile";
 import QRCode from "qrcode";
+import { useTranslation } from "react-i18next";
 import {
   getOrderInfoWithOrderId,
   updateOrderRecord,
@@ -15,6 +16,7 @@ interface OrderDetailProps {
   onClose: () => void;
 }
 export default function OrderDetail({ order, onClose }: OrderDetailProps) {
+  const { t } = useTranslation();
   const [orderInfo, setOrderInfo] = useState<OrderRecord>(order);
 
   const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
@@ -25,7 +27,7 @@ export default function OrderDetail({ order, onClose }: OrderDetailProps) {
     if (nOrderInfo && nOrderInfo.status === StoragePurchaseStatus.SUCCESS) {
       Toast.show({
         icon: "success",
-        content: "订阅成功",
+        content: t("order.subscribe_success"),
         position: "center",
       });
       return;
@@ -33,7 +35,7 @@ export default function OrderDetail({ order, onClose }: OrderDetailProps) {
     if (nOrderInfo && nOrderInfo.status === StoragePurchaseStatus.CANCEL) {
       Toast.show({
         icon: "fail",
-        content: "订单已取消",
+        content: t("order.order_cancelled"),
         position: "center",
       });
       return;
@@ -49,7 +51,7 @@ export default function OrderDetail({ order, onClose }: OrderDetailProps) {
     if (!wxPayManager) {
       Toast.show({
         icon: "fail",
-        content: "微信支付管理器未初始化",
+        content: t("order.wxpay_not_init"),
         position: "center",
       });
       return [];
@@ -60,7 +62,7 @@ export default function OrderDetail({ order, onClose }: OrderDetailProps) {
     if (error) {
       Toast.show({
         icon: "fail",
-        content: error.message || "获取支付二维码失败",
+        content: error.message || t("order.get_qrcode_failed"),
         position: "center",
       });
       return [];
@@ -73,7 +75,7 @@ export default function OrderDetail({ order, onClose }: OrderDetailProps) {
     if (!orderInfo || !orderInfo.orderId) {
       Toast.show({
         icon: "fail",
-        content: "暂无订单信息",
+        content: t("order.no_order_info"),
         position: "center",
       });
       return;
@@ -83,7 +85,7 @@ export default function OrderDetail({ order, onClose }: OrderDetailProps) {
     if (nOrderInfo && nOrderInfo.status === StoragePurchaseStatus.SUCCESS) {
       Toast.show({
         icon: "success",
-        content: "订阅成功",
+        content: t("order.subscribe_success"),
         position: "center",
       });
       setQrCodeUrl("");
@@ -92,14 +94,14 @@ export default function OrderDetail({ order, onClose }: OrderDetailProps) {
     if (nOrderInfo && nOrderInfo.status === StoragePurchaseStatus.CANCEL) {
       Toast.show({
         icon: "fail",
-        content: "订单已取消",
+        content: t("order.order_cancelled"),
         position: "center",
       });
       setQrCodeUrl("");
       return;
     }
     Toast.show({
-      content: "订单待确认，请稍后查看",
+      content: t("order.order_pending"),
       position: "center",
     });
   };
@@ -112,7 +114,7 @@ export default function OrderDetail({ order, onClose }: OrderDetailProps) {
       if (!wxPayManager) {
         Toast.show({
           icon: "fail",
-          content: "微信支付管理器未初始化",
+          content: t("order.wxpay_not_init"),
           position: "center",
         });
         return nOrderInfo;
@@ -123,7 +125,7 @@ export default function OrderDetail({ order, onClose }: OrderDetailProps) {
       if (error) {
         Toast.show({
           icon: "fail",
-          content: error.message || "查询订单失败",
+          content: error.message || t("order.query_order_failed"),
           position: "center",
         });
         return nOrderInfo;
@@ -175,7 +177,7 @@ export default function OrderDetail({ order, onClose }: OrderDetailProps) {
           <div>
             <h2 className="text-xl font-bold text-white flex items-center gap-2">
               <span className="w-1 h-5 bg-primary rounded-full shadow-[0_0_10px_rgba(59,130,246,0.5)]"></span>
-              订单详情
+              {t("order.order_detail")}
             </h2>
             <p className="text-sm text-slate-400 mt-1 ml-3 font-mono">
               #{orderInfo.orderId}
@@ -213,13 +215,13 @@ export default function OrderDetail({ order, onClose }: OrderDetailProps) {
             </div>
             <div className="space-y-2 relative z-10">
               <div className="flex justify-between items-start">
-                <span className="text-slate-400 text-sm">套餐名称</span>
+                <span className="text-slate-400 text-sm">{t("order.package_name")}</span>
                 <span className="text-white font-medium text-right">
                   {orderInfo.pkgName}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-slate-400 text-sm">下单时间</span>
+                <span className="text-slate-400 text-sm">{t("order.order_time")}</span>
                 <span className="text-white font-mono text-sm">
                   {new Date(orderInfo.createTime).toLocaleString()}
                 </span>
@@ -231,22 +233,22 @@ export default function OrderDetail({ order, onClose }: OrderDetailProps) {
           <div className="bg-white/5 border border-white/10 rounded-xl p-6">
             <h3 className="text-lg font-semibold text-white mb-5 flex items-center gap-2">
               <CreditCard size={20} className="text-primary" />
-              支付信息
+              {t("order.payment_info")}
             </h3>
             <div className="space-y-4">
               <div className="flex justify-between items-center pb-4 border-b border-white/5">
-                <span className="text-slate-400">支付方式</span>
-                <span className="text-white font-medium">微信支付</span>
+                <span className="text-slate-400">{t("order.payment_method")}</span>
+                <span className="text-white font-medium">{t("order.wechat_pay")}</span>
               </div>
               <div className="flex justify-between items-center pb-4 border-b border-white/5">
-                <span className="text-slate-400">支付金额</span>
+                <span className="text-slate-400">{t("order.payment_amount")}</span>
                 <span className="text-xl font-bold text-white">
                   {orderInfo.currency === CurrencyType.CNY ? "¥" : "$"}
                   {orderInfo.amount ? (orderInfo.amount * 0.01).toFixed(2) : 0}
                 </span>
               </div>
               <div className="flex justify-between items-center pb-4 border-b border-white/5">
-                <span className="text-slate-400">交易单号</span>
+                <span className="text-slate-400">{t("order.transaction_id")}</span>
                 <span
                   className="text-white font-mono text-sm text-right max-w-[200px] truncate"
                   title={orderInfo.orderId}
@@ -255,7 +257,7 @@ export default function OrderDetail({ order, onClose }: OrderDetailProps) {
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-slate-400">支付时间</span>
+                <span className="text-slate-400">{t("order.payment_time")}</span>
                 <span className="text-white font-mono text-sm">
                   {new Date(orderInfo.createTime).toLocaleString()}
                 </span>
@@ -270,7 +272,7 @@ export default function OrderDetail({ order, onClose }: OrderDetailProps) {
                 onClick={handlePay}
                 className="bg-primary text-white px-8 py-2 rounded-xl hover:bg-primary/90 transition-colors"
               >
-                支付
+                {t("order.pay")}
               </button>
             </div>
           )}
@@ -289,9 +291,9 @@ export default function OrderDetail({ order, onClose }: OrderDetailProps) {
             </div>
             <div className="flex-1 flex flex-col mb-8 px-16 py-8 items-center justify-center">
               <p className="text-gray-300 mb-2">
-                套餐名称：{orderInfo?.pkgName}
+                {t("order.package_name")}：{orderInfo?.pkgName}
               </p>
-              <h2 className="text-2xl font-bold mb-6 text-white">扫一扫付款</h2>
+              <h2 className="text-2xl font-bold mb-6 text-white">{t("order.scan_to_pay")}</h2>
               <div className="bg-white p-4 rounded-xl mb-8">
                 <img
                   src={qrCodeUrl}
@@ -304,7 +306,7 @@ export default function OrderDetail({ order, onClose }: OrderDetailProps) {
                 className="py-3 w-full max-w-xs font-bold"
                 variant="primary"
               >
-                已完成支付
+                {t("order.payment_completed")}
               </Button>
             </div>
           </div>

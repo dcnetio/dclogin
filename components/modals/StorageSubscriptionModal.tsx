@@ -76,7 +76,7 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
   const nextStep = () => {
     if (!account || !account.nftAccount) {
       Toast.show({
-        content: "请先登录",
+        content: t("order.please_login"),
         position: "center",
       });
       return;
@@ -85,7 +85,7 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
       setStep(2);
     } else {
       Toast.show({
-        content: "请先选择一个存储套餐",
+        content: t("order.select_package"),
         position: "center",
       });
     }
@@ -138,7 +138,7 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
     if (!orderInfo || !orderInfo.orderId) {
       Toast.show({
         icon: "fail",
-        content: "暂无订单信息",
+        content: t("order.no_order_info"),
         position: "center",
       });
       return;
@@ -152,7 +152,7 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
       if (!wxPayManager) {
         Toast.show({
           icon: "fail",
-          content: "微信支付管理器未初始化",
+          content: t("order.wxpay_not_init"),
           position: "center",
         });
         return [];
@@ -167,7 +167,7 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
       if (error) {
         Toast.show({
           icon: "fail",
-          content: error.message || "获取支付订单失败",
+          content: error.message || t("order.get_order_failed"),
           position: "center",
         });
         return [];
@@ -184,7 +184,7 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
       if (!wxPayManager) {
         Toast.show({
           icon: "fail",
-          content: "微信支付管理器未初始化",
+          content: t("order.wxpay_not_init"),
           position: "center",
         });
         return [];
@@ -206,7 +206,7 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
       if (error) {
         Toast.show({
           icon: "fail",
-          content: error.message || "创建支付订单失败",
+          content: error.message || t("order.create_order_failed"),
           position: "center",
         });
         return [];
@@ -224,7 +224,7 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
       if (!wxPayManager) {
         Toast.show({
           icon: "fail",
-          content: "微信支付管理器未初始化",
+          content: t("order.wxpay_not_init"),
           position: "center",
         });
         return [];
@@ -233,7 +233,7 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
       if (error) {
         Toast.show({
           icon: "fail",
-          content: error.message || "获取支付二维码失败",
+          content: error.message || t("order.get_qrcode_failed"),
           position: "center",
         });
         return [];
@@ -270,7 +270,7 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
       if (!wxPayManager) {
         Toast.show({
           icon: "fail",
-          content: "微信支付管理器未初始化",
+          content: t("order.wxpay_not_init"),
           position: "center",
         });
         return [];
@@ -281,7 +281,7 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
       if (error) {
         Toast.show({
           icon: "fail",
-          content: error.message || "查询订单失败",
+          content: error.message || t("order.query_order_failed"),
           position: "center",
         });
         return [];
@@ -295,7 +295,7 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
         });
         Toast.show({
           icon: "success",
-          content: "订阅成功",
+          content: t("order.subscribe_success"),
           position: "center",
         });
       } else if (status === StoragePurchaseStatus.WAITING_CONFIRM) {
@@ -310,14 +310,14 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
               status: StoragePurchaseStatus.CANCEL as number,
             });
             Toast.show({
-              content: "订单过期，请重新订阅",
+              content: t("order.order_expired"),
               position: "center",
             });
             return;
           }
         }
         Toast.show({
-          content: "订单待确认，请稍后查看",
+          content: t("order.order_pending"),
           position: "center",
         });
       }
@@ -334,7 +334,7 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
       <div className="w-full max-w-4xl max-h-[90vh] flex flex-col bg-slate-900 border border-white/10 rounded-2xl shadow-2xl">
         <div className="p-6 border-b border-white/10 flex justify-between items-center shrink-0">
           <div>
-            <h2 className="text-2xl font-bold">存储套餐订阅</h2>
+            <h2 className="text-2xl font-bold">{t("order.subscription_title")}</h2>
           </div>
           <Button
             fill="none"
@@ -362,7 +362,7 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
           {step === 1 ? (
             <>
               <div className="flex-1 overflow-y-auto p-6">
-                <p className="text-gray-300 mb-4">选择适合您的存储方案</p>
+                <p className="text-gray-300 mb-4">{t("order.select_plan")}</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
                   {storagePlans.map((plan) => (
                     <Card
@@ -415,7 +415,7 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
                                   : "text-gray-400"
                               }`}
                             >
-                              /12月
+                              {t("order.month_12")}
                             </span>
                           </div>
                         </div>
@@ -438,7 +438,7 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
                   className="flex-1 py-3"
                   variant="primary"
                 >
-                  下一步
+                  {t("order.next_step")}
                 </Button>
                 {(!account || !account.nftAccount) && (
                   <Button
@@ -446,7 +446,7 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
                     className="flex-1 ml-4 py-3"
                     variant="neutral"
                   >
-                    登录
+                    {t("login.login")}
                   </Button>
                 )}
               </div>
@@ -456,12 +456,12 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
               <div className="flex-1 overflow-y-auto p-6">
                 <div className="max-w-2xl mx-auto">
                   <div className="bg-white/5 rounded-xl p-4 lg:p-6 mb-4 lg:mb-6 border border-white/10">
-                    <h3 className="text-lg lg:text-xl font-bold mb-3 lg:mb-4 text-white">确认购买</h3>
+                    <h3 className="text-lg lg:text-xl font-bold mb-3 lg:mb-4 text-white">{t("order.confirm_purchase")}</h3>
                     <div className="flex items-center justify-between p-3 lg:p-4 bg-white/5 rounded-lg border border-white/10">
                       <div>
                         <h4 className="font-bold text-white">{selectedPlan.pkgName}</h4>
                         <p className="text-gray-400 text-sm lg:text-base">
-                          {selectedPlan.spaceSize}GB /{selectedPlan.validDays}天
+                          {selectedPlan.spaceSize}GB /{selectedPlan.validDays}{t("order.day")}
                         </p>
                       </div>
                       <div className="text-lg lg:text-xl font-bold text-white">
@@ -474,7 +474,7 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
                   </div>
 
                   <div className="bg-white/5 rounded-xl p-4 lg:p-6 mb-4 lg:mb-6 border border-white/10">
-                    <h3 className="text-lg lg:text-xl font-bold mb-3 lg:mb-4 text-white">支付方式</h3>
+                    <h3 className="text-lg lg:text-xl font-bold mb-3 lg:mb-4 text-white">{t("order.payment_method")}</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
                       <div
                         className={`border-2 rounded-lg p-3 lg:p-4 cursor-pointer transition ${
@@ -494,7 +494,7 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
                               <path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-1.952 16.544c-.007-.007-.015-.014-.029-.014-.015 0-.022.007-.029.014-.651.651-1.697.651-2.348 0-.651-.651-.651-1.697 0-2.348.651-.651 1.697-.651 2.348 0 .651.651.651 1.697 0 2.348zm5.904 0c-.007-.007-.015-.014-.029-.014-.015 0-.022.007-.029.014-.651.651-1.697.651-2.348 0-.651-.651-.651-1.697 0-2.348.651-.651 1.697-.651 2.348 0 .651.651.651 1.697 0 2.348z" />
                             </svg>
                           </div>
-                          <span className="font-medium text-white">微信支付</span>
+                          <span className="font-medium text-white">{t("order.wechat_pay")}</span>
                         </div>
                       </div>
                     </div>
@@ -508,7 +508,7 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
                   variant="neutral"
                   className="flex-1 py-3"
                 >
-                  返回
+                  {t("changePassword.back")}
                 </Button>
                 <Button
                   onClick={handlePayment}
@@ -538,10 +538,10 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
                           d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                         ></path>
                       </svg>
-                      处理中...
+                      {t("order.processing")}
                     </>
                   ) : (
-                    `确认支付 ${
+                    `${t("order.confirm_pay")} ${
                       selectedPlan?.currency === CurrencyType.CNY ? "¥" : "$"
                     }${
                       selectedPlan.amount
@@ -556,9 +556,9 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
             /* 显示二维码*/
             <div className="flex-1 flex flex-col items-center justify-center p-6">
               <p className="text-gray-300 mb-2">
-                套餐名称：{selectedPlan?.pkgName}
+                {t("order.package_name")}：{selectedPlan?.pkgName}
               </p>
-              <h2 className="text-2xl font-bold mb-6 text-white">扫一扫付款</h2>
+              <h2 className="text-2xl font-bold mb-6 text-white">{t("order.scan_to_pay")}</h2>
               <div className="bg-white p-4 rounded-xl mb-8">
                 <img
                   src={qrCodeUrl}
@@ -571,7 +571,7 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
                 className="py-3 w-full max-w-xs font-bold"
                 variant="primary"
               >
-                已完成支付
+                {t("order.payment_completed")}
               </Button>
             </div>
           )}

@@ -1,7 +1,7 @@
 "use client";
-import { Ellipsis } from 'antd-mobile';
-import { useEffect } from 'react';
-import styles from './index.module.css'
+import { Ellipsis } from "antd-mobile";
+import { useEffect } from "react";
+import Card from "@/components/ui/Card";
 import { AccountInfo } from '@/types/walletTypes';
 interface TransItemProps {
   fromItem: AccountInfo | undefined;
@@ -13,18 +13,13 @@ export default function TransItem(props: TransItemProps) {
   }, []);
  
   return (
-    <div className={styles.info}>
-    <Ellipsis
-      direction="middle"
-      content={fromItem?.account || ''}
-      className={styles.account}
-    />
-    
-    <Ellipsis
-      direction="middle"
-      content={to || ''}
-      className={styles.account}
-    />
+    <div className="flex gap-3 flex-col md:flex-row">
+      <Card className="flex-1 text-center py-3">
+        <Ellipsis direction="middle" content={fromItem?.account || ""} className="text-sm text-white" />
+      </Card>
+      <Card className="flex-1 text-center py-3">
+        <Ellipsis direction="middle" content={to || ""} className="text-sm text-white" />
+      </Card>
     </div>
   );
 }

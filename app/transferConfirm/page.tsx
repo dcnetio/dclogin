@@ -1,5 +1,5 @@
 "use client";
-import styles from "./page.module.css";
+// import styles from "./page.module.css";
 import { useRouter, useSearchParams } from "next/navigation";
 import TransItem from "@/components/transfer/transItem";
 import { useEffect, useState } from "react";
@@ -11,6 +11,8 @@ import { Button, Dialog } from "antd-mobile";
 import { appState } from "@/config/constant";
 import { useAppSelector } from "@/lib/hooks";
 import { useTranslation } from "react-i18next";
+import { CheckCircle2 } from "lucide-react";
+
 export default function TransferConfirm() {
   const router = useRouter();
   const { t } = useTranslation();
@@ -37,13 +39,17 @@ export default function TransferConfirm() {
     // 确认框
     Dialog.confirm({
       content: (
-        <div className={styles.pop}>
-          <div className={styles.sTitle}>
-            {t("transfer.confirm_transfer")}：
+        <div className="p-4 text-center">
+          <div className="text-lg font-bold mb-2 text-slate-800">
+            {t("transfer.confirm_transfer")}
           </div>
-          <div className={styles.address}>
-            {t("transfer.confirm_to")} {to} {t("transfer.transfer")} {amount}{" "}
-            {currencySymbol}
+          <div className="text-sm text-slate-600 break-all">
+            {t("transfer.confirm_to")}{" "}
+            <span className="font-mono text-primary">{to}</span> <br />
+            {t("transfer.transfer")}{" "}
+            <span className="font-bold text-slate-800">
+              {amount} {currencySymbol}
+            </span>
           </div>
         </div>
       ),
@@ -83,26 +89,38 @@ export default function TransferConfirm() {
     }
   }, [initState]);
   return (
-    <div>
-      <TransItem fromItem={accountInfo} to={to} />
-      <div className={styles.content}>
-        <div className={styles.balanceD}>
-          <div className={styles.tag}>
-            {t("activity.sending")}
-            {currencySymbol}
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="glass-panel w-full max-w-lg p-6 rounded-2xl space-y-6">
+        <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+          <span className="w-1 h-6 bg-primary rounded-full"></span>
+          {t("transfer.confirm_title", "确认转账")}
+        </h2>
+
+        <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+          <TransItem fromItem={accountInfo} to={to} />
+        </div>
+
+        <div className="text-center py-6 space-y-2">
+          <div className="text-sm text-slate-400">
+            {t("activity.sending")} {currencySymbol}
           </div>
-          <div className={styles.balance}>
-            {amount} {currencySymbol}
+          <div className="text-4xl font-bold text-white font-mono tracking-tight">
+            {amount}{" "}
+            <span className="text-lg text-slate-400 font-sans">
+              {currencySymbol}
+            </span>
           </div>
         </div>
-        <GASItem amount={amount} currencySymbol={currencySymbol} />
-        <GASTotal amount={amount} currencySymbol={currencySymbol} />
-      </div>
-      <div className={styles.btnD}>
-        <div className={styles.btn}>
+
+        <div className="space-y-4 bg-white/5 border border-white/10 rounded-xl p-4">
+          <GASItem amount={amount} currencySymbol={currencySymbol} />
+          <div className="h-px bg-white/10 my-2"></div>
+          <GASTotal amount={amount} currencySymbol={currencySymbol} />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4 pt-4">
           <Button
-            color="primary"
-            fill="outline"
+            className="btn-secondary !rounded-xl !h-12 !text-base !font-medium"
             onClick={() => {
               router?.back();
             }}
@@ -110,9 +128,11 @@ export default function TransferConfirm() {
           >
             {t("common.cancel")}
           </Button>
-        </div>
-        <div className={styles.btn}>
-          <Button color="primary" fill="solid" onClick={transferBN} block>
+          <Button
+            className="btn-primary !rounded-xl !h-12 !text-base !font-semibold"
+            onClick={transferBN}
+            block
+          >
             {t("common.confirm")}
           </Button>
         </div>

@@ -1,5 +1,4 @@
 import { Button, List, Popup } from "antd-mobile";
-import styles from "./index.module.css";
 import { useEffect, useState } from "react";
 import DBHelper, { getAllData, store_account } from "@/helpers/DBHelper";
 import { AccountInfo } from "@/types/walletTypes";
@@ -65,10 +64,10 @@ export default function Account(props: AccountProps) {
           </List.Item>
         ))}
         {list.length == 0 && (
-          <div className={styles.emptyTxt}>{t("account.empty")}</div>
+          <div className="py-10 text-center text-gray-400">{t("account.empty")}</div>
         )}
       </List>
-      <div className={styles.btn}>
+      <div className="m-5">
         <Button color="primary" size="large" block>
           {t("account.add")}
         </Button>

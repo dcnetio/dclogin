@@ -1,8 +1,9 @@
 "use client";
 import { APPInfo } from "web-dc-api";
-import styles from "./index.module.css";
 import { Button } from "antd-mobile";
-import {CheckShieldFill} from "antd-mobile-icons";
+import { CheckShieldFill } from "antd-mobile-icons";
+import Card from "@/components/ui/Card";
+import Container from "@/components/ui/Container";
 import { useTranslation} from 'react-i18next';
 
 interface AddDAPPNoteProps {
@@ -13,37 +14,39 @@ export default function AddDAPPNote(props: AddDAPPNoteProps) {
   const { info, confirmFun } = props;
   const {t} = useTranslation();
   return (
-    <div className={styles.page}>
-      <div className={styles.icon}>
-        <CheckShieldFill fontSize={48}/>
-      </div>
-      {/* <div className={styles.title}>{t('DAPP.add_title')}</div> */}
-      <div className={styles.content}>
-        <div className={styles.url}>{info.appUrl}</div>
-        <div className={styles.name}>
-        {t('DAPP.app')}{info.appName} {info.appVersion}
+    <div className="min-h-screen flex items-center justify-center p-6">
+      <Card className="w-full max-w-md text-center">
+        <div className="flex justify-center mb-4">
+          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+            <CheckShieldFill fontSize={28} color="white" />
+          </div>
         </div>
-      </div>
-      <div className={styles.note}>{t('DAPP.add_tip')}</div>
-      <div className={styles.btnD}>
-        <div className={styles.btn}>
-          <Button
-            color="primary"
-            fill="outline"
-            onClick={() => {
-              window.close();
-            }}
-            block
-          >
-            {t('common.cancel')}
-          </Button>
+        <div className="mb-2 text-sm text-blue-400 break-words">{info.appUrl}</div>
+        <div className="font-semibold text-lg mb-2">
+          {t("DAPP.app")} {info.appName} {info.appVersion}
         </div>
-        <div className={styles.btn}>
-          <Button color="primary" fill="solid" onClick={confirmFun} block>
-          {/* {t('DAPP.allow_add')} */}
-          </Button>
+        <div className="mt-4 text-sm font-bold text-amber-500">{t("DAPP.add_tip")}</div>
+
+        <div className="flex gap-4 mt-6">
+          <div className="flex-1">
+            <Button
+              color="primary"
+              fill="outline"
+              onClick={() => {
+                window.close();
+              }}
+              block
+            >
+              {t("common.cancel")}
+            </Button>
+          </div>
+          <div className="flex-1">
+            <Button color="primary" fill="solid" onClick={confirmFun} block>
+              {t("common.confirm", "确认")}
+            </Button>
+          </div>
         </div>
-      </div>
+      </Card>
     </div>
   );
 }

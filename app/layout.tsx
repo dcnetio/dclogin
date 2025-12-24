@@ -16,18 +16,27 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { NavBar } from "antd-mobile";
 import { useTranslation } from "react-i18next";
-// import { unstableSetRender } from "antd-mobile"; // Support since version ^5.40.0
-// import { createRoot } from "react-dom/client";
+import { unstableSetRender } from "antd-mobile";
+import { createRoot, Root } from "react-dom/client";
 
-// unstableSetRender((node, container) => {
-//   container._reactRoot ||= createRoot(container);
-//   const root = container._reactRoot;
-//   root.render(node);
-//   return async () => {
-//     await new Promise((resolve) => setTimeout(resolve, 0));
-//     root.unmount();
-//   };
-// });
+// 使用 WeakMap 替代在 DOM 元素上添加属性（更干净）
+const rootMap = new WeakMap<Element | DocumentFragment, Root>();
+
+unstableSetRender((node, container) => {
+  let root = rootMap.get(container);
+  if (!root) {
+    root = createRoot(container);
+    rootMap.set(container, root);
+  }
+
+  root.render(node);
+
+  return async () => {
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    root!.unmount();
+    rootMap.delete(container);
+  };
+});
 const geistSans = localFont({
   src: "../fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -60,6 +69,8 @@ export default function RootLayout({
         return t("register.register");
       case "/changePassword":
         return t("changePassword.title");
+      case "/orders":
+        return t("orders.list_title", "订单列表");
       default:
         return ""; // 默认标题
     }
@@ -67,7 +78,9 @@ export default function RootLayout({
 
   useEffect(() => {
     // 路由变化时更新 showHeader
-    setShowHeader(pathname !== "/");
+    // 首页、登录页、注册页不显示头部
+    const name = pathname.endsWith("/") ? pathname.slice(0, -1) : pathname;
+    setShowHeader(name !== "" && name !== "/login" && name !== "/register");
   }, [pathname]);
 
   useEffect(() => {
@@ -91,23 +104,25 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <link rel="icon" href="/logo.svg" type="image/svg+xml" />
         <Script id="wallet-origin" strategy="beforeInteractive">
           {`globalThis.walletOpenOrigin = window.location.origin;`}
         </Script>
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
       >
-        <div className={styles.container}>
+        <div className="flex-1 relative z-10">
           <StoreProvider>
             <Locales>
               {showHeader && isMobile && (
                 <NavBar
+                  className="tech-navbar"
                   onBack={
                     isFirstVisit ? undefined : () => window.history.back()
                   } // 根据首次访问状态决定是否显示返回功能
                 >
-                  <div style={{ fontWeight: "bold", fontSize: "16px" }}>
+                  <div className="text-lg font-bold text-white text-glow">
                     {getTitle(pathname)} {/* 动态标题 */}
                   </div>
                 </NavBar>
@@ -115,7 +130,9 @@ export default function RootLayout({
               <RefreshProtectionProvider paramName="origin">
                 <ToastProvider>
                   <Login />
-                  {children}
+                  <main className="flex-1 w-full">
+                    {children}
+                  </main>
                 </ToastProvider>
                 <ProtectionStatus />
                 <StrictRefreshBlocker />

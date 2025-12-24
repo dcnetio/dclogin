@@ -11,6 +11,7 @@ import { Toast } from "antd-mobile";
 import { User2 } from "lucide-react";
 import { useAppSelector } from "@/lib/hooks";
 import { AccountInfo } from "@/types/walletTypes";
+import LanguageSwitcher from "@/components/common/LanguageSwitcher";
 const Header = () => {
   const { t } = useTranslation();
   const router = useRouter();
@@ -44,26 +45,32 @@ const Header = () => {
       // 提示成功，并跳转到首页
       store.dispatch(
         updateAuthStep({
-          type: MsgStatus.failed,
+          type: MsgStatus.success,
           content: t("auth.success"),
         })
       );
       // 初始化成功，
       store.dispatch(saveInitState(appState.init_success));
-      router.replace(`${window.location.pathname}${window.location.search}`);
+      router.replace(
+        `/${
+          window.location.pathname && window.location.pathname.startsWith("/")
+            ? window.location.pathname.slice(1)
+            : window.location.pathname
+        }${window.location.search}`
+      );
     } catch (err) {
       console.error("登录失败:", err);
     }
   }, [authInfo]);
 
-  // const handleLogout = async () => {
-  //   try {
-  //     // 清除本地状态
-  //     setShowAccountSwitchModal(false);
-  //   } catch (err) {
-  //     console.error("登出失败:", err);
-  //   }
-  // };
+  const handleLogout = async () => {
+    try {
+      // 清除本地状态
+      setShowAccountSwitchModal(false);
+    } catch (err) {
+      console.error("登出失败:", err);
+    }
+  };
 
   useEffect(() => {
     if (account && account.nftAccount) {
@@ -71,39 +78,51 @@ const Header = () => {
     }
   }, [account?.nftAccount]);
   return (
-    <div className="bg-white p-4 shadow-lg">
-      <div className="container mx-auto flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold">登录中心</h1>
-          <p className="text-gray-700">去中心化身份管理平台</p>
+    <div className="sticky top-0 z-50 w-full backdrop-blur-md border-b border-white/5 bg-slate-900/50 h-[72px]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-row justify-between items-center">
+        <div className="flex items-center space-x-3">
+          <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
+            <div className="w-5 h-5 border-2 border-white rounded-full" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-white tracking-tight">
+              DCLogin
+            </h1>
+            <p className="text-xs text-slate-400">{t("home.subtitle")}</p>
+          </div>
         </div>
-        <div className="relative">
+        <div className="relative flex items-center gap-4">
+          <LanguageSwitcher />
           {accountInfo ? (
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => setShowAccountSwitchModal(true)}
-                className="flex items-center space-x-2 focus:outline-none"
+                className="flex items-center space-x-3 focus:outline-none group"
               >
-                <div className="bg-gray-200 rounded-full p-2">
-                  <User2 color="#333" size={18} />
-                </div>
-                <div>
-                  <p className="font-medium">
-                    {accountInfo.nftAccount
-                      ? `${accountInfo.nftAccount}`
-                      : "用户"}
+                <div className="text-right hidden sm:block">
+                  <p className="text-sm font-medium text-white group-hover:text-primary transition-colors">
+                    {accountInfo.nftAccount || t("home.user_default")}
                   </p>
+                  <p className="text-xs text-slate-400">
+                    {t("home.connected")}
+                  </p>
+                </div>
+                <div className="w-10 h-10 rounded-full bg-white/10 border border-white/10 flex items-center justify-center group-hover:bg-primary/20 group-hover:border-primary/50 transition-all">
+                  <User2
+                    className="text-white group-hover:text-primary"
+                    size={20}
+                  />
                 </div>
               </button>
             </div>
           ) : (
             <button
               onClick={handleLogin}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center"
+              className="btn-primary flex items-center space-x-2"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 mr-1"
+                className="h-5 w-5"
                 viewBox="0 0 20 20"
                 fill="currentColor"
               >
@@ -113,7 +132,7 @@ const Header = () => {
                   clipRule="evenodd"
                 />
               </svg>
-              登录
+              <span>{t("home.login")}</span>
             </button>
           )}
         </div>

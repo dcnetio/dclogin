@@ -145,8 +145,12 @@ export enum PackageLang {
   en = "en",
 }
 
-// 存储购买状态 1.等待确认 2.购买成功
+// 存储购买状态 1.待支付 2.购买成功 3.购买取消
 export enum StoragePurchaseStatus {
   WAITING_CONFIRM = 1,
+  WAITING_CONFIRM_DESC = "待支付",
   SUCCESS = 2,
+  SUCCESS_DESC = "已完成",
+  CANCEL = 3,
+  CANCEL_DESC = "已取消",
 }

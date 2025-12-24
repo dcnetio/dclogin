@@ -1,6 +1,6 @@
 "use client";
-import styles from './index.module.css'
-import { useTranslation} from 'react-i18next';
+import { useTranslation } from "react-i18next";
+import Card from "@/components/ui/Card";
 interface GASTotalProps {
   amount: string | undefined;
   currencySymbol: string;
@@ -10,17 +10,15 @@ export default function GASTotal(props: GASTotalProps) {
   const { t } = useTranslation();
  
   return (
-    <div className={styles.info}>
-      <div className={styles.titleD}>
-      <div className={styles.title}>{t('transfer.total')}</div>
-      <div className={styles.greyTxt}>{t('transfer.amount')} + {t('transfer.fuel_cost')}</div>
+    <Card className="flex items-start md:flex-row flex-col p-4">
+      <div className="w-36">
+        <div className="font-semibold text-white">{t("transfer.total")}</div>
+        <div className="text-sm text-gray-400">{t("transfer.amount")} + {t("transfer.fuel_cost")}</div>
       </div>
-      <div className={styles.list}>
-        <div className={styles.item}>
-          <div className={styles.bold}>{Number(amount) * 1.0000105}{currencySymbol}</div>
-          <div className={styles.txt}>{t('transfer.maximum_amount')}：{Number(amount) * 1.0000105}{currencySymbol}</div>
-        </div>
+      <div className="flex-1 text-right">
+        <div className="text-lg font-bold text-white">{Number(amount) * 1.0000105}{currencySymbol}</div>
+        <div className="text-sm text-gray-400">{t("transfer.maximum_amount")}：{Number(amount) * 1.0000105}{currencySymbol}</div>
       </div>
-    </div>
+    </Card>
   );
 }

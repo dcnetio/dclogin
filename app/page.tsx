@@ -1,357 +1,160 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import Header from "@/components/common/header";
-import StorageSubscriptionModal from "@/components/modals/StorageSubscriptionModal";
+
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Shield, Cloud, Lock, Globe, ArrowLeft, Zap, Server, Key, Languages } from "lucide-react";
+import { useTranslation, Trans } from "react-i18next";
+import { I18N_LANGUAGES } from "@/config/constant";
 import { useAppSelector } from "@/lib/hooks";
-import { getUserInfoWithNft } from "@/services/account";
-import { User } from "web-dc-api";
-import { Toast } from "antd-mobile";
-import ethers from "@/helpers/ethersHelper";
-import {
-  asyncAuthRecord,
-  getAuthRecordsWithAccount,
-} from "@/services/threadDB/auths";
-import { AuthRecord } from "@/types/pageType";
-import { AccountInfo } from "@/types/walletTypes";
-import { useRouter, useSearchParams } from "next/navigation";
-import DAPPNote from "@/components/note/DAPPNote";
-interface UserInfo extends User {
-  points: number;
-}
 
-const Dashboard = () => {
+export default function FeaturesPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const origin = searchParams.get("origin");
-  const [userInfo, setUserInfo] = useState<UserInfo>(null);
+  const { t, i18n } = useTranslation();
   const [apps] = useState<any[]>([]);
-  const [loginHistory, setLoginHistory] = useState<AuthRecord[]>([]);
-  const [displayedLoginHistory, setDisplayedLoginHistory] = useState<
-    AuthRecord[]
-  >([]);
-  const [error] = useState<string | null>(null);
-  const [historyPage, setHistoryPage] = useState(1);
-  // const [setShowExchangeModal] = useState(false);
-  const [showStorageModal, setShowStorageModal] = useState(false);
+  const account = useAppSelector((state) => state.wallet.account);
 
-  const account: AccountInfo = useAppSelector((state) => state.wallet.account);
+  const changeLanguage = (lng: string) => {
+    i18n.changeLanguage(lng);
+  };
 
-  const HISTORY_PAGE_SIZE = 3;
-  // 获取用户信息的逻辑
-  const getUserInfo = async () => {
-    // setIsLoading(true);
-    // 获取用户信息
-    const [userInfo, error] = await getUserInfoWithNft(account.nftAccount);
-    if (error) {
-      Toast.show({
-        content: error.message || "获取用户信息失败",
-        position: "center",
-      });
-      return;
+  const handleExperience = () => {
+    router.push('/home');
+  };
+
+  const features = [
+    {
+      icon: <Key className="w-8 h-8 text-blue-400" />,
+      title: t("home.feature_login_title"),
+      description: t("home.feature_login_desc"),
+      gradient: "from-blue-500/20 to-blue-600/5"
+    },
+    {
+      icon: <Cloud className="w-8 h-8 text-violet-400" />,
+      title: t("home.feature_cloud_title"),
+      description: t("home.feature_cloud_desc"),
+      gradient: "from-violet-500/20 to-violet-600/5"
+    },
+    {
+      icon: <Globe className="w-8 h-8 text-cyan-400" />,
+      title: t("home.feature_decentralized_title"),
+      description: t("home.feature_decentralized_desc"),
+      gradient: "from-cyan-500/20 to-cyan-600/5"
+    },
+    {
+      icon: <Shield className="w-8 h-8 text-emerald-400" />,
+      title: t("home.feature_security_title"),
+      description: t("home.feature_security_desc"),
+      gradient: "from-emerald-500/20 to-emerald-600/5"
     }
-    // 获取用户余额
-    const balance = await ethers.getUserBalance(account.account);
-    userInfo.points = balance;
-    setUserInfo(userInfo);
-    // 获取授权记录
-    getAuthHistorys(account.account);
-  };
-
-  const getAuthHistorys = async (accountStr: string): Promise<AuthRecord[]> => {
-    try {
-      console.log("getAuthHistorys accountStr", accountStr);
-      const records = await getAuthRecordsWithAccount(accountStr);
-      setLoginHistory(records);
-      // 同步授权记录
-      const flag = await asyncAuthRecord(accountStr);
-      if (flag) {
-        const nrecords = await getAuthRecordsWithAccount(accountStr);
-        setLoginHistory(nrecords);
-      }
-    } catch (error) {
-      console.log("getAuthHistorys error", error);
-      Toast.show({
-        content: error.message || "获取授权记录失败",
-        position: "center",
-      });
-      return [];
-    }
-  };
-
-  const handleLoadMoreHistory = () => {
-    setHistoryPage((prevPage) => prevPage + 1);
-  };
-
-  const handleSubscribeStorage = () => {
-    setShowStorageModal(true);
-  };
-
-  // const handleExchangePoints = async (points: number) => {
-  //   try {
-  //     const dc = await getDC();
-  //     if (!dc) {
-  //       throw new Error("未获取到有效的 DC 实例");
-  //     }
-
-  //     let [kvdb] = await dc.keyValue.getStore(
-  //       dc.appInfo.appId,
-  //       "keyvalue_user_pub",
-  //       APPThemeConfig.appThemeAuthor
-  //     );
-  //     if (!kvdb) {
-  //       throw new Error("用户主题不存在");
-  //     }
-
-  //     alert(`成功兑换 ${points} 积分`);
-  //   } catch (err) {
-  //     setError(err.message || "兑换失败");
-  //   }
-  // };
-
-  const formatBytes = (bytes: number, decimals = 2) => {
-    if (bytes === 0) return "0 Bytes";
-    const k = 1024;
-    const dm = decimals < 0 ? 0 : decimals;
-    const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
-  };
-
-  const handleRefreshLoginHistory = async () => {
-    if (account && account.account) {
-      const accountStr = account.account;
-      // 同步授权记录
-      const flag = await asyncAuthRecord(accountStr);
-      if (flag) {
-        const nrecords = await getAuthRecordsWithAccount(accountStr);
-        setLoginHistory(nrecords);
-      }
-    }
-  };
-
-  const gotoOrderRecords = () => {
-    router.push("/orders");
-  };
-
-  const exchangePoints = async () => {
-    if (!userInfo) {
-      Toast.show({
-        content: "未登录",
-        position: "center",
-      });
-      return;
-    }
-    if (!userInfo?.points || userInfo.points == 0) {
-      // Optionally show a message or handle the case when points are insufficient
-      Toast.show({
-        content: "积分不足",
-        position: "center",
-      });
-      return;
-    }
-    // setShowExchangeModal(true);
-  };
-
-  useEffect(() => {
-    if (account && account.nftAccount) {
-      getUserInfo();
-    }
-  }, [account?.nftAccount]);
-
-  useEffect(() => {
-    // 当历史记录或页码变化时，更新显示的记录
-    const startIndex = 0;
-    const endIndex = historyPage * HISTORY_PAGE_SIZE;
-    setDisplayedLoginHistory(loginHistory.slice(startIndex, endIndex) || []);
-  }, [loginHistory, historyPage]);
-
-  if (!!origin && (!account || !account.nftAccount)) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <DAPPNote />
-      </div>
-    );
-  }
-  if (error && !userInfo) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-        <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full">
-          <h2 className="text-xl font-bold text-red-400 mb-4">错误</h2>
-          <p className="text-gray-900 mb-4">{error}</p>
-          <button
-            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-            onClick={() => window.location.reload()}
-          >
-            重试
-          </button>
-        </div>
-      </div>
-    );
-  }
+  ];
 
   return (
-    <div className="min-h-screen bg-gray-100 text-gray-900">
-      {/* 顶部用户信息栏 */}
-      <Header />
-
-      <div className="container mx-auto p-4">
-        {/* 账户概览卡片 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          {/* 存储使用情况 */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-medium text-gray-900">存储使用</h3>
-              <div className="bg-green-500 rounded-full p-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M4 5a2 2 0 00-2 7v8a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0011.172 3H8.828a2 2 0 00-1.414.586L6.293 4.707A1 1 0 015.586 5H4zm6 9a3 3 0 100-6 3 3 0 000 6z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </div>
-            </div>
-            <div className="mt-4">
-              <div className="flex justify-between text-sm mb-1">
-                <span>已使用: {formatBytes(userInfo?.usedSpace || 0)}</span>
-                <span>总共: {formatBytes(userInfo?.subscribeSpace || 0)}</span>
-              </div>
-              <div className="w-full bg-gray-700 rounded-full h-2">
-                <div
-                  className="bg-green-500 h-2 rounded-full"
-                  style={{
-                    width: `${
-                      ((userInfo?.usedSpace ? userInfo?.usedSpace : 0) /
-                        (userInfo?.subscribeSpace || 1)) *
-                      100
-                    }%`,
-                  }}
-                ></div>
-              </div>
-              <p className="mt-2 text-sm text-gray-800">
-                到期区块高度:{" "}
-                {userInfo?.expireNumber ? userInfo.expireNumber : "-"}
-              </p>
-              <div className="flex flex-col md:flex-row gap-2 mt-4">
-                <button
-                  onClick={handleSubscribeStorage}
-                  className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded flex items-center justify-center"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 mr-2"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z" />
-                  </svg>
-                  订阅更多存储
-                </button>
-
-                {account && account.account && (
-                  <button
-                    onClick={gotoOrderRecords}
-                    className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded flex items-center justify-center"
-                  >
-                    订阅记录
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* 积分余额 */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-medium text-gray-900">积分余额</h3>
-              <div className="bg-yellow-500 rounded-full p-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
-                  <path
-                    fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0 1 1 0 002 0zm-1 4a1 1 0 110-2 1 1 0 010 2z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </div>
-            </div>
-            <div className="mt-4">
-              <div className="text-3xl font-bold">
-                {userInfo?.points || 0} 积分
-              </div>
-              <button
-                onClick={exchangePoints}
-                className={`mt-4 w-full  text-white py-2 px-4 rounded ${
-                  userInfo?.points && userInfo?.points > 0
-                    ? "bg-yellow-600 hover:bg-yellow-700"
-                    : "bg-gray-400 cursor-not-allowed"
-                }`}
+    <div className="min-h-screen p-6 pb-20">
+      {/* Header */}
+      <header className="flex items-center justify-between mb-8">
+        <div className="flex items-center gap-3">
+          <img src="/logo.svg" alt="DCLogin" className="w-10 h-10 rounded-xl shadow-lg" />
+          <h1 className="text-2xl font-bold text-white tracking-tight">
+            DCLogin
+          </h1>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="relative group">
+            <button className="p-2 rounded-full bg-white/5 hover:bg-white/10 transition-colors text-slate-400 hover:text-white">
+              <Languages size={20} />
+            </button>
+            <div className="absolute right-0 top-full mt-2 w-32 py-2 bg-slate-900 border border-white/10 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+              <button 
+                onClick={() => changeLanguage(I18N_LANGUAGES.ZH)}
+                className={`w-full px-4 py-2 text-left text-sm hover:bg-white/5 transition-colors ${i18n.language === I18N_LANGUAGES.ZH ? 'text-blue-400' : 'text-slate-300'}`}
               >
-                兑换积分
+                中文
+              </button>
+              <button 
+                onClick={() => changeLanguage(I18N_LANGUAGES.EN)}
+                className={`w-full px-4 py-2 text-left text-sm hover:bg-white/5 transition-colors ${i18n.language === I18N_LANGUAGES.EN ? 'text-blue-400' : 'text-slate-300'}`}
+              >
+                English
               </button>
             </div>
           </div>
+          <button 
+            onClick={handleExperience}
+            className="px-6 py-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 backdrop-blur-md text-sm font-semibold text-white transition-all hover:scale-105"
+          >
+            {t("home.experience_now")}
+          </button>
         </div>
+      </header>
 
-        {/* 登录历史 */}
-        <div className="bg-white rounded-lg shadow p-6 mb-8">
-          <h3 className="text-lg font-medium text-gray-900 mb-4 flex justify-between">
-            <span>登录历史</span>
-            <button
-              onClick={handleRefreshLoginHistory}
-              className="ml-4 text-sm text-blue-500 hover:text-blue-700"
-            >
-              刷新
-            </button>
-          </h3>
-          {displayedLoginHistory.length > 0 ? (
-            <div className="space-y-3">
-              {displayedLoginHistory.map((item: AuthRecord) => (
-                <div key={item.recordId} className="bg-white rounded-lg p-4">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <h4 className="font-medium">{item.appName}</h4>
-                      <p className="text-sm text-gray-900">{item.appUrl}</p>
-                    </div>
-                    <div className="text-sm text-gray-900">
-                      {new Date(item.timestamp).toLocaleString()}
-                    </div>
-                  </div>
-                </div>
-              ))}
-              {displayedLoginHistory.length < loginHistory.length && (
-                <button
-                  onClick={handleLoadMoreHistory}
-                  className="w-full py-2 bg-white hover:bg-gray-200 rounded-lg text-center"
-                >
-                  加载更多
-                </button>
-              )}
+      {/* Hero Section */}
+      <div className="mb-12 text-center relative">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-blue-500/20 rounded-full blur-3xl -z-10"></div>
+        <h2 className="text-4xl font-bold mb-4 text-white">
+          <Trans i18nKey="home.slogan_title" components={{ 1: <span className="text-blue-400" /> }} />
+        </h2>
+        <p className="text-gray-400 max-w-lg mx-auto text-lg">
+          {t("home.slogan_desc")}
+        </p>
+      </div>
+
+      {/* Features Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+        {features.map((feature, index) => (
+          <div 
+            key={index}
+            className={`
+              relative overflow-hidden rounded-2xl p-6 border border-white/10 backdrop-blur-sm
+              bg-gradient-to-br ${feature.gradient}
+              hover:border-white/20 transition-all duration-300 hover:scale-[1.02] group
+            `}
+          >
+            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+              {feature.icon}
             </div>
-          ) : (
-            <p className="text-gray-600">暂无登录历史</p>
-          )}
-        </div>
+            
+            <div className="relative z-10">
+              <div className="mb-4 p-3 bg-white/5 rounded-xl w-fit backdrop-blur-md border border-white/10">
+                {feature.icon}
+              </div>
+              <h3 className="text-xl font-bold mb-2 text-white">{feature.title}</h3>
+              <p className="text-gray-300 leading-relaxed">
+                {feature.description}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
 
-        {/* 应用列表 */}
-        <div className="bg-white rounded-lg shadow p-6 mb-8">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">应用列表</h3>
+      {/* Stats / Trust Section */}
+      <div className="mt-16 grid grid-cols-3 gap-4 max-w-4xl mx-auto text-center">
+        <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+          <div className="text-2xl font-bold text-blue-400 mb-1">100%</div>
+          <div className="text-xs text-gray-400 uppercase tracking-wider">{t("home.stat_decentralized")}</div>
+        </div>
+        <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+          <div className="text-2xl font-bold text-violet-400 mb-1">Zero + TEE</div>
+          <div className="text-xs text-gray-400 uppercase tracking-wider">{t("home.stat_zkp")}</div>
+        </div>
+        <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+          <div className="text-2xl font-bold text-cyan-400 mb-1">24/7</div>
+          <div className="text-xs text-gray-400 uppercase tracking-wider">{t("home.stat_availability")}</div>
+        </div>
+      </div>
+
+      {/* App List Section */}
+      <div className="max-w-4xl mx-auto mt-12">
+        <div className="glass-panel p-6 rounded-2xl text-left border border-white/10 bg-white/5 backdrop-blur-sm">
+          <h3 className="text-lg font-medium text-white mb-6 flex items-center gap-2">
+            <span className="w-1 h-6 bg-green-500 rounded-full"></span>
+            {t("home.recommended_apps")}
+          </h3>
           {apps.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {apps.map((app) => (
                 <div
                   key={app.id}
-                  className="bg-gray-100 rounded-lg p-4 flex items-center"
+                  className="bg-white/5 hover:bg-white/10 border border-white/5 rounded-xl p-4 flex items-center transition-all hover:scale-[1.02] cursor-pointer"
                 >
                   <img
                     src={
@@ -359,41 +162,36 @@ const Dashboard = () => {
                       "https://images.unsplash.com/photo-1637593992672-ed85a851fdc3?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80"
                     }
                     alt={app.name}
-                    className="w-12 h-12 rounded-lg mr-4"
+                    className="w-12 h-12 rounded-xl mr-4 object-cover shadow-lg"
                     onError={(e) => {
                       e.currentTarget.src =
                         "https://images.unsplash.com/photo-1637593992672-ed85a851fdc3?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80";
                     }}
                   />
                   <div>
-                    <h4 className="font-medium">{app.name}</h4>
-                    <p className="text-sm text-gray-900">{app.description}</p>
+                    <h4 className="font-medium text-white">{app.name}</h4>
+                    <p className="text-xs text-slate-400 line-clamp-1">{app.description}</p>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-gray-600">暂无应用</p>
+            <div className="text-center py-10 text-slate-500">
+              <p>{t("home.under_review")}</p>
+            </div>
           )}
         </div>
       </div>
 
-      {/* 存储订阅模态框 */}
-      <StorageSubscriptionModal
-        isOpen={showStorageModal}
-        onClose={() => setShowStorageModal(false)}
-        // userPoints={userInfo?.points || 0}
-      />
-
-      {/* 积分兑换模态框 */}
-      {/* <PointsExchangeModal
-        isOpen={showExchangeModal}
-        onClose={() => setShowExchangeModal(false)}
-        userPoints={userInfo?.points || 0}
-        onExchange={handleExchangePoints}
-      /> */}
+      {/* Bottom CTA */}
+      <div className="mt-16 text-center">
+        <button 
+          onClick={handleExperience}
+          className="px-8 py-3 rounded-full bg-gradient-to-r from-blue-600 to-violet-600 font-bold text-white shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transition-all hover:-translate-y-1"
+        >
+          {t("home.experience_now")}
+        </button>
+      </div>
     </div>
   );
-};
-
-export default Dashboard;
+}

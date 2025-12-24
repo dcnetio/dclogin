@@ -1,3 +1,5 @@
+import { StoragePurchaseStatus } from "@/config/constant";
+
 export interface ActivityItem {
   hash: string;
   status: number;
@@ -49,4 +51,5 @@ export interface OrderRecord {
   description?: string; // 订单描述
   createTime: number; // 创建时间戳
   updateTime?: number; // 更新时间戳
+  _mod?: string; // threadDB内部使用字段，勿动
 }

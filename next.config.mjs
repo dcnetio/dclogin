@@ -14,7 +14,7 @@ const nextConfig = {
   poweredByHeader: false, // 隐藏 X-Powered-By 头
 
   // === 输出配置 ===
-  output: "export", // 静态导出
+  output: process.env.NODE_ENV === "production" ? "export" : undefined, // 静态导出
   trailingSlash: true, // URL 尾部斜杠
 
   // === 环境相关配置 ===
@@ -119,6 +119,7 @@ const nextConfig = {
 
   // === 头部配置 ===
   async headers() {
+    if (process.env.NODE_ENV === "production") return [];
     return [
       {
         source: "/(.*)",
@@ -201,8 +202,7 @@ const nextConfig = {
   ...(process.env.NODE_ENV === "development" && {
     // 开发环境特定配置
     devIndicators: {
-      buildActivity: true,
-      buildActivityPosition: "bottom-right",
+      position: "bottom-right",
     },
   }),
 

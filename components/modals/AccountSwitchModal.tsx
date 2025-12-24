@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 
 import { AddOutline, CloseOutline } from "antd-mobile-icons";
 import { AccountInfo } from "@/types/walletTypes";
+import { Dialog } from "antd-mobile";
 import {
   changeAccount,
   deleteAccount,
@@ -99,8 +100,50 @@ const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
   };
 
   // 退出登录
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    // 确认框
+    Dialog.confirm({
+      style: {
+        "--adm-color-background": "#1e293b",
+      },
+      bodyStyle: {
+        background: "#1e293b",
+      },
+      content: (
+        <div className="p-4 text-center">
+          <div className="text-lg font-bold mb-2 text-slate-100">
+            {t("auth.logout")}
+          </div>
+          <div className="text-sm text-slate-300 break-all">
+            {t("auth.logout_tip")}
+          </div>
+        </div>
+      ),
+      confirmText: (
+        <span style={{ color: "#60a5fa" }}>{t("common.confirm")}</span>
+      ),
+      cancelText: (
+        <span style={{ color: "#94a3b8" }}>{t("common.cancel")}</span>
+      ),
+      onConfirm: async () => {
+        logoutAccount();
+      },
+    });
+  };
+
+  const logoutAccount = async () => {
     try {
+      // 删除数据库
+      await deleteAccount(account?.account);
+
+      setTimeout(() => {
+        const updatedAccounts = accounts.filter(
+          (acc) => acc.account !== account.account
+        );
+        setAccounts(updatedAccounts);
+        setIsDeleting(null);
+      }, 500);
+
       // Clear Redux
       store.dispatch(saveAccountInfo({} as AccountInfo));
       store.dispatch(updateAuthStep({ type: "", content: "" }));
@@ -118,7 +161,6 @@ const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
       }
     } catch (error) {
     } finally {
-      // Redirect
       router.replace("/home");
       onClose();
     }
@@ -144,7 +186,6 @@ const AccountSwitchModal: React.FC<AccountSwitchModalProps> = ({
     // 删除数据库
     await deleteAccount(account);
 
-    // 模拟删除操作
     setTimeout(() => {
       const updatedAccounts = accounts.filter((acc) => acc.account !== account);
       setAccounts(updatedAccounts);

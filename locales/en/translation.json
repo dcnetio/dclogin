@@ -305,7 +305,9 @@
     "no_account": "Please login or register to continue",
     "success": "Authorization successful, entering home page",
     "failed": "Authorization failed, please refresh page",
-    "web_auth_failed": "WebAuth authorization failed"
+    "web_auth_failed": "WebAuth authorization failed",
+    "logout": "Logout",
+    "logout_tip": "Are you sure you want to logout?"
   },
   "wallet": {
     "wallet": "Wallet",

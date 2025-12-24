@@ -44,8 +44,12 @@ export default function TransferConfirm() {
             {t("transfer.confirm_transfer")}
           </div>
           <div className="text-sm text-slate-600 break-all">
-            {t("transfer.confirm_to")} <span className="font-mono text-primary">{to}</span> <br/>
-            {t("transfer.transfer")} <span className="font-bold text-slate-800">{amount} {currencySymbol}</span>
+            {t("transfer.confirm_to")}{" "}
+            <span className="font-mono text-primary">{to}</span> <br />
+            {t("transfer.transfer")}{" "}
+            <span className="font-bold text-slate-800">
+              {amount} {currencySymbol}
+            </span>
           </div>
         </div>
       ),
@@ -101,7 +105,10 @@ export default function TransferConfirm() {
             {t("activity.sending")} {currencySymbol}
           </div>
           <div className="text-4xl font-bold text-white font-mono tracking-tight">
-            {amount} <span className="text-lg text-slate-400 font-sans">{currencySymbol}</span>
+            {amount}{" "}
+            <span className="text-lg text-slate-400 font-sans">
+              {currencySymbol}
+            </span>
           </div>
         </div>
 
@@ -121,9 +128,9 @@ export default function TransferConfirm() {
           >
             {t("common.cancel")}
           </Button>
-          <Button 
+          <Button
             className="btn-primary !rounded-xl !h-12 !text-base !font-semibold"
-            onClick={transferBN} 
+            onClick={transferBN}
             block
           >
             {t("common.confirm")}

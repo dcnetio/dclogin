@@ -204,7 +204,9 @@
     "hundred_million": "亿",
     "trillion": "兆",
     "reviewing": "加速审核中...",
-    "maintainable_date": "可维持存储套餐至:",    "token_insufficient_warning": "云服务Token不足,数据随时丢失",    "subscribe_more": "订阅更多",
+    "maintainable_date": "可维持存储套餐至:",
+    "token_insufficient_warning": "云服务Token不足,数据随时丢失",
+    "subscribe_more": "订阅更多",
     "subscription_records": "订阅记录",
     "points_balance": "积分余额",
     "points": "积分",
@@ -296,7 +298,9 @@
     "no_account": "请登录或注册账户以继续",
     "success": "授权成功，进入首页",
     "failed": "授权失败，请刷新网页重试",
-    "web_auth_failed": "webAuth授权失败"
+    "web_auth_failed": "webAuth授权失败",
+    "logout": "退出登录",
+    "logout_tip": "确定要退出登录吗？"
   },
   "wallet": {
     "wallet": "钱包",

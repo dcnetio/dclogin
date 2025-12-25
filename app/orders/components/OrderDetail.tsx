@@ -3,13 +3,14 @@ import { X, CreditCard } from "lucide-react";
 import { CurrencyType, StoragePurchaseStatus } from "@/config/constant";
 import { OrderRecord } from "@/types/pageType";
 import { container } from "@/server/dc-contianer";
-import { Button, Toast } from "antd-mobile";
+import { Toast } from "antd-mobile";
 import QRCode from "qrcode";
 import { useTranslation } from "react-i18next";
 import {
   getOrderInfoWithOrderId,
   updateOrderRecord,
 } from "@/services/threadDB/orders";
+import Button from "@/components/ui/Button";
 
 interface OrderDetailProps {
   order: OrderRecord;
@@ -30,7 +31,7 @@ export default function OrderDetail({ order, onClose }: OrderDetailProps) {
       if (nOrderInfo && nOrderInfo.status === StoragePurchaseStatus.SUCCESS) {
         Toast.show({
           icon: "success",
-          content: t("order.order_cancelled"),
+          content: t("order.order_expired"),
           position: "center",
         });
         return;
@@ -94,7 +95,7 @@ export default function OrderDetail({ order, onClose }: OrderDetailProps) {
       if (nOrderInfo && nOrderInfo.status === StoragePurchaseStatus.SUCCESS) {
         Toast.show({
           icon: "success",
-          content: t("order.order_cancelled"),
+          content: t("order.subscribe_success"),
           position: "center",
         });
         return;
@@ -102,7 +103,7 @@ export default function OrderDetail({ order, onClose }: OrderDetailProps) {
       if (nOrderInfo && nOrderInfo.status === StoragePurchaseStatus.CANCEL) {
         Toast.show({
           icon: "fail",
-          content: t("order.wxpay_not_init"),
+          content: t("order.order_expired"),
           position: "center",
         });
 
@@ -359,7 +360,8 @@ export default function OrderDetail({ order, onClose }: OrderDetailProps) {
               </div>
               <Button
                 onClick={finishPayment}
-                className="py-3 w-full max-w-xs font-bold"
+                variant="primary"
+                className="py-3 w-full max-w-xs font-bold text-white bg-primary hover:bg-primary/90 transition-colors"
               >
                 {t("order.payment_completed")}
               </Button>

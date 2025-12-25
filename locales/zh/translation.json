@@ -335,7 +335,6 @@
   },
   "order": {
     "subscribe_success": "订阅成功",
-    "order_cancelled": "订单已取消",
     "wxpay_not_init": "微信支付管理器未初始化",
     "get_qrcode_failed": "获取支付二维码失败",
     "no_order_info": "暂无订单信息",

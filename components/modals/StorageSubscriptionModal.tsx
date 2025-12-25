@@ -104,9 +104,10 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
         return;
       }
       if (!user) {
-        if (authInfo.needLogin) {
+        const auth = store.getState().auth.authInfo || null;
+        if (auth.needLogin) {
           // 未登录过，前往登录页
-          router.replace(`/login`);
+          router.push(`/login`);
         }
         return;
       }
@@ -119,7 +120,7 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
       );
       // 初始化成功，
       store.dispatch(saveInitState(appState.init_success));
-      router.replace(`/home${window.location.search}`);
+      router.replace("/home");
     } catch (err) {
       console.error("登录失败:", err);
     }

@@ -299,6 +299,7 @@
     "success": "授权成功，进入首页",
     "failed": "授权失败，请刷新网页重试",
     "web_auth_failed": "webAuth授权失败",
+    "web_auth_not_set": "webAuth授权之前未设置",
     "logout": "退出登录",
     "logout_tip": "确定要退出登录吗？"
   },

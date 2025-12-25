@@ -306,6 +306,7 @@
     "success": "Authorization successful, entering home page",
     "failed": "Authorization failed, please refresh page",
     "web_auth_failed": "WebAuth authorization failed",
+    "web_auth_not_set": "WebAuth authorization is not set",
     "logout": "Logout",
     "logout_tip": "Are you sure you want to logout?"
   },

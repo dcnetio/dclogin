@@ -112,32 +112,28 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
       >
-        <div className="flex-1 relative z-10">
-          <StoreProvider>
-            <Locales>
-              {showHeader && isMobile && (
-                <NavBar
-                  className="tech-navbar"
-                  onBack={
-                    isFirstVisit ? undefined : () => window.history.back()
-                  } // 根据首次访问状态决定是否显示返回功能
-                >
-                  <div className="text-lg font-bold text-white text-glow">
-                    {getTitle(pathname)} {/* 动态标题 */}
-                  </div>
-                </NavBar>
-              )}
-              <RefreshProtectionProvider paramName="origin">
-                <ToastProvider>
-                  <Login />
-                  <main className="flex-1 w-full">{children}</main>
-                </ToastProvider>
-                <ProtectionStatus />
-                <StrictRefreshBlocker />
-              </RefreshProtectionProvider>
-            </Locales>
-          </StoreProvider>
-        </div>
+        <StoreProvider>
+          <Locales>
+            {showHeader && isMobile && (
+              <NavBar
+                className="tech-navbar"
+                onBack={isFirstVisit ? undefined : () => window.history.back()} // 根据首次访问状态决定是否显示返回功能
+              >
+                <div className="text-lg font-bold text-white text-glow">
+                  {getTitle(pathname)} {/* 动态标题 */}
+                </div>
+              </NavBar>
+            )}
+            <RefreshProtectionProvider paramName="origin">
+              <ToastProvider>
+                <Login />
+                <main className="flex-1 w-full">{children}</main>
+              </ToastProvider>
+              <ProtectionStatus />
+              <StrictRefreshBlocker />
+            </RefreshProtectionProvider>
+          </Locales>
+        </StoreProvider>
       </body>
     </html>
   );

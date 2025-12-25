@@ -5,7 +5,12 @@ interface ToastProps {
   duration?: number; // Duration in milliseconds
   position?: "top" | "bottom" | "center"; // Toast position
 }
-const Toast = ({ content, type = "info", duration = 3000, position = "bottom" }: ToastProps) => {
+const Toast = ({
+  content,
+  type = "info",
+  duration = 3000,
+  position = "bottom",
+}: ToastProps) => {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -32,11 +37,9 @@ const Toast = ({ content, type = "info", duration = 3000, position = "bottom" }:
 
   return (
     <div
-      className={`fixed px-6 py-3 rounded-xl shadow-md transition-opacity duration-300 ${typeStyles[type]} ${
-        positionStyles[position]
-      }`}
+      className={`fixed px-6 py-3 rounded-xl shadow-md transition-opacity duration-300 ${typeStyles[type]} ${positionStyles[position]}`}
       style={{
-        zIndex: 9999, // 确保提示框在最前面
+        zIndex: 999, // 确保提示框在最前面
         opacity: visible ? 1 : 0, // 添加淡入淡出效果
       }}
     >

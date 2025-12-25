@@ -154,7 +154,7 @@ export const showEncodePassword = (
           document.body.removeChild(container);
         } else {
           window.showToast({
-            content: i18n.t("auth.web_auth_failed"),
+            content: i18n.t("auth.web_auth_not_set"),
             position: "center",
           });
         }

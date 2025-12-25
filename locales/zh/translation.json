@@ -299,6 +299,7 @@
     "success": "授权成功，进入首页",
     "failed": "授权失败，请刷新网页重试",
     "web_auth_failed": "webAuth授权失败",
+    "web_auth_not_set": "webAuth授权之前未设置",
     "logout": "退出登录",
     "logout_tip": "确定要退出登录吗？"
   },
@@ -335,7 +336,6 @@
   },
   "order": {
     "subscribe_success": "订阅成功",
-    "order_cancelled": "订单已取消",
     "wxpay_not_init": "微信支付管理器未初始化",
     "get_qrcode_failed": "获取支付二维码失败",
     "no_order_info": "暂无订单信息",

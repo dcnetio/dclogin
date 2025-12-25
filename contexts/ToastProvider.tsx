@@ -72,7 +72,7 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
       key = "",
       content,
       type = "info",
-      duration = 3000,
+      duration = 1500,
       position = "bottom",
     }: {
       key?: string;

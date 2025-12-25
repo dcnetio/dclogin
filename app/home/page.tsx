@@ -512,7 +512,9 @@ const Dashboard = () => {
               </button>
 
               <button
-                onClick={() => router.push("/register")}
+                onClick={() =>
+                  router.push(`/register${window.location.search}`)
+                }
                 className="px-8 py-4 glass-panel rounded-xl text-white font-semibold text-lg border border-white/20 hover:border-white/40 transition-all hover:scale-105 min-w-[200px]"
               >
                 {t("home.register")}

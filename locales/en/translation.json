@@ -306,6 +306,7 @@
     "success": "Authorization successful, entering home page",
     "failed": "Authorization failed, please refresh page",
     "web_auth_failed": "WebAuth authorization failed",
+    "web_auth_not_set": "WebAuth authorization is not set",
     "logout": "Logout",
     "logout_tip": "Are you sure you want to logout?"
   },
@@ -343,7 +344,6 @@
   },
   "order": {
     "subscribe_success": "Subscription Successful",
-    "order_cancelled": "Order Cancelled",
     "wxpay_not_init": "WeChat Pay Manager not initialized",
     "get_qrcode_failed": "Failed to get payment QR code",
     "no_order_info": "No order information",

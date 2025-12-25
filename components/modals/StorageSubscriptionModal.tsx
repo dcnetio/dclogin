@@ -107,7 +107,7 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
         const auth = store.getState().auth.authInfo || null;
         if (auth.needLogin) {
           // 未登录过，前往登录页
-          router.replace(`/login`);
+          router.push(`/login`);
         }
         return;
       }

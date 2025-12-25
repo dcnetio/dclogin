@@ -276,7 +276,7 @@ const Dashboard = () => {
         const auth = store.getState().auth.authInfo || null;
         if (auth.needLogin) {
           // 未登录过，前往登录页
-          router.replace(`/login${window.location.search}`);
+          router.push(`/login${window.location.search}`);
         }
         return;
       }

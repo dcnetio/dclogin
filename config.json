@@ -1,5 +1,5 @@
 {
-  "peerAddr": "/dns4/bnpay.baybird.cn/tcp/3002/ws/p2p/12D3KooWJM8UHfVVYchrBkYeWNXtGvRq21TkcxqrUUZfZjW4x6Ji",
+  "peerAddr": "/dns/bnpay.baybird.cn/wss/p2p/12D3KooWJM8UHfVVYchrBkYeWNXtGvRq21TkcxqrUUZfZjW4x6Ji",
   "versionName": "v0_1_2",
   "version": "0.1.2",
   "versionCode": 22

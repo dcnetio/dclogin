@@ -55,7 +55,6 @@ const StorageSubscriptionModal: React.FC<StorageSubscriptionModalProps> = ({
   const [orderInfo, setOrderInfo] = useState<OrderRecord>(null);
 
   const account: AccountInfo = useAppSelector((state) => state.wallet.account);
-  const authInfo = useAppSelector((state) => state.auth.authInfo);
 
   useEffect(() => {
     if (isOpen) {

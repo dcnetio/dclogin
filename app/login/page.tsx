@@ -98,7 +98,7 @@ export default function Login() {
         // });
 
         store.dispatch(saveInitState(appState.init_success));
-        router.push("/");
+        router.push("/home");
         return;
       }
 

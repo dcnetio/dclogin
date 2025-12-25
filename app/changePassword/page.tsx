@@ -117,7 +117,7 @@ export default function ChangePassword() {
         position: "center",
       });
       // 返回上一页或者跳转到登录页
-      router.push("/");
+      router.push("/home");
     } catch {
       window.showToast({
         content: t("changePassword.failed"),

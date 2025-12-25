@@ -35,9 +35,10 @@ const Header = () => {
         return;
       }
       if (!user) {
-        if (authInfo.needLogin) {
+        const auth = store.getState().auth.authInfo || null;
+        if (auth.needLogin) {
           // 未登录过，前往登录页
-          router.replace(`/login`);
+          router.replace(`/login${window.location.search}`);
         }
         return;
       }

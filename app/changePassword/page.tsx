@@ -204,7 +204,7 @@ export default function ChangePassword() {
 
                 <div className={styles.openSourceSection}>
                   <a
-                    href="https://github.com/dcnetio"
+                    href="https://github.com/dcnetio/dclogin"
                     target="_blank"
                     rel="noopener noreferrer"
                     className={styles.githubLink}

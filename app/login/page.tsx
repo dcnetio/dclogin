@@ -194,7 +194,7 @@ export default function Login() {
 
           <div className="pt-4">
             <a
-              href="https://github.com/dcnetio"
+              href="https://github.com/dcnetio/dclogin"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center space-x-2 text-slate-400 hover:text-white transition-colors"

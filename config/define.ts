@@ -29,6 +29,7 @@ if (
       appName: "dologin",
     },
   };
+   _peerUrl = "/ip4/192.168.31.31/tcp/3002/ws/p2p/12D3KooWQEyWpYrKzfppidqqUoFQ4mrGzfPj9pakfrs821nEuHWR";
 }
 export const basePath = _basePath;
 export const apiUrl = _apiUrl;

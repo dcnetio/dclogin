@@ -1,39 +1,9 @@
-import { versionName, peerAddr } from "../config.json";
-let _basePath = "/" + versionName;
-let _apiUrl = "/api";
-let _peerUrl = peerAddr;
-let _dcConfig = {
-  wssUrl: "wss://dcchain.baybird.cn",
-  backWssUrl: "wss://dcchain.baybird.cn",
-  appInfo: {
-    appId: "dologin",
-    appName: "dologin",
-  },
-};
-let _APPThemeConfig = {
-  appThemeAuthor: "DcChain",
-};
-let _DefChainId = 176;
-// if (
-//   typeof process !== "undefined" &&
-//   process.env &&
-//   process.env["NODE_ENV"].trim() !== "production"
-// ) {
-//   _basePath = "";
-//   _apiUrl = "http://192.168.31.31:9001/api";
-//   _dcConfig = {
-//     wssUrl: "ws://192.168.31.31:9944",
-//     backWssUrl: "ws://192.168.31.31:9944",
-//     appInfo: {
-//       appId: "dologin",
-//       appName: "dologin",
-//     },
-//   };
-//    _peerUrl = "/ip4/192.168.31.31/tcp/3002/ws/p2p/12D3KooWQEyWpYrKzfppidqqUoFQ4mrGzfPj9pakfrs821nEuHWR";
-// }
-export const basePath = _basePath;
-export const apiUrl = _apiUrl;
-export const dcConfig = _dcConfig;
-export const APPThemeConfig = _APPThemeConfig;
-export const DefChainId = _DefChainId;
-export const peerUrl = _peerUrl;
+// @ts-ignore (如果 TS 报错找不到模块，可以忽略或者在 d.ts 里声明一下)
+import configInfo from "@app-config";
+console.log("环境", configInfo);
+export const basePath = configInfo.basePath;
+export const apiUrl = configInfo.apiUrl;
+export const dcConfig = configInfo.dcConfig;
+export const APPThemeConfig = configInfo.APPThemeConfig;
+export const DefChainId = configInfo.DefChainId;
+export const peerUrl = configInfo.peerAddr;

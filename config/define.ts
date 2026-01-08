@@ -17,7 +17,7 @@ let _DefChainId = 176;
 if (
   typeof process !== "undefined" &&
   process.env &&
-  process.env["NODE_ENV"].trim() === "development"
+  process.env["NODE_ENV"].trim() !== "production"
 ) {
   _basePath = "";
   _apiUrl = "http://192.168.31.31:9001/api";

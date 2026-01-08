@@ -3,6 +3,7 @@ import { readFile } from "fs/promises";
 
 const APP_ENV =
   process.env.NEXT_PUBLIC_APP_ENV || process.env.NODE_ENV || "development";
+console.log("process.env.NEXT_PUBLIC_APP_ENV", process.env.NEXT_PUBLIC_APP_ENV);
 const IS_DEV = APP_ENV === "development";
 const IS_PROD = APP_ENV === "production";
 

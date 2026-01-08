@@ -14,7 +14,10 @@ RUN npm install
 
 # 复制源代码
 COPY . .
-ENV NODE_ENV=test
+
+# 【新增】设置自定义变量，必须以 NEXT_PUBLIC_ 开头
+ENV NEXT_PUBLIC_APP_ENV=test
+
 # 执行构建
 RUN npm run build
 

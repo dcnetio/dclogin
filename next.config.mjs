@@ -1,12 +1,19 @@
 /** @type {import('next').NextConfig} */
 import { readFile } from "fs/promises";
 
-const versionJson = JSON.parse(
-  await readFile(new URL("./config.json", import.meta.url), "utf8")
-);
+const APP_ENV =
+  process.env.NEXT_PUBLIC_APP_ENV || process.env.NODE_ENV || "development";
+const IS_DEV = APP_ENV === "development";
+const IS_PROD = APP_ENV === "production";
 
-const versionPath =
-  process.env.NODE_ENV === "production" ? "/" + versionJson.versionName : "";
+// 动态决定要加载哪个文件
+let configFileName = "config.json"; // 默认
+if (APP_ENV === "production") configFileName = "config.prod.json";
+if (APP_ENV === "test") configFileName = "config.test.json";
+
+const versionJson = JSON.parse(
+  await readFile(new URL(configFileName, import.meta.url), "utf8")
+);
 const nextConfig = {
   // === 基础配置 ===
 
@@ -14,12 +21,12 @@ const nextConfig = {
   poweredByHeader: false, // 隐藏 X-Powered-By 头
 
   // === 输出配置 ===
-  output: process.env.NODE_ENV === "development" ?  undefined: "export", // 静态导出
+  output: IS_DEV ? undefined : "export", // 静态导出
   trailingSlash: true, // URL 尾部斜杠
 
   // === 环境相关配置 ===
-  assetPrefix: versionPath,
-  basePath: versionPath,
+  assetPrefix: versionJson.basePath,
+  basePath: versionJson.basePath,
 
   // === 图片优化配置 ===
   images: {
@@ -41,14 +48,14 @@ const nextConfig = {
     //     : false,
 
     // 移除 React 属性（生产环境）
-    reactRemoveProperties: process.env.NODE_ENV !== "development",
+    reactRemoveProperties: !IS_DEV,
 
     // styled-components 支持（如果使用）
     // styledComponents: true,
   },
 
   // === 性能优化 ===
-  compress: process.env.NODE_ENV === "production", // 启用 gzip 压缩
+  compress: IS_PROD, // 启用 gzip 压缩
 
   // === 构建配置 ===
   // generateBuildId: async () => {
@@ -82,6 +89,8 @@ const nextConfig = {
     config.resolve.alias = {
       ...config.resolve.alias,
       "@/*": "./*",
+      // 定义一个别名 '@app-config' 指向具体的 json 文件
+      "@app-config": new URL(configFileName, import.meta.url).pathname,
     };
 
     // 优化包大小
@@ -119,36 +128,38 @@ const nextConfig = {
 
   // === 头部配置 ===
   async headers() {
-    if (process.env.NODE_ENV !== "development") return [];
-    return [
-      {
-        source: "/(.*)",
-        headers: [
-          {
-            key: "X-Frame-Options",
-            value: "ALLOWALL", // 或者 'ALLOWALL'
-          },
-          {
-            key: "X-Content-Type-Options",
-            value: "nosniff",
-          },
-          {
-            key: "Referrer-Policy",
-            value: "origin-when-cross-origin",
-          },
-          // 缓存静态资源
-          {
-            key: "Cache-Control",
-            value: "public, max-age=31536000, immutable",
-          },
-        ],
-      },
-    ];
+    if (IS_DEV) {
+      return [
+        {
+          source: "/(.*)",
+          headers: [
+            {
+              key: "X-Frame-Options",
+              value: "ALLOWALL", // 或者 'ALLOWALL'
+            },
+            {
+              key: "X-Content-Type-Options",
+              value: "nosniff",
+            },
+            {
+              key: "Referrer-Policy",
+              value: "origin-when-cross-origin",
+            },
+            // 缓存静态资源
+            {
+              key: "Cache-Control",
+              value: "public, max-age=31536000, immutable",
+            },
+          ],
+        },
+      ];
+    }
+    return [];
   },
 
   rewrites: async () => {
     // 仅在开发环境中使用重写
-    if (process.env.NODE_ENV === "development") {
+    if (IS_DEV) {
       return [
         {
           source: "/iframe/:path*",
@@ -199,7 +210,7 @@ const nextConfig = {
   },
 
   // === 开发配置 ===
-  ...(process.env.NODE_ENV === "development" && {
+  ...(IS_DEV && {
     // 开发环境特定配置
     devIndicators: {
       position: "bottom-right",
@@ -207,7 +218,7 @@ const nextConfig = {
   }),
 
   // === 生产配置 ===
-  ...(process.env.NODE_ENV !== "development" && {
+  ...(!IS_DEV && {
     // 生产环境特定配置
     generateEtags: false, // 禁用 ETags
 

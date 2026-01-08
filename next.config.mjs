@@ -14,7 +14,7 @@ const nextConfig = {
   poweredByHeader: false, // 隐藏 X-Powered-By 头
 
   // === 输出配置 ===
-  output: process.env.NODE_ENV === "production" ? "export" : undefined, // 静态导出
+  output: process.env.NODE_ENV === "development" ?  undefined: "export", // 静态导出
   trailingSlash: true, // URL 尾部斜杠
 
   // === 环境相关配置 ===
@@ -41,7 +41,7 @@ const nextConfig = {
     //     : false,
 
     // 移除 React 属性（生产环境）
-    reactRemoveProperties: process.env.NODE_ENV === "production",
+    reactRemoveProperties: process.env.NODE_ENV !== "development",
 
     // styled-components 支持（如果使用）
     // styledComponents: true,
@@ -119,7 +119,7 @@ const nextConfig = {
 
   // === 头部配置 ===
   async headers() {
-    if (process.env.NODE_ENV === "production") return [];
+    if (process.env.NODE_ENV !== "development") return [];
     return [
       {
         source: "/(.*)",
@@ -148,7 +148,7 @@ const nextConfig = {
 
   rewrites: async () => {
     // 仅在开发环境中使用重写
-    if (process.env.NODE_ENV !== "production") {
+    if (process.env.NODE_ENV === "development") {
       return [
         {
           source: "/iframe/:path*",
@@ -207,7 +207,7 @@ const nextConfig = {
   }),
 
   // === 生产配置 ===
-  ...(process.env.NODE_ENV === "production" && {
+  ...(process.env.NODE_ENV !== "development" && {
     // 生产环境特定配置
     generateEtags: false, // 禁用 ETags
 

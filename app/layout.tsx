@@ -105,7 +105,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link rel="icon" href={`${basePath}/logo.svg`} type="image/svg+xml" />
-        <Script id="wallet-origin" strategy="beforeInteractive">
+        <Script id="dcLogin-origin" strategy="beforeInteractive">
           {`globalThis.walletOpenOrigin = window.location.origin;`}
         </Script>
       </head>

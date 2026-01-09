@@ -3,8 +3,8 @@ import type { Metadata } from "next";
 import { basePath } from "@/config/define";
 
 export const metadata: Metadata = {
-  title: "DC Wallet",
-  description: "DC Wallet",
+  title: "DC Login",
+  description: "DC Login",
   icons: [
     { url: basePath + "/favicon.ico", type: "image/x-icon", sizes: "256x256" },
   ],

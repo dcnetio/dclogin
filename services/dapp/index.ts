@@ -85,9 +85,9 @@ if (typeof window !== "undefined") {
   }
 }
 
-// 通知DAPP,钱包加载完成
+// 通知DAPP,登录中心加载完成
 function initCommChannel() {
-  //通知DAPP,钱包加载完成
+  //通知DAPP,登录中心加载完成
   const message = {
     type: "walletLoaded",
     data: {
@@ -126,7 +126,7 @@ async function onDAPPMessage(event: MessageEvent) {
   }
   //判断消息类型,message格式为{type: 'getUserInfo', data: {}}
   switch (message.type) {
-    case "checkWalletLoaded": //检查钱包是否加载完成请求
+    case "checkWalletLoaded": //检查登录中心是否加载完成请求
       const sendMessage = {
         type: "walletLoaded",
         data: {
@@ -144,7 +144,7 @@ async function onDAPPMessage(event: MessageEvent) {
       };
       iframeChannel.postMessage(loadedMessage); //利用messageChannel通知页面加载完成,当浏览器不支持window.opener会走这个流程
       break;
-    case "connect": //连接钱包请求
+    case "connect": //连接登录中心请求
       console.log("connect=====", message);
       console.log("event=====", event);
       if (isConnectReqMessage(message)) {
@@ -218,7 +218,7 @@ async function onDAPPMessage(event: MessageEvent) {
 }
 
 // 已有账号解密调用登录
-// 收到连接钱包请求处理,message格式为{type: 'connect',data: {appName:'test',appIcon:'',appUrl: 'http://localhost:8080',appVersion: '1.0.0'}}
+// 收到连接登录中心请求处理,message格式为{type: 'connect',data: {appName:'test',appIcon:'',appUrl: 'http://localhost:8080',appVersion: '1.0.0'}}
 async function connectCmdHandler(
   message: ConnectReqMessage,
   bool: boolean,
@@ -553,7 +553,7 @@ async function createAccountWithRegister(
       bindRes[1].message &&
       bindRes[1].message.indexOf("user has binded an account") !== -1
     ) {
-      walletAccount = null; // 清除钱包账号
+      walletAccount = null; // 清除登录中心账号
     }
     return;
   }
@@ -588,7 +588,7 @@ async function createAccountWithRegister(
   } catch (error) {
     console.log("=================initUserDB error", error);
   }
-  walletAccount = null; // 清除钱包账号
+  walletAccount = null; // 清除登录中心账号
   window.showToast({
     content: i18n.t("register.success"), // todo
     position: "center",

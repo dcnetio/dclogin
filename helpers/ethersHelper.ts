@@ -31,14 +31,14 @@ const connectWithHttps = async (url: string) => {
   }
 };
 
-// 创建钱包账号
+// 创建dclogin账号
 const createWalletAccount = async () => {
   // wallet 创建包，助记词，私钥，地址
   const wallet = Wallet.createRandom();
   return wallet;
 };
 
-// 根据助记词生成钱包账号
+// 根据助记词生成dclogin账号
 const createWalletAccountWithMnemonic = async (mnemonic: string) => {
   const wallet = Wallet.fromPhrase(mnemonic);
   return wallet;

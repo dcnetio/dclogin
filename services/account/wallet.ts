@@ -18,14 +18,14 @@ import { initUserDB } from "../threadDB";
 import { dcConfig } from "@/config/define";
 import { getToken } from "./auth";
 
-// 根据账号,生成签名的钱包账号对象
+// 根据账号,生成签名的登录中心账号对象
 async function generateWalletAccount(seedAccount: string) {
   let account = null;
   // 数据库里获取账号信息
   try {
     account = await DBHelper.getData(DBHelper.store_account, seedAccount);
     if (account == null) {
-      //待测试 跳出提示框,提示钱包里的用户账号不存在
+      //待测试 跳出提示框,提示登录中心里的用户账号不存在
       window.showToast({
         content: i18n.t("account.wallet_no_account"),
         position: "center",
@@ -59,7 +59,7 @@ async function generateWalletAccount(seedAccount: string) {
       return;
     }
   } catch {
-    //待测试 跳出提示框,提示用户解锁钱包失败
+    //待测试 跳出提示框,提示用户解锁登录中心失败
     window.showToast({
       content: i18n.t("account.unlock_wallet_failed"),
       position: "center",
@@ -73,7 +73,7 @@ async function generateWalletAccount(seedAccount: string) {
     userHandleHash
   );
   if (!mnemonic) {
-    //待测试 跳出提示框,提示用户导入钱包失败
+    //待测试 跳出提示框,提示用户导入登录中心失败
     window.showToast({
       content: i18n.t("account.unlock_wallet_failed"),
       position: "center",
@@ -87,10 +87,10 @@ async function generateWalletAccount(seedAccount: string) {
       await dc.auth.generateAppAccount(appId, mnemonic);
     }
   }
-  // 通过助记词导入钱包,生成带私钥钱包账号
+  // 通过助记词导入登录中心,生成带私钥登录中心账号
   const wallet = await ethersHelper.createWalletAccountWithMnemonic(mnemonic);
   if (!wallet) {
-    //待测试 跳出提示框,提示用户导入钱包失败
+    //待测试 跳出提示框,提示用户导入登录中心失败
     window.showToast({
       content: i18n.t("account.unlock_wallet_failed"),
       position: "center",
@@ -99,7 +99,7 @@ async function generateWalletAccount(seedAccount: string) {
   return wallet;
 }
 
-// 根据账号,生成签名的钱包账号对象（切换账号）
+// 根据账号,生成签名的登录中心账号对象（切换账号）
 async function generateWalletAccountWithChange(seedAccount: string) {
   const dc = getDC();
   if (!dc) {
@@ -114,7 +114,7 @@ async function generateWalletAccountWithChange(seedAccount: string) {
   try {
     account = await DBHelper.getData(DBHelper.store_account, seedAccount);
     if (account == null) {
-      //待测试 跳出提示框,提示钱包里的用户账号不存在
+      //待测试 跳出提示框,提示登录中心里的用户账号不存在
       window.showToast({
         content: i18n.t("account.wallet_no_account"),
         position: "center",
@@ -148,7 +148,7 @@ async function generateWalletAccountWithChange(seedAccount: string) {
       return;
     }
   } catch {
-    //待测试 跳出提示框,提示用户解锁钱包失败
+    //待测试 跳出提示框,提示用户解锁登录中心失败
     window.showToast({
       content: i18n.t("account.unlock_wallet_failed"),
       position: "center",
@@ -162,7 +162,7 @@ async function generateWalletAccountWithChange(seedAccount: string) {
     userHandleHash
   );
   if (!mnemonic) {
-    //待测试 跳出提示框,提示用户导入钱包失败
+    //待测试 跳出提示框,提示用户导入登录中心失败
     window.showToast({
       content: i18n.t("account.unlock_wallet_failed"),
       position: "center",
@@ -196,10 +196,10 @@ async function generateWalletAccountWithChange(seedAccount: string) {
     console.error("initUserDB", error);
   }
   window.clearToast();
-  // 通过助记词导入钱包,生成带私钥钱包账号
+  // 通过助记词导入登录中心,生成带私钥登录中心账号
   const wallet = await ethersHelper.createWalletAccountWithMnemonic(mnemonic);
   if (!wallet) {
-    //待测试 跳出提示框,提示用户导入钱包失败
+    //待测试 跳出提示框,提示用户导入登录中心失败
     window.showToast({
       content: i18n.t("account.unlock_wallet_failed"),
       position: "center",
@@ -207,7 +207,7 @@ async function generateWalletAccountWithChange(seedAccount: string) {
   }
   return wallet;
 }
-// 创建钱包账号
+// 创建登录中心账号
 async function createWalletAccount(
   mnemonic: string | null = null,
   nftAccount: string,
@@ -264,7 +264,7 @@ async function createWalletAccount(
   }
 }
 
-// 解锁钱包并返回数据信息
+// 解锁登录中心并返回数据信息
 async function unlockWallet(chooseAccount: AccountInfo) {
   // 获取当前网络
   // const chain = await getCurrentChain();
@@ -289,7 +289,7 @@ async function unlockWallet(chooseAccount: AccountInfo) {
       credentialId: chooseAccount.credentialId || "",
     });
     if (!userHandleHash) {
-      //跳出提示框,提示用户解锁钱包失败
+      //跳出提示框,提示用户解锁登录中心失败
       return;
     }
   } catch (error) {
@@ -349,10 +349,10 @@ async function resPonseWallet(
       connectingApp = appInfo;
     }
   }
-  // 通过助记词导入钱包,生成带私钥钱包账号
+  // 通过助记词导入登录中心,生成带私钥登录中心账号
   const wallet = await ethersHelper.createWalletAccountWithMnemonic(mnemonic);
   if (!wallet) {
-    //待测试 跳出提示框,提示用户解锁钱包失败
+    //待测试 跳出提示框,提示用户解锁登录中心失败
     store.dispatch(
       updateAuthStep({
         type: MsgStatus.failed,
@@ -451,7 +451,7 @@ async function resPonseWallet(
         window.close();
       });
   } else {
-    // 钱包本身访问
+    // 登录中心本身访问
     // 保存用户信息
     const toSaveAccountInfo: AccountInfo = {
       url: currentAccount.url,

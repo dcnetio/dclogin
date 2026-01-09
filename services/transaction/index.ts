@@ -19,7 +19,7 @@ async function transfer(
   const currentChain = getCurrentNetwork();
   const networkStatus = getNetworkStatus();
   if (currentChain == null || networkStatus != NetworkStauts.connected) {
-    //待测试 跳出提示框,提示用户未连接钱包
+    //待测试 跳出提示框,提示用户未连接登录中心
     window.showToast({
       content: i18n.t("account.wallet_not_connect"),
       position: "center",

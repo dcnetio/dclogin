@@ -17,7 +17,7 @@ export async function applyFreeSpace(
 ): Promise<[boolean, Error | null]> {
   const dc = getDC();
   if (!dc) {
-    return [false, new Error("Wallet not connected")];
+    return [false, new Error("dcLogin not connected")];
   }
   // Get public key for request
   if (!pubKey) {

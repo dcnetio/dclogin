@@ -1,8 +1,8 @@
 {
-  "versionName": "v0_1_2",
+  "versionName": "v0_1_3",
   "version": "0.1.2",
   "versionCode": 22,
-  "basePath": "/v0_1_2",
+  "basePath": "/v0_1_3",
   "peerAddr": "/dns4/bnpay.baybird.cn/tcp/3002/ws/p2p/12D3KooWJM8UHfVVYchrBkYeWNXtGvRq21TkcxqrUUZfZjW4x6Ji",
   "apiUrl": "/api",
   "APPThemeConfig": {
@@ -13,8 +13,8 @@
     "wssUrl": "wss://dcchain.baybird.cn",
     "backWssUrl": "wss://dcchain.baybird.cn",
     "appInfo": {
-      "appId": "dologin",
-      "appName": "dologin"
+      "appId": "dclogin",
+      "appName": "dclogin"
     }
   }
 }

@@ -99,11 +99,11 @@
     "auth_no_module": "用户模块未找到",
     "auth_doing": "用户授权中，请稍后",
     "auth_failed": "用户授权失败",
-    "unlock_wallet_cancel": "取消解锁钱包",
-    "unlock_wallet_failed": "解锁钱包失败",
-    "wallet_no_account": "钱包里的用户账号不存在",
+    "unlock_wallet_cancel": "取消解锁登录",
+    "unlock_wallet_failed": "解锁登录失败",
+    "wallet_no_account": "登录中心里的用户账号不存在",
     "get_info_failed": "用户获取账号信息失败",
-    "wallet_not_connect": "用户未连接钱包",
+    "wallet_not_connect": "用户未连接登录中心",
     "no_account": "用户没有可用账号",
     "give_space_ing": "赠送空间中...",
     "give_space_failed": "赠送空间失败",
@@ -137,8 +137,7 @@
     "warning": "授权前，请务必确认应用的安全性！",
     "unified_login": "统一登录",
     "data_security": "数据安全",
-    "data_seamless": "无缝体验",
-    "description": "去中心钱包"
+    "data_seamless": "无缝体验"
   },
   "sign": {
     "sign_title": "是否允许传入的信息进行签名?",
@@ -304,7 +303,6 @@
     "logout_tip": "确定要退出登录吗？"
   },
   "wallet": {
-    "wallet": "钱包",
     "name": "DCLogin",
     "tagline": "您通往新一代互联网的安全入口",
     "intro": "DCLogin 是一款基于去中心化云服务（DC）开发的统一登录工具，为用户提供安全的入口，便捷地进入新一代互联网。DCLogin 不存储任何用户隐私信息。",

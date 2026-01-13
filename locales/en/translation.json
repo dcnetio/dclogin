@@ -100,11 +100,11 @@
     "auth_no_module": "User module not found",
     "auth_doing": "Authorizing, please wait",
     "auth_failed": "Authorization failed",
-    "unlock_wallet_cancel": "Unlock wallet cancelled",
-    "unlock_wallet_failed": "Failed to unlock wallet",
-    "wallet_no_account": "Account not found in wallet",
+    "unlock_wallet_cancel": "Unlock dcLogin cancelled",
+    "unlock_wallet_failed": "Failed to unlock dcLogin",
+    "wallet_no_account": "Account not found in dcLogin",
     "get_info_failed": "Failed to get account info",
-    "wallet_not_connect": "Wallet not connected",
+    "wallet_not_connect": "dcLogin not connected",
     "no_account": "No available account",
     "give_space_ing": "Granting space...",
     "give_space_failed": "Failed to grant space",
@@ -138,8 +138,7 @@
     "warning": "Please confirm app security before authorizing!",
     "unified_login": "Unified Login",
     "data_security": "Data Security",
-    "data_seamless": "Seamless Experience",
-    "description": "Decentralized Wallet"
+    "data_seamless": "Seamless Experience"
   },
   "sign": {
     "sign_title": "Allow signing the following message?",
@@ -311,7 +310,6 @@
     "logout_tip": "Are you sure you want to logout?"
   },
   "wallet": {
-    "wallet": "Wallet",
     "initialization_failed": "Initialization Failed",
     "name": "DCLogin",
     "tagline": "Your secure gateway to the next generation internet",

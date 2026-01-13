@@ -28,7 +28,7 @@ export default function Login() {
   const init = async () => {
     try {
       if (openerOrigin) {
-        // dapp打开钱包，立刻回复钱包已经加载
+        // dapp打开dclogin，立刻回复dclogin已经加载
         initCommChannel();
       }
       // 保存app信息

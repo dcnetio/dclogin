@@ -1,20 +1,20 @@
 {
-  "versionName": "v0_1_2",
+  "versionName": "v0_1_3",
   "version": "0.1.2",
   "versionCode": 22,
   "basePath": "",
-  "peerAddr": "/ip4/192.168.31.31/tcp/3002/ws/p2p/12D3KooWQEyWpYrKzfppidqqUoFQ4mrGzfPj9pakfrs821nEuHWR",
-  "apiUrl": "http://192.168.31.31:9001/api",
+  "peerAddr": "/ip4/10.0.0.2/tcp/3002/ws/p2p/12D3KooWQEyWpYrKzfppidqqUoFQ4mrGzfPj9pakfrs821nEuHWR",
+  "apiUrl": "http://10.0.0.2:9001/api",
   "APPThemeConfig": {
     "appThemeAuthor": "DcChain"
   },
   "DefChainId": 176,
   "dcConfig": {
-    "wssUrl": "ws://192.168.31.31:9944",
-    "backWssUrl": "ws://192.168.31.31:9944",
+    "wssUrl": "ws://10.0.0.2:9944",
+    "backWssUrl": "ws://10.0.0.2:9944",
     "appInfo": {
-      "appId": "dologin",
-      "appName": "dologin"
+      "appId": "dclogin",
+      "appName": "dclogin"
     }
   }
 }

@@ -12,7 +12,7 @@ async function chooseStoredAccount(): Promise<AccountInfo | null> {
     console.log("currentAccount 已经存在", currentAccount);
     return currentAccount;
   }
-  //判断用户是否已经创建过钱包账号,如果没有,则跳出状态等待框,提示用户账号创建中
+  //判断用户是否已经创建过登录中心账号,如果没有,则跳出状态等待框,提示用户账号创建中
   const accounts = await DBHelper.getAllData(DBHelper.store_account);
   if (!accounts || accounts.length == 0) {
     return null;

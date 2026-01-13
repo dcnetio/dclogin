@@ -13,8 +13,8 @@
     "wssUrl": "wss://dcchain.baybird.cn",
     "backWssUrl": "wss://dcchain.baybird.cn",
     "appInfo": {
-      "appId": "dologin",
-      "appName": "dologin"
+      "appId": "dclogin",
+      "appName": "dclogin"
     }
   }
 }

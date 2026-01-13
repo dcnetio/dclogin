@@ -20,6 +20,6 @@ docker run -d \
 
 在 Chrome 地址栏输入：chrome://flags/#unsafely-treat-insecure-origin-as-secure
 在 Insecure origins treated as secure 输入框中填入你的地址：
-http://192.168.31.31:3000
+http://10.0.0.2:3000
 将右侧下拉菜单改为 Enabled。
 点击右下角的 Relaunch 重启浏览器。
